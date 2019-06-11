@@ -1,0 +1,13 @@
+
+# GP menu items definition
+entity.gp.collection:
+  title: 'GP list'
+  route_name: entity.gp.collection
+  description: 'GP list'
+  parent: system.admin_content
+
+gp.admin.structure.settings:
+  title: 'GP settings'
+  description: 'Configure GP entities'
+  route_name: gp.settings
+  parent: system.admin_structure

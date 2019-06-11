@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_gp.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_gp_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_gp module.
+    case 'help.page.nidirect_gp':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('NI Direct GP') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_gp_theme() {
+  return [
+    'nidirect_gp' => [
+      'render element' => 'children',
+    ],
+  ];
+}

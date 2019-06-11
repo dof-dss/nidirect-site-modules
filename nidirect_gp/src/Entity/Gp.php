@@ -52,15 +52,15 @@ use Drupal\user\UserInterface;
  *     "status" = "status",
  *   },
  *   links = {
- *     "canonical" = "/admin/content/gp/{gp}",
- *     "add-form" = "/admin/content/gp/add",
- *     "edit-form" = "/admin/content/gp/{gp}/edit",
- *     "delete-form" = "/admin/content/gp/{gp}/delete",
- *     "version-history" = "/admin/content/gp/{gp}/revisions",
- *     "revision" = "/admin/content/gp/{gp}/revisions/{gp_revision}/view",
- *     "revision_revert" = "/admin/content/gp/{gp}/revisions/{gp_revision}/revert",
- *     "revision_delete" = "/admin/content/gp/{gp}/revisions/{gp_revision}/delete",
- *     "translation_revert" = "/admin/content/gp/{gp}/revisions/{gp_revision}/revert/{langcode}",
+ *     "canonical" = "/gp/{gp}",
+ *     "add-form" = "/gp/add",
+ *     "edit-form" = "/gp/{gp}/edit",
+ *     "delete-form" = "/gp/{gp}/delete",
+ *     "version-history" = "/gp/{gp}/revisions",
+ *     "revision" = "/gp/{gp}/revisions/{gp_revision}/view",
+ *     "revision_revert" = "/gp/{gp}/revisions/{gp_revision}/revert",
+ *     "revision_delete" = "/gp/{gp}/revisions/{gp_revision}/delete",
+ *     "translation_revert" = "/gp/{gp}/revisions/{gp_revision}/revert/{langcode}",
  *     "collection" = "/admin/content/gp",
  *   },
  *   field_ui_base_route = "gp.settings"
@@ -69,8 +69,6 @@ use Drupal\user\UserInterface;
 class Gp extends RevisionableContentEntityBase implements GpInterface {
 
   use EntityChangedTrait;
-
-  private $title_options = ['dr' => 'Dr', 'prof' => 'Professor'];
 
   /**
    * {@inheritdoc}
@@ -124,7 +122,9 @@ class Gp extends RevisionableContentEntityBase implements GpInterface {
    * {@inheritdoc}
    */
   public function label() {
-    return sprintf("%s %s %s", $this->title_options[$this->getTitle()], $this->getFirstName(), $this->getLastName());
+    // TODO: refactor to allow access from a static context (see basefielddefinition).
+    $title_options = ['dr' => 'Dr', 'prof' => 'Professor'];
+    return sprintf("%s %s %s", $title_options[$this->getTitle()], $this->getFirstName(), $this->getLastName());
   }
 
   /**
@@ -260,7 +260,7 @@ class Gp extends RevisionableContentEntityBase implements GpInterface {
         ->setSettings([
           'max_length' => 50,
           'text_processing' => 0,
-          'allowed_values' => $this->title_options,
+          'allowed_values' => ['dr' => 'Dr', 'prof' => 'Professor'],
         ])
         ->setDefaultValue('')
         ->setDisplayOptions('view', [

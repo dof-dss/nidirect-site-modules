@@ -31,7 +31,7 @@ class GpListBuilder extends EntityListBuilder {
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),
-      'entity.gp.edit_form',
+      'entity.gp.canonical',
       ['gp' => $entity->id()]
     );
     return $row + parent::buildRow($entity);

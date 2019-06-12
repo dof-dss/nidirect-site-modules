@@ -1,9 +1,9 @@
 
 # GP menu items definition
 entity.gp.collection:
-  title: 'GP list'
+  title: 'GPs'
   route_name: entity.gp.collection
-  description: 'GP list'
+  description: 'Show GP list'
   parent: system.admin_content
 
 gp.admin.structure.settings:

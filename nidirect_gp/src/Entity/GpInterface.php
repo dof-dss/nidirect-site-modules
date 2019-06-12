@@ -17,6 +17,14 @@ interface GpInterface extends ContentEntityInterface, RevisionLogInterface, Enti
   // Add get/set methods for your configuration properties here.
 
   /**
+   * Get the display name of the GP.
+   *
+   * @return string
+   *   Title, first and last name of the GP as single string.
+   */
+  public function getDisplayName();
+
+  /**
    * Gets the GP title.
    *
    * @return string

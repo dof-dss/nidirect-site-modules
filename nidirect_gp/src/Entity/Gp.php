@@ -18,13 +18,20 @@ use Drupal\user\UserInterface;
  * @ContentEntityType(
  *   id = "gp",
  *   label = @Translation("GP"),
+ *   label_collection = @Translation("GPs"),
+ *   label_singular = @Translation("GP"),
+ *   label_plural = @Translation("GPs"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count GP",
+ *     plural = "@count GPs",
+ *   ),
+ *   label_callback = "gp_format_name",
  *   handlers = {
  *     "storage" = "Drupal\nidirect_gp\GpStorage",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "list_builder" = "Drupal\nidirect_gp\GpListBuilder",
  *     "views_data" = "Drupal\nidirect_gp\Entity\GpViewsData",
  *     "translation" = "Drupal\nidirect_gp\GpTranslationHandler",
- *
  *     "form" = {
  *       "default" = "Drupal\nidirect_gp\Form\GpForm",
  *       "add" = "Drupal\nidirect_gp\Form\GpForm",
@@ -45,7 +52,6 @@ use Drupal\user\UserInterface;
  *   entity_keys = {
  *     "id" = "id",
  *     "revision" = "vid",
- *     "label" = "name",
  *     "uuid" = "uuid",
  *     "uid" = "user_id",
  *     "langcode" = "langcode",
@@ -69,6 +75,14 @@ use Drupal\user\UserInterface;
 class Gp extends RevisionableContentEntityBase implements GpInterface {
 
   use EntityChangedTrait;
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getDisplayName() {
+    $name = $this->label();
+    return $name;
+  }
 
   /**
    * {@inheritdoc}

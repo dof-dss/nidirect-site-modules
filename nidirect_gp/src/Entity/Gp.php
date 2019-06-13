@@ -136,24 +136,7 @@ class Gp extends RevisionableContentEntityBase implements GpInterface {
    * {@inheritdoc}
    */
   public function label() {
-    // TODO: refactor to allow access from a static context (see basefielddefinition).
-    $title_options = ['dr' => 'Dr', 'prof' => 'Professor'];
-    return sprintf("%s %s %s", $title_options[$this->getTitle()], $this->getFirstName(), $this->getLastName());
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getTitle() {
-    return $this->get('title')->value;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setTitle($title) {
-    $this->set('title', $title);
-    return $this;
+    return sprintf("Dr %s %s", $this->getFirstName(), $this->getLastName());
   }
 
   /**
@@ -266,29 +249,6 @@ class Gp extends RevisionableContentEntityBase implements GpInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
-
-    $fields['title'] = BaseFieldDefinition::create('list_string')
-        ->setLabel(t('Title'))
-        ->setDescription(t('The title of the GP. Eg: Dr, Professor'))
-        ->setRevisionable(TRUE)
-        ->setSettings([
-          'max_length' => 50,
-          'text_processing' => 0,
-          'allowed_values' => ['dr' => 'Dr', 'prof' => 'Professor'],
-        ])
-        ->setDefaultValue('')
-        ->setDisplayOptions('view', [
-          'label' => 'above',
-          'type' => 'string',
-          'weight' => -6,
-        ])
-        ->setDisplayOptions('form', [
-          'label' => 'above',
-          'type' => 'options_select',
-          'weight' => -6,
-        ])
-        ->setDisplayConfigurable('form', TRUE)
-        ->setDisplayConfigurable('view', TRUE);
 
     $fields['first_name'] = BaseFieldDefinition::create('string')
       ->setLabel(t('First name'))

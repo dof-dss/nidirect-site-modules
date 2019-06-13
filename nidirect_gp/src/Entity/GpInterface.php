@@ -25,25 +25,6 @@ interface GpInterface extends ContentEntityInterface, RevisionLogInterface, Enti
   public function getDisplayName();
 
   /**
-   * Gets the GP title.
-   *
-   * @return string
-   *   Title of the GP.
-   */
-  public function getTitle();
-
-  /**
-   * Sets the GP title.
-   *
-   * @param string $title
-   *   The GP title.
-   *
-   * @return \Drupal\nidirect_gp\Entity\GpInterface
-   *   The called GP entity.
-   */
-  public function setTitle($title);
-
-  /**
    * Gets the GP first name.
    *
    * @return string

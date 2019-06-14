@@ -13,7 +13,6 @@ use Drupal\Core\Link;
  */
 class GpListBuilder extends EntityListBuilder {
 
-
   /**
    * {@inheritdoc}
    */

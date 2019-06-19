@@ -1,0 +1,48 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_common.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_common module.
+    case 'help.page.nidirect_common':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Common site wide functions') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ *
+ * Programmatically sets the field_top_level_theme based on
+ * the parent taxonomy tids of the field_subtheme value.
+ */
+function nidirect_common_entity_presave($entity) {
+  // Check we're saving a node and not a configuration form.
+  if ($entity->getEntityType()->id() == 'node') {
+    if ($entity->hasField('field_top_level_theme') && !empty($entity->get('field_subtheme')->getString())) {
+      $subtheme_tid = $entity->get('field_subtheme')->getString();
+
+      $taxonomy = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+      $parent_terms = $taxonomy->loadAllParents($subtheme_tid);
+
+      // Check we have a parent term and set as top level term.
+      if (!empty($parent_terms)) {
+        $root_term = array_pop($parent_terms);
+        $entity->set('field_top_level_theme', $root_term);
+      }
+    }
+  }
+}

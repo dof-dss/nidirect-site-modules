@@ -110,7 +110,7 @@ function nidirect_common_gp_practice_form_validate(&$form, FormStateInterface $f
   $practiceName = $form_state->getValue('field_gp_practice_name')[0]['value'];
   $surgeryName = $form_state->getValue('field_gp_surgery_name')[0]['value'];
   if (empty($practiceName) && empty($surgeryName)) {
-    $form_state->setErrorByName('field_gp_practice_name', 'You must provide a surgery name, a practice name, or both. Both cannot be left blank.');
+    $form_state->setErrorByName('field_gp_practice_name', t('You must provide a surgery name, a practice name, or both. Both cannot be left blank.'));
   }
 }
 

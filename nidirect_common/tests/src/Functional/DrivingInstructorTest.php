@@ -23,6 +23,11 @@ class DrivingInstructorTest extends BrowserTestBase {
   public static $modules = ['nidirect_common', 'node'];
 
   /**
+   * Use install profile so that we have all content types, modules etc.
+   */
+  protected $profile = 'test';
+
+  /**
    * Tests the behavior when creating the node.
    */
   public function testNodeCreate() {

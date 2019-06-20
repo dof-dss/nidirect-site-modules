@@ -26,7 +26,6 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
   }
 }
 
-
 /**
  * Implements hook_entity_presave().
  */
@@ -72,6 +71,30 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Driving instructor node form #after_build function.
+ *
+ * For usability on the driving instructor search page, instructors are
+ * displayed using two parent terms, driving instruction and motorcycle
+ * instruction. We don't want instructors ever to be tagged with these
+ * terms so we'll hide them from the list.
+ */
+function nidirect_common_driving_instructor_after_build($form, &$form_state) {
+  $categories = &$form['field_di_categories']['widget']['#options'];
+
+  foreach ($categories as $tid => $label) {
+    if (substr($label, 0, 1) != '-') {
+      unset($categories[$tid]);
+    }
+    else {
+      $categories[$tid] = substr($label, 1);
+    }
+  }
+  asort($categories);
+
+  return $form;
+}
+
+/**
  * Implements hook_form_alter().
  */
 function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -86,6 +109,7 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     $form['title']['widget'][0]['value']['#description'] =
       t('You cannot edit the title. It is created automatically from the first name, last name, and ADI number.');
     $form['title']['#disabled'] = 'TRUE';
+    $form['#after_build'][] = 'nidirect_common_driving_instructor_after_build';
   }
   elseif (($form_id == "node_gp_practice_form")
     || ($form_id == "node_gp_practice_edit_form")) {

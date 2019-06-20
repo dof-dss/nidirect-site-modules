@@ -1,5 +1,5 @@
 name: 'NIDirect Common'
 type: module
-description: 'Common site wide functions'
+description: 'NIDirect Common functions and overrides'
 core: 8.x
-package: 'NIDirect'
+package: 'Custom'

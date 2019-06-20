@@ -20,30 +20,16 @@ class DrivingInstructorTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['nidirect_common', 'node', 'config', 'system'];
-
-  //protected $profile = 'test';
+  public static $modules = ['nidirect_common', 'node'];
 
   /**
    * Tests the behavior when creating the node.
    */
   public function testNodeCreate() {
-    // Import the content of the sync directory.
-    //$sync = \Drupal::service('config.storage.sync');
-    //$this->copyConfig(\Drupal::service('config.storage'), $sync);
-    //$steps = $this->configImporter()->initialize();
-    //$this->configImporter()->import();
-
-    //$this->setInstallProfile($this->profile);
-    //$this->setUp();
-
     // Create a node to view.
     //$node = $this->drupalCreateNode(['type' => 'driving_instructor', 'field_di_firstname' => [['value' => 'Firstname']]]);
-    //$this->drupalLogin($this->rootUser);
     $node = $this->drupalCreateNode(['type' => 'cold_weather_payment', 'title' => 'testing']);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
-    //$this->drupalGet('/node/' . $node->id() . '/view');
-    //$this->assertResponse(200);
   }
 
 }

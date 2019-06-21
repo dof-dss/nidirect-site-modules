@@ -4,9 +4,6 @@ namespace Drupal\Tests\cnnic_common\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Tests Driving Instructor title generation.
@@ -24,6 +21,8 @@ class GPPracticeTest extends BrowserTestBase {
 
   /**
    * Use install profile so that we have all content types, modules etc.
+   *
+   * @var installprofile
    */
   protected $profile = 'test';
 
@@ -32,9 +31,11 @@ class GPPracticeTest extends BrowserTestBase {
    */
   public function testNodeCreate() {
     // Create a node to view.
-    $node = $this->drupalCreateNode(['type' => 'gp_practice',
+    $node = $this->drupalCreateNode([
+      'type' => 'gp_practice',
       'field_gp_practice_name' => [['value' => 'Practice']],
-      'field_gp_surgery_name' => [['value' => 'Surgery']]]);
+      'field_gp_surgery_name' => [['value' => 'Surgery']],
+    ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $this->drupalGet('/node/' . $node->id() . '/view');
     // Node title should have been automatically set to include

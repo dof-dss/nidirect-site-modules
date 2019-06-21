@@ -32,9 +32,15 @@ class DrivingInstructorTest extends BrowserTestBase {
    */
   public function testNodeCreate() {
     // Create a node to view.
-    //$node = $this->drupalCreateNode(['type' => 'driving_instructor', 'field_di_firstname' => [['value' => 'Firstname']]]);
-    $node = $this->drupalCreateNode(['type' => 'cold_weather_payment', 'title' => 'testing']);
+    $node = $this->drupalCreateNode(['type' => 'driving_instructor',
+      'field_di_firstname' => [['value' => 'Firstname']],
+      'field_di_lastname' => [['value' => 'Lastname']],
+      'field_di_adi_no' => [['value' => '222']]]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
+    $this->drupalGet('/node/' . $node->id() . '/view');
+    // Node title should ahve been automatically set to include
+    // all three fields.
+    $this->assertSession()->pageTextContains('Firstname Lastname (ADI No. 222)');
   }
 
 }

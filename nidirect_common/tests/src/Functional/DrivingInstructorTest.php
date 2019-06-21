@@ -24,7 +24,7 @@ class DrivingInstructorTest extends BrowserTestBase {
    *
    * @var installprofile
    */
-  protected $profile = 'test';
+  protected $profile = 'test_profile';
 
   /**
    * Tests the behavior when creating the node.

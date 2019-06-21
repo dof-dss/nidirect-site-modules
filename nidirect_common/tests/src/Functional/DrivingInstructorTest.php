@@ -4,9 +4,6 @@ namespace Drupal\Tests\cnnic_common\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
-use Drupal\KernelTests\KernelTestBase;
 
 /**
  * Tests Driving Instructor title generation.
@@ -24,6 +21,8 @@ class DrivingInstructorTest extends BrowserTestBase {
 
   /**
    * Use install profile so that we have all content types, modules etc.
+   *
+   * @var installprofile
    */
   protected $profile = 'test';
 
@@ -32,13 +31,15 @@ class DrivingInstructorTest extends BrowserTestBase {
    */
   public function testNodeCreate() {
     // Create a node to view.
-    $node = $this->drupalCreateNode(['type' => 'driving_instructor',
+    $node = $this->drupalCreateNode([
+      'type' => 'driving_instructor',
       'field_di_firstname' => [['value' => 'Firstname']],
       'field_di_lastname' => [['value' => 'Lastname']],
-      'field_di_adi_no' => [['value' => '222']]]);
+      'field_di_adi_no' => [['value' => '222']],
+    ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $this->drupalGet('/node/' . $node->id() . '/view');
-    // Node title should ahve been automatically set to include
+    // Node title should have been automatically set to include
     // all three fields.
     $this->assertSession()->pageTextContains('Firstname Lastname (ADI No. 222)');
   }

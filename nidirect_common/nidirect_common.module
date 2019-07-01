@@ -171,3 +171,19 @@ function build_gp_practice_title($practiceName = '', $surgeryName = '') {
   // will be caught by validation.
   return $title;
 }
+
+/**
+ * Form alter hook to add extra guidance for the LinkIt
+ * dialogue box presented in the WYSIWYG editor.
+ *
+ * @param array $form
+ *   Form definition.
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   Form state.
+ */
+function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, FormStateInterface $form_state) {
+  $form['attributes']['href']['#description'] .= '<p>'
+    . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
+    . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
+    . '</p>';
+}

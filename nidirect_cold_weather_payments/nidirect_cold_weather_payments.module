@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_cold_weather_payments.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_cold_weather_payments_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_cold_weather_payments module.
+    case 'help.page.nidirect_cold_weather_payments':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Displays information about Cold Weather Payment Scheme payments and dates for a postcode.') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_cold_weather_payments_theme() {
+  return [
+    'nidirect_cold_weather_payments' => [
+      'render element' => 'children',
+    ],
+  ];
+}

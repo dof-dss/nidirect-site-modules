@@ -1,0 +1,5 @@
+name: 'NIDirect Cold Weather Payments'
+type: module
+description: 'Cold weather payments system'
+core: 8.x
+package: 'NIDirect'

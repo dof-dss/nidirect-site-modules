@@ -1,0 +1,11 @@
+# Ignore potentially dangerous files.
+*.sql*
+*.tar*
+*.*zip
+
+# Misc IDE's and tooling files to ingore.
+.swp
+.vscode
+/.idea/
+.DS_Store
+.talismanrc

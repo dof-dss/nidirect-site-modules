@@ -27,7 +27,7 @@ class GPPracticeTest extends BrowserTestBase {
   protected $profile = 'test_profile';
 
   /**
-   * Tests the behavior when creating the node.
+   * Tests the behavior when creating the node with two fields.
    */
   public function testVanillaNodeCreate() {
     // Create a node to view.
@@ -44,7 +44,7 @@ class GPPracticeTest extends BrowserTestBase {
   }
 
   /**
-   * Tests the behavior when creating the node.
+   * Tests the behavior when creating the node with one field.
    */
   public function testOneFieldNodeCreate() {
     // Create a node with just one field filled in.

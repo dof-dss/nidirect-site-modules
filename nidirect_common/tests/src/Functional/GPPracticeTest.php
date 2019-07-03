@@ -29,7 +29,7 @@ class GPPracticeTest extends BrowserTestBase {
   /**
    * Tests the behavior when creating the node.
    */
-  public function testNodeCreate() {
+  public function testVanillaNodeCreate() {
     // Create a node to view.
     $node = $this->drupalCreateNode([
       'type' => 'gp_practice',
@@ -39,8 +39,39 @@ class GPPracticeTest extends BrowserTestBase {
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $this->drupalGet('/node/' . $node->id() . '/view');
     // Node title should have been automatically set to include
-    // all three fields.
+    // both fields.
     $this->assertSession()->pageTextContains('Surgery - Practice');
+  }
+
+  /**
+   * Tests the behavior when creating the node.
+   */
+  public function testOneFieldNodeCreate() {
+    // Create a node with just one field filled in.
+    $node = $this->drupalCreateNode([
+      'type' => 'gp_practice',
+      'field_gp_practice_name' => [['value' => 'Practice']]
+    ]);
+    $this->assertTrue(Node::load($node->id()), 'Node created.');
+    $this->drupalGet('/node/' . $node->id() . '/view');
+    // Node title should have been automatically set to include
+    // the practice name.
+    $this->assertSession()->pageTextContains('Practice');
+    // There should be no hyphen.
+    $this->assertSession()->pageTextNotContains('- Practice');
+
+    // Create a node with the other field filled in.
+    $node = $this->drupalCreateNode([
+      'type' => 'gp_practice',
+      'field_gp_surgery_name' => [['value' => 'Surgery']]
+    ]);
+    $this->assertTrue(Node::load($node->id()), 'Node created.');
+    $this->drupalGet('/node/' . $node->id() . '/view');
+    // Node title should have been automatically set to include
+    // the practice name.
+    $this->assertSession()->pageTextContains('Surgery');
+    // There should be no hyphen.
+    $this->assertSession()->pageTextNotContains('Surgery -');
   }
 
 }

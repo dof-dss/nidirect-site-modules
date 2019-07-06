@@ -187,3 +187,25 @@ function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, Form
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
     . '</p>';
 }
+
+/**
+ * Implements hook_entity_view_mode_alter().
+ *
+ * Workaround to switch view mode between content edit/view pages because
+ * CKEditor does not permit external assets for Maps. We use a preview
+ * view mode by default, but switch to 'embed' on content pages.
+ */
+function nidirect_common_entity_view_mode_alter(&$view_mode, EntityInterface $entity, $context) {
+  if ($entity->getEntityTypeId() != 'paragraph') {
+    // Exit for non-paragraph entities.
+    return;
+  }
+  if ($entity->getParagraphType()->id != 'map') {
+    // Exit for non-map types.
+    return;
+  }
+
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.node.canonical') {
+    $view_mode = 'embed';
+  }
+}

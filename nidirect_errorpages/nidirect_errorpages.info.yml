@@ -1,0 +1,5 @@
+name: 'NIDirect custom error pages'
+type: module
+description: 'Custom error pages for NIDirect'
+core: 8.x
+package: 'NIDirect'

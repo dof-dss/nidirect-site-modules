@@ -20,8 +20,6 @@ class WeatherStationEntityHtmlRouteProvider extends AdminHtmlRouteProvider {
   public function getRoutes(EntityTypeInterface $entity_type) {
     $collection = parent::getRoutes($entity_type);
 
-    // Provide your custom entity routes here.
-
     return $collection;
   }
 

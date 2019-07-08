@@ -110,7 +110,8 @@ class ColdWeatherPaymentResource extends ResourceBase {
    *   Throws exception expected.
    */
   public function get($postcode = NULL) {
-    $response['postcode'] = $postcode;
+    preg_match_all('/^(BT)?(\d{1,2})\s?/mi', $postcode, $matches, PREG_SET_ORDER, 0);
+    $response['postcode'] = $matches[0][2];
 
     // Fetch the latest Payment period node.
     $query = $this->entityQuery->get('node')

@@ -55,7 +55,7 @@ class WeatherStationEntity extends ConfigEntityBase implements WeatherStationEnt
    */
   protected $label;
 
-    /**
+  /**
    * The Weather station postcodes.
    *
    * @var string

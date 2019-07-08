@@ -39,7 +39,6 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
    */
   protected $entityQuery;
 
-
   /**
    * {@inheritdoc}
    */

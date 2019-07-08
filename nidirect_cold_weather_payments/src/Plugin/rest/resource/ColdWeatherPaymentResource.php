@@ -142,7 +142,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
 
       // Postcodes for stations are stored as the first 2 digits, strip BT
       // from the query postcode.
-      if (in_array(str_replace('BT', '', $postcode), $postcodes)) {
+      if (in_array(str_replace('BT', '', $response['postcode']), $postcodes)) {
         $payment_granted = TRUE;
       }
 

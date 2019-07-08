@@ -121,17 +121,23 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     $data = $this->cwpLookup($postcode);
 
-    $renderable = [
-      '#theme' => 'cwp_search_result',
-      '#postcode' => $data['postcode'],
-      '#period_start' => $data['payments_period']['date_start'],
-      '#period_end' => $data['payments_period']['date_end'],
-      '#payments' => $data['payments'],
-    ];
-    $rendered = $this->renderer->render($renderable);
+    // Check we have data back from the API.
+    if (is_null($data)) {
+      $output = $this->t('Sorry, we were unable to process this request.');
+    }
+    else {
+      $renderable = [
+        '#theme' => 'cwp_search_result',
+        '#postcode' => $data['postcode'],
+        '#period_start' => $data['payments_period']['date_start'],
+        '#period_end' => $data['payments_period']['date_end'],
+        '#payments' => $data['payments'],
+      ];
+      $output = $this->renderer->render($renderable);
+    }
 
     $response->addCommand(
-      new HtmlCommand('#cwp-message', $rendered)
+      new HtmlCommand('#cwp-message', $output)
     );
 
     return $response;
@@ -161,16 +167,22 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     $data = $this->cwpLookup($postcode);
 
-    $renderable = [
-      '#theme' => 'cwp_search_result',
-      '#postcode' => $data['postcode'],
-      '#period_start' => $data['payments_period']['date_start'],
-      '#period_end' => $data['payments_period']['date_end'],
-      '#payments' => $data['payments'],
-    ];
-    $rendered = $this->renderer->render($renderable);
+    // Check we have data back from the API.
+    if (is_null($data)) {
+      $output = $this->t('Sorry, we were unable to process this request.');
+    }
+    else {
+      $renderable = [
+        '#theme' => 'cwp_search_result',
+        '#postcode' => $data['postcode'],
+        '#period_start' => $data['payments_period']['date_start'],
+        '#period_end' => $data['payments_period']['date_end'],
+        '#payments' => $data['payments'],
+      ];
+      $output = $this->renderer->render($renderable);
+    }
 
-    $form_state->set('message', $rendered);
+    $form_state->set('message', $output);
     $form_state->setRebuild(TRUE);
   }
 
@@ -178,6 +190,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * Call CWP API and process data.
    */
   private function cwpLookup($postcode) {
+    $data = NULL;
 
     try {
       $client = $this->httpClientFactory->fromOptions([
@@ -196,10 +209,12 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       }
 
       $data['payments'] = $payments;
-      return $data;
     }
-    catch (Exception $e) {
-      // TODO: handle Guzzle exception.
+    catch (\Exception $e) {
+      \Drupal::logger('type')->error($e->getMessage());
+    }
+    finally {
+      return $data;
     }
   }
 

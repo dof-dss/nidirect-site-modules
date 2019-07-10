@@ -6,7 +6,6 @@ use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 use Drupal\Core\Messenger\MessengerInterface;
 
 /**
@@ -22,13 +21,6 @@ class WeatherStationEntityForm extends EntityForm {
   protected $entityTypeManager;
 
   /**
-   * EntityQuery.
-   *
-   * @var Drupal\Core\Entity\Query\QueryFactory
-   */
-  protected $entityQuery;
-
-  /**
    * Messenger service.
    *
    * @var Drupal\Core\Messenger\MessengerInterface
@@ -38,9 +30,8 @@ class WeatherStationEntityForm extends EntityForm {
   /**
    * Class constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entityTypeManager, QueryFactory $entityQuery, MessengerInterface $messenger) {
+  public function __construct(EntityTypeManagerInterface $entityTypeManager, MessengerInterface $messenger) {
     $this->entityTypeManager = $entityTypeManager;
-    $this->entityQuery = $entityQuery;
     $this->messenger = $messenger;
   }
 
@@ -50,7 +41,6 @@ class WeatherStationEntityForm extends EntityForm {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('entity.query'),
       $container->get('messenger')
     );
   }
@@ -103,7 +93,7 @@ class WeatherStationEntityForm extends EntityForm {
     $existing_postcodes = [];
 
     // Check all weather station entities for a matching postcode.
-    $ids = $this->entityQuery->get('weather_station')
+    $ids = $this->entityTypeManager->getStorage('weather_station')->getQuery()
       ->condition('id', $id, '<>')
       ->execute();
     $stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple($ids);

@@ -8,7 +8,6 @@ use Drupal\rest\ResourceResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Entity\Query\QueryFactory;
 
 /**
  * Provides a resource to view cold weather payment details.
@@ -38,13 +37,6 @@ class ColdWeatherPaymentResource extends ResourceBase {
   protected $entityTypeManager;
 
   /**
-   * EntityQuery.
-   *
-   * @var Drupal\Core\Entity\Query\QueryFactory
-   */
-  protected $entityQuery;
-
-  /**
    * Constructs a new ColdWeatherPaymentResource object.
    *
    * @param array $configuration
@@ -61,8 +53,6 @@ class ColdWeatherPaymentResource extends ResourceBase {
    *   A current user instance.
    * @param Drupal\Core\Entity\EntityTypeManagerInterface $entityTypeManager
    *   Entity Type Manager instance.
-   * @param Drupal\Core\Entity\Query\QueryFactory $entityQuery
-   *   Entity Query instance.
    */
   public function __construct(
       array $configuration,
@@ -71,14 +61,11 @@ class ColdWeatherPaymentResource extends ResourceBase {
       array $serializer_formats,
       LoggerInterface $logger,
       AccountProxyInterface $current_user,
-      EntityTypeManagerInterface $entityTypeManager,
-      QueryFactory $entityQuery
+      EntityTypeManagerInterface $entityTypeManager
   ) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
-
     $this->currentUser = $current_user;
     $this->entityTypeManager = $entityTypeManager;
-    $this->entityQuery = $entityQuery;
   }
 
   /**
@@ -92,8 +79,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
     $container->getParameter('serializer.formats'),
     $container->get('logger.factory')->get('nidirect_cold_weather_payments'),
     $container->get('current_user'),
-    $container->get('entity_type.manager'),
-    $container->get('entity.query')
+    $container->get('entity_type.manager')
     );
   }
 
@@ -114,12 +100,14 @@ class ColdWeatherPaymentResource extends ResourceBase {
     $response['postcode'] = $matches[0][2];
 
     // Fetch the latest Payment period node.
-    $query = $this->entityQuery->get('node')
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'cold_weather_payment')
       ->sort('created', 'DESC')
       ->range(0, 1);
 
-    $vid = array_pop(array_keys($query->execute()));
+    $vid_keys = array_keys($query->execute());
+    // Fetch the last revision.
+    $vid = array_pop($vid_keys);
     $node = $this->entityTypeManager->getStorage('node')->loadRevision($vid);
 
     // Payment period covered.

@@ -56,6 +56,8 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
       // Find parent terms, if any and begin to build up link chain.
       $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($theme_tid);
+      // Flip so we have oldest > youngest ancestors.
+      $ancestors = array_reverse($ancestors, TRUE);
 
       foreach ($ancestors as $term) {
         $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));

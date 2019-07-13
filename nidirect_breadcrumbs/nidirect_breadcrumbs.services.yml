@@ -19,3 +19,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\HealthConditionBreadcrumb
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+  nidirect_breadcrumbs.breadcrumb.news:
+    class: Drupal\nidirect_breadcrumbs\NewsBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

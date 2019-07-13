@@ -1,0 +1,5 @@
+services:
+  nidirect_breadcrumbs.breadcrumb.themes:
+    class: Drupal\nidirect_breadcrumbs\ThemesBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

@@ -47,11 +47,11 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
   public function build(RouteMatchInterface $route_match) {
 
     $links[] = Link::createFromRoute(t('Home'), '<front>');
+    $links[] = Link::fromTextandUrl(t('Themes'), Url::fromUserInput('/themes'));
 
     $node = $route_match->getParameter('node');
 
     if ($node->hasField('field_subtheme')) {
-      // Subtheme is a mandatory field so should always be present.
       $theme_tid = $node->field_subtheme->target_id;
 
       // Find parent terms, if any and begin to build up link chain.

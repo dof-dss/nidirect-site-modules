@@ -3,3 +3,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\ThemesBreadcrumb
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+  nidirect_breadcrumbs.breadcrumb.umbrella_bodies:
+    class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

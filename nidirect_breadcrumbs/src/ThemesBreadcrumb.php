@@ -46,6 +46,8 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
 
+    $cache_tags = [];
+
     $links[] = Link::createFromRoute(t('Home'), '<front>');
     $links[] = Link::fromTextandUrl(t('Themes'), Url::fromUserInput('/themes'));
 
@@ -61,6 +63,7 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
       foreach ($ancestors as $term) {
         $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
+        $cache_tags[] = 'taxonomy_term:' . $term->id();
       }
     }
 
@@ -70,6 +73,10 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb = new Breadcrumb();
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
+
+    if (!empty($cache_tags)) {
+      $breadcrumb->addCacheTags($cache_tags);
+    }
 
     return $breadcrumb;
   }

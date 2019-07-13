@@ -57,6 +57,13 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 
+    // Add cache tags so that if any entities above change, we can regenerate the breadcrumb too.
+    $breadcrumb->addCacheTags([
+      'taxonomy_term:22',
+      'taxonomy_term:262',
+      'taxonomy_term:262',
+    ]);
+
     return $breadcrumb;
   }
 

@@ -23,3 +23,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\NewsBreadcrumb
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+  nidirect_breadcrumbs.breadcrumb.recipe:
+    class: Drupal\nidirect_breadcrumbs\RecipeBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

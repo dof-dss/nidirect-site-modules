@@ -7,3 +7,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb
     tags:
       - { name: breadcrumb_builder, priority: 100 }
+  nidirect_breadcrumbs.breadcrumb.contact:
+    class: Drupal\nidirect_breadcrumbs\ContactBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 100 }

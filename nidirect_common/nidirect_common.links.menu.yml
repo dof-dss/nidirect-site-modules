@@ -1,0 +1,5 @@
+nidirect.admin_config:
+  title: 'NIDirect'
+  description: 'Manage NIDirect settings'
+  parent: system.admin_config
+  route_name: nidirect.admin_config

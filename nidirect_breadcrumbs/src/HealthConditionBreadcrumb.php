@@ -58,7 +58,6 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->addCacheTags([
       'taxonomy_term:22',
       'node:7387',
-      // 'view:view_id:display?'
     ]);
 
     return $breadcrumb;

@@ -58,7 +58,6 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->addCacheTags([
       'taxonomy_term:22',
       'taxonomy_term:382',
-      // 'view:view_id:display?'
     ]);
 
     return $breadcrumb;

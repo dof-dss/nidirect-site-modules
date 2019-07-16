@@ -9,3 +9,4 @@
 /.idea/
 .DS_Store
 .talismanrc
+node_modules

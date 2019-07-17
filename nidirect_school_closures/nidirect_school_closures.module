@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_school_closures.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_school_closures_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_school_closures module.
+    case 'help.page.nidirect_school_closures':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Displays information on school closures') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_school_closures_theme() {
+  return [
+    'nidirect_school_closures' => [
+      'render element' => 'children',
+    ],
+  ];
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function nidirect_school_closures_info() {
+  $types['nidirect'] = ['name' => 'NI Direct'];
+
+  $tokens['school_closures'] = [
+    'name' => t('School closures'),
+    'description' => t('Displays school closure information.'),
+  ];
+
+  return [
+    'types' => $types,
+    'tokens' => ['nidirect' => $tokens],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function nidirect_school_closures_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'nidirect') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'school_closures':
+          $output = nidirect_school_closures_feed();
+          $replacements[$original] = render($output);
+          break;
+      }
+    }
+  }
+  return $replacements;
+}
+
+/**
+ * Returns school closure render array.
+ */
+function nidirect_school_closures_feed() {
+  return 'School Closures';
+}

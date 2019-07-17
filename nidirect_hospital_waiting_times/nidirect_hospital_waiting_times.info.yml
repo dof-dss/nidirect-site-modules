@@ -1,0 +1,8 @@
+name: 'NIDirect Hospital Waiting Times'
+type: module
+description: 'Display hospital waiting times.'
+core: 8.x
+package: 'NIDirect'
+dependencies:
+  - ultimate_cron
+  - token

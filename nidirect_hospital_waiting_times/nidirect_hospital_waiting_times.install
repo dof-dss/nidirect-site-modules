@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * Implements hook_install().
+ */
+function nidirect_hospital_waiting_times_install() {
+  nidirect_hospital_waiting_times_update_cache();
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function nidirect_hospital_waiting_times_uninstall() {
+  $cache = \Drupal::cache();
+  $cache->delete('hospital_emergency_waiting_times');
+}

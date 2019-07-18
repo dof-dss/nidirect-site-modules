@@ -1,0 +1,8 @@
+
+nidirect_workflow.moderation_state_controller_change_state:
+  path: '/nidirect_workflow/change_state'
+  defaults:
+    _controller: '\Drupal\nidirect_workflow\Controller\ModerationStateController::change_state'
+    _title: 'change_state'
+  requirements:
+    _permission: 'access content'

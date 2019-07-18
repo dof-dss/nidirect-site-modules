@@ -12,7 +12,6 @@ class ModerationStateController extends ControllerBase {
 
   /**
    * Change_state of specified entity.
-   *
    */
   public function change_state($nid, $new_state) {
     // Load the entity.
@@ -22,7 +21,7 @@ class ModerationStateController extends ControllerBase {
       $entity->set('moderation_state', $new_state);
       $entity->save();
       // Log it.
-      $message = t('State of') . ' (' . $nid . ') ' . t('changed to' );
+      $message = t('State of') . ' (' . $nid . ') ' . t('changed to');
       $message .= ' ' . $new_state . ' ' . t('by') . ' ' . $this->currentUser()->getAccountName();
       \Drupal::logger('nidirect_workflow')->notice($message);
     }
@@ -31,10 +30,11 @@ class ModerationStateController extends ControllerBase {
     if ($destination->isRouted()) {
       // Valid internal path.
       return $this->redirect($destination->getRouteName());
-    } else {
+    }
+    else {
       // Route not found, error.
-      $message = "Unable to retrieve route for destination param - " . \Drupal::destination()->get();
-      \Drupal::logger('nidirect_workflow')->error(t($message));
+      $message = t("Unable to retrieve route for destination param") . " - " . \Drupal::destination()->get();
+      \Drupal::logger('nidirect_workflow')->error($message);
     }
   }
 

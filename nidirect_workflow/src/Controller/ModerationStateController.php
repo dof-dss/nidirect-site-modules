@@ -3,7 +3,7 @@
 namespace Drupal\nidirect_workflow\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\HttpFoundation\RedirectResponse;
+use Drupal\Core\Url;
 
 /**
  * Class ModerationStateController.
@@ -15,9 +15,12 @@ class ModerationStateController extends ControllerBase {
    *
    */
   public function change_state() {
-    // Redirect user
-    $response = new RedirectResponse('/admin/content');
-    $response->send();
+    // Redirect user to page given in the 'destination' URL argument.
+    $destination = Url::fromUserInput(\Drupal::destination()->get());
+    if ($destination->isRouted()) {
+      // Valid internal path.
+      return $this->redirect($destination->getRouteName());
+    }
   }
 
 }

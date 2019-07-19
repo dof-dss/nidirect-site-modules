@@ -25,15 +25,9 @@ class ModerationStateController extends ControllerBase {
       $message .= ' ' . $new_state . ' ' . t('by') . ' ' . $this->currentUser()->getAccountName();
       \Drupal::logger('nidirect_workflow')->notice($message);
     }
-    // Redirect user to current page.
-    $page = \Drupal::destination()->get();
-    if (preg_match('/needs-review/', $page)) {
-      return $this->redirect('view.workflow_moderation.page_1');
-    } elseif (preg_match('/all-drafts/', $page)) {
-      return $this->redirect('view.workflow_moderation.page_3');
-    } else {
-      return $this->redirect('view.workflow_moderation.page_2');
-    }
+    // Redirect user to current page (although the 'destination'
+    // url argument will override this).
+    return $this->redirect('view.workflow_moderation.page_1');
   }
 
 }

@@ -1,0 +1,4 @@
+services:
+  nidirect_school_closures.source.default:
+    class: Drupal\nidirect_school_closures\Service\C2kschoolsSchoolClosuresService
+    arguments: ['@http_client', '@cache.default', '@config.factory', '@logger.factory']

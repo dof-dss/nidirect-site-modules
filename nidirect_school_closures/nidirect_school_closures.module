@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 
 /**
  * Implements hook_help().
@@ -30,6 +31,10 @@ function nidirect_school_closures_theme() {
   return [
     'nidirect_school_closures' => [
       'render element' => 'children',
+      'variables' => [
+        'closures' => NULL,
+        'updated' => NULL,
+      ],
     ],
   ];
 }
@@ -37,7 +42,7 @@ function nidirect_school_closures_theme() {
 /**
  * Implements hook_token_info().
  */
-function nidirect_school_closures_info() {
+function nidirect_school_closures_token_info() {
   $types['nidirect'] = ['name' => 'NI Direct'];
 
   $tokens['school_closures'] = [
@@ -61,7 +66,7 @@ function nidirect_school_closures_tokens($type, $tokens, array $data, array $opt
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'school_closures':
-          $output = nidirect_school_closures_feed();
+          $output = nidirect_school_closures_render();
           $replacements[$original] = render($output);
           break;
       }
@@ -73,6 +78,14 @@ function nidirect_school_closures_tokens($type, $tokens, array $data, array $opt
 /**
  * Returns school closure render array.
  */
-function nidirect_school_closures_feed() {
-  return 'School Closures';
+function nidirect_school_closures_render() {
+  $service = \Drupal::service('nidirect_school_closures.source.default');
+  $data = $service->getClosures();
+
+  return [
+    '#theme' => 'nidirect_school_closures',
+    '#closures' => $data,
+    '#updated' => $service->getUpdated(),
+    '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
+  ];
 }

@@ -1,1 +1,14 @@
-<!-- Add you custom twig html here -->
+<div id="school-closure-results">
+  <p>Last updated: {{ updated|date('g.ia') }} on {{ updated|date('jS F Y') }}.</p>
+
+  {% if closures|length > 0 %}
+    {% for closure in closures %}
+    <div class="columnItem">
+      <h3 data-transliterated="{{ closure.altname }}">{{ closure.name }} | {{ closure.location }}</h3>
+      <p class="description">{{ closure.date|date('l jS F Y') }} {{ closure.reason|default("") }}</p>
+    </div>
+    {% endfor %}
+  {% else %}
+    <p>There are no school closures.</p>
+  {% endif %}
+</div>

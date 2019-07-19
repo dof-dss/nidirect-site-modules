@@ -4,12 +4,33 @@ namespace Drupal\nidirect_school_closures\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Session\AccountInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
 
 /**
  * Configure example settings for this site.
  */
 class SchoolClosuresSettingsForm extends ConfigFormBase {
   const SETTINGS = 'nidirect_school_closures.settings';
+
+  protected $closureService;
+
+   /**
+   * Class constructor.
+   */
+  public function __construct(SchoolClosuresServiceInterface $closure_service) {
+    $this->closureService = $closure_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('nidirect_school_closures.source.default')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -30,6 +51,15 @@ class SchoolClosuresSettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $config = $this->config(static::SETTINGS);
+
+    $form['closure_service'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Current service provider'),
+      '#description' => $this->t('Defined in nidirect_school_closures.source.default'),
+      '#disabled' => TRUE,
+      '#default_value' => get_class($this->closureService),
+    ];
+
 
     $form['data_source_url'] = [
       '#type' => 'textfield',

@@ -12,7 +12,7 @@ class ModerationStateController extends ControllerBase {
   /**
    * Change_state of specified entity.
    */
-  public function change_state($nid, $new_state) {
+  public function changeState($nid, $new_state) {
     // Load the entity.
     $entity = \Drupal::entityTypeManager()->getStorage('node')->load($nid);
     if ($entity) {

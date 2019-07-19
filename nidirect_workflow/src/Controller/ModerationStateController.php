@@ -3,7 +3,6 @@
 namespace Drupal\nidirect_workflow\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 
 /**
  * Class ModerationStateController.

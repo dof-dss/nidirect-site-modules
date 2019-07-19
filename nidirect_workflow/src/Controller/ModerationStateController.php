@@ -25,16 +25,14 @@ class ModerationStateController extends ControllerBase {
       $message .= ' ' . $new_state . ' ' . t('by') . ' ' . $this->currentUser()->getAccountName();
       \Drupal::logger('nidirect_workflow')->notice($message);
     }
-    // Redirect user to page given in the 'destination' URL argument.
-    $destination = Url::fromUserInput(\Drupal::destination()->get());
-    if ($destination->isRouted()) {
-      // Valid internal path.
-      return $this->redirect($destination->getRouteName());
-    }
-    else {
-      // Route not found, error.
-      $message = t("Unable to retrieve route for destination param") . " - " . \Drupal::destination()->get();
-      \Drupal::logger('nidirect_workflow')->error($message);
+    // Redirect user to current page.
+    $page = \Drupal::destination()->get();
+    if (preg_match('/needs-review/', $page)) {
+      return $this->redirect('view.workflow_moderation.page_1');
+    } elseif (preg_match('/all-drafts/', $page)) {
+      return $this->redirect('view.workflow_moderation.page_3');
+    } else {
+      return $this->redirect('view.workflow_moderation.page_2');
     }
   }
 

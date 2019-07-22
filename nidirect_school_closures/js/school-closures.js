@@ -7,7 +7,7 @@
  * Neil Blair 02/07/2018
  */
 
-var scMin = 2,                       // enable filtering if school closures exceed this number
+var scMin = 20,                       // enable filtering if school closures exceed this number
     scContainerID = 'school-closure-results', // id of element containing school closure items
     scItemsClass = 'columnItem',      // class of school closure item containers
     scTagToFilter = 'h3',             // tag in each item we want to filter on

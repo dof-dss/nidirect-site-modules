@@ -72,7 +72,7 @@ class SchoolClosure {
   /**
    * Return if the closure date has expired.
    */
-  public function expiredClosure() {
+  public function isExpired() {
     $today = new \DateTime('now', new \DateTimeZone('Europe/London'));
     // Reset the clock to avoid issues with time comparisons.
     $today->setTime(0, 0, 0);

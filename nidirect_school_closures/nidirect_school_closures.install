@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Contains install hook.
+ */
+
+/**
  * Implements hook_uninstall().
  */
 function nidirect_school_closures_uninstall() {

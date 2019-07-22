@@ -239,7 +239,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
         $closure = new SchoolClosure($name, $location, $date, $reason);
 
         // If the closure is before today, skip.
-        if ($closure->expiredClosure()) {
+        if ($closure->isExpired()) {
           continue;
         }
 

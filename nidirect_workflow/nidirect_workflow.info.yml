@@ -1,0 +1,5 @@
+name: 'NIDirect Workflow'
+type: module
+description: 'Workflow enhancements'
+core: 8.x
+package: 'NIDirect'

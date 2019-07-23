@@ -62,7 +62,6 @@ class ModerationStateController extends ControllerBase implements ContainerInjec
       // Log it.
       $message = t('State of') . ' (' . $nid . ') ' . t('changed to');
       $message .= ' ' . $new_state . ' ' . t('by') . ' ' . $this->currentUser()->getAccountName();
-      //\Drupal::logger('nidirect_workflow')->notice($message);
       $this->logger->notice($message);
     }
     // Redirect user to current page (although the 'destination'

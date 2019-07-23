@@ -5,6 +5,7 @@ namespace Drupal\nidirect_workflow\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -19,13 +20,23 @@ class ModerationStateController extends ControllerBase implements ContainerInjec
   protected $entityTypeManager;
 
   /**
+   * A logger instance.
+   *
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * Creates a new ModerationStateConstraintValidator instance.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger interface.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, LoggerInterface $logger) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->logger = $logger;
   }
 
   /**
@@ -33,7 +44,8 @@ class ModerationStateController extends ControllerBase implements ContainerInjec
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('logger.factory')->get('nidirect_workflow')
     );
   }
 
@@ -50,7 +62,8 @@ class ModerationStateController extends ControllerBase implements ContainerInjec
       // Log it.
       $message = t('State of') . ' (' . $nid . ') ' . t('changed to');
       $message .= ' ' . $new_state . ' ' . t('by') . ' ' . $this->currentUser()->getAccountName();
-      \Drupal::logger('nidirect_workflow')->notice($message);
+      //\Drupal::logger('nidirect_workflow')->notice($message);
+      $this->logger->notice($message);
     }
     // Redirect user to current page (although the 'destination'
     // url argument will override this).

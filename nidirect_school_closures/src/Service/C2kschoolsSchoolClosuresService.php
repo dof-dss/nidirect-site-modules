@@ -16,21 +16,28 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface {
 
   /**
-   * Http request attempt counter.
+   * HTTP request attempt count.
    *
    * @var int
    */
   protected $attempt = 1;
 
   /**
-   * Maximum number of http request attempts to be made.
+   * Maximum number of HTTP requests to be made.
    *
    * @var int
    */
   protected $maxAttempts = 3;
 
   /**
-   * URL for the http get request.
+   * Error state.
+   *
+   * @var bool
+   */
+  protected $error = FALSE;
+
+  /**
+   * URL for the HTTP GET request.
    *
    * @var string
    */
@@ -44,21 +51,21 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   protected $xml = NULL;
 
   /**
-   * Array of school closures.
+   * Dataset of school closures.
    *
    * @var array
    */
-  protected $data = NULL;
+  protected $data = [];
 
   /**
-   * Cached data object.
+   * Cache backup.
    *
    * @var object
    */
-  protected $cached = NULL;
+  protected $cacheBackup = NULL;
 
   /**
-   * Duration in minutes to keep closured cached.
+   * Cache duration in minutes for dataset.
    *
    * @var int
    */
@@ -108,24 +115,69 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   }
 
   /**
+   * Last updated date.
+   *
+   * @return date
+   *   Returns dataset last updated date.
+   */
+  public function getUpdated() {
+    return $this->updated;
+  }
+
+  /**
+   * Getter for data.
+   *
+   * @return array
+   *   Returns closures dataset array.
+   */
+  public function getData() {
+    return $this->data;
+  }
+
+  /**
+   * Setter for XML.
+   *
+   * @param \SimpleXMLElement $xml
+   *   XML Element containing school closure data.
+   */
+  public function setXml(\SimpleXMLElement $xml) {
+    $this->xml = $xml;
+  }
+
+  /**
+   * Return error state.
+   *
+   * @return bool
+   *   Returns the current error state.
+   */
+  public function hasErrors() {
+    return $this->error;
+  }
+
+  /**
    * Return closures data.
    *
    * @return array
    *   closures array.
    */
   public function getClosures() {
-    $this->cached = $this->cacheService->get('school_closures');
+    // Reset error state.
+    $this->error = FALSE;
+
+    $cache = $this->cacheService->get('school_closures');
 
     // If we have cached data, check the expiry.
-    if (!empty($this->cached)) {
-      $this->data = $this->cached->data;
-      $this->updated = date_timestamp_set(new \DateTime(), $this->cached->created);
+    if (!empty($cache)) {
+      $this->data = $cache->data;
+      $this->updated = date_timestamp_set(new \DateTime(), $cache->created);
 
       $now = new \DateTime('now');
       $interval = $now->diff($this->updated);
 
       // If the cached data is stale, delete cache and call again.
       if ($interval->i >= $this->cacheDuration) {
+        // Backup the cache in case we can't retrieve from the external service.
+        $this->cacheBackup = $cache;
         $this->cacheService->delete('school_closures');
         $this->getClosures();
       }
@@ -151,33 +203,26 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
           $this->getClosures();
         }
         else {
-          // If fetching data failed, fall back to the cached data.
-          if (!empty($this->cached)) {
+          // If exhausted max attempts then reset attempt counter and try
+          // fetching backup cached dataset.
+          $this->attempt = 1;
+          if (!empty($this->cacheBackup)) {
             // Cache the data indefinitely. The cache will be deleted based
             // on the cache duration setting in the config.
-            $this->cacheService->set('school_closures', $this->cached, CacheBackendInterface::CACHE_PERMANENT);
-            $this->attempt = 1;
+            $this->cacheService->set('school_closures', $this->cacheBackup, CacheBackendInterface::CACHE_PERMANENT);
             $this->logger->notice('Unable to update school closure data, reverting to cached data.');
+            $this->getClosures();
           }
           else {
             // Warn if we can't retrive data from the service or the cache.
             $this->logger->warning('Unable to update school closure data or revert to cached data.');
+            $this->error = TRUE;
           }
         }
       }
     }
 
     return $this->data;
-  }
-
-  /**
-   * Last updated date.
-   *
-   * @return date
-   *   returns last updated date.
-   */
-  public function getUpdated() {
-    return $this->updated;
   }
 
   /**
@@ -206,9 +251,10 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   /**
    * Process the XML data into array.
    */
-  protected function processData() {
+  public function processData() {
     if (!empty($this->xml->channel->item)) {
-      $this->data = NULL;
+      $this->data = [];
+
       foreach ($this->xml->channel->item as $item) {
         $title = utf8_decode($item->title);
         $description = utf8_decode($item->description);
@@ -236,9 +282,9 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
           continue;
         }
 
+        // Closure processing object.
         $closure = new SchoolClosure($name, $location, $date, $reason);
 
-        // If the closure is before today, skip.
         if ($closure->isExpired()) {
           continue;
         }
@@ -250,6 +296,11 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
       usort($this->data, function ($a, $b) {
         return $a['date']->getTimestamp() - $b['date']->getTimestamp();
       });
+
+      $this->error = FALSE;
+    }
+    else {
+      $this->error = TRUE;
     }
   }
 

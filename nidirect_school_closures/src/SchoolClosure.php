@@ -2,13 +2,10 @@
 
 namespace Drupal\nidirect_school_closures;
 
-use DateTime;
-
 /**
  * SchoolClosure class.
  */
 class SchoolClosure {
-
   protected $name;
   protected $altName;
   protected $location;
@@ -29,25 +26,13 @@ class SchoolClosure {
     "flooding or burst pipes"                                                     => "due to flooding or a burst pipe.",
   ];
 
-  /**
-   * SchoolClosure constructor.
-   *
-   * @param string $name
-   *   Name of the school.
-   * @param string $location
-   *   School location.
-   * @param \DateTime $date
-   *   Date the closure takes place.
-   * @param string $reason
-   *   Reason for the school closure.
-   */
-  public function __construct(string $name, string $location, DateTime $date, string $reason) {
+  public function __construct(string $name, string $location, \DateTime $date, string $reason) {
     $this->name = $name;
     $this->location = $location;
     $this->date = $date;
     $this->reason = $reason;
 
-    // Call all processors.
+    // Call processors.
     $this->processAltName();
     $this->processLocation();
     $this->processReason();
@@ -89,6 +74,7 @@ class SchoolClosure {
     if (preg_match($pattern, $this->name)) {
       $transliteration = \Drupal::service('transliteration');
       $this->altName = $transliteration->removeDiacritics($this->name);
+
     }
   }
 
@@ -105,10 +91,12 @@ class SchoolClosure {
      *
      * Portadown Primary School, County Armagh
      */
-    $title_arr = explode(' ', $this->name);
-    $first_word = $title_arr[0] . ', ';
-    if (substr($this->location, 0, strlen($first_word)) == $first_word) {
-      $this->location = substr($this->location, strlen($first_word));
+    if (!empty($this->name) && !empty($this->location)) {
+      $title_arr = explode(' ', $this->name);
+      $first_word = $title_arr[0] . ', ';
+      if (substr($this->location, 0, strlen($first_word)) == $first_word) {
+        $this->location = substr($this->location, strlen($first_word));
+      }
     }
   }
 

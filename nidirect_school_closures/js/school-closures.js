@@ -21,7 +21,6 @@ var scMin = 20,                       // enable filtering if school closures exc
     scAriaAlert, scStatusDefault;
 
 scParent = document.getElementById(scContainerID);
-console.log(scParent);
 scResults = scParent.getElementsByClassName(scItemsClass);
 scStatusDefault = '<span class="element-invisible">Showing </span><span class="count">' + scResults.length + '</span> school ';
 // plural closures in status?

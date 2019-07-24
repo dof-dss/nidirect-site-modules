@@ -34,6 +34,7 @@ function nidirect_school_closures_theme() {
       'variables' => [
         'closures' => NULL,
         'updated' => NULL,
+        'error' => FALSE,
       ],
     ],
   ];
@@ -85,6 +86,7 @@ function nidirect_school_closures_render() {
   return [
     '#theme' => 'nidirect_school_closures',
     '#closures' => $data,
+    '#error' => $service->hasErrors(),
     '#updated' => $service->getUpdated(),
     '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
   ];

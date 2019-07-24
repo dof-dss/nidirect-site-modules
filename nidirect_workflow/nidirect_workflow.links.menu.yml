@@ -1,0 +1,6 @@
+nidirect_workflow.my_workbench_menu:
+  title: 'My Workbench'
+  route_name: view.workflow_moderation.page_1
+  description: 'My Workbench'
+  parent: system.admin
+  weight: -50

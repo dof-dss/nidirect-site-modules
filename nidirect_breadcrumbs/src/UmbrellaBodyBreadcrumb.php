@@ -53,14 +53,13 @@ class UmbrellaBodyBreadcrumb implements BreadcrumbBuilderInterface {
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
-    
+
     // Add cache tags so that if any entities above change, we can regenerate the breadcrumb too.
     $breadcrumb->addCacheTags([
       'taxonomy_term:24',
       'node:4007',
       'node:7712',
     ]);
-
 
     return $breadcrumb;
   }

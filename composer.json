@@ -1,5 +1,5 @@
 {
-  "name": "nics/nidirect-site-modules",
+  "name": "dof-dss/nidirect-site-modules",
   "description": "Drupal modules to provide custom code for NI Direct",
   "type": "drupal-module",
   "authors": [

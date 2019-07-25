@@ -71,10 +71,9 @@ class C2kschoolsSchoolClosuresServiceTest extends KernelTestBase {
     $this->closureService->setXml($xml);
     $this->closureService->processData();
 
-    $expected = FALSE;
     $output = $this->closureService->hasErrors();
 
-    $this->assertEquals($expected, $output);
+    $this->assertFalse($output);
   }
 
   /**
@@ -85,10 +84,9 @@ class C2kschoolsSchoolClosuresServiceTest extends KernelTestBase {
     $this->closureService->setXml($xml);
     $this->closureService->processData();
 
-    $expected = TRUE;
     $output = $this->closureService->hasErrors();
 
-    $this->assertEquals($expected, $output);
+    $this->assertTrue($output);
   }
 
 }

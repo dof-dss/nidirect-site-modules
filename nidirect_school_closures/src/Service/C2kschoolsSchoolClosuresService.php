@@ -252,6 +252,13 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
    * Process the XML data into array.
    */
   public function processData() {
+    // If we don't have a channel element there was an issue.
+    if (empty($this->xml->channel)) {
+      $this->error = TRUE;
+      return;
+    }
+
+    // Process all closure XML elements.
     if (!empty($this->xml->channel->item)) {
       $this->data = [];
 
@@ -298,9 +305,6 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
       });
 
       $this->error = FALSE;
-    }
-    else {
-      $this->error = TRUE;
     }
   }
 

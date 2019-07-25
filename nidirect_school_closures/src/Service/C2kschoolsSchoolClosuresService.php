@@ -215,7 +215,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
           }
           else {
             // Warn if we can't retrive data from the service or the cache.
-            $this->logger->warning('Unable to update school closure data or revert to cached data.');
+            $this->logger->alert('Unable to update school closure data or revert to cached data.');
             $this->error = TRUE;
           }
         }

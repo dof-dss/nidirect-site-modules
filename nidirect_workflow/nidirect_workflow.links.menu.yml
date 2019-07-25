@@ -4,21 +4,27 @@ nidirect_workflow.my_workbench:
   description: 'My Workbench'
   parent: system.admin
   weight: -50
+nidirect_workflow.create_content:
+  title: 'Create Content'
+  route_name: node.add_page
+  description: 'Create Content'
+  parent: nidirect_workflow.my_workbench
+  weight: 0
 nidirect_workflow.my_drafts:
   title: 'My Drafts'
   route_name: view.workflow_moderation.page_2
   description: 'My Drafts'
   parent: nidirect_workflow.my_workbench
-  weight: 0
+  weight: 1
 nidirect_workflow.all_drafts:
   title: 'All Drafts'
   route_name: view.workflow_moderation.page_3
   description: 'All Drafts'
   parent: nidirect_workflow.my_workbench
-  weight: 1
+  weight: 2
 nidirect_workflow.needs_review:
   title: 'Needs Review'
   route_name: view.workflow_moderation.page_1
   description: 'Needs Review'
   parent: nidirect_workflow.my_workbench
-  weight: 2
+  weight: 3

@@ -4,9 +4,6 @@
  * Implements hook_page_attachments().
  */
 function nidirect_workflow_page_attachments(array &$attachments) {
-  // Attach extra custom css for admin screens.
-  $current_path = \Drupal::service('path.current')->getPath();
-  if (preg_match('@^\/admin\/@', $current_path)) {
-    $attachments['#attached']['library'][] = 'nidirect_workflow/admin.css';
-  }
+  // Attach extra custom css for admin menu.
+  $attachments['#attached']['library'][] = 'nidirect_workflow/admin.css';
 }

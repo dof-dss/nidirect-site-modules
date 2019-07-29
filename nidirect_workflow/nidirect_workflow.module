@@ -1,0 +1,9 @@
+<?php
+
+/**
+ * Implements hook_page_attachments().
+ */
+function nidirect_workflow_page_attachments(array &$attachments) {
+  // Attach extra custom css for admin menu.
+  $attachments['#attached']['library'][] = 'nidirect_workflow/admin.css';
+}

@@ -1,7 +1,7 @@
 nidirect_workflow.my_workbench:
-  title: 'My Workbench'
+  title: 'My Dashboard'
   route_name: view.workflow_moderation.page_2
-  description: 'My Workbench'
+  description: 'My Dashboard'
   parent: system.admin
   weight: -50
 nidirect_workflow.create_content:

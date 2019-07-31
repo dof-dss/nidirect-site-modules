@@ -92,11 +92,7 @@ class DrivingInstructorTest extends EntityKernelTestBase {
       'uid' => $content_admin_user->id()
     ]);
     $node->save();
-    $nid = $node->id();
-    $new_node = Node::load($nid);
-    $title = $new_node->getTitle();
-    $comp = "Firstname Lastname (ADI No. 222)";
-    $this->assertEquals('Firstname Lastname (ADI No. 222)', $title);
+    $this->assertEquals('Firstname Lastname (ADI No. 222)', $node->getTitle());
 
   }
 

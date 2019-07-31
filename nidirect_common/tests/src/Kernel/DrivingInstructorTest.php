@@ -20,7 +20,7 @@ class DrivingInstructorTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['user', 'node', 'nidirect_common'];
+  public static $modules = ['node', 'nidirect_common'];
 
   /**
    * Test setup function.

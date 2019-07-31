@@ -44,44 +44,21 @@ class DrivingInstructorTest extends EntityKernelTestBase {
       'label' => 'driving_instructor'])->save();
 
     // Add fields.
-    FieldStorageConfig::create([
-      'field_name' => 'field_di_firstname',
-      'type' => 'string',
-      'entity_type' => 'node',
-      'cardinality' => 1,
-    ])->save();
-    FieldConfig::create([
-      'field_name' => 'field_di_firstname',
-      'label' => 'field_di_firstname',
-      'entity_type' => 'node',
-      'bundle' => 'driving_instructor',
-    ])->save();
-
-    FieldStorageConfig::create([
-      'field_name' => 'field_di_lastname',
-      'type' => 'string',
-      'entity_type' => 'node',
-      'cardinality' => 1,
-    ])->save();
-    FieldConfig::create([
-      'field_name' => 'field_di_lastname',
-      'label' => 'field_di_lastname',
-      'entity_type' => 'node',
-      'bundle' => 'driving_instructor',
-    ])->save();
-
-    FieldStorageConfig::create([
-      'field_name' => 'field_di_adi_no',
-      'type' => 'string',
-      'entity_type' => 'node',
-      'cardinality' => 1,
-    ])->save();
-    FieldConfig::create([
-      'field_name' => 'field_di_adi_no',
-      'label' => 'field_di_adi_no',
-      'entity_type' => 'node',
-      'bundle' => 'driving_instructor',
-    ])->save();
+    $fields = ['field_di_firstname', 'field_di_lastname', 'field_di_adi_no'];
+    foreach ($fields as $field) {
+      FieldStorageConfig::create([
+        'field_name' => $field,
+        'type' => 'string',
+        'entity_type' => 'node',
+        'cardinality' => 1,
+      ])->save();
+      FieldConfig::create([
+        'field_name' => $field,
+        'label' => $field,
+        'entity_type' => 'node',
+        'bundle' => 'driving_instructor',
+      ])->save();
+    }
 
     $ctype = NodeType::load('driving_instructor');
     $node = Node::create([

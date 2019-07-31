@@ -28,13 +28,13 @@ class DrivingInstructorTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a mock node type for testing.
+    // Create a content type for testing.
     NodeType::create([
       'type' => 'driving_instructor',
       'label' => 'driving_instructor',
     ])->save();
 
-    // Add mocked fields.
+    // Add required fields.
     $fields = ['field_di_firstname', 'field_di_lastname', 'field_di_adi_no'];
     foreach ($fields as $field) {
       FieldStorageConfig::create([
@@ -56,7 +56,7 @@ class DrivingInstructorTest extends EntityKernelTestBase {
    * Tests the behavior when creating the node.
    */
   public function testNodeCreate() {
-    // Create a node to view.
+    // Create a driving instructor.
     $content_admin_user = $this->createUser(['uid' => 2], ['administer nodes']);
     $node = Node::create([
       'type' => 'driving_instructor',

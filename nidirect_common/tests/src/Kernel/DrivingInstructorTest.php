@@ -57,13 +57,11 @@ class DrivingInstructorTest extends EntityKernelTestBase {
    */
   public function testNodeCreate() {
     // Create a driving instructor.
-    $content_admin_user = $this->createUser(['uid' => 2], ['administer nodes']);
     $node = Node::create([
       'type' => 'driving_instructor',
       'field_di_firstname' => [['value' => 'Firstname']],
       'field_di_lastname' => [['value' => 'Lastname']],
       'field_di_adi_no' => [['value' => '222']],
-      'uid' => $content_admin_user->id(),
     ]);
     $node->save();
     // Title should have been automatically set to a combination of fields.

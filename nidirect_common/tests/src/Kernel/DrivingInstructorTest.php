@@ -29,21 +29,11 @@ class DrivingInstructorTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    $this->setInstallProfile('test_profile');
-  }
-
-  /**
-   * Tests the behavior when creating the node.
-   */
-  public function testNodeCreate() {
-    // Create a node to view.
-    $content_admin_user = $this->createUser(['uid' => 2], ['administer nodes']);
-
-    // Create a node type for testing.
+    // Create a mock node type for testing.
     NodeType::create(['type' => 'driving_instructor',
       'label' => 'driving_instructor'])->save();
 
-    // Add fields.
+    // Add mocked fields.
     $fields = ['field_di_firstname', 'field_di_lastname', 'field_di_adi_no'];
     foreach ($fields as $field) {
       FieldStorageConfig::create([
@@ -59,8 +49,14 @@ class DrivingInstructorTest extends EntityKernelTestBase {
         'bundle' => 'driving_instructor',
       ])->save();
     }
+  }
 
-    $ctype = NodeType::load('driving_instructor');
+  /**
+   * Tests the behavior when creating the node.
+   */
+  public function testNodeCreate() {
+    // Create a node to view.
+    $content_admin_user = $this->createUser(['uid' => 2], ['administer nodes']);
     $node = Node::create([
       'type' => 'driving_instructor',
       'field_di_firstname' => [['value' => 'Firstname']],

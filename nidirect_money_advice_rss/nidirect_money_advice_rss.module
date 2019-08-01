@@ -1,0 +1,35 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_money_advice_rss.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_money_advice_rss_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_money_advice_rss module.
+    case 'help.page.nidirect_money_advice_rss':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Import Money Advice Service RSS feed') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_money_advice_rss_theme() {
+  return [
+    'nidirect_money_advice_rss' => [
+      'render element' => 'children',
+    ],
+  ];
+}

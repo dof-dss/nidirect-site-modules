@@ -78,18 +78,13 @@ class GPPracticeTest extends EntityKernelTestBase {
     $node->save();
     $this->assertEquals('Practice', $node->getTitle());
 
-    /*// Create a node with the other field filled in.
-    $node = $this->drupalCreateNode([
+    // Create a node with the other field filled in.
+    $node = Node::create([
       'type' => 'gp_practice',
-      'field_gp_surgery_name' => [['value' => 'Surgery']]
+      'field_gp_practice_name' => [['value' => 'Surgery']]
     ]);
-    $this->assertTrue(Node::load($node->id()), 'Node created.');
-    $this->drupalGet('/node/' . $node->id() . '/view');
-    // Node title should have been automatically set to include
-    // the practice name.
-    $this->assertSession()->pageTextContains('Surgery');
-    // There should be no hyphen.
-    $this->assertSession()->pageTextNotContains('Surgery -');*/
+    $node->save();
+    $this->assertEquals('Surgery', $node->getTitle());
   }
 
 }

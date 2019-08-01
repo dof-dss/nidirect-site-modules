@@ -4,6 +4,7 @@ namespace Drupal\nidirect_gp\Form;
 
 use Drupal\Core\Entity\ContentEntityForm;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 
 /**
  * Form controller for GP edit forms.
@@ -55,13 +56,13 @@ class GpForm extends ContentEntityForm {
 
     switch ($status) {
       case SAVED_NEW:
-        drupal_set_message($this->t('Created GP %label.', [
+        MessengerInterface::addMessage($this->t('Created GP %label.', [
           '%label' => $entity->label(),
         ]));
         break;
 
       default:
-        drupal_set_message($this->t('Saved GP %label.', [
+        MessengerInterface::addMessage($this->t('Saved GP %label.', [
           '%label' => $entity->label(),
         ]));
     }

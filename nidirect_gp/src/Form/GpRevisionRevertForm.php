@@ -6,6 +6,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Drupal\nidirect_gp\Entity\GpInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -120,7 +121,7 @@ class GpRevisionRevertForm extends ConfirmFormBase {
     $this->revision->save();
 
     $this->logger('content')->notice('GP: reverted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
-    drupal_set_message(t('GP %title has been reverted to the revision from %revision-date.', ['%title' => $this->revision->label(), '%revision-date' => $this->dateFormatter->format($original_revision_timestamp)]));
+    MessengerInterface::addMessage(t('GP %title has been reverted to the revision from %revision-date.', ['%title' => $this->revision->label(), '%revision-date' => $this->dateFormatter->format($original_revision_timestamp)]));
     $form_state->setRedirect(
       'entity.gp.version_history',
       ['gp' => $this->revision->id()]

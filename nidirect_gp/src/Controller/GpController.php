@@ -66,12 +66,8 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
     $has_translations = (count($languages) > 1);
     $gp_storage = \Drupal::entityTypeManager()->getStorage('gp');
 
-    $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', [
-      '@langname' => $langname,
-      '%title' => $gp->label()]) : $this->t('Revisions for %title', ['%title' => $gp->label()
-    ]);
+    $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $gp->label()]) : $this->t('Revisions for %title', ['%title' => $gp->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
-
     $revert_permission = (($account->hasPermission("revert all gp revisions") || $account->hasPermission('administer gp entities')));
     $delete_permission = (($account->hasPermission("delete all gp revisions") || $account->hasPermission('administer gp entities')));
 

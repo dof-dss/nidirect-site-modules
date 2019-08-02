@@ -26,7 +26,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
    *   An array suitable for drupal_render().
    */
   public function revisionShow($gp_revision) {
-    $gp = \Drupal::entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
+    $gp = $this->container()->get('entity.manager')->getStorage('gp')->loadRevision($gp_revision);
     $view_builder = \Drupal::entityTypeManager()->getViewBuilder('gp');
 
     return $view_builder->view($gp);

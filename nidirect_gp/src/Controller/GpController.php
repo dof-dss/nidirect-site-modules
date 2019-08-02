@@ -27,7 +27,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
    */
   public function revisionShow($gp_revision) {
     $gp = $this->container()->get('entity.manager')->getStorage('gp')->loadRevision($gp_revision);
-    $view_builder = \Drupal::entityTypeManager()->getViewBuilder('gp');
+    $view_builder = $this->entityTypeManager()->getViewBuilder('gp');
 
     return $view_builder->view($gp);
   }
@@ -42,7 +42,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
    *   The page title.
    */
   public function revisionPageTitle($gp_revision) {
-    $gp = \Drupal::entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
+    $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
     return $this->t('Revision of %title from %date', [
       '%title' => $gp->label(),
       '%date' => \Drupal::service('date.formatter')->format($gp->getRevisionCreationTime())
@@ -64,7 +64,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
     $langname = $gp->language()->getName();
     $languages = $gp->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
-    $gp_storage = \Drupal::entityTypeManager()->getStorage('gp');
+    $gp_storage = $this->entityTypeManager()->getStorage('gp');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $gp->label()]) : $this->t('Revisions for %title', ['%title' => $gp->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];

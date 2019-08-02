@@ -8,6 +8,18 @@ namespace Drupal\nidirect_money_advice_rss;
 class ArticleProcessors {
 
   /**
+   * Removes summary text from body value.
+   */
+  public static function body($value) {
+    $pattern = '/<p><strong>.*?<\/strong><\/p>(.*?)$/s';
+    if (preg_match($pattern, $value, $matches)) {
+      return $matches[1];
+    }
+
+    return $value;
+  }
+
+  /**
    * Extracts summary text from body value.
    */
   public static function summary($value) {
@@ -32,6 +44,21 @@ class ArticleProcessors {
       $teaser = 'Advice on managing your money from the Money Advice Service';
     }
     return $teaser;
+  }
+
+  /**
+   * Return the term id for theme/subtheme.
+   */
+  public static function subtheme($value) {
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadByProperties([
+      'vid' => 'site_themes',
+      'name' => 'Managing money',
+    ]);
+
+    if (is_array($terms)) {
+      $term = reset($terms);
+      return $term->id();
+    }
   }
 
 }

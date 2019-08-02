@@ -85,6 +85,10 @@ process:
       from_format: 'D, d M Y H:i:s O'
       to_format: 'U'
       source: pub_date
+  published:
+    -
+      plugin: default_value
+      default_value: 1
   field_enable_toc:
     -
       plugin: default_value
@@ -102,6 +106,13 @@ process:
       callable:
         - '\Drupal\nidirect_money_advice_rss\ArticleProcessors'
         - teaser
+      source: body
+  field_subtheme:
+    -
+      plugin: callback
+      callable:
+        - '\Drupal\nidirect_money_advice_rss\ArticleProcessors'
+        - subtheme
       source: body
 destination:
   plugin: entity:node

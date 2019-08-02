@@ -4,11 +4,6 @@
   "description": "Import Money Advice Service RSS feed",
   "keywords": ["Drupal"],
   "license": "GPL-2.0+",
-  "homepage": "https://www.drupal.org/project/nidirect_money_advice_rss",
   "minimum-stability": "dev",
-  "support": {
-    "issues": "https://www.drupal.org/project/issues/nidirect_money_advice_rss",
-    "source": "http://cgit.drupalcode.org/nidirect_money_advice_rss"
-  },
   "require": { }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\cnnic_common\Functional;
+namespace Drupal\Tests\nidirect_common\Kernel;
 
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;

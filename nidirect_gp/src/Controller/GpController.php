@@ -3,8 +3,9 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\nidirect_gp\Entity\GpInterface;
@@ -14,7 +15,28 @@ use Drupal\nidirect_gp\Entity\GpInterface;
  *
  *  Returns responses for GP routes.
  */
-class GpController extends ControllerBase implements ContainerInjectionInterface {
+class GpController extends ControllerBase {
+
+  protected $dateFormatter;
+
+  /**
+   * Constructs an GpController object.
+   *
+   * @param \Drupal\Component\Datetime\Time $date_formatter
+   *   The form builder.
+   */
+  public function __construct(DateFormatterInterface $date_formatter) {
+    $this->dateFormatter = $date_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container
+      ->get('date.formatter')
+    );
+  }
 
   /**
    * Displays a GP  revision.
@@ -45,7 +67,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
     $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
     return $this->t('Revision of %title from %date', [
       '%title' => $gp->label(),
-      '%date' => \Drupal::service('date.formatter')->format($gp->getRevisionCreationTime())
+      '%date' => $this->dateFormatter->format($gp->getRevisionCreationTime())
     ]);
   }
 
@@ -89,7 +111,7 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
         ];
 
         // Use revision link to link to revisions that are not active.
-        $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+        $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $gp->getRevisionId()) {
           $link = Link::fromTextAndUrl($date, new Url('entity.gp.revision', ['gp' => $gp->id(), 'gp_revision' => $vid]));
         }

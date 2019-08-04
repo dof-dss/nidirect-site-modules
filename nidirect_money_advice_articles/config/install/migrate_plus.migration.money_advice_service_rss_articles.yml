@@ -18,24 +18,24 @@ source:
     - https://webfeeds.moneyadviceservice.org.uk/feeds/115.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/116.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/117.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/118.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/120.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/121.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/122.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/123.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/124.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/126.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/128.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/130.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/131.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/161.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/168.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/169.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/170.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/172.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/173.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/174.rss
-    # - https://webfeeds.moneyadviceservice.org.uk/feeds/175.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/118.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/120.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/121.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/122.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/123.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/124.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/126.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/128.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/130.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/131.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/161.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/168.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/169.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/170.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/172.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/173.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/174.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/175.rss
   item_selector: /rss/channel/item
   fields:
     -

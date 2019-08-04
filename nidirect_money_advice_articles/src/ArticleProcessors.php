@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_money_advice_rss;
+namespace Drupal\nidirect_money_advice_articles;
 
 /**
  * Callback functions for article migrations.

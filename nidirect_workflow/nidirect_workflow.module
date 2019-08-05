@@ -1,6 +1,10 @@
 <?php
 
 /**
+ * @file
+ */
+
+/**
  * Implements hook_page_attachments().
  */
 function nidirect_workflow_page_attachments(array &$attachments) {

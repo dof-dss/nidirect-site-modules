@@ -26,6 +26,18 @@ class SchoolClosure {
     "flooding or burst pipes"                                                     => "due to flooding or a burst pipe.",
   ];
 
+  /**
+   * Constructor for SchoolClosure class.
+   *
+   * @param string $name
+   *   Name of the closure.
+   * @param string $location
+   *   Location of the closure.
+   * @param \DateTime $date
+   *   Date of closure.
+   * @param string $reason
+   *   Reason for closure.
+   */
   public function __construct(string $name, string $location, \DateTime $date, string $reason) {
     $this->name = $name;
     $this->location = $location;

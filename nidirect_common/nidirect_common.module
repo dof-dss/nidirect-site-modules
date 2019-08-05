@@ -53,6 +53,9 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 
       case 'health_condition':
         if ($entity->isPublished()) {
+
+          // Need more logic in here !!
+          $review_date = $entity->get('field_next_review_date')->value;
           // Flag for audit
           $audit_flag = Flag::load('content_audit');
           \Drupal::service('flag')->flag($audit_flag, $entity);

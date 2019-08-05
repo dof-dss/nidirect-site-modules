@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\cnnic_common\Functional;
+namespace Drupal\Tests\nidirect_common\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;

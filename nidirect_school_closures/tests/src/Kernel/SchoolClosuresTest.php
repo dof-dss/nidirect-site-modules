@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\nidirect_school_closures;
+namespace Drupal\Tests\nidirect_school_closures\Kernel;
 
 use Drupal\nidirect_school_closures\SchoolClosure;
 use Drupal\KernelTests\KernelTestBase;

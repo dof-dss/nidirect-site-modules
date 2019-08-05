@@ -3,8 +3,10 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\nidirect_gp\Entity\GpInterface;
 
@@ -13,7 +15,28 @@ use Drupal\nidirect_gp\Entity\GpInterface;
  *
  *  Returns responses for GP routes.
  */
-class GpController extends ControllerBase implements ContainerInjectionInterface {
+class GpController extends ControllerBase {
+
+  protected $dateFormatter;
+
+  /**
+   * Constructs an GpController object.
+   *
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   The form builder.
+   */
+  public function __construct(DateFormatterInterface $date_formatter) {
+    $this->dateFormatter = $date_formatter;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static($container
+      ->get('date.formatter')
+    );
+  }
 
   /**
    * Displays a GP  revision.
@@ -25,8 +48,8 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
    *   An array suitable for drupal_render().
    */
   public function revisionShow($gp_revision) {
-    $gp = $this->entityManager()->getStorage('gp')->loadRevision($gp_revision);
-    $view_builder = $this->entityManager()->getViewBuilder('gp');
+    $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
+    $view_builder = $this->entityTypeManager()->getViewBuilder('gp');
 
     return $view_builder->view($gp);
   }
@@ -41,8 +64,11 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
    *   The page title.
    */
   public function revisionPageTitle($gp_revision) {
-    $gp = $this->entityManager()->getStorage('gp')->loadRevision($gp_revision);
-    return $this->t('Revision of %title from %date', ['%title' => $gp->label(), '%date' => format_date($gp->getRevisionCreationTime())]);
+    $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
+    return $this->t('Revision of %title from %date', [
+      '%title' => $gp->label(),
+      '%date' => $this->dateFormatter->format($gp->getRevisionCreationTime())
+    ]);
   }
 
   /**
@@ -60,11 +86,10 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
     $langname = $gp->language()->getName();
     $languages = $gp->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
-    $gp_storage = $this->entityManager()->getStorage('gp');
+    $gp_storage = $this->entityTypeManager()->getStorage('gp');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $gp->label()]) : $this->t('Revisions for %title', ['%title' => $gp->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
-
     $revert_permission = (($account->hasPermission("revert all gp revisions") || $account->hasPermission('administer gp entities')));
     $delete_permission = (($account->hasPermission("delete all gp revisions") || $account->hasPermission('administer gp entities')));
 
@@ -86,12 +111,12 @@ class GpController extends ControllerBase implements ContainerInjectionInterface
         ];
 
         // Use revision link to link to revisions that are not active.
-        $date = \Drupal::service('date.formatter')->format($revision->getRevisionCreationTime(), 'short');
+        $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $gp->getRevisionId()) {
-          $link = $this->l($date, new Url('entity.gp.revision', ['gp' => $gp->id(), 'gp_revision' => $vid]));
+          $link = Link::fromTextAndUrl($date, new Url('entity.gp.revision', ['gp' => $gp->id(), 'gp_revision' => $vid]));
         }
         else {
-          $link = $gp->link($date);
+          $link = $gp->toLink($date);
         }
 
         $row = [];

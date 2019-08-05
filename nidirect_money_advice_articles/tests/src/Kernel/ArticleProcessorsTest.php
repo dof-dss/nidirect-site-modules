@@ -30,7 +30,6 @@ class ArticleProcessorsTest extends KernelTestBase {
     $this->installConfig(['nidirect_money_advice_articles']);
   }
 
-
   /**
    * Test article body with source summary.
    */
@@ -84,7 +83,6 @@ class ArticleProcessorsTest extends KernelTestBase {
 
     $this->assertNotContains('Taking the time to manage your money better can really pay off.', $output);
   }
-
 
   /**
    * Test article teaser with source summary.

@@ -3,3 +3,8 @@ type: module
 description: 'Import Money Advice Service articles from RSS feed.'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - drupal:taxonomy
+  - drupal:migrate
+  - migrate_plus
+  - ultimate_cron

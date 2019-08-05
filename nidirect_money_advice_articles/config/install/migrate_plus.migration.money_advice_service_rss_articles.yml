@@ -11,8 +11,8 @@ source:
   urls:
     - https://webfeeds.moneyadviceservice.org.uk/feeds/17.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/18.rss
-    - https://webfeeds.moneyadviceservice.org.uk/feeds/18.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/21.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/22.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/112.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/113.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/115.rss
@@ -25,7 +25,6 @@ source:
     - https://webfeeds.moneyadviceservice.org.uk/feeds/123.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/124.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/126.rss
-    - https://webfeeds.moneyadviceservice.org.uk/feeds/128.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/130.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/131.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/161.rss
@@ -33,7 +32,6 @@ source:
     - https://webfeeds.moneyadviceservice.org.uk/feeds/169.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/170.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/172.rss
-    - https://webfeeds.moneyadviceservice.org.uk/feeds/173.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/174.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/175.rss
   item_selector: /rss/channel/item
@@ -97,21 +95,21 @@ process:
     -
       plugin: callback
       callable:
-        - '\Drupal\nidirect_money_advice_rss\ArticleProcessors'
+        - '\Drupal\nidirect_money_advice_articles\ArticleProcessors'
         - summary
       source: body
   field_teaser:
     -
       plugin: callback
       callable:
-        - '\Drupal\nidirect_money_advice_rss\ArticleProcessors'
+        - '\Drupal\nidirect_money_advice_articles\ArticleProcessors'
         - teaser
       source: body
   field_subtheme:
     -
       plugin: callback
       callable:
-        - '\Drupal\nidirect_money_advice_rss\ArticleProcessors'
+        - '\Drupal\nidirect_money_advice_articles\ArticleProcessors'
         - subtheme
       source: body
 destination:

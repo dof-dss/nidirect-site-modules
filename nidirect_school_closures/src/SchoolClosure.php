@@ -27,12 +27,12 @@ class SchoolClosure {
   ];
 
   /**
-   * Constructor.
+   * Constructor for SchoolClosure class.
    *
    * @param string $name
    *   Name of the closure.
    * @param string $location
-   *   Closure location.
+   *   Location of the closure.
    * @param \DateTime $date
    *   Date of closure.
    * @param string $reason

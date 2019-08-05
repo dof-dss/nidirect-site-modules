@@ -44,7 +44,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $entity_storage;
+  protected $entityStorage;
 
   /**
    * The database connection.
@@ -62,9 +62,11 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    *   The database connection.
    * @param \Drupal\Core\Messenger\MessengerInterface $messenger
    *   Drupal messenger service.
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
+   *   Drupal date formatter service.
    */
   public function __construct(EntityStorageInterface $entity_storage, Connection $connection, MessengerInterface $messenger = NULL, DateFormatterInterface $date_formatter) {
-    $this->entity_storage = $entity_storage;
+    $this->entityStorage = $entity_storage;
     $this->connection = $connection;
     $this->messenger = $messenger;
     $this->dateFormatter = $date_formatter;
@@ -115,7 +117,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $gp_revision = NULL) {
-    $this->revision = $this->entity_storage->loadRevision($gp_revision);
+    $this->revision = $this->entityStorage->loadRevision($gp_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -125,7 +127,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->entity_storage->deleteRevision($this->revision->getRevisionId());
+    $this->entityStorage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('GP: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
     $this->messenger->addMessage(t('Revision from %revision-date of GP %title has been deleted.', ['%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));

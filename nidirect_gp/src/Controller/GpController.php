@@ -22,7 +22,7 @@ class GpController extends ControllerBase {
   /**
    * Constructs an GpController object.
    *
-   * @param \Drupal\Component\Datetime\Time $date_formatter
+   * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The form builder.
    */
   public function __construct(DateFormatterInterface $date_formatter) {

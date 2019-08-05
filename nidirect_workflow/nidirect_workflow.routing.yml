@@ -11,6 +11,14 @@ nidirect_workflow.audit_controller_content_audit:
   path: '/nidirect_workflow/content_audit/{nid}'
   defaults:
     _controller: '\Drupal\nidirect_workflow\Controller\AuditController::contentAudit'
-    _title: 'content_audit'
+    _title: 'Content Audit'
+  requirements:
+    _permission: 'access content'
+
+nidirect_workflow.audit_controller_confirm_audit:
+  path: '/nidirect_workflow/confirm_audit/{nid}'
+  defaults:
+    _controller: '\Drupal\nidirect_workflow\Controller\AuditController::confirmAudit'
+    _title: 'Confirm Audit'
   requirements:
     _permission: 'access content'

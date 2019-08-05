@@ -6,3 +6,11 @@ nidirect_workflow.moderation_state_controller_change_state:
     _title: 'change_state'
   requirements:
     _permission: 'access content'
+
+nidirect_workflow.audit_controller_content_audit:
+  path: '/nidirect_workflow/content_audit'
+  defaults:
+    _controller: '\Drupal\nidirect_workflow\Controller\AuditController::contentAudit'
+    _title: 'content_audit'
+  requirements:
+    _permission: 'access content'

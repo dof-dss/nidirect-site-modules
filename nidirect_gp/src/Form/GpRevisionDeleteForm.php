@@ -3,9 +3,11 @@
 namespace Drupal\nidirect_gp\Form;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\ConfirmFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -16,6 +18,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class GpRevisionDeleteForm extends ConfirmFormBase {
 
+  /**
+   * The Messenger service.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
+   * Date formatter service.
+   *
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
+  protected $dateFormatter;
 
   /**
    * The GP revision.
@@ -29,7 +44,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $GpStorage;
+  protected $entity_storage;
 
   /**
    * The database connection.
@@ -45,10 +60,14 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    *   The entity storage.
    * @param \Drupal\Core\Database\Connection $connection
    *   The database connection.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Drupal messenger service.
    */
-  public function __construct(EntityStorageInterface $entity_storage, Connection $connection) {
-    $this->GpStorage = $entity_storage;
+  public function __construct(EntityStorageInterface $entity_storage, Connection $connection, MessengerInterface $messenger = NULL, DateFormatterInterface $date_formatter) {
+    $this->entity_storage = $entity_storage;
     $this->connection = $connection;
+    $this->messenger = $messenger;
+    $this->dateFormatter = $date_formatter;
   }
 
   /**
@@ -58,7 +77,9 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
     $entity_manager = $container->get('entity.manager');
     return new static(
       $entity_manager->getStorage('gp'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('messenger'),
+      $container->get('date.formatter')
     );
   }
 
@@ -73,7 +94,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function getQuestion() {
-    return t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => format_date($this->revision->getRevisionCreationTime())]);
+    return t('Are you sure you want to delete the revision from %revision-date?', ['%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime())]);
   }
 
   /**
@@ -94,7 +115,7 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $gp_revision = NULL) {
-    $this->revision = $this->GpStorage->loadRevision($gp_revision);
+    $this->revision = $this->entity_storage->loadRevision($gp_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;
@@ -104,10 +125,10 @@ class GpRevisionDeleteForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->GpStorage->deleteRevision($this->revision->getRevisionId());
+    $this->entity_storage->deleteRevision($this->revision->getRevisionId());
 
     $this->logger('content')->notice('GP: deleted %title revision %revision.', ['%title' => $this->revision->label(), '%revision' => $this->revision->getRevisionId()]);
-    drupal_set_message(t('Revision from %revision-date of GP %title has been deleted.', ['%revision-date' => format_date($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
+    $this->messenger->addMessage(t('Revision from %revision-date of GP %title has been deleted.', ['%revision-date' => $this->dateFormatter->format($this->revision->getRevisionCreationTime()), '%title' => $this->revision->label()]));
     $form_state->setRedirect(
       'entity.gp.canonical',
        ['gp' => $this->revision->id()]

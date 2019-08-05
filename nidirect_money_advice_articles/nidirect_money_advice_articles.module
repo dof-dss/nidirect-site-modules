@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\migrate\MigrateExecutable;
+use Drupal\migrate\MigrateMessage;
 
 /**
  * Implements hook_help().
@@ -21,4 +23,13 @@ function nidirect_money_advice_articles_help($route_name, RouteMatchInterface $r
 
     default:
   }
+}
+
+/**
+ * Cron callback to start migration import.
+ */
+function nidirect_money_advice_articles_import() {
+  $migration = \Drupal::service('plugin.manager.migration')->createInstance('money_advice_service_rss_articles');
+  $executable = new MigrateExecutable($migration, new MigrateMessage());
+  $executable->import();
 }

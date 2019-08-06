@@ -1,5 +1,8 @@
 <?php
 
+use Drupal\Component\Utility\Xss;
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * @file
  */
@@ -11,3 +14,39 @@ function nidirect_workflow_page_attachments(array &$attachments) {
   // Attach extra custom css for admin menu.
   $attachments['#attached']['library'][] = 'nidirect_workflow/admin.css';
 }
+
+/**
+ * Implements hook_entity_presave().
+ */
+function nidirect_workflow_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    switch ($entity->bundle()) {
+      case 'article':
+      case 'contact':
+      case 'page':
+        // We have just published a node type that is subject to auditing.
+        if ($entity->isPublished()) {
+          $next_audit_date = $entity->get('field_next_audit_due')->value;
+          if (empty($next_audit_date)) {
+            // No audit date set, set it for six months time.
+            $entity->set('field_next_audit_due',date('Y-m-d', strtotime("+6 months")));
+          }
+        }
+        // - Need to add the 'audit this content' link to the node view page
+        // - Need to restrict access to the field in node edit.
+        break;
+
+      case 'health_condition':
+        if ($entity->isPublished()) {
+          // Has a 'next review' date been set ?
+          $review_date = $entity->get('field_next_review_date')->value;
+          if (!empty($review_date)) {
+            // Set 'audit due' date to be the same.
+            $next_audit_date = $entity->get('field_next_audit_due')->value;
+          }
+        }
+    }
+  }
+}
+

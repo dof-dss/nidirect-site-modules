@@ -79,7 +79,7 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
       $node = $this->entityTypeManager()->getStorage('node')->load($nid);
       if ($node) {
         $msg = t("Click this button to indicate that you have audited this published content and are happy that it is still accurate and relevant.");
-        $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid'>" . t("Audit this published content") . "</a></div>";
+        $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid?destination=/node/$nid'>" . t("Audit this published content") . "</a></div>";
       }
     }
     return [
@@ -104,7 +104,7 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
       $this->logger->notice($message);
     }
     // Redirect user to node view (although the 'destination'
-    // url argument will override this).
+    // url argument may override this).
     return $this->redirect('entity.node.canonical', ['node' => $nid]);
   }
 

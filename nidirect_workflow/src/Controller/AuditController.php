@@ -5,8 +5,6 @@ namespace Drupal\nidirect_workflow\Controller;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
-use Drupal\node\Entity\Node;
 use Drupal\Core\Controller\ControllerBase;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -65,8 +63,6 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
   }
 
   /**
-
-  /**
    * Content Audit.
    *
    * @return string
@@ -78,13 +74,13 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
     if (!empty($nid)) {
       $node = $this->entityTypeManager()->getStorage('node')->load($nid);
       if ($node) {
-        $msg = t("Click this button to indicate that you have audited this published content and are happy that it is still accurate and relevant.");
-        $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid?destination=/node/$nid'>" . t("Audit this published content") . "</a></div>";
+        $msg = $this->t("Click this button to indicate that you have audited this published content and are happy that it is still accurate and relevant.");
+        $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid?destination=/node/$nid'>" . $this->t("Audit this published content") . "</a></div>";
       }
     }
     return [
       '#type' => 'markup',
-      '#markup' => $this->t($msg),
+      '#markup' => $msg,
     ];
   }
 
@@ -98,9 +94,10 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
     // Bump up the 'next audit due' date and log it.
     $node = $this->entityTypeManager()->getStorage('node')->load($nid);
     if ($node) {
-      $node->set('field_next_audit_due',date('Y-m-d', strtotime("+6 months")));
+      $node->set('field_next_audit_due', date('Y-m-d', strtotime("+6 months")));
       $node->save();
-      $message = "nid " . $nid . " has been audited by " . $this->account->getAccountName() . " (uid " . $this->account->id() . ")";
+      $message = "nid " . $nid . " " . $this->t("has been audited by") . " ";
+      $message .= $this->account->getAccountName() . " (uid " . $this->account->id() . ")";
       $this->logger->notice($message);
     }
     // Redirect user to node view (although the 'destination'

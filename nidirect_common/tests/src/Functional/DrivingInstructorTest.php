@@ -38,10 +38,10 @@ class DrivingInstructorTest extends BrowserTestBase {
       'field_di_adi_no' => [['value' => '222']],
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
-    $this->drupalGet('/node/' . $node->id() . '/view');
+    $new_node = Node::load($node->id());
     // Node title should have been automatically set to include
     // all three fields.
-    $this->assertSession()->pageTextContains('Firstname Lastname (ADI No. 222)');
+    $this->assertEquals('Firstname Lastname (ADI No. 222)', $new_node->getTitle());
   }
 
 }

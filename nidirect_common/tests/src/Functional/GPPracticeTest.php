@@ -37,10 +37,12 @@ class GPPracticeTest extends BrowserTestBase {
       'field_gp_surgery_name' => [['value' => 'Surgery']],
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
-    $this->drupalGet('/node/' . $node->id() . '/view');
+
+    $this->assertTrue(Node::load($node->id()), 'Node created.');
+    $new_node = Node::load($node->id());
     // Node title should have been automatically set to include
     // both fields.
-    $this->assertSession()->pageTextContains('Surgery - Practice');
+    $this->assertEquals('Surgery - Practice', $new_node->getTitle());
   }
 
   /**
@@ -53,12 +55,10 @@ class GPPracticeTest extends BrowserTestBase {
       'field_gp_practice_name' => [['value' => 'Practice']]
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
-    $this->drupalGet('/node/' . $node->id() . '/view');
+    $new_node = Node::load($node->id());
     // Node title should have been automatically set to include
     // the practice name.
-    $this->assertSession()->pageTextContains('Practice');
-    // There should be no hyphen.
-    $this->assertSession()->pageTextNotContains('- Practice');
+    $this->assertEquals('Practice', $new_node->getTitle());
 
     // Create a node with the other field filled in.
     $node = $this->drupalCreateNode([
@@ -66,12 +66,10 @@ class GPPracticeTest extends BrowserTestBase {
       'field_gp_surgery_name' => [['value' => 'Surgery']]
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
-    $this->drupalGet('/node/' . $node->id() . '/view');
+    $new_node = Node::load($node->id());
     // Node title should have been automatically set to include
     // the practice name.
-    $this->assertSession()->pageTextContains('Surgery');
-    // There should be no hyphen.
-    $this->assertSession()->pageTextNotContains('Surgery -');
+    $this->assertEquals('Surgery', $new_node->getTitle());
   }
 
 }

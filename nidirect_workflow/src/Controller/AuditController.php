@@ -76,6 +76,7 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
       if ($node) {
         $msg = $this->t("Click this button to indicate that you have audited this published content and are happy that it is still accurate and relevant.");
         $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid?destination=/node/$nid'>" . $this->t("Audit this published content") . "</a></div>";
+        $msg .= "<div><a href='/node/$nid'>" . $this->t("Cancel") . "</a></div>";
       }
     }
     return [

@@ -38,6 +38,6 @@ nidirect_workflow.audit_settings_form:
   title: 'NIDirect Audit Settings Form'
   route_name: nidirect_workflow.audit_settings_form
   description: 'Configure audit settings and messages'
-  parent: system.admin_config_system
+  parent: nidirect.admin_config
   weight: 99
 

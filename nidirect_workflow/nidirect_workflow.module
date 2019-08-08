@@ -39,8 +39,6 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
             $entity->set('field_next_audit_due', date('Y-m-d', strtotime("+6 months")));
           }
         }
-        // - Need to add the 'audit this content' link to the node view page
-        // - Need to restrict access to the field in node edit.
         break;
 
       case 'health_condition':
@@ -49,7 +47,7 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
           $review_date = $entity->get('field_next_review_date')->value;
           if (!empty($review_date)) {
             // Set 'audit due' date to be the same.
-            $next_audit_date = $entity->get('field_next_audit_due')->value;
+            $entity->set('field_next_audit_due', $review_date);
           }
         }
     }
@@ -62,7 +60,15 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
 function nidirect_workflow_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   // Disable the 'next audit date' for all but admins.
-  if (($form_id == 'node_article_form') || ($form_id == 'node_article_edit_form')) {
+  if (($form_id == 'node_article_form')
+    || ($form_id == 'node_article_edit_form')
+    || ($form_id == 'node_contact_form')
+    || ($form_id == 'node_contact_edit_form')
+    || ($form_id == 'node_page_form')
+    || ($form_id == 'node_page_edit_form')
+    || ($form_id == 'node_health_condition_form')
+    || ($form_id == 'node_health_condition_edit_form')
+  ) {
     $account = User::load(\Drupal::currentUser()->id());
     if (!$account->hasRole('administrator')) {
       $form['field_next_audit_due']['#disabled'] = 'TRUE';

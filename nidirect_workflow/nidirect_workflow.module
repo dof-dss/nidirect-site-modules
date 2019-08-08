@@ -1,7 +1,13 @@
 <?php
 
-use Drupal\Component\Utility\Xss;
+/**
+ * @file
+ * Contains code that provides user dashboard.
+ */
+
+use Drupal\user\Entity\User;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
 
 /**
  * Implements hook_page_attachments().
@@ -26,7 +32,7 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
           $next_audit_date = $entity->get('field_next_audit_due')->value;
           if (empty($next_audit_date)) {
             // No audit date set, set it for six months time.
-            $entity->set('field_next_audit_due',date('Y-m-d', strtotime("+6 months")));
+            $entity->set('field_next_audit_due', date('Y-m-d', strtotime("+6 months")));
           }
         }
         // - Need to add the 'audit this content' link to the node view page
@@ -46,3 +52,16 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
   }
 }
 
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_workflow_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Disable the 'next audit date' for all but admins.
+  if (($form_id == 'node_article_form') || ($form_id == 'node_article_edit_form')) {
+    $account = User::load(\Drupal::currentUser()->id());
+    if (!$account->hasRole('administrator')) {
+      $form['field_next_audit_due']['#disabled'] = 'TRUE';
+    }
+  }
+}

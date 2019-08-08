@@ -39,6 +39,22 @@ class AuditSettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('audit_button_text'),
     ];
 
+    $form['audit_button_hover_text'] = [
+      '#type' => 'textfield',
+      '#size' => 130,
+      '#title' => $this->t('Audit button hover text'),
+      '#description' => $this->t('Text to be displayed when the editor hovers their mouse over the audit button.'),
+      '#default_value' => $config->get('audit_button_hover_text'),
+    ];
+
+    $form['audit_confirmation_text'] = [
+      '#type' => 'textfield',
+      '#size' => 130,
+      '#title' => $this->t('Audit confirmation text'),
+      '#description' => $this->t('Ask the editor to confirm that they have audited the content.'),
+      '#default_value' => $config->get('audit_confirmation_text'),
+    ];
+
     return parent::buildForm($form, $form_state);
   }
 
@@ -57,6 +73,8 @@ class AuditSettingsForm extends ConfigFormBase {
 
     $this->config('nidirect_workflow.auditsettings')
       ->set('audit_button_text', $form_state->getValue('audit_button_text'))
+      ->set('audit_button_hover_text', $form_state->getValue('audit_button_hover_text'))
+      ->set('audit_confirmation_text', $form_state->getValue('audit_confirmation_text'))
       ->save();
   }
 

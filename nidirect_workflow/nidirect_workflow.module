@@ -10,10 +10,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * @file
- */
-
-/**
  * Implements hook_page_attachments().
  */
 function nidirect_workflow_page_attachments(array &$attachments) {
@@ -27,20 +23,21 @@ function nidirect_workflow_page_attachments(array &$attachments) {
 function nidirect_workflow_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
   if ($entity->getEntityTypeId() == 'node') {
-    switch ($entity->bundle()) {
-      case 'article':
-      case 'contact':
-      case 'page':
-        // We have just published a node type that is subject to auditing.
-        if ($entity->isPublished()) {
-          $next_audit_date = $entity->get('field_next_audit_due')->value;
-          if (empty($next_audit_date)) {
-            // No audit date set, set it for six months time.
-            $entity->set('field_next_audit_due', date('Y-m-d', strtotime("+6 months")));
-          }
+    return;
+  }
+  switch ($entity->bundle()) {
+    case 'article':
+    case 'contact':
+    case 'page':
+      // We have just published a node type that is subject to auditing.
+      if ($entity->isPublished()) {
+        $next_audit_date = $entity->get('field_next_audit_due')->value;
+        if (empty($next_audit_date)) {
+          // No audit date set, set it for six months time.
+          $entity->set('field_next_audit_due', date('Y-m-d', strtotime("+6 months")));
         }
-        break;
-    }
+      }
+      break;
   }
 }
 

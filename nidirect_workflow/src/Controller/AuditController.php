@@ -10,7 +10,7 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class AuditController.
+ * Controller to handle auditing of nodes.
  */
 class AuditController extends ControllerBase implements ContainerInjectionInterface {
 

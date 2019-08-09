@@ -54,7 +54,7 @@ function nidirect_workflow_form_alter(&$form, FormStateInterface $form_state, $f
     || ($form_id == 'node_page_form')
     || ($form_id == 'node_page_edit_form')
   ) {
-    $account = User::load(\Drupal::currentUser()->id());
+    $account = \Drupal::entityTypeManager()->getStorage('user')->load(\Drupal::currentUser()->id());
     // Check user access level.
     if ($account->hasRole('administrator')) {
       // Admin can see audit date and change it.

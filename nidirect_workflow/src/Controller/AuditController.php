@@ -70,7 +70,6 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
    */
   public function contentAudit($nid) {
     $msg = 'Invalid node id';
-    // Don't forget translations.
     if (!empty($nid)) {
       $node = $this->entityTypeManager()->getStorage('node')->load($nid);
       if ($node) {

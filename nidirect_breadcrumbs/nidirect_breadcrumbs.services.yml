@@ -27,3 +27,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\RecipeBreadcrumb
     tags:
       - { name: breadcrumb_builder }
+  nidirect_breadcrumbs.breadcrumb.search:
+    class: Drupal\nidirect_breadcrumbs\SearchBreadcrumb
+    tags:
+      - { name: breadcrumb_builder }

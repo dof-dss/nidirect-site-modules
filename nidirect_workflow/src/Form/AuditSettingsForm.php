@@ -6,7 +6,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class AuditSettingsForm.
+ * Implements admin form to allow setting of audit text.
  */
 class AuditSettingsForm extends ConfigFormBase {
 

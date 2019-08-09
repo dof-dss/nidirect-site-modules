@@ -55,7 +55,7 @@ function nidirect_workflow_entity_presave(EntityInterface $entity) {
  */
 function nidirect_workflow_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-  // Disable the 'next audit date' for all but admins.
+  // Manage access to 'next audit date' field.
   if (($form_id == 'node_article_form')
     || ($form_id == 'node_article_edit_form')
     || ($form_id == 'node_contact_form')
@@ -66,8 +66,21 @@ function nidirect_workflow_form_alter(&$form, FormStateInterface $form_state, $f
     || ($form_id == 'node_health_condition_edit_form')
   ) {
     $account = User::load(\Drupal::currentUser()->id());
-    if (!$account->hasRole('administrator')) {
-      $form['field_next_audit_due']['#disabled'] = 'TRUE';
+    // Check user access level.
+    if ($account->hasRole('administrator')) {
+      // Admin can see audit date and change it.
+      $form['field_next_audit_due']['#access'] = TRUE;
+      $form['field_next_audit_due']['#disabled'] = FALSE;
+    }
+    elseif ($account->hasPermission('audit content')) {
+      // If user has permission to audit content but is not an admin
+      // then they can see the audit date but not change it.
+      $form['field_next_audit_due']['#access'] = TRUE;
+      $form['field_next_audit_due']['#disabled'] = TRUE;
+    }
+    else {
+      // Hide the audit date for anyone else.
+      $form['field_next_audit_due']['#access'] = FALSE;
     }
   }
 }

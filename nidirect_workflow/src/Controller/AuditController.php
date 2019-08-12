@@ -79,13 +79,14 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
         $audit_confirmation_text = $this->config('nidirect_workflow.auditsettings')->get('audit_confirmation_text');
         // Show confirmation text to user.
         $msg = "<div class='confirmation_text'>" . $this->t($audit_confirmation_text) . "</div>";
-        // Now build links to confirm or cancel.
+        // Build a confirm link.
         $link_object = Link::createFromRoute($this->t($audit_button_text),
           'nidirect_workflow.audit_controller_confirm_audit',
           ['nid' => $nid],
           ['attributes' => ['rel' => 'nofollow', 'class' => 'audit_link']]);
         // Add confirm link to markup.
         $msg .= "<div>" . $link_object->toString()->__toString() . "</div>";
+        // Build a cancel link.
         $link_object_cancel = Link::createFromRoute($this->t("Cancel"),
           'entity.node.canonical',
           ['node' => $nid],

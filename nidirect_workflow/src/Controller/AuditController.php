@@ -4,6 +4,7 @@ namespace Drupal\nidirect_workflow\Controller;
 
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Psr\Log\LoggerInterface;
@@ -69,15 +70,28 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
    *   Return confirmation string.
    */
   public function contentAudit($nid) {
-    $msg = $this->t('Invalid node ID');
+    $msg = $this->t('Invalid node ID - @nid', ['@nid' => $nid]);
     if (!empty($nid)) {
       $node = $this->entityTypeManager()->getStorage('node')->load($nid);
       if ($node) {
+        // Retrieve audit text from config.
         $audit_button_text = $this->config('nidirect_workflow.auditsettings')->get('audit_button_text');
         $audit_confirmation_text = $this->config('nidirect_workflow.auditsettings')->get('audit_confirmation_text');
-        $msg = $this->t($audit_confirmation_text);
-        $msg .= "<div><a href='/nidirect_workflow/confirm_audit/$nid?destination=/node/$nid'>" . $this->t($audit_button_text) . "</a></div>";
-        $msg .= "<div><a href='/node/$nid'>" . $this->t("Cancel") . "</a></div>";
+        // Show confirmation text to user.
+        $msg = "<div class='confirmation_text'>" . $this->t($audit_confirmation_text) . "</div>";
+        // Now build links to confirm or cancel.
+        $link_object = Link::createFromRoute($this->t($audit_button_text),
+          'nidirect_workflow.audit_controller_confirm_audit',
+          ['nid' => $nid],
+          ['attributes' => ['rel' => 'nofollow', 'class' => 'audit_link']]);
+        // Add confirm link to markup.
+        $msg .= "<div>" . $link_object->toString()->__toString() . "</div>";
+        $link_object_cancel = Link::createFromRoute($this->t("Cancel"),
+          'entity.node.canonical',
+          ['node' => $nid],
+          ['attributes' => ['rel' => 'nofollow', 'class' => 'cancel_link']]);
+        // Add cancel link to markup.
+        $msg .= "<div>" . $link_object_cancel->toString()->__toString() . "</div>";
       }
     }
     return [

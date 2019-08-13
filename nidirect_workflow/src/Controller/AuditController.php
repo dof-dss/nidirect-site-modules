@@ -116,7 +116,7 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
       $message = "nid " . $nid . " " . $this->t("has been audited by") . " ";
       $message .= $this->account->getAccountName() . " (uid " . $this->account->id() . ")";
       $this->logger->notice($message);
-      \Drupal::messenger()->addMessage(t('Content has been marked as audited'));
+      $this->messenger()->addMessage(t('Content has been marked as audited'));
     }
     // Redirect user to node view (although the 'destination'
     // url argument may override this).

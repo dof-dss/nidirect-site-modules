@@ -93,8 +93,8 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
         // Add confirm link to render array.
         $render_array['link1'] = array_merge($link_object->toRenderable(),
           [
-            '#prefix' => "<div class='confirm_audit'>",
-            '#suffix' => "</div>",
+            '#prefix' => "<span class='confirm_audit'>",
+            '#suffix' => "</span>",
             '#weight' => 1,
           ]);
         // Build a cancel link.
@@ -104,11 +104,11 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
           ['attributes' => ['rel' => 'nofollow', 'class' => 'cancel_link']]);
         // Add cancel link to render array.
         $render_array['link2'] = array_merge($link_object_cancel->toRenderable(),
-        [
-          '#prefix' => "<div class='cancel'>",
-          '#suffix' => "</div>",
-          '#weight' => 2,
-        ]);
+          [
+            '#prefix' => "<span class='cancel'>",
+            '#suffix' => "</span>",
+            '#weight' => 2,
+          ]);
       }
     }
     return $render_array;

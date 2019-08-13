@@ -12,8 +12,25 @@ use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class SearchBreadcrumb implements BreadcrumbBuilderInterface {
+
+  /**
+   * Class constructor.
+   */
+  public function __construct(array $route_matches) {
+    $this->routeMatches = $route_matches;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('breadcrumb.search.matches')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -21,7 +38,7 @@ class SearchBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    if ($route_match->getRouteName() == 'view.search.page_1') {
+    if (in_array($route_match->getRouteName(), $this->routeMatches)) {
       $match = TRUE;
     }
 

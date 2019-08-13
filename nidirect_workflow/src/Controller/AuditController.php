@@ -70,6 +70,7 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
    *   Return confirmation string.
    */
   public function contentAudit($nid) {
+    $render_array = [];
     $msg = $this->t('Invalid node ID - @nid', ['@nid' => $nid]);
     if (!empty($nid)) {
       $node = $this->entityTypeManager()->getStorage('node')->load($nid);
@@ -78,27 +79,39 @@ class AuditController extends ControllerBase implements ContainerInjectionInterf
         $audit_button_text = $this->config('nidirect_workflow.auditsettings')->get('audit_button_text');
         $audit_confirmation_text = $this->config('nidirect_workflow.auditsettings')->get('audit_confirmation_text');
         // Show confirmation text to user.
-        $msg = "<div class='confirmation_text'>" . $this->t($audit_confirmation_text) . "</div>";
+        $render_array['confirmation_text'] = [
+          '#markup' => $this->t($audit_confirmation_text),
+          '#prefix' => "<div class='confirmation_text'>",
+          '#suffix' => "</div>",
+          '#weight' => 0,
+        ];
         // Build a confirm link.
         $link_object = Link::createFromRoute($this->t($audit_button_text),
           'nidirect_workflow.audit_controller_confirm_audit',
           ['nid' => $nid],
           ['attributes' => ['rel' => 'nofollow', 'class' => 'audit_link']]);
-        // Add confirm link to markup.
-        $msg .= "<div>" . $link_object->toString()->__toString() . "</div>";
+        // Add confirm link to render array.
+        $render_array['link1'] = array_merge($link_object->toRenderable(),
+          [
+            '#prefix' => "<div class='confirm_audit'>",
+            '#suffix' => "</div>",
+            '#weight' => 1,
+          ]);
         // Build a cancel link.
         $link_object_cancel = Link::createFromRoute($this->t("Cancel"),
           'entity.node.canonical',
           ['node' => $nid],
           ['attributes' => ['rel' => 'nofollow', 'class' => 'cancel_link']]);
-        // Add cancel link to markup.
-        $msg .= "<div>" . $link_object_cancel->toString()->__toString() . "</div>";
+        // Add cancel link to render array.
+        $render_array['link2'] = array_merge($link_object_cancel->toRenderable(),
+        [
+          '#prefix' => "<div class='cancel'>",
+          '#suffix' => "</div>",
+          '#weight' => 2,
+        ]);
       }
     }
-    return [
-      '#type' => 'markup',
-      '#markup' => $msg,
-    ];
+    return $render_array;
   }
 
   /**

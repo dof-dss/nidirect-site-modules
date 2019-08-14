@@ -1,30 +1,37 @@
 services:
   nidirect_breadcrumbs.breadcrumb.themes:
     class: Drupal\nidirect_breadcrumbs\ThemesBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.umbrella_bodies:
     class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.contact:
     class: Drupal\nidirect_breadcrumbs\ContactBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.gp_practice:
     class: Drupal\nidirect_breadcrumbs\GpPracticeBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.health_condition:
     class: Drupal\nidirect_breadcrumbs\HealthConditionBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.news:
     class: Drupal\nidirect_breadcrumbs\NewsBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.recipe:
     class: Drupal\nidirect_breadcrumbs\RecipeBreadcrumb
+    arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.search:

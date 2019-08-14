@@ -1,0 +1,8 @@
+
+nidirect_contacts.contact_listing_controller_hello:
+  path: '/contacts'
+  defaults:
+    _controller: '\Drupal\nidirect_contacts\Controller\ContactListingController::default'
+    _title: 'Contacts'
+  requirements:
+    _permission: 'access content'

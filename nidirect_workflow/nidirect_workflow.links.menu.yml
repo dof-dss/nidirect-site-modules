@@ -28,3 +28,16 @@ nidirect_workflow.needs_review:
   description: 'Needs Review'
   parent: nidirect_workflow.my_workbench
   weight: 3
+nidirect_workflow.needs_audit:
+  title: 'Needs Audit'
+  route_name: view.workflow_moderation.page_4
+  description: 'Needs Audit'
+  parent: nidirect_workflow.my_workbench
+  weight: 4
+nidirect_workflow.audit_settings_form:
+  title: 'NIDirect Audit Settings Form'
+  route_name: nidirect_workflow.audit_settings_form
+  description: 'Configure audit settings and messages'
+  parent: nidirect.admin_config
+  weight: 99
+

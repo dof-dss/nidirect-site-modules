@@ -36,4 +36,3 @@ services:
 parameters:
   breadcrumb.search.matches:
     - view.search.page_1
-    - view.contacts.page_1

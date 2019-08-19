@@ -34,7 +34,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
    * @param mixed $plugin_definition
    *   Plugin definition.
    * @param Drupal\Core\Routing\CurrentRouteMatch $route_match
-   *   Route match object
+   *   Route match object.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);

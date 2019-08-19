@@ -54,8 +54,6 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $q = \Drupal::request()->query->all();
   $route_name = \Drupal::routeMatch()->getRouteName();
 
-  $results_or_letter_filter = (!empty($q) || $route_name == 'nidirect_contacts.letter');
-
   // Links for sorting options.
   $sort_relevance = Link::createFromRoute('Sort by relevance', 'nidirect_contacts.default', [], [
     'query' => array_merge($q, [
@@ -67,33 +65,42 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
       'sort_by' => 'title',
     ])
   ]);
+  // Convenience links.
   $show_az = Link::createFromRoute('Show A-Z', 'nidirect_contacts.default');
   $reset_search = Link::createFromRoute('Reset search', 'nidirect_contacts.default');
 
   // Add to render array by default; toggle visibility after.
   $variables['links']['sort_by_relevance'] = $sort_relevance->toRenderable();
   $variables['links']['sort_title'] = $sort_title->toRenderable();
-  $variables['links']['show_az'] = $show_az->toRenderable();
   $variables['links']['reset'] = $reset_search->toRenderable();
+  $variables['links']['show_az'] = $show_az->toRenderable();
 
-  // If we have no search term, hide the sorting options.
-  if (!$results_or_letter_filter) {
-    hide($variables['links']['show_az']);
-    hide($variables['links']['reset']);
-  }
-
-  // Toggle display of links based on what we're sorting by.
-  if (!$results_or_letter_filter) {
-    hide($variables['links']['sort_title']);
+  // Hide the sort options when there is no search term and we're not looking
+  // at the contacts A-Z.
+  if ($route_name == 'nidirect_contacts.letter') {
+    // No sort options on this display.
     hide($variables['links']['sort_by_relevance']);
+    hide($variables['links']['sort_title']);
+
+    $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
+    $variables['header']['az'] = $az_block->build();
   }
 
-  if (!empty($q['sort_by'])) {
+  if ($route_name == 'nidirect_contacts.default') {
+    if (empty($q['query_contacts_az'])) {
+      hide($variables['links']['show_az']);
+      hide($variables['links']['reset']);
+    }
+
     if ($q['sort_by'] == 'title') {
       hide($variables['links']['sort_title']);
     }
+    if (empty($q['sort_by']) || $q['sort_by'] == 'search_api_relevance') {
+      hide($variables['links']['sort_by_relevance']);
+    }
 
-    if ($q['sort_by'] == 'search_api_relevance') {
+    if (empty($q)) {
+      hide($variables['links']['sort_title']);
       hide($variables['links']['sort_by_relevance']);
     }
   }

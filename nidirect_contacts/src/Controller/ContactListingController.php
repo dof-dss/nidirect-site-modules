@@ -108,9 +108,6 @@ class ContactListingController extends ControllerBase {
       $letter = substr($letter, 0, 1);
     }
 
-    $az_block = $this->blockManager->createInstance('contact_az_block', []);
-    $content['a-z'] = $az_block->build();
-
     $content['contacts_a_z'] = [
       '#type' => 'view',
       '#name' => 'contacts_a_z',

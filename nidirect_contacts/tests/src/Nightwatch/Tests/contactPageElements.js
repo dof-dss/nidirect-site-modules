@@ -55,16 +55,28 @@ module.exports = {
 
   'Contact landing page should show the A-Z block': browser => {
     browser
-      .drupalRelativeURL('/contacts')
       .expect.element('#contacts-az')
       .to.be.present;
   },
 
   'Contact landing page should show the A-Z block': browser => {
     browser
-      .drupalRelativeURL('/contacts')
       .expect.element('#contacts-az')
       .to.be.present;
   },
+
+  'Contact search SORT BY TITLE should hide link to sort by title': browser => {
+    browser
+      .drupalRelativeURL('/contacts?query_contacts_az=test&sort_by=title')
+      .expect.element('.view-contacts .view-links')
+      .text.to.not.contain('Sort by title');
+  },
+
+  'Contact search SORT BY RELEVANCY should hide link to sort by relevancy': browser => {
+    browser
+      .drupalRelativeURL('/contacts?query_contacts_az=test&sort_by=search_api_relevance')
+      .expect.element('.view-contacts .view-links')
+      .text.to.not.contain('Sort by relevancy');
+  }
 
 };

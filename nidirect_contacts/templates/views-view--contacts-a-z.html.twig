@@ -58,9 +58,15 @@
 
   {% if links %}
     <div class="view-links">
-      {{ links }}
+      {% for link in links %}
+        {{ link }}
+        {% if not loop.last %}
+          |
+        {% endif %}
+      {% endfor %}
     </div>
   {% endif %}
+
 
   {% if rows %}
     <div class="view-content">

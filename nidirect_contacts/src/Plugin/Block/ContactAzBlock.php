@@ -82,6 +82,10 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     $build['contact_az_block'] = [
       '#theme' => 'item_list',
       '#items' => $links,
+      '#attributes' => [
+        'class' => 'az-facet-list',
+        'id' => 'contacts-az',
+      ],
     ];
 
     return $build;

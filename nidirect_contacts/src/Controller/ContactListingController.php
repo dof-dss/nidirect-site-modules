@@ -78,8 +78,13 @@ class ContactListingController extends ControllerBase {
       '#display_id' => 'contact_search',
     ];
 
-    $az_block = $this->blockManager->createInstance('contact_az_block', []);
-    $content['contact_az_block'] = $az_block->build();
+    $q = $this->request->getCurrentRequest()->query->all();
+
+    if (empty($q['query_contacts_az'])) {
+      // Hide the A-Z block if we have a search term.
+      $az_block = $this->blockManager->createInstance('contact_az_block', []);
+      $content['contact_az_block'] = $az_block->build();
+    }
 
     return $content;
   }

@@ -2,14 +2,9 @@
 
 namespace Drupal\Tests\nidirect_workflow\Functional;
 
-use Drupal\content_moderation\EntityTypeInfo;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\nidirect_workflow\Controller\AuditController;
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Tests audit workflow.
@@ -79,7 +74,7 @@ class AuditTest extends BrowserTestBase {
     $node = $this->drupalCreateNode([
       'type' => $type,
       'title' => 'audit testing ' . $type,
-      'moderation_state' => 'published'
+      'moderation_state' => 'published',
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $nid = $node->id();

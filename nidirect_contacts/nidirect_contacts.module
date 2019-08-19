@@ -17,8 +17,8 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
   if ($form['#id'] == 'views-exposed-form-contacts-contact-search') {
     // Make sort options invisible, but because the view embed filters are defined as exposed,
     // we still get to use URL parameters despite having no visible form elements.
-    hide($form['sort_by']);
-    hide($form['sort_order']);
+    unset($form['sort_by']);
+    unset($form['sort_order']);
   }
 
   if ($form['#id'] == 'views-exposed-form-contacts-a-z-contacts-by-letter') {
@@ -79,29 +79,31 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   // at the contacts A-Z.
   if ($route_name == 'nidirect_contacts.letter') {
     // No sort options on this display.
-    hide($variables['links']['sort_by_relevance']);
-    hide($variables['links']['sort_title']);
+    unset($variables['links']['sort_by_relevance']);
+    unset($variables['links']['sort_title']);
 
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
   }
 
   if ($route_name == 'nidirect_contacts.default') {
+    if (empty($q)) {
+      unset($variables['links']['sort_title']);
+      unset($variables['links']['sort_by_relevance']);
+      unset($variables['links']['show_az']);
+      unset($variables['links']['reset']);
+    }
+
     if (empty($q['query_contacts_az'])) {
-      hide($variables['links']['show_az']);
-      hide($variables['links']['reset']);
+      unset($variables['links']['show_az']);
+      unset($variables['links']['reset']);
     }
 
     if ($q['sort_by'] == 'title') {
-      hide($variables['links']['sort_title']);
+      unset($variables['links']['sort_title']);
     }
     if (empty($q['sort_by']) || $q['sort_by'] == 'search_api_relevance') {
-      hide($variables['links']['sort_by_relevance']);
-    }
-
-    if (empty($q)) {
-      hide($variables['links']['sort_title']);
-      hide($variables['links']['sort_by_relevance']);
+      unset($variables['links']['sort_by_relevance']);
     }
   }
 }

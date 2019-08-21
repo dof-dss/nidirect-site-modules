@@ -1,3 +1,24 @@
+nidirect.main.news:
+  title: 'News'
+  url: internal:/news
+  menu_name: main
+  weight: 5
+nidirect.main.contacts:
+  title: 'Contacts'
+  url: internal:/contacts
+  menu_name: main
+  weight: 6
+nidirect.main.help:
+  title: 'Help'
+  url: internal:/information-and-services/help
+  menu_name: main
+  weight: 7
+nidirect.main.feedback:
+  title: 'Feedback'
+  url: internal:/forms/feedback?s=/front
+  menu_name: main
+  weight: 8
+
 nidirect.admin_config:
   title: 'NIDirect'
   description: 'Manage NIDirect settings'

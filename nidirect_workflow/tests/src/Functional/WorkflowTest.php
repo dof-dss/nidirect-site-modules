@@ -2,13 +2,10 @@
 
 namespace Drupal\Tests\nidirect_workflow\Functional;
 
-use Drupal\nidirect_workflow\Controller\AuditController;
 use Drupal\Tests\BrowserTestBase;
-use Drupal\node\Entity\Node;
-use Drupal\user\Entity\Role;
 
 /**
- * Tests workflow menus for roles
+ * Tests workflow menus for roles.
  *
  * @group nidirect_common
  */
@@ -44,7 +41,7 @@ class WorkflowTest extends BrowserTestBase {
   /**
    * Test menus available when logging on as author.
    */
-  public function testAuthLogon() {
+  public function testAuthenticatedLogon() {
     $account = $this->drupalCreateUser(['access content']);
     $this->drupalLogin($account);
 
@@ -62,49 +59,29 @@ class WorkflowTest extends BrowserTestBase {
    */
   public function testAuthorLogon() {
     $account = $this->drupalCreateUser(['access content']);
-    //$role = Role::load('author_user');
-    $role = Role::create([
-      'id' => 'author_user',
-      'label' => 'Author User',
-    ]);
-    $role->save();
-    $account->addRole($role->id());
+    $account->addRole('author_user');
     $account->save;
-    //print_r($account->getRoles());
     $this->drupalLogin($account);
 
     $assert = $this->assertSession();
 
-    $this->drupalGet('admin/workflow/needs-review');
-    $assert->statusCodeEquals('200');
-    //$assert->pageTextContains('Needs Review');
-
     $this->drupalGet('admin/workflow/needs-audit');
-    $assert->statusCodeEquals('200');
-    //$assert->pageTextContains('You are not authorized to access this page');
+    $assert->statusCodeEquals('403');
   }
 
   /**
-   * Test menus available when logging on as author.
+   * Test menus available when logging on as user with audit permission.
    */
   public function testAuditPermission() {
     $account = $this->drupalCreateUser(['audit content']);
     $this->drupalLogin($account);
 
-    //$this->drupalLogin($this->rootUser);
-
     $assert = $this->assertSession();
-
-    //$this->drupalGet('admin/workflow/needs-review');
-    //$assert->statusCodeEquals('200');
-    //$assert->pageTextContains('Needs Review');
-
     $this->drupalGet('admin/workflow/needs-audit');
     $assert->statusCodeEquals('200');
 
     $this->drupalGet('admin/workflow/needs-review');
     $assert->statusCodeEquals('403');
-    //$assert->pageTextContains('You are not authorized to access this page');
   }
 
 }

@@ -58,20 +58,13 @@ class ContactListingController extends ControllerBase {
   /**
    * Default presentation of the contacts listing page.
    *
-   * - Title (Contacts A to Z)
-   * - Search by contact name
-   *    <input 'Search contacts' placeholder> <submit>
-   * - Find contacts beginning with...
-   *    <Big A-Z, 0-9 grid of links>
-   *    Link is: /contacts/letter/a
-   *
    * @return array
-   *   Return render array for Drupal to convert to HTML.
+   *   Render array for Drupal to convert to HTML.
    */
   public function default() {
     $content = [];
 
-    // Views static service class used in absence of container service to inject via constructor.
+    // Create a render array from a views display.
     $content['contact_form'] = [
       '#type' => 'view',
       '#name' => 'contacts',
@@ -90,17 +83,10 @@ class ContactListingController extends ControllerBase {
   }
 
   /**
-   * A-Z contacts listing page.
-   *
-   * - Title: Contacts A to Z
-   * - Search by contact name
-   *    <input 'Search contacts' placeholder> <submit>
-   * - Find contacts beginning with...
-   *    <Big A-Z, 0-9 grid of links>
-   * - Reset a-z link | show search link
+   * Contacts when filtered by letter.
    *
    * @return array
-   *   Return render array for Drupal to convert to HTML.
+   *   Render array for Drupal to convert to HTML.
    */
   public function filterByLetter(string $letter = NULL) {
     // Trim letter parameter if, for whatever reason, it's > 1.

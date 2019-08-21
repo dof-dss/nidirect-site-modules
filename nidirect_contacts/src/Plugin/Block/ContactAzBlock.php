@@ -64,7 +64,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
 
     if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');
-      $title = $this->t('Showing entries for') . ' ' . strtoupper($letter);
+      $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
     }
 
     $build['title'] = [
@@ -74,7 +74,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     foreach (array_merge(range('a', 'z'), range('0', '9')) as $item) {
       $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_contacts.letter', ['letter' => $item], [
         'attributes' => [
-          'title' => $this->t('View entries under') . ' ' . strtoupper($item)
+          'title' => $this->t('View entries under :item', [':item' => strtoupper($item)]),
         ]
       ])->toRenderable();
     }

@@ -44,17 +44,33 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
   }
 
   /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
+
+  /**
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    $this->node = $route_match->getParameter('node');
+
+    if (!empty($this->node)) {
+      if (is_object($this->node) == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($node);
       }
-      $bundle = $node->bundle();
-      $match = $node->bundle() == 'contact';
+
+      $match = $this->node->bundle() == 'contact';
+    }
+    else {
+      // Also check for contacts listing/search pages.
+      $match = in_array($route_match->getRouteName(), [
+        'nidirect_contacts.default',
+        'nidirect_contacts.letter',
+      ]);
     }
 
     return $match;
@@ -64,10 +80,15 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
    * {@inheritdoc}
    */
   public function build(RouteMatchInterface $route_match) {
-
     $breadcrumb = new Breadcrumb();
-    $links[] = Link::createFromRoute(t('Home'), '<front>');
-    $links[] = Link::fromTextandUrl(t('Contacts'), Url::fromUserInput('/contacts'));
+
+    $links = [];
+
+    if (!empty($this->node)) {
+      // Only add to contact node pages.
+      $links[] = Link::createFromRoute(t('Home'), '<front>');
+      $links[] = Link::fromTextandUrl(t('Contacts'), Url::fromUserInput('/contacts'));
+    }
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);

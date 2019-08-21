@@ -1,0 +1,109 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_contacts.module.
+ */
+
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterface $form_state) {
+  if ($form['#id'] == 'views-exposed-form-contacts-contact-search') {
+    // Make sort options invisible, but because the view embed filters are defined as exposed,
+    // we still get to use URL parameters despite having no visible form elements.
+    unset($form['sort_by']);
+    unset($form['sort_order']);
+  }
+
+  if ($form['#id'] == 'views-exposed-form-contacts-a-z-contacts-by-letter') {
+    $form['#action'] = \Drupal::service('router.route_provider')->getRouteByName('nidirect_contacts.default')->getPath();
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function nidirect_contacts_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'contacts_a_z' && $view->current_display == 'contacts_by_letter') {
+    // Argument condition referenced by array index feels a tad brittle. There
+    // doesn't seem to be a functional convenience function on the Views query object
+    // that lets us replace/alter the condition types and operators so it's set below.
+    $query->where[0]['conditions'][0]['value'] .= '%';
+    $query->where[0]['conditions'][0]['operator'] = 'LIKE';
+  }
+}
+
+/**
+ * Implements hook_preprocess_views_view().
+ */
+function nidirect_contacts_preprocess_views_view(&$variables) {
+  if (!preg_match('/^contacts/', $variables['id'])) {
+    return;
+  }
+
+  if (!in_array($variables['display_id'], ['contact_search', 'contacts_by_letter'])) {
+    return;
+  }
+
+  $q = \Drupal::request()->query->all();
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  // Links for sorting options.
+  $sort_relevance = Link::createFromRoute('Sort by relevance', 'nidirect_contacts.default', [], [
+    'query' => array_merge($q, [
+      'sort_by' => 'search_api_relevance',
+    ])
+  ]);
+  $sort_title = Link::createFromRoute('Sort alphabetically', 'nidirect_contacts.default', [], [
+    'query' => array_merge($q, [
+      'sort_by' => 'title',
+    ])
+  ]);
+  // Convenience links.
+  $show_az = Link::createFromRoute('Show A-Z', 'nidirect_contacts.default');
+  $reset_search = Link::createFromRoute('Reset search', 'nidirect_contacts.default');
+
+  // Add to render array by default; toggle visibility after.
+  $variables['links']['sort_by_relevance'] = $sort_relevance->toRenderable();
+  $variables['links']['sort_title'] = $sort_title->toRenderable();
+  $variables['links']['reset'] = $reset_search->toRenderable();
+  $variables['links']['show_az'] = $show_az->toRenderable();
+
+  // Hide the sort options when there is no search term and we're not looking
+  // at the contacts A-Z.
+  if ($route_name == 'nidirect_contacts.letter') {
+    // No sort options on this display.
+    unset($variables['links']['sort_by_relevance']);
+    unset($variables['links']['sort_title']);
+
+    $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
+    $variables['header']['az'] = $az_block->build();
+  }
+
+  if ($route_name == 'nidirect_contacts.default') {
+    if (empty($q)) {
+      unset($variables['links']['sort_title']);
+      unset($variables['links']['sort_by_relevance']);
+      unset($variables['links']['show_az']);
+      unset($variables['links']['reset']);
+    }
+
+    if (empty($q['query_contacts_az'])) {
+      unset($variables['links']['show_az']);
+      unset($variables['links']['reset']);
+    }
+
+    if ($q['sort_by'] == 'title') {
+      unset($variables['links']['sort_title']);
+    }
+    if (empty($q['sort_by']) || $q['sort_by'] == 'search_api_relevance') {
+      unset($variables['links']['sort_by_relevance']);
+    }
+  }
+}

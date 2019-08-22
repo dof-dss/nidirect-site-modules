@@ -18,25 +18,7 @@ class WorkflowAuditTest extends BrowserTestBase {
    */
   protected $profile = 'test_profile';
 
-  /**
-   * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
-   */
-  protected $entityTypeManager;
-
   protected $strictConfigSchema = FALSE;
-
-  /**
-   * {@inheritdoc}
-   */
-  protected function setUp() {
-    parent::setUp();
-
-    $this->entityTypeManager = $this->container->get('entity_type.manager');
-    $this->logger = $this->container->get('logger.factory')->get('audit_test');
-    $this->account = $this->container->get('current_user');
-  }
 
   /**
    * Test when logging on as author.

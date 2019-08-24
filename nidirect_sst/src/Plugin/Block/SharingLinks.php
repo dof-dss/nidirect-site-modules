@@ -23,22 +23,22 @@ class SharingLinks extends BlockBase {
     $build = [];
 
     // Links for: Twitter, Facebook, Youtube and RSS.
-    $build['twitter'] = Link::fromTextAndUrl('Twitter',
+    $build['twitter'] = Link::fromTextAndUrl($this->t('Twitter'),
       Url::fromUri('https://twitter.com/nidirect', [
-        'attributes' => ['title' => 'Twitter']
+        'attributes' => ['title' => $this->t('Twitter')]
       ]))->toRenderable();
-    $build['fb'] = Link::fromTextAndUrl('Facebook',
+    $build['fb'] = Link::fromTextAndUrl($this->t('Facebook'),
       Url::fromUri('https://www.facebook.com/nidirect', [
-        'attributes' => ['title' => 'Facebook']
+        'attributes' => ['title' => $this->t('Facebook')]
       ]))->toRenderable();
-    $build['youtube'] = Link::fromTextAndUrl('YouTube',
+    $build['youtube'] = Link::fromTextAndUrl($this->t('YouTube'),
       Url::fromUri('https://www.youtube.com/user/nidirect', [
-        'attributes' => ['title' => 'YouTube']
+        'attributes' => ['title' => $this->t('YouTube')]
       ]))->toRenderable();
     // TODO: covert to route name once feed exists.
-    $build['rss'] = Link::fromTextAndUrl('RSS',
+    $build['rss'] = Link::fromTextAndUrl($this->t('RSS'),
       Url::fromUri('internal:/news-rss.xml', [
-        'attributes' => ['title' => 'RSS']
+        'attributes' => ['title' => $this->t('RSS')]
       ]))->toRenderable();
 
     return $build;

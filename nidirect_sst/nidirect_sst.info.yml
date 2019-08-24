@@ -1,0 +1,5 @@
+name: 'NIDirect Social Sharing Tools'
+type: module
+description: 'Social network sharing links and tools'
+core: 8.x
+package: 'NIDirect'

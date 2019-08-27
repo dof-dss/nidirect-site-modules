@@ -5,19 +5,13 @@
  * Contains nidirect_related_content.module.
  */
 
-use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\views\ViewExecutable;
-use Drupal\Core\Block\BlockPluginInterface;
 
 /**
  * Implements hook_views_pre_build().
  */
 function nidirect_related_content_views_pre_build(ViewExecutable $view) {
-  if ($view->id() != 'articles_by_term') {
-    return;
-  }
-
-  if ($view->current_display != 'block_1') {
+  if ($view->id() != 'articles_by_term' && $view->current_display != 'block_1') {
     return;
   }
 
@@ -36,11 +30,7 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
  * Implements hook_views_pre_render().
  */
 function nidirect_related_content_views_pre_render(ViewExecutable $view) {
-  if ($view->id() != 'articles_by_term') {
-    return;
-  }
-
-  if ($view->current_display != 'block_1') {
+  if ($view->id() != 'articles_by_term' && $view->current_display != 'block_1') {
     return;
   }
 
@@ -63,11 +53,7 @@ function nidirect_related_content_views_pre_render(ViewExecutable $view) {
  * Implements hook_preprocess_views_view_field().
  */
 function nidirect_related_content_preprocess_views_view_field(&$variables) {
-  if ($variables['view']->id() != 'articles_by_term') {
-    return;
-  }
-
-  if ($variables['view']->current_display != 'block_1') {
+  if ($variables['view']->id() != 'articles_by_term' && $variables['view']->current_display != 'block_1') {
     return;
   }
 

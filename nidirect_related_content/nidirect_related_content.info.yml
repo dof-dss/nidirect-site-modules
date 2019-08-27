@@ -1,6 +1,6 @@
 name: 'NIDirect: Related content'
 type: module
-description: 'My Awesome Module'
+description: "Display related terms based on the present node's theme value"
 core: 8.x
 package: 'NIDirect'
 dependencies:

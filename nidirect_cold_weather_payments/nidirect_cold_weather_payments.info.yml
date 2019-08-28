@@ -3,3 +3,7 @@ type: module
 description: 'Cold weather payments system'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - drupal:help
+  - drupal:block
+  - token

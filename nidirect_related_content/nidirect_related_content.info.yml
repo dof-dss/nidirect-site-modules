@@ -4,5 +4,5 @@ description: "Display related terms based on the present node's theme value"
 core: 8.x
 package: 'NIDirect'
 dependencies:
-  - views
-  - taxonomy
+  - drupal:views
+  - drupal:taxonomy

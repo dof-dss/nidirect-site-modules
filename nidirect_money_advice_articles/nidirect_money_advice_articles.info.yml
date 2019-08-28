@@ -4,6 +4,7 @@ description: 'Import Money Advice Service articles from RSS feed.'
 core: 8.x
 package: 'NIDirect'
 dependencies:
+  - drupal:help
   - drupal:taxonomy
   - drupal:migrate
   - migrate_plus

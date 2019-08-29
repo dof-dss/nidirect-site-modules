@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -186,4 +187,19 @@ function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, Form
     . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
     . '</p>';
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_common_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'recipe' && $view->current_display == 'page_1') {
+    // Display custom header to show singular/plural recipe(s) label.
+    $view->header = [
+      '#markup' => \Drupal::translation()->formatPlural(
+        $view->pager->total_items,
+        '@number recipe',
+        '@number recipes', ['@number' => $view->pager->total_items])
+    ];
+  }
 }

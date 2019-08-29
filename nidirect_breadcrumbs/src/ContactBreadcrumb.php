@@ -25,7 +25,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ContactBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * Drupal entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
+
+  /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
 
   /**
    * Class constructor.
@@ -42,13 +54,6 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
       $container->get('entity_type.manager')
     );
   }
-
-  /**
-   * Node object, or null if on a non-node page.
-   *
-   * @var \Drupal\node\Entity\Node
-   */
-  protected $node;
 
   /**
    * {@inheritdoc}

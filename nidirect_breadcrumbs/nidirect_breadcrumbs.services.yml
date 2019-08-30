@@ -33,7 +33,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\RecipeBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
   nidirect_breadcrumbs.breadcrumb.search:
     class: Drupal\nidirect_breadcrumbs\SearchBreadcrumb
     arguments: ['%breadcrumb.search.matches%']

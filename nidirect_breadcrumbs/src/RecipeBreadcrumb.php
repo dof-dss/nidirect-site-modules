@@ -64,12 +64,11 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
-
     $this->node = $route_match->getParameter('node');
 
     if (!empty($this->node)) {
       if (is_object($this->node) == FALSE) {
-        $this->node = $this->entityTypeManager->getStorage('node')->load($node);
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
 
       $match = $this->node->bundle() == 'recipe';

@@ -3,3 +3,5 @@ type: module
 description: 'Breadcrumb customisations'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - drupal:node

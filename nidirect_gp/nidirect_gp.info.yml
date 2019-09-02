@@ -3,3 +3,5 @@ type: module
 description: 'NI Direct GP'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - drupal:help

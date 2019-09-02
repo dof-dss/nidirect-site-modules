@@ -4,5 +4,6 @@ description: 'Displays information on school closures'
 core: 8.x
 package: 'NIDirect'
 dependencies:
+  - drupal:help
   - ultimate_cron
   - token

@@ -193,7 +193,7 @@ function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, Form
  * Implements hook_views_pre_render().
  */
 function nidirect_common_views_pre_render(ViewExecutable $view) {
-  if ($view->id() == 'recipes' && $view->current_display == 'page_1') {
+  if ($view->id() == 'recipes' && $view->current_display == 'search_page') {
     // Display custom header to show singular/plural recipe(s) label.
     $view->header = [
       '#markup' => \Drupal::translation()->formatPlural(
@@ -208,7 +208,7 @@ function nidirect_common_views_pre_render(ViewExecutable $view) {
  * Implements hook_preprocess_block().
  */
 function nidirect_common_preprocess_block(&$variables) {
-  if ($variables['attributes']['id'] == 'block-exposedformrecipespage-1') {
+  if ($variables['attributes']['id'] == 'block-exposedformrecipessearch-page') {
     $variables['content']['preamble'] = [
       '#markup' => '<p>' . t('Search recipes and choose filters to show only the results you want.') . '</p>',
       '#weight' => -10,

@@ -75,7 +75,7 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
     }
     else {
       // Also match on recipe search page.
-      $match = $route_match->getRouteName() == 'view.recipes.page_1';
+      $match = $route_match->getRouteName() == 'view.recipes.search_page';
     }
 
     return $match;

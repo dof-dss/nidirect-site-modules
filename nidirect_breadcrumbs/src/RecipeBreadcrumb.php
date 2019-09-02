@@ -29,7 +29,19 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * Drupal entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
+
+  /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
 
   /**
    * Class constructor.
@@ -52,13 +64,18 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
+    $this->node = $route_match->getParameter('node');
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    if (!empty($this->node)) {
+      if (is_object($this->node) == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
-      $match = $node->bundle() == 'recipe';
+
+      $match = $this->node->bundle() == 'recipe';
+    }
+    else {
+      // Also match on recipe search page.
+      $match = $route_match->getRouteName() == 'view.recipes.search_page';
     }
 
     return $match;
@@ -73,7 +90,10 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
     $links[] = Link::createFromRoute(t('Home'), '<front>');
     $links[] = Link::fromTextandUrl(t('Health and well-being'), Url::fromUri('entity:taxonomy_term/22'));
     $links[] = Link::fromTextandUrl(t('Eat well'), Url::fromUri('entity:taxonomy_term/382'));
-    $links[] = Link::fromTextandUrl(t('Recipes'), Url::fromUserInput('/information-and-services/eat-well/recipes'));
+
+    if ($this->node) {
+      $links[] = Link::fromTextandUrl(t('Recipes'), Url::fromUserInput('/information-and-services/eat-well/recipes'));
+    }
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);

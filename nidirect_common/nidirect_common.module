@@ -9,6 +9,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -186,4 +187,31 @@ function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, Form
     . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
     . '</p>';
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_common_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'recipes' && $view->current_display == 'search_page') {
+    // Display custom header to show singular/plural recipe(s) label.
+    $view->header = [
+      '#markup' => \Drupal::translation()->formatPlural(
+        $view->pager->total_items,
+        '@number recipe',
+        '@number recipes', ['@number' => $view->pager->total_items])
+    ];
+  }
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function nidirect_common_preprocess_block(&$variables) {
+  if ($variables['attributes']['id'] == 'block-exposedformrecipessearch-page') {
+    $variables['content']['preamble'] = [
+      '#markup' => '<p>' . t('Search recipes and choose filters to show only the results you want.') . '</p>',
+      '#weight' => -10,
+    ];
+  }
 }

@@ -15,8 +15,8 @@ use Psr\Log\LoggerInterface;
  * A block to show links to pre-filtered searches by season.
  *
  * @Block(
- *  id = "recipes_by_season_block",
- *  admin_label = @Translation("Recipes by season block"),
+ *  id = "recipes_by_season",
+ *  admin_label = @Translation("Recipes by season"),
  *  category = "NIDirect related content",
  * )
  */

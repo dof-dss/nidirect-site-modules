@@ -15,8 +15,8 @@ use Psr\Log\LoggerInterface;
  * A block to show links to pre-filtered searches by ingredient.
  *
  * @Block(
- *  id = "recipes_by_ingredient_block",
- *  admin_label = @Translation("Recipes by ingredient block"),
+ *  id = "recipes_by_ingredient",
+ *  admin_label = @Translation("Recipes by ingredient"),
  *  category = "NIDirect related content",
  * )
  */

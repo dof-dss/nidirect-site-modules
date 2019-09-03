@@ -6,3 +6,4 @@ package: 'NIDirect'
 dependencies:
   - drupal:views
   - drupal:taxonomy
+  - facets

@@ -17,6 +17,9 @@ use Drupal\nidirect_gp\Entity\GpInterface;
  */
 class GpController extends ControllerBase {
 
+  /**
+   * @var \Drupal\Core\Datetime\DateFormatterInterface
+   */
   protected $dateFormatter;
 
   /**

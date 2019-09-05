@@ -1,0 +1,24 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_news.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_news_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_news module.
+    case 'help.page.nidirect_news':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Custom code to present news content') . '</p>';
+      return $output;
+
+    default:
+  }
+}

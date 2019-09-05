@@ -11,8 +11,12 @@ use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
  * Configure example settings for this site.
  */
 class SchoolClosuresSettingsForm extends ConfigFormBase {
+
   const SETTINGS = 'nidirect_school_closures.settings';
 
+  /**
+   * @var \Drupal\nidirect_school_closures\SchoolClosuresServiceInterface
+   */
   protected $closureService;
 
   /**

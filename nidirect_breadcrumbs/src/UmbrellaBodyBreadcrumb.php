@@ -29,6 +29,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UmbrellaBodyBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
   /**

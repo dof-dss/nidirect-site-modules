@@ -13,10 +13,19 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class ArticleProcessorsTest extends KernelTestBase {
 
-  protected $strictConfigSchema = FALSE;
+  /**
+   * @var bool
+   */
+  protected $strictConfigSchema;
 
+  /**
+   * @var \Drupal\nidirect_money_advice_articles\ArticleProcessors
+   */
   protected $articleProcessor;
 
+  /**
+   * @var array
+   */
   public static $modules = [
     'nidirect_money_advice_articles',
   ];

@@ -12,10 +12,19 @@ use Drupal\KernelTests\KernelTestBase;
  */
 class C2kschoolsSchoolClosuresServiceTest extends KernelTestBase {
 
+  /**
+   * @var mixed
+   */
   protected $closureService;
 
-  protected $strictConfigSchema = FALSE;
+  /**
+   * @var bool
+   */
+  protected $strictConfigSchema;
 
+  /**
+   * @var array
+   */
   public static $modules = [
     'nidirect_school_closures',
   ];

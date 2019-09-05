@@ -24,6 +24,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
   /**

@@ -73,7 +73,7 @@ class NewsListingController extends ControllerBase {
 
     // Older news.
     $content['older_news'] = [
-      '#type' => 'paragraph',
+      '#type' => 'view',
       '#name' => 'news',
       '#display_id' => 'older_news',
     ];

@@ -12,6 +12,10 @@ use Drupal\KernelTests\KernelTestBase;
  * @group nidirect
  */
 class SchoolClosuresTest extends KernelTestBase {
+
+  /**
+   * @var \DateTime
+   */
   protected $today;
 
   /**

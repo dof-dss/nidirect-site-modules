@@ -6,11 +6,36 @@ namespace Drupal\nidirect_school_closures;
  * SchoolClosure class.
  */
 class SchoolClosure {
+
+  /**
+   * @var string
+   */
   protected $name;
+
+  /**
+   * @var string
+   */
   protected $altName;
+
+  /**
+   * @var string
+   */
+
+  /**
+   * @var string
+   */
   protected $location;
+
+  /**
+   * @var \DateTime
+   */
   protected $date;
+
+  /**
+   * @var string
+   */
   protected $reason;
+
   /**
    * Array of friendly reason texts.
    */

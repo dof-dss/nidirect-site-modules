@@ -29,6 +29,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
   /**

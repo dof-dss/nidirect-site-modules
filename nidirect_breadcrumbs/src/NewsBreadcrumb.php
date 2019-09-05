@@ -25,6 +25,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
   /**

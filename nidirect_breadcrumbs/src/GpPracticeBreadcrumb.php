@@ -31,6 +31,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
 
+  /**
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
   protected $entityTypeManager;
 
   /**

@@ -11,19 +11,21 @@ use Drupal\views\ViewExecutable;
  * Implements hook_views_pre_build().
  */
 function nidirect_related_content_views_pre_build(ViewExecutable $view) {
-  if ($view->id() != 'articles_by_term' && $view->current_display != 'block_1') {
-    return;
+  $id = $view->id();
+  $display = $view->current_display;
+
+  if ($id == 'articles_by_term' && $display == 'block_1') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    if (empty($node->field_subtheme)) {
+      return;
+    }
+
+    $sub_theme = $node->field_subtheme->target_id ?? 'all';
+    $site_themes = $node->field_site_themes->target_id ?? 'all';
+
+    $view->setArguments([$sub_theme, $site_themes]);
   }
-
-  $node = \Drupal::routeMatch()->getParameter('node');
-  if (empty($node->field_subtheme)) {
-    return;
-  }
-
-  $sub_theme = $node->field_subtheme->target_id ?? 'all';
-  $site_themes = $node->field_site_themes->target_id ?? 'all';
-
-  $view->setArguments([$sub_theme, $site_themes]);
 }
 
 /**

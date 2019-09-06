@@ -119,6 +119,12 @@ class RecipesByIngredientBlock extends BlockBase implements ContainerFactoryPlug
       foreach ((array) $ingredients as $value) {
         $term_id = $value['target_id'];
         $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($term_id);
+
+        // Skip if null.
+        if (empty($term)) {
+          continue;
+        }
+
         $facet_url = $this->facetsUrlGenerator->getUrl(['main_ingredient' => [$term_id]]);
         $build['facet_link_ingredients']['#items'][] = Link::fromTextAndUrl($term->label(), $facet_url)->toRenderable();
       }

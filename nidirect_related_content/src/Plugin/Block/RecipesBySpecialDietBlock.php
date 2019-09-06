@@ -119,6 +119,12 @@ class RecipesBySpecialDietBlock extends BlockBase implements ContainerFactoryPlu
       foreach ((array) $diet_values as $value) {
         $term_id = $value['target_id'];
         $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($term_id);
+
+        // Skip if null.
+        if (empty($term)) {
+          continue;
+        }
+
         $facet_url = $this->facetsUrlGenerator->getUrl(['special_diet' => [$term_id]]);
         $build['facet_link_special_diet']['#items'][] = Link::fromTextAndUrl($term->label(), $facet_url)->toRenderable();
       }

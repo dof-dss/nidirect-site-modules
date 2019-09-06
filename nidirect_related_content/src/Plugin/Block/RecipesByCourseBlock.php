@@ -119,6 +119,12 @@ class RecipesByCourseBlock extends BlockBase implements ContainerFactoryPluginIn
       foreach ((array) $course as $value) {
         $term_id = $value['target_id'];
         $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($term_id);
+
+        // Skip if null.
+        if (empty($term)) {
+          continue;
+        }
+
         $facet_url = $this->facetsUrlGenerator->getUrl(['course_type' => [$term_id]]);
         $build['facet_link_course']['#items'][] = Link::fromTextAndUrl($term->label(), $facet_url)->toRenderable();
       }

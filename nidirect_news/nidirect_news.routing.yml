@@ -1,5 +1,5 @@
 
-nidirect_news.news_listing_controller_hello:
+nidirect_news.news_listing:
   path: '/news'
   defaults:
     _controller: '\Drupal\nidirect_news\Controller\NewsListingController::default'

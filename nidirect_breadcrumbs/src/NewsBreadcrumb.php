@@ -31,6 +31,13 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
   protected $entityTypeManager;
 
   /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
+
+  /**
    * Class constructor.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
@@ -52,12 +59,18 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    $this->node = $route_match->getParameter('node');
+
+    if (!empty($this->node)) {
+      if (is_object($this->node) == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
-      $match = $node->bundle() == 'news';
+
+      $match = $this->node->bundle() == 'news';
+    }
+    else {
+      // Also match on news listing page.
+      $match = $route_match->getRouteName() == 'nidirect_news.news_listing';
     }
 
     return $match;
@@ -69,10 +82,14 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
   public function build(RouteMatchInterface $route_match) {
 
     $breadcrumb = new Breadcrumb();
-    $links[] = Link::createFromRoute(t('Home'), '<front>');
-    $links[] = Link::fromTextandUrl(t('News'), Url::fromUserInput('/news'));
 
-    $breadcrumb->setLinks($links);
+    if ($this->node) {
+      $links[] = Link::createFromRoute(t('Home'), '<front>');
+      $links[] = Link::fromTextandUrl(t('News'), Url::fromRoute('nidirect_news.news_listing'));
+
+      $breadcrumb->setLinks($links);
+    }
+
     $breadcrumb->addCacheContexts(['url.path']);
 
     return $breadcrumb;

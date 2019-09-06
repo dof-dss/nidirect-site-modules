@@ -1,0 +1,29 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_news.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function nidirect_news_preprocess_field(&$variables) {
+  $entity_type = $variables['entity_type'];
+  $bundle = $variables['element']['#bundle'];
+  $field_name = $variables['field_name'];
+  $view_mode = $variables['element']['#view_mode'];
+
+  if ($field_name != 'field_published_date') {
+    return;
+  }
+
+  if ($entity_type != 'node' || $bundle != 'news' || $view_mode != 'full') {
+    return;
+  }
+
+  // Adjust the title in full display mode to match present site value.
+  $variables['label'] = t('Date published');
+}

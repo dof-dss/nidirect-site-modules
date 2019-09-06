@@ -2,12 +2,6 @@
   "name": "dof-dss/nidirect-site-modules",
   "description": "Drupal modules to provide custom code for NI Direct",
   "type": "drupal-module",
-  "authors": [
-    {
-      "name": "Stephen Cousins",
-      "email": "hello@onemanandhismouse.com"
-    }
-  ],
   "require": {
     "composer/installers": "^1.6"
   }

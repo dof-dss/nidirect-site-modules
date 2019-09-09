@@ -208,7 +208,7 @@ function nidirect_common_views_pre_render(ViewExecutable $view) {
  * Implements hook_preprocess_block().
  */
 function nidirect_common_preprocess_block(&$variables) {
-  if ($variables['attributes']['id'] == 'block-exposedformrecipessearch-page') {
+  if ($variables['plugin_id'] == 'views_exposed_filter_block:recipes-search_page') {
     $variables['content']['preamble'] = [
       '#markup' => '<p>' . t('Search recipes and choose filters to show only the results you want.') . '</p>',
       '#weight' => -10,

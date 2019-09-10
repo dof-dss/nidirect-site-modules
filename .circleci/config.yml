@@ -19,7 +19,7 @@ jobs:
       - run:
           name: Fetch phpcs convenience script
           command: |
-            curl https://raw.githubusercontent.com/dof-dss/nidirect-drupal/master/phpcs.sh -o /home/circleci/project/phpcs.sh
+            curl https://raw.githubusercontent.com/dof-dss/nidirect-drupal/development/phpcs.sh -o /home/circleci/project/phpcs.sh
             chmod +x /home/circleci/project/phpcs.sh
       - run:
           name: PHPCS static analysis

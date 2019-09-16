@@ -33,3 +33,62 @@ function nidirect_gp_theme() {
     ],
   ];
 }
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_gp_preprocess_node(&$variables) {
+  $node = &$variables['node'];
+  if ($node->bundle() != 'gp_practice' || $variables['view_mode'] != 'teaser') {
+    return;
+  }
+
+  // Rejig the content render array based on what was presented from underlying GP entities
+  // and existing GP Practice field values.
+  $gp_details = [];
+
+  // Lead GP.
+  if (!empty($node->field_gp_practice_lead->referencedEntities())) {
+    $lead_gp = $node->field_gp_practice_lead->referencedEntities()[0];
+
+    if (!empty($lead_gp)) {
+      $gp_details['lead_gp'] = [
+        '#markup' => $lead_gp->getFirstName() . ' ' . $lead_gp->getLastName(),
+      ];
+    }
+  }
+
+  // Member GPs.
+  if (!empty($node->field_gp_practice_member->referencedEntities())) {
+    foreach ($node->field_gp_practice_member->referencedEntities() as $gp) {
+      if (!empty($gp)) {
+        $gp_details['member_gps'][] = [
+          '#markup' => $gp->first_name->value . ' ' . $gp->last_name->value,
+        ];
+      }
+    }
+  }
+
+  // Address capped to line 1 + locality, for brevity.
+  $gp_details['address']['line1'] = $variables['content']['field_address'][0]['address_line1'];
+  $gp_details['address']['town'] = $variables['content']['field_address'][0]['locality'];
+
+  // Availability of online appointments and repeat prescriptions.
+  $gp_details['online_appointments'] = !empty($node->field_gp_appointments->getValue());
+  $gp_details['repeat_prescriptions'] = !empty($node->field_gp_prescriptions->getValue());
+
+  // Replace existing render array for this node's view mode.
+  $variables['content'] = $gp_details;
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function nidirect_gp_preprocess_block(&$variables) {
+  if ($variables['plugin_id'] == 'views_exposed_filter_block:gp_practices-find_a_gp') {
+    $variables['content']['preamble'] = [
+      '#markup' => '<p>' . t('Enter a GP name, practice or town.') . '</p>',
+      '#weight' => -10,
+    ];
+  }
+}

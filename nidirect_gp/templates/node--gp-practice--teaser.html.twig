@@ -1,0 +1,35 @@
+{#
+/**
+ * @file
+ * Default template for GP Practice's teaser view mode.
+ * USAGE: copy to your theme folder templates directory, or
+ * use from a module with a suitable hook_theme instance.
+ */
+#}
+{%
+  set classes = [
+  view_mode ? 'node--view-mode-' ~ view_mode|clean_class,
+  'clearfix',
+]
+%}
+<h3><a href="{{ url }}">{{ label }}</a></h3>
+<div class="gp-practice-members">
+  {% if content.lead_gp %}
+    <span>{{ content.lead_gp }}, </span>
+  {% endif %}
+  {% for gp in content.member_gps %}
+    <span>{{ gp }}</span>{% if not loop.last %}, {% endif %}
+  {% endfor %}
+</div>
+<div class="gp-practice-address">
+  {% if content.address.line1 %}{{ content.address.line1 }}{% endif %}
+  {% if content.address.town %}, {{ content.address.town }}{% endif %}
+</div>
+<div class="gp-practice-online-services">
+  {% if content.online_appointments %}
+    <div>Online appointments</div>
+  {% endif %}
+  {% if content.repeat_prescriptions %}
+    <div>Repeat prescriptions</div>
+  {% endif %}
+</div>

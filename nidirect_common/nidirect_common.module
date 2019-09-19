@@ -244,6 +244,7 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
   if ($display->getComponent('banner_display')) {
     $banner_image = $entity->get('field_banner_image')->first();
 
+    // Try fetching image from subtheme term.
     if (empty($banner_image)) {
       $term = $entity->get('field_subtheme')->entity;
 
@@ -252,10 +253,22 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
       }
 
       $banner_image = $term->get('field_banner_image')->first();
+
+      // Try fetching image from the parent term.
+      if (empty($banner_image)) {
+        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+        $parents = $storage->loadParents($term->id());
+
+        if (!empty($parents)) {
+          $parent = array_shift($parents);
+        }
+
+        $banner_image = $parent->get('field_banner_image')->first();
+      }
     }
 
     if (!empty($banner_image)) {
-      $build[] = $banner_image->view();
+      $build['banner_display'] = $banner_image->view();
     }
   }
 }

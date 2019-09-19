@@ -242,9 +242,20 @@ function nidirect_common_entity_extra_field_info() {
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($display->getComponent('banner_display')) {
-    $build['banner_display'] = [
-      '#type' => 'markup',
-      '#markup' => 'banner image',
-    ];
+    $banner_image = $entity->get('field_banner_image')->first();
+
+    if (empty($banner_image)) {
+      $term = $entity->get('field_subtheme')->entity;
+
+      if (empty($term)) {
+        return;
+      }
+
+      $banner_image = $term->get('field_banner_image')->first();
+    }
+
+    if (!empty($banner_image)) {
+      $build[] = $banner_image->view();
+    }
   }
 }

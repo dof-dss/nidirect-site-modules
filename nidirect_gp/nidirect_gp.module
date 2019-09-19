@@ -43,42 +43,31 @@ function nidirect_gp_preprocess_node(&$variables) {
     return;
   }
 
-  // Rejig the content render array based on what was presented from underlying GP entities
-  // and existing GP Practice field values.
-  $gp_details = [];
-
   // Lead GP.
   if (!empty($node->field_gp_practice_lead->referencedEntities())) {
-    $lead_gp = $node->field_gp_practice_lead->referencedEntities()[0];
-
-    if (!empty($lead_gp)) {
-      $gp_details['lead_gp'] = [
-        '#markup' => $lead_gp->getFirstName() . ' ' . $lead_gp->getLastName(),
-      ];
-    }
+    $gp = $node->field_gp_practice_lead->referencedEntities()[0];
+    $variables['gp_names'][] = $gp->label();
   }
 
   // Member GPs.
   if (!empty($node->field_gp_practice_member->referencedEntities())) {
-    foreach ($node->field_gp_practice_member->referencedEntities() as $gp) {
-      if (!empty($gp)) {
-        $gp_details['member_gps'][] = [
-          '#markup' => $gp->first_name->value . ' ' . $gp->last_name->value,
-        ];
-      }
+    foreach ($node->field_gp_practice_member->referencedEntities() as $index => $gp) {
+      $variables['gp_names'][] = $gp->label();
     }
   }
+}
 
-  // Address capped to line 1 + locality, for brevity.
-  $gp_details['address']['line1'] = $variables['content']['field_address'][0]['address_line1'];
-  $gp_details['address']['town'] = $variables['content']['field_address'][0]['locality'];
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function nidirect_gp_entity_extra_field_info() {
+  $extra['node']['gp_practice']['display']['gp_names'] = [
+    'label' => t('GP names'),
+    'description' => t('List of GP names, lead GP listed first.'),
+    'weight' => 0,
+  ];
 
-  // Availability of online appointments and repeat prescriptions.
-  $gp_details['online_appointments'] = !empty($node->field_gp_appointments->getValue());
-  $gp_details['repeat_prescriptions'] = !empty($node->field_gp_prescriptions->getValue());
-
-  // Replace existing render array for this node's view mode.
-  $variables['content'] = $gp_details;
+  return $extra;
 }
 
 /**

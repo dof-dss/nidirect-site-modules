@@ -7,9 +7,11 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
 use Drupal\views\ViewExecutable;
+use Drupal\node\Entity\NodeType;
 
 /**
  * Implements hook_help().
@@ -212,6 +214,37 @@ function nidirect_common_preprocess_block(&$variables) {
     $variables['content']['preamble'] = [
       '#markup' => '<p>' . t('Search recipes and choose filters to show only the results you want.') . '</p>',
       '#weight' => -10,
+    ];
+  }
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function nidirect_common_entity_extra_field_info() {
+  $extra = [];
+  $content_types = ['article'];
+
+  foreach ($content_types as $type) {
+    $extra['node'][$type]['display']['banner_display'] = [
+      'label' => t('Banner display'),
+      'description' => t('Display content or theme image banner.'),
+      'weight' => 50,
+      'visible' => TRUE,
+    ];
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('banner_display')) {
+    $build['banner_display'] = [
+      '#type' => 'markup',
+      '#markup' => 'banner image',
     ];
   }
 }

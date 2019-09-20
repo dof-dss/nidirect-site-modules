@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
+use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -26,6 +27,44 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
 
     default:
   }
+}
+
+/**
+ * Implements hook_cron().
+ *
+ */
+function nidirect_common_cron() {
+  //$queue_factory = \Drupal::service('queue');
+  //$queue = $queue_factory->get('audit_date_processor');
+  $queue = \Drupal::queue('audit_date_updates');
+  \Drupal::messenger()->addMessage(t('Found @count audit updates to process', ['@count' => $queue->numberOfItems()]));
+  $today = date('Y-m-d', \Drupal::time()->getCurrentTime());
+  while ($item = $queue->claimItem()) {
+    if (isset($item) && is_object($item)) {
+      $nid_list = $item->data;
+      if (isset($nid_list) && is_object($nid_list)) {
+        $all_nids = $nid_list->nids;
+        \Drupal::messenger()->addMessage(t('all nids are @count', ['@count' => $all_nids]));
+        $nids = explode(",", $all_nids);
+        $x = strpos($all_nids, ",");
+        \Drupal::messenger()->addMessage(t('x is @count', ['@count' => $x]));
+        \Drupal::messenger()->addMessage(t('nids are @count', ['@count' => count(nids)]));
+        \Drupal::messenger()->addMessage(t('first one is @count', ['@count' => $nids[0]]));
+        \Drupal::messenger()->addMessage(t('second one is @count', ['@count' => $nids[1]]));
+        $nodes = Node::loadMultiple($nids);
+        foreach ($nodes as $node) {
+          \Drupal::messenger()->addMessage(t('in node loop'));
+          // Just set next audit date to today as will show in 'needs audit' report
+          // if next audit date is today or earlier.
+          $node->set('field_next_audit_due', $today);
+          $node->save();
+        }
+      }
+      $queue->deleteItem($item);
+    }
+  }
+  \Drupal::messenger()->addMessage(t('Remaining @count audit updates to process', ['@count' => $queue->numberOfItems()]));
+  \Drupal::messenger()->addMessage(t('Audit date Queue processed'));
 }
 
 /**

@@ -5,7 +5,14 @@ namespace Drupal\nidirect_common\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 
 /**
- * Provides a 'SiteSearchBlock' block.
+ * This block acts as a wrapper around a views embed display.
+ * A block display alone requires AJAX on exposed filters which
+ * means the search autocomplete will reload the same page if
+ * no item is selected from the autocomplete list. What we want
+ * it to do is respect the original action attribute on the form
+ * element and ensure if no autocomplete terms are selected and
+ * the form is submitted (eg: with the enter key) then the browser
+ * follows the path defined in the action attribute.
  *
  * @Block(
  *  id = "site_search_block",

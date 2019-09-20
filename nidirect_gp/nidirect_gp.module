@@ -74,18 +74,6 @@ function nidirect_gp_entity_extra_field_info() {
 }
 
 /**
- * Implements hook_preprocess_block().
- */
-function nidirect_gp_preprocess_block(&$variables) {
-  if ($variables['plugin_id'] == 'views_exposed_filter_block:gp_practices-find_a_gp') {
-    $variables['content']['preamble'] = [
-      '#markup' => '<p>' . t('Enter a GP name, practice or town.') . '</p>',
-      '#weight' => -10,
-    ];
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id) {

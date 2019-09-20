@@ -37,6 +37,13 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
   protected $entityTypeManager;
 
   /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
+
+  /**
    * Class constructor.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
@@ -57,13 +64,17 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
+    $this->node = $route_match->getParameter('node');
 
     if ($node = $route_match->getParameter('node')) {
       if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
       $match = $node->bundle() == 'gp_practice';
+    }
+    else {
+      // Also match on GP search page.
+      $match = $route_match->getRouteName() == 'view.gp_practices.find_a_gp';
     }
 
     return $match;
@@ -79,7 +90,9 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
     $links[] = Link::fromTextandUrl(t('Health and well-being'), Url::fromUri('entity:taxonomy_term/22'));
     $links[] = Link::fromTextandUrl(t('Health services'), Url::fromUri('entity:taxonomy_term/262'));
     $links[] = Link::fromTextandUrl(t('Doctors, dentists and other health services'), Url::fromUri('entity:taxonomy_term/263'));
-    $links[] = Link::fromTextandUrl(t('Find a GP practice'), Url::fromUserInput('/services/gp-practices'));
+    $links[] = Link::fromTextandUrl(
+      t('Find a GP practice'), Url::fromRoute(($this->node) ? 'view.gp_practices.find_a_gp' : '<none>')
+    );
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);

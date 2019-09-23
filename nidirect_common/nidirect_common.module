@@ -7,6 +7,7 @@
 
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
 use Drupal\views\ViewExecutable;
@@ -144,5 +145,60 @@ function nidirect_common_preprocess_block(&$variables) {
       '#markup' => '<p>' . t('Search recipes and choose filters to show only the results you want.') . '</p>',
       '#weight' => -10,
     ];
+  }
+}
+
+/**
+ * Implements hook_entity_extra_field_info().
+ */
+function nidirect_common_entity_extra_field_info() {
+  $extra = [];
+  $content_types = ['application', 'article', 'publication', 'health_condition'];
+
+  foreach ($content_types as $type) {
+    $extra['node'][$type]['display']['banner_display'] = [
+      'label' => t('Banner display'),
+      'description' => t('Display content or theme image banner.'),
+      'weight' => 0,
+      'visible' => TRUE,
+    ];
+  }
+
+  return $extra;
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($display->getComponent('banner_display')) {
+    $banner_image = $entity->get('field_banner_image')->first();
+
+    // Try fetching image from subtheme term.
+    if (empty($banner_image)) {
+      $term = $entity->get('field_subtheme')->entity;
+
+      if (empty($term)) {
+        return;
+      }
+
+      $banner_image = $term->get('field_banner_image')->first();
+
+      // Try fetching image from the parent term.
+      if (empty($banner_image)) {
+        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+        $parents = $storage->loadParents($term->id());
+
+        if (!empty($parents)) {
+          $parent = array_shift($parents);
+        }
+
+        $banner_image = $parent->get('field_banner_image')->first();
+      }
+    }
+
+    if (!empty($banner_image)) {
+      $build['banner_display'] = $banner_image->view();
+    }
   }
 }

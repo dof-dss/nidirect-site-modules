@@ -124,6 +124,7 @@ function nidirect_gp_entity_presave(EntityInterface $entity) {
   // Construct the title.
   $practice = Xss::filter($entity->get('field_gp_practice_name')->value);
   $surgery = Xss::filter($entity->get('field_gp_surgery_name')->value);
+
   $title = _build_gp_practice_title($practice, $surgery);
 
   $entity->setTitle($title);
@@ -142,7 +143,7 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   There are four permutations:
   1. Both provided
   2. practiceName provided, surgeryName not provided
-  3. practiceName not provied, surgeryName provided
+  3. practiceName not provided, surgeryName provided
   4. Neither provided
    */
 
@@ -160,5 +161,9 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   }
   // 4. Neither provided - this generates an error that
   // will be caught by validation.
+
+  // Re-encode &amp; to just &.
+  $title = str_replace('&amp;', '&', $title);
+
   return $title;
 }

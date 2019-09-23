@@ -43,15 +43,6 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
         $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
         $entity->setTitle($title);
         break;
-
-      case 'gp_practice':
-        // Construct the title.
-        $practice = Xss::filter($entity->get('field_gp_practice_name')->value);
-        $surgery = Xss::filter($entity->get('field_gp_surgery_name')->value);
-        $title = build_gp_practice_title($practice, $surgery);
-        $entity->setTitle($title);
-        break;
-
     }
     /*
      * Programmatically sets the field_top_level_theme based on
@@ -100,8 +91,7 @@ function nidirect_common_driving_instructor_after_build($form, &$form_state) {
  * Implements hook_form_alter().
  */
 function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Special processing for Driving Instructor title
-  // and GP Practice title.
+  // Special processing for Driving Instructor title.
   if (($form_id == "node_driving_instructor_form")
     || ($form_id == "node_driving_instructor_edit_form")) {
     // Make title field readonly and set a placeholder.
@@ -113,65 +103,6 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     $form['title']['#disabled'] = 'TRUE';
     $form['#after_build'][] = 'nidirect_common_driving_instructor_after_build';
   }
-  elseif (($form_id == "node_gp_practice_form")
-    || ($form_id == "node_gp_practice_edit_form")) {
-    // Make title field readonly and set a placeholder.
-    if (empty($form['title']['widget'][0]['value']['#default_value'])) {
-      $form['title']['widget'][0]['value']['#default_value'] = ' ';
-    }
-    $form['title']['widget'][0]['value']['#description'] =
-      t('You cannot edit the title. It is created automatically from the practice name and surgery name.');
-    $form['title']['#disabled'] = 'TRUE';
-    // Add a validator.
-    array_unshift($form['#validate'], 'nidirect_common_gp_practice_form_validate');
-  }
-}
-
-/**
- * Utility function to handle GP Practice validation.
- */
-function nidirect_common_gp_practice_form_validate(&$form, FormStateInterface $form_state) {
-  // If neither a practice name nor a surgery name is provided,
-  // go back to the form.
-  $practiceName = $form_state->getValue('field_gp_practice_name')[0]['value'];
-  $surgeryName = $form_state->getValue('field_gp_surgery_name')[0]['value'];
-  if (empty($practiceName) && empty($surgeryName)) {
-    $form_state->setErrorByName('field_gp_practice_name', t('You must provide a surgery name, a practice name, or both. Both cannot be left blank.'));
-  }
-}
-
-/**
- * Utility function to handle GP Practice submit.
- */
-function build_gp_practice_title($practiceName = '', $surgeryName = '') {
-  /*
-  For GP Practice nodes, the node title is a combination of the
-  practice name and the surgery
-  name, e.g. Dr. Jekyll & Partners - Hyde Park Surgery.
-  One or other can be blank but not both.
-
-  There are four permutations:
-  1. Both provided
-  2. practiceName provided, surgeryName not provided
-  3. practiceName not provied, surgeryName provided
-  4. Neither provided
-   */
-
-  // 1. Both provided.
-  if ($practiceName != '' && $surgeryName != '') {
-    $title = $surgeryName . ' - ' . $practiceName;
-  }
-  // 2. practiceName provided, surgeryName not provided.
-  if ($practiceName != '' && $surgeryName == '') {
-    $title = $practiceName;
-  }
-  // 3. practiceName not provided, surgeryName provided.
-  if ($practiceName == '' && $surgeryName != '') {
-    $title = $surgeryName;
-  }
-  // 4. Neither provided - this generates an error that
-  // will be caught by validation.
-  return $title;
 }
 
 /**

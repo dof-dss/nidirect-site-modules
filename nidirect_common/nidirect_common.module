@@ -171,11 +171,16 @@ function nidirect_common_entity_extra_field_info() {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  if ($display->getComponent('banner_display')) {
-    $banner_image = $entity->get('field_banner_image')->first();
+  if (array_key_exists('banner_display', $display->getComponents())) {
+
+    // Check if the node has a banner image field and if an image is present.
+    if ($entity->hasField('field_banner_image') && !$entity->get('field_banner_image')->isEmpty()) {
+        $banner_image = $entity->get('field_banner_image')->first();
+    }
 
     // Try fetching image from subtheme term.
-    if (empty($banner_image)) {
+    if (empty($banner_image) && $entity->hasField('field_subtheme')) {
+
       $term = $entity->get('field_subtheme')->entity;
 
       if (empty($term)) {

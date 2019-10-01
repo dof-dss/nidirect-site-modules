@@ -34,15 +34,16 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
  *
  */
 function nidirect_common_cron() {
-  $queue = \Drupal::queue('audit_date_updates');
-  \Drupal::messenger()->addMessage(t('Found @count audit updates to process', ['@count' => $queue->numberOfItems()]));
+  \Drupal::service('queue')->get('audit_date_updates')->createQueue();
+  $queue = \Drupal::service('queue')->get('audit_date_updates');
   $today = date('Y-m-d', \Drupal::time()->getCurrentTime());
-  while ($item = $queue->claimItem()) {
+  // Only process one item from queue to avoid swamping.
+  if ($item = $queue->claimItem()) {
+    \Drupal::logger('nidirect-common')->notice('Found @count audit updates to process', ['@count' => $queue->numberOfItems()]);
     if (isset($item) && is_object($item)) {
       $nid_list_obj = $item->data;
       if (isset($nid_list_obj) && is_object($nid_list_obj)) {
-        $nids_csv = $nid_list_obj->nids;
-        $nids = explode(",", $nids_csv);
+        $nids = explode(",", $nid_list_obj->nids);
         $nodes = Node::loadMultiple($nids);
         foreach ($nodes as $node) {
           if ($node->hasField('field_next_audit_due')) {
@@ -53,10 +54,10 @@ function nidirect_common_cron() {
           }
         }
       }
-      $queue->deleteItem($item);
     }
+    $queue->deleteItem($item);
+    \Drupal::logger('nidirect-common')->notice('One item processed from audit date queue');
   }
-  \Drupal::messenger()->addMessage(t('Audit date Queue processed'));
 }
 
 /**

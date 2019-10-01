@@ -33,7 +33,8 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
  *
  */
 function nidirect_common_cron() {
-  \Drupal::service('queue')->get('audit_date_updates')->createQueue();
+  // Process anything in the 'audit_date_updates' queue which was
+  // populated by the NidirectMigratePostAuditCommand.
   $queue = \Drupal::service('queue')->get('audit_date_updates');
   $today = date('Y-m-d', \Drupal::time()->getCurrentTime());
   // Only process one item from queue to avoid swamping.
@@ -42,9 +43,12 @@ function nidirect_common_cron() {
     if (isset($item) && is_object($item)) {
       $nid_list_obj = $item->data;
       if (isset($nid_list_obj) && is_object($nid_list_obj)) {
+        // Convert comma separated list of nids into an array.
         $nids = explode(",", $nid_list_obj->nids);
+        // Load all nodes at once.
         $nodes = Node::loadMultiple($nids);
         foreach ($nodes as $node) {
+          // Double check that auditing is enabled for this content type.
           if ($node->hasField('field_next_audit_due')) {
             // Just set next audit date to today as will show in 'needs audit' report
             // if next audit date is today or earlier.

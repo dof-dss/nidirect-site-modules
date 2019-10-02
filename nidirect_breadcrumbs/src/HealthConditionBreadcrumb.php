@@ -99,7 +99,7 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
     // Add cache tags so that if any entities above change, we can regenerate the breadcrumb too.
     $breadcrumb->addCacheTags([
       'taxonomy_term:22',
-      'node:7387'
+      'node:7387',
     ]);
 
     return $breadcrumb;

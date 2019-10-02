@@ -5,11 +5,13 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
+use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -192,6 +194,26 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 
     if (!empty($banner_image)) {
       $build['banner_display'] = $banner_image->view();
+    }
+  }
+
+  if ($entity->bundle() == 'health_condition' && $view_mode == 'search_result') {
+    // Extract the linked related conditions and convert to array for presentation as an unordered list.
+    $related_conditions = $entity->get('field_related_conditions')->referencedEntities();
+    if (!empty($related_conditions)) {
+      $conditions = [];
+      foreach ($related_conditions as $condition_node) {
+        $conditions[] = Link::fromTextAndUrl(
+          $condition_node->label(),
+          Url::fromRoute('entity.node.canonical', ['node' => $condition_node->id()])
+        )->toRenderable();
+      }
+
+      $build['related_conditions'] = [
+        '#theme' => 'item_list',
+        '#list_type' => 'ul',
+        '#items' => $conditions,
+      ];
     }
   }
 }

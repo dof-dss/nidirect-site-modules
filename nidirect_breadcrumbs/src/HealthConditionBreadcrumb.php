@@ -35,6 +35,13 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
   protected $entityTypeManager;
 
   /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
+
+  /**
    * Class constructor.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
@@ -55,13 +62,18 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
+    $this->node = $route_match->getParameter('node');
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    if (!empty($this->node)) {
+      if (is_object($this->node) == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
-      $match = $node->bundle() == 'health_condition';
+
+      $match = $this->node->bundle() == 'health_condition';
+    }
+    else {
+      // Also match on recipe search page.
+      $match = $route_match->getRouteName() == 'view.health_conditions.search_page';
     }
 
     return $match;
@@ -76,7 +88,10 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
     $links[] = Link::createFromRoute(t('Home'), '<front>');
     $links[] = Link::fromTextandUrl(t('Health and wellbeing'), Url::fromUri('entity:taxonomy_term/22'));
     $links[] = Link::fromTextandUrl(t('Illnesses and conditions'), Url::fromUri('entity:node/7387'));
-    $links[] = Link::fromTextandUrl(t('A to Z'), Url::fromUserInput('/services/health-conditions-a-z'));
+
+    if ($this->node) {
+      $links[] = Link::fromTextandUrl(t('A to Z'), Url::fromRoute('view.health_conditions.search_page'));
+    }
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);

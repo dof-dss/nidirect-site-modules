@@ -5,13 +5,11 @@
  * Contains nidirect_common.module.
  */
 
-use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 
@@ -235,36 +233,5 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
     if (!empty($banner_image)) {
       $build['banner_display'] = $banner_image->view();
     }
-  }
-
-  if ($entity->bundle() == 'health_condition' && $view_mode == 'search_result') {
-    // Extract the linked related conditions and convert to array for presentation as an unordered list.
-    $related_conditions = $entity->get('field_related_conditions')->referencedEntities();
-    if (!empty($related_conditions)) {
-      $conditions = [];
-      foreach ($related_conditions as $condition_node) {
-        $conditions[] = Link::fromTextAndUrl(
-          $condition_node->label(),
-          Url::fromRoute('entity.node.canonical', ['node' => $condition_node->id()])
-        )->toRenderable();
-      }
-
-      $build['related_conditions'] = [
-        '#theme' => 'item_list',
-        '#list_type' => 'ul',
-        '#items' => $conditions,
-      ];
-    }
-  }
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function nidirect_common_form_views_exposed_form_alter(&$form, FormStateInterface $form_state) {
-  if ($form['#id'] == 'views-exposed-form-health-conditions-search-page') {
-    // Inject a reset link between the textfield and submit button.
-    $reset = Link::createFromRoute(t('new search | show a-z'), 'view.health_conditions.search_page');
-    $form['reset_az'] = $reset->toRenderable();
   }
 }

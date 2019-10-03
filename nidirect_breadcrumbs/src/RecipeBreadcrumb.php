@@ -92,7 +92,7 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
     $links[] = Link::fromTextandUrl(t('Eat well'), Url::fromUri('entity:taxonomy_term/382'));
 
     if ($this->node) {
-      $links[] = Link::fromTextandUrl(t('Recipes'), Url::fromUserInput('/information-and-services/eat-well/recipes'));
+      $links[] = Link::fromTextandUrl(t('Recipes'), Url::fromRoute('view.recipes.search_page'));
     }
 
     $breadcrumb->setLinks($links);

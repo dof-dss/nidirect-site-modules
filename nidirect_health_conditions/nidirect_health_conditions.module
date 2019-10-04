@@ -9,6 +9,8 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_form_FORM_ID_alter().
@@ -43,5 +45,31 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
         '#items' => $conditions,
       ];
     }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'health_conditions' && $view->current_display == 'search_page') {
+    $query_params = $view->getExposedInput();
+
+    // Generate the header content to show N condition(s) matching 'search term'.
+    $single_message = "@count condition matching '@search_term'";
+    $plural_message = "@count conditions matching '@search_term'";
+
+    $results_summary = \Drupal::translation()->formatPlural(
+      $view->total_rows,
+      $single_message,
+      $plural_message, [
+        '@count' => $view->total_rows,
+        '@search_term' => $query_params['query_health_az'],
+      ]
+    );
+
+    $view->header = [
+      '#markup' => $results_summary,
+    ];
   }
 }

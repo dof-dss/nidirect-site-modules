@@ -10,6 +10,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -76,5 +77,18 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
     $view->header = [
       '#markup' => $results_summary,
     ];
+  }
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function nidirect_health_conditions_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'health_conditions_a_to_z' && $view->current_display == 'health_conditions_by_letter') {
+    // Argument condition referenced by array index (found in the contextual arg config in views UI) feels brittle.
+    // There doesn't seem to be a functional convenience function on the Views query object
+    // that lets us replace/alter the condition types or operators so it's set below.
+    $query->where[0]['conditions'][0]['value'] .= '%';
+    $query->where[0]['conditions'][0]['operator'] = 'LIKE';
   }
 }

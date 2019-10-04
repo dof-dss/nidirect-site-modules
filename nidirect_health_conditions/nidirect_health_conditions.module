@@ -1,0 +1,80 @@
+<?php
+
+/**
+ * @file
+ * Custom code for health conditions features.
+ */
+
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\views\ViewExecutable;
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function nidirect_health_conditions_form_views_exposed_form_alter(&$form, FormStateInterface $form_state) {
+  if ($form['#id'] == 'views-exposed-form-health-conditions-search-page') {
+    // Inject a reset link between the textfield and submit button.
+    $reset = Link::createFromRoute(t('new search | show a-z'), 'view.health_conditions.search_page');
+    $form['reset_az'] = $reset->toRenderable();
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_view().
+ */
+function nidirect_health_conditions_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  if ($entity->bundle() == 'health_condition' && $view_mode == 'search_result') {
+    // Force basic_html format for summary in this view mode.
+    if (!empty($build['field_summary']['#items'])) {
+      $build['field_summary']['#format'] = 'basic_html';
+    }
+
+    // Extract the linked related conditions and convert to array for presentation as an unordered list.
+    $related_conditions = $entity->get('field_related_conditions')->referencedEntities();
+    if (!empty($related_conditions)) {
+      $conditions = [];
+      foreach ($related_conditions as $condition_node) {
+        $conditions[] = Link::fromTextAndUrl(
+          $condition_node->label(),
+          Url::fromRoute('entity.node.canonical', ['node' => $condition_node->id()])
+        )->toRenderable();
+      }
+
+      $build['related_conditions'] = [
+        '#theme' => 'item_list',
+        '#list_type' => 'ul',
+        '#items' => $conditions,
+      ];
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'health_conditions' && $view->current_display == 'search_page') {
+    $query_params = $view->getExposedInput();
+
+    // Generate the header content to show N condition(s) matching 'search term'.
+    $single_message = "@count condition matching '@search_term'";
+    $plural_message = "@count conditions matching '@search_term'";
+
+    $results_summary = \Drupal::translation()->formatPlural(
+      $view->total_rows,
+      $single_message,
+      $plural_message, [
+        '@count' => $view->total_rows,
+        '@search_term' => $query_params['query_health_az'],
+      ]
+    );
+
+    $view->header = [
+      '#markup' => $results_summary,
+    ];
+  }
+}

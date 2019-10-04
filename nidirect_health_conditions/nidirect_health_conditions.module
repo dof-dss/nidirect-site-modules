@@ -28,6 +28,11 @@ function nidirect_health_conditions_form_views_exposed_form_alter(&$form, FormSt
  */
 function nidirect_health_conditions_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
   if ($entity->bundle() == 'health_condition' && $view_mode == 'search_result') {
+    // Force basic_html format for summary in this view mode.
+    if (!empty($build['field_summary']['#items'])) {
+      $build['field_summary']['#format'] = 'basic_html';
+    }
+
     // Extract the linked related conditions and convert to array for presentation as an unordered list.
     $related_conditions = $entity->get('field_related_conditions')->referencedEntities();
     if (!empty($related_conditions)) {

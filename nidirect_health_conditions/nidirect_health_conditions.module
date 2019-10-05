@@ -58,26 +58,50 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
  * Implements hook_views_pre_render().
  */
 function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
+  // Inject custom formatted views header for search API based view.
+  $single_message = '';
+  $plural_message = '';
+  $search_term = '';
+
   if ($view->id() == 'health_conditions' && $view->current_display == 'search_page') {
     $query_params = $view->getExposedInput();
+    $search_term = $query_params['query_health_az'] ?? '';
 
     // Generate the header content to show N condition(s) matching 'search term'.
     $single_message = "@count condition matching '@search_term'";
     $plural_message = "@count conditions matching '@search_term'";
-
-    $results_summary = \Drupal::translation()->formatPlural(
-      $view->total_rows,
-      $single_message,
-      $plural_message, [
-        '@count' => $view->total_rows,
-        '@search_term' => $query_params['query_health_az'],
-      ]
-    );
-
-    $view->header = [
-      '#markup' => $results_summary,
-    ];
   }
+
+  // Replicate the above pattern of message, but alter wording on node based view (filter by letter).
+  // NB: these are separate views because each uses different base entities and you
+  // cannot mix entity bases in views. It's also much easier to use the built-in
+  // filters for the node title field to allow a 'starts with' query operator (see hook_views_query_alter below)
+  // that you cannot get with a search API based view.
+  if ($view->id() == 'health_conditions_a_to_z' && $view->current_display == 'health_conditions_by_letter') {
+    $search_term = $view->args[0] ?? '';
+    $search_term = strtoupper($search_term);
+
+    // Generate the header content to show N condition(s) matching 'search term'.
+    $single_message = "@count condition - under @search_term";
+    $plural_message = "@count conditions - under @search_term";
+  }
+
+  if (empty($search_term) || $view->total_rows == 0) {
+    return;
+  }
+
+  $results_summary = \Drupal::translation()->formatPlural(
+    $view->total_rows,
+    $single_message,
+    $plural_message, [
+      '@count' => $view->total_rows,
+      '@search_term' => $search_term,
+    ]
+  );
+
+  $view->header = [
+    '#markup' => $results_summary,
+  ];
 }
 
 /**
@@ -85,9 +109,9 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
  */
 function nidirect_health_conditions_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'health_conditions_a_to_z' && $view->current_display == 'health_conditions_by_letter') {
-    // Argument condition referenced by array index (found in the contextual arg config in views UI) feels brittle.
-    // There doesn't seem to be a functional convenience function on the Views query object
-    // that lets us replace/alter the condition types or operators so it's set below.
+    // where[0] refers to the contextual filter, but the out-of-the-box options doesn't permit a 'LIKE'
+    // comparison. So we adjust it here to pass the controller's parameter for letter into the
+    // view and let it do the heavy lifting of the query.
     $query->where[0]['conditions'][0]['value'] .= '%';
     $query->where[0]['conditions'][0]['operator'] = 'LIKE';
   }

@@ -11,6 +11,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides a 'HealthConditionsAzBlock' block.
  *
+ * This block is used instead of a views exposed filter, because we use an embed display type
+ * to allow us a non-AJAX based block form. Views would provide this but requires AJAX for it
+ * to operate, losing us the behaviour we want.
+ *
  * @Block(
  *  id = "healthconditions_az_block",
  *  admin_label = @Translation("Health Conditions A to Z"),
@@ -58,17 +62,6 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
   public function build() {
     $build = [];
     $links = [];
-
-    $title = $this->t('Or find conditions beginning with') . '...';
-
-    if ($this->routeMatch->getRouteName() == 'nidirect_health_conditions.letter') {
-      $letter = $this->routeMatch->getParameter('letter');
-      $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
-    }
-
-    $build['title'] = [
-      '#markup' => '<p>' . $title . '</p>',
-    ];
 
     foreach (range('a', 'z') as $item) {
       $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_health_conditions.letter', ['letter' => $item], [

@@ -63,12 +63,26 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
     $build = [];
     $links = [];
 
+    $letter = $this->routeMatch->getParameter('letter');
+
     foreach (range('a', 'z') as $item) {
-      $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_health_conditions.letter', ['letter' => $item], [
-        'attributes' => [
-          'title' => $this->t('View entries under :item', [':item' => strtoupper($item)]),
-        ]
-      ])->toRenderable();
+      if ($item == $letter) {
+        $links[] = [
+          '#type' => 'html_tag',
+          '#tag' => 'span',
+          '#attributes' => [
+            'class' => ['a-nolink', 'active'],
+          ],
+          '#value' => strtoupper($item),
+        ];
+      }
+      else {
+        $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_health_conditions.letter', ['letter' => $item], [
+          'attributes' => [
+            'title' => $this->t('View entries under :item', [':item' => strtoupper($item)]),
+          ]
+        ])->toRenderable();
+      }
     }
 
     $build['healthconditions_az_block'] = [
@@ -77,6 +91,11 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
       '#attributes' => [
         'class' => 'az-facet-list',
         'id' => 'health-conditions-az',
+      ],
+      '#cache' => [
+        'contexts' => [
+          'url.path',
+        ]
       ],
     ];
 

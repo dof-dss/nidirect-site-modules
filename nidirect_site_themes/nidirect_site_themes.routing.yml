@@ -1,0 +1,8 @@
+
+nidirect_site_themes.site_theme_controller_disp:
+  path: '/admin/site_themes'
+  defaults:
+    _controller: '\Drupal\nidirect_site_themes\Controller\SiteThemeController::disp'
+    _title: 'disp'
+  requirements:
+    _permission: 'access content'

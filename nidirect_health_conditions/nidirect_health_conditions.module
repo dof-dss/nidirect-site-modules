@@ -53,6 +53,16 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
       ];
     }
   }
+
+  if ($entity->bundle() == 'health_condition_alternative' && $view_mode == 'search_result') {
+    // We want to render the referenced health condition's search_result node contents
+    // but replace its title with the title from this health_condition_alternative node.
+    // This ensures we can introduce duplicates of a certain health condition, with
+    // a custom title, without having to intricately preprocess various parts of the views display.
+    $build['field_parent_condition'][0]['#node']->setTitle($entity->getTitle());
+    // Hide the original health_condition_alternative node title.
+    $build['title']['#access'] = FALSE;
+  }
 }
 
 /**

@@ -53,6 +53,16 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
       ];
     }
   }
+
+  if ($entity->bundle() == 'health_condition_alternative' && $view_mode == 'search_result') {
+    // We want to render the referenced health condition's search_result node contents
+    // but replace its title with the title from this health_condition_alternative node.
+    // This ensures we can introduce duplicates of a certain health condition, with
+    // a custom title, without having to intricately preprocess various parts of the views display.
+    $build['field_parent_condition'][0]['#node']->setTitle($entity->getTitle());
+    // Hide the original health_condition_alternative node title.
+    $build['title']['#access'] = FALSE;
+  }
 }
 
 /**
@@ -178,5 +188,51 @@ function nidirect_health_conditions_preprocess_field(&$variables) {
         ]);
       }
     }
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ *
+ * Perform alterations before an entity form is included in the IEF widget. Different
+ * to the usual hook_form_alter() hooks associated with Form API.
+ *
+ * Used here to clean up the UX of adding a new alternative health condition title
+ * to make it feel less like a node and more like a single field value (what the editor cares about).
+ *
+ * Only kicks in when adding a new health condition alternative node via the IEF
+ * on a health condition node edit form. We don't include on the 'add' form because we
+ * can't add the entity reference field value using a node that doesn't yet exist.
+ *
+ * @param array $entity_form
+ *   Nested array of form elements that comprise the entity form.
+ * @param Drupal\Core\Form\FormStateInterface $form_state
+ *   The form state of the parent form.
+ */
+function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
+  if ($entity_form['#bundle'] == 'health_condition_alternative') {
+    $is_edit_form = \Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form';
+    $node = \Drupal::routeMatch()->getParameter('node');
+    $is_health_condition = $node->bundle() == 'health_condition';
+
+    // If we're adding from the health condition node edit form then pre-set
+    // the parent condition value and hide it so it's out of the way.
+    if ($is_edit_form && $is_health_condition && $entity_form['#op'] == 'add') {
+      // The autocomplete widget doesn't take a node id as a value, it requires the full-fat node object as per:
+      // https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Entity%21Element%21EntityAutocomplete.php/class/EntityAutocomplete/8.7.x
+      $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = $node;
+
+      // Change element type as hide() appears to ignore the value we set.
+      $entity_form['status']['widget']['value']['#type'] = 'hidden';
+      // Publish by default.
+      $entity_form['status']['widget']['value']['#value'] = TRUE;
+
+      // Save the entity by default when adding.
+      $entity_form['#save_entity'] = TRUE;
+    }
+
+    // Always hide some fields when using the inline entity form regardless of $entity_form['#op'].
+    // To change this value, don't use the IEF form. Edit the node directly via the main content edit listings.
+    hide($entity_form['field_parent_condition']);
   }
 }

@@ -2,4 +2,4 @@ services:
   nidirect_site_themes.taxonomy_route_subscriber:
     class: Drupal\nidirect_site_themes\Routing\TaxonomyRouteSubscriber
     tags:
-      - { name: event_subscriber }
+      - { name: event_subscriber, priority: 100 }

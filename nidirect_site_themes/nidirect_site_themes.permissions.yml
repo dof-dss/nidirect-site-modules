@@ -1,0 +1,5 @@
+view taxonomy terms:
+  title: 'View terms in a vocabulary'
+
+permission_callbacks:
+  - Drupal\nidirect_site_themes\TaxonomyVocabAccess::permissions

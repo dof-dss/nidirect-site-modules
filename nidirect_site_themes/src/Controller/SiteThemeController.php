@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_site_themes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
 use Drupal\taxonomy\Entity\Term;
 
 /**
@@ -38,7 +39,8 @@ class SiteThemeController extends ControllerBase {
     $output = "<div class='item_list'><ul>";
     $term = Term::load($parent_tid);
     if (!empty($term)) {
-      $output .= "<li>" . $term->getName() . "</li>";
+      $link_object = Link::createFromRoute(t('edit'), 'entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
+      $output .= "<li>" . $term->getName() . " (" . t("Topic ID: @tid", ['@tid' => $parent_tid]) . ") " . $link_object->toString() . "</li>";
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         $output .= $this->printOneLevel($vid, $thisterm->tid);

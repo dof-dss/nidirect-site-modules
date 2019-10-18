@@ -21,10 +21,13 @@ class SiteThemeController extends ControllerBase {
     $output = $this->printVocab('site_themes');
     return [
       '#type' => 'markup',
-      '#markup' => $output
+      '#markup' => $output,
     ];
   }
 
+  /**
+   *
+   */
   protected function printVocab($vid) {
     $output = "<h1>Site Themes</h1><div class='item_list'><ul>";
     $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, 0, 1);
@@ -35,12 +38,23 @@ class SiteThemeController extends ControllerBase {
     return $output;
   }
 
+  /**
+   *
+   */
   protected function printOneLevel($vid, $parent_tid) {
     $output = "<div class='item_list'><ul>";
     $term = Term::load($parent_tid);
     if (!empty($term)) {
       $link_object = Link::createFromRoute(t('edit'), 'entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
-      $output .= "<li>" . $term->getName() . " (" . t("Topic ID: @tid", ['@tid' => $parent_tid]) . ") " . $link_object->toString() . "</li>";
+      $output .= "<li>";
+      $output .= t(
+            "@term (Topic ID: @tid) @edit_link", [
+              '@term' => $term->getName(),
+              '@tid' => $parent_tid,
+              '@edit_link' => $link_object->toString(),
+            ]
+        );
+      $output .= "</li>";
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         $output .= $this->printOneLevel($vid, $thisterm->tid);

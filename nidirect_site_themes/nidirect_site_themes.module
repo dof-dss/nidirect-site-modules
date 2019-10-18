@@ -55,12 +55,3 @@ function nidirect_site_themes_form_alter(&$form, FormStateInterface $form_state,
     hide($form['toolbar']['delete']);
   }
 }
-
-/**
- * Implements hook_local_tasks_alter().
- */
-//function nidirect_site_themes_local_tasks_alter(&$local_tasks) {
-//  if (\Drupal::currentUser()->hasPermission('administer taxonomy') == FALSE) {
-//    unset($local_tasks['entity.taxonomy_vocabulary.overview_form']);
-//  }
-//}

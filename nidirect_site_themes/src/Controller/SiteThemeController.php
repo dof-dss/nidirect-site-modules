@@ -3,12 +3,8 @@
 namespace Drupal\nidirect_site_themes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\taxonomy\Entity\Term;
-use Psr\Log\LoggerInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class SiteThemeController.
@@ -50,9 +46,10 @@ class SiteThemeController extends ControllerBase {
     $term = Term::load($parent_tid);
     if (!empty($term)) {
       $output .= "<li>";
-      // edit terms in site_themes
       $account = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
       $edit_link = '';
+      // If current user has 'edit terms in site_themes'
+      // permission then add an 'edit' link.
       if ($account->hasPermission('edit terms in site_themes')) {
         $link_object = Link::createFromRoute(t('edit'), 'entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
         $edit_link = $link_object->toString();

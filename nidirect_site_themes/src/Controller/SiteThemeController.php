@@ -42,7 +42,7 @@ class SiteThemeController extends ControllerBase {
    *
    */
   protected function printOneLevel($vid, $parent_tid) {
-    $output = "<div class='item_list'><ul>";
+    $output = "<div class='theme_item_list'><ul>";
     $term = Term::load($parent_tid);
     if (!empty($term)) {
       $output .= "<li>";

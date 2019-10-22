@@ -12,12 +12,11 @@ use Drupal\taxonomy\Entity\Term;
 class SiteThemeController extends ControllerBase {
 
   /**
-   * Disp.
+   * Display.
    *
-   * @return string
-   *   Return Hello string.
+   * @return site themes tree.
    */
-  public function disp() {
+  public function display() {
     $output = $this->printVocab('site_themes');
     return [
       '#type' => 'markup',
@@ -26,7 +25,7 @@ class SiteThemeController extends ControllerBase {
   }
 
   /**
-   *
+   * Display entire tree for one vocabulary.
    */
   protected function printVocab($vid) {
     $output = "<div class='item_list'><ul>";
@@ -39,7 +38,7 @@ class SiteThemeController extends ControllerBase {
   }
 
   /**
-   *
+   * Display one level of tree.
    */
   protected function printOneLevel($vid, $parent_tid) {
     $output = "<div class='theme_item_list'><ul>";
@@ -64,6 +63,7 @@ class SiteThemeController extends ControllerBase {
       $output .= "</li>";
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
+        // Call this function recursively.
         $output .= $this->printOneLevel($vid, $thisterm->tid);
       }
     }

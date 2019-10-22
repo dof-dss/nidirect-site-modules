@@ -37,6 +37,9 @@ function nidirect_site_themes_preprocess_item_list(&$variables) {
  * Implements hook_page_attachments().
  */
 function nidirect_site_themes_page_attachments(array &$attachments) {
-  // Attach extra custom css for admin menu.
-  $attachments['#attached']['library'][] = 'nidirect_site_themes/admin_theme.css';
+  // Attach extra custom css for site themes tree.
+  $page = \Drupal::request()->getRequestUri();
+  if ($page == '/admin/site_themes') {
+    $attachments['#attached']['library'][] = 'nidirect_site_themes/admin_theme.css';
+  }
 }

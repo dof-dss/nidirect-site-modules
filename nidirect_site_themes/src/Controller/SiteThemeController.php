@@ -44,36 +44,27 @@ class SiteThemeController extends ControllerBase {
     $links = [];
     $term = Term::load($parent_tid);
     if (!empty($term)) {
-      $account = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
-      $edit_link = '';
-      // If current user has 'edit terms in site_themes'
-      // permission then add an 'edit' link.
-      if ($account->hasPermission('edit terms in site_themes')) {
-        $edit_url = Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
-        //$edit_link = $link_object->toString();
-      }
-
-      $default_options = [
+      $this_link = [
         '#type' => 'link',
         '#options' => [
           'absolute' => TRUE,
           'base_url' => $GLOBALS['base_url'],
         ],
+        '#prefix' => t(
+          "@term (Topic ID: @tid) ", [
+            '@term' => $term->getName(),
+            '@tid' => $parent_tid
+          ]
+        )
       ];
-
-      $prefix = t(
-        "@term (Topic ID: @tid) ", [
-          '@term' => $term->getName(),
-          '@tid' => $parent_tid
-        ]
-      );
-
-      $links[] = $default_options + [
-        '#url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]),
-        '#title' => t('Edit'),
-        '#prefix' => $prefix
-      ];
-
+      // If current user has 'edit terms in site_themes'
+      // permission then add an 'edit' link.
+      $account = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
+      if ($account->hasPermission('edit terms in site_themes')) {
+        $this_link['#url'] = Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
+        $this_link['#title'] = t('Edit');
+      }
+      $links[] = $this_link;
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         // Call this function recursively.

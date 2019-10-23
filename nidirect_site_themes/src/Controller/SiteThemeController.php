@@ -46,10 +46,6 @@ class SiteThemeController extends ControllerBase {
     if (!empty($term)) {
       $this_link = [
         '#type' => 'link',
-        '#options' => [
-          'absolute' => TRUE,
-          'base_url' => $GLOBALS['base_url'],
-        ],
         '#prefix' => t(
           "@term (Topic ID: @tid) ", [
             '@term' => $term->getName(),
@@ -65,6 +61,7 @@ class SiteThemeController extends ControllerBase {
         $this_link['#title'] = t('Edit');
       }
       $links[] = $this_link;
+      // Look for terms below this one.
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         // Call this function recursively.

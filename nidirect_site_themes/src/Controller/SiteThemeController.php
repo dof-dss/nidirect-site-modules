@@ -4,6 +4,7 @@ namespace Drupal\nidirect_site_themes\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\taxonomy\Entity\Term;
 
 /**
@@ -17,10 +18,10 @@ class SiteThemeController extends ControllerBase {
    * @return site themes tree.
    */
   public function display() {
-    $output = $this->printVocab('site_themes');
+    $links = $this->printVocab('site_themes');
     return [
-      '#type' => 'markup',
-      '#markup' => $output,
+      '#theme' => 'item_list',
+      '#items' => $links,
     ];
   }
 
@@ -28,47 +29,58 @@ class SiteThemeController extends ControllerBase {
    * Display entire tree for one vocabulary.
    */
   protected function printVocab($vid) {
-    $output = "<div class='item_list'><ul>";
+    $links = [];
     $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, 0, 1);
     foreach ($terms as $term) {
-      $output .= $this->printOneLevel($vid, $term->tid);
+      $links[] = $this->printOneLevel($vid, $term->tid);
     }
-    $output .= "</ul></div>";
-    return $output;
+    return $links;
   }
 
   /**
    * Display one level of tree.
    */
   protected function printOneLevel($vid, $parent_tid) {
-    $output = "<div class='theme_item_list'><ul>";
+    $links = [];
     $term = Term::load($parent_tid);
     if (!empty($term)) {
-      $output .= "<li>";
       $account = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
       $edit_link = '';
       // If current user has 'edit terms in site_themes'
       // permission then add an 'edit' link.
       if ($account->hasPermission('edit terms in site_themes')) {
-        $link_object = Link::createFromRoute(t('edit'), 'entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
-        $edit_link = $link_object->toString();
+        $edit_url = Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
+        //$edit_link = $link_object->toString();
       }
-      $output .= t(
-            "@term (Topic ID: @tid) @edit_link", [
-              '@term' => $term->getName(),
-              '@tid' => $parent_tid,
-              '@edit_link' => $edit_link,
-            ]
-        );
-      $output .= "</li>";
+
+      $default_options = [
+        '#type' => 'link',
+        '#options' => [
+          'absolute' => TRUE,
+          'base_url' => $GLOBALS['base_url'],
+        ],
+      ];
+
+      $prefix = t(
+        "@term (Topic ID: @tid) ", [
+          '@term' => $term->getName(),
+          '@tid' => $parent_tid
+        ]
+      );
+
+      $links[] = $default_options + [
+        '#url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]),
+        '#title' => t('Edit'),
+        '#prefix' => $prefix
+      ];
+
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         // Call this function recursively.
-        $output .= $this->printOneLevel($vid, $thisterm->tid);
+         $links[] = $this->printOneLevel($vid, $thisterm->tid);
       }
     }
-    $output .= "</ul></div>";
-    return $output;
+    return $links;
   }
 
 }

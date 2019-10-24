@@ -234,18 +234,8 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
       $build['banner_display'] = $banner_image->view();
     }
   }
-}
 
-/**
- * Implements hook_preprocess_field().
- */
-function nidirect_common_preprocess_field(&$variables) {
-  // Is this the publication date field, on a publication node bundle in search_result view mode?
-  $field_id = $variables['field_name'];
-  $bundle = $variables['element']['#object']->bundle();
-  $view_mode = $variables['element']['#view_mode'];
-
-  if ($field_id == 'field_published_date' && $bundle == 'publication' && $view_mode == 'search_result') {
-    $variables['label'] = t('Published');
+  if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
+    $build['field_published_date']['#title'] = t('Published');
   }
 }

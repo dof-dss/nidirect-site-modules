@@ -32,8 +32,8 @@ class SiteThemeController extends ControllerBase {
     $links = [];
     $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, 0, 1);
     foreach ($terms as $term) {
-      $links += $this->printOneLevel($vid, $term->tid);
-      $x = 1;
+      $this_level = $this->printOneLevel($vid, $term->tid);
+      $links[] = $this_level[0];
     }
     return $links;
   }

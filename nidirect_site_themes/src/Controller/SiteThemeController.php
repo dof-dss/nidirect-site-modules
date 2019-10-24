@@ -44,11 +44,14 @@ class SiteThemeController extends ControllerBase {
     $links = [];
     $term = Term::load($parent_tid);
     if (!empty($term)) {
+      // This is a view link for the taxonomy term, the alias
+      // will be picked up.
+      $link = Link::createFromRoute($term->getName(), 'entity.taxonomy_term.canonical', ['taxonomy_term' => $parent_tid]);
       $this_link = [
         '#type' => 'link',
         '#prefix' => t(
           "@term (Topic ID: @tid) ", [
-            '@term' => $term->getName(),
+            '@term' => $link->toString(),
             '@tid' => $parent_tid
           ]
         )
@@ -58,7 +61,7 @@ class SiteThemeController extends ControllerBase {
       $account = $this->entityTypeManager()->getStorage('user')->load($this->currentUser()->id());
       if ($account->hasPermission('edit terms in site_themes')) {
         $this_link['#url'] = Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
-        $this_link['#title'] = t('Edit');
+        $this_link['#title'] = t('edit');
       }
       $links[] = $this_link;
       // Look for terms below this one.

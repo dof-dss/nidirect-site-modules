@@ -5,7 +5,6 @@ namespace Drupal\nidirect_site_themes\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\taxonomy\Entity\Term;
 
 /**
  * Class SiteThemeController.
@@ -14,8 +13,6 @@ class SiteThemeController extends ControllerBase {
 
   /**
    * Display.
-   *
-   * @return site themes tree.
    */
   public function display() {
     $links = $this->printVocab('site_themes');
@@ -52,9 +49,9 @@ class SiteThemeController extends ControllerBase {
         '#prefix' => t(
           "@term (Topic ID: @tid) ", [
             '@term' => $link->toString(),
-            '@tid' => $parent_tid
+            '@tid' => $parent_tid,
           ]
-        )
+        ),
       ];
       // If current user has 'edit terms in site_themes'
       // permission then add an 'edit' link.
@@ -67,7 +64,7 @@ class SiteThemeController extends ControllerBase {
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {
         // Call this function recursively.
-         $this_link[] = $this->printOneLevel($vid, $thisterm->tid);
+        $this_link[] = $this->printOneLevel($vid, $thisterm->tid);
       }
       $links[] = $this_link;
     }

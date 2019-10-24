@@ -32,8 +32,7 @@ class SiteThemeController extends ControllerBase {
     $links = [];
     $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, 0, 1);
     foreach ($terms as $term) {
-      $this_level = $this->printOneLevel($vid, $term->tid);
-      $links[] = $this_level[0];
+      $links[] = $this->printOneLevel($vid, $term->tid)[0];
     }
     return $links;
   }
@@ -64,7 +63,6 @@ class SiteThemeController extends ControllerBase {
         $this_link['#url'] = Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $parent_tid]);
         $this_link['#title'] = t('edit');
       }
-
       // Look for terms below this one.
       $terms = $this->entityTypeManager()->getStorage('taxonomy_term')->loadTree($vid, $parent_tid, 1);
       foreach ($terms as $thisterm) {

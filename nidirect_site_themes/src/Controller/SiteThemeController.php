@@ -42,7 +42,7 @@ class SiteThemeController extends ControllerBase {
    */
   protected function printOneLevel($vid, $parent_tid) {
     $links = [];
-    $term = Term::load($parent_tid);
+    $term = $this->entityTypeManager()->getStorage('taxonomy_term')->load($parent_tid);
     if (!empty($term)) {
       // This is a view link for the taxonomy term, the alias
       // will be picked up.

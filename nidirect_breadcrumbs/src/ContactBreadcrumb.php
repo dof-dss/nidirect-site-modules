@@ -21,6 +21,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ContactBreadcrumb implements BreadcrumbBuilderInterface {
@@ -61,21 +62,20 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    $this->node = $route_match->getParameter('node');
+    $route_name = $route_match->getRouteName();
 
-    if (!empty($this->node)) {
-      if (is_object($this->node) == FALSE) {
-        $this->node = $this->entityTypeManager->getStorage('node')->load($node);
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
+        $match = $this->node->bundle() == 'contact';
       }
-
-      $match = $this->node->bundle() == 'contact';
     }
-    else {
-      // Also check for contacts listing/search pages.
-      $match = in_array($route_match->getRouteName(), [
-        'nidirect_contacts.default',
-        'nidirect_contacts.letter',
-      ]);
+
+    // Also check for contacts listing/search pages.
+    if (in_array($route_name, ['nidirect_contacts.default', 'nidirect_contacts.letter'])) {
+      $match = TRUE;
     }
 
     return $match;

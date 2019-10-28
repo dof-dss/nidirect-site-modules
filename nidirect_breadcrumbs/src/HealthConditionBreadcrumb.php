@@ -25,11 +25,14 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Drupal entity type manager.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -62,18 +65,24 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
-    $this->node = $route_match->getParameter('node');
 
-    if (!empty($this->node)) {
-      if (is_object($this->node) == FALSE) {
+    $route_name = $route_match->getRouteName();
+
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
 
-      $match = $this->node->bundle() == 'health_condition';
+      if (!empty($this->node)) {
+        $match = $this->node->bundle() == 'health_condition';
+      }
     }
-    else {
-      // Also match on recipe search page.
-      $match = $route_match->getRouteName() == 'view.health_conditions.search_page';
+
+    if ($route_name == 'view.health_conditions.search_page') {
+      // Also match on health condition search page.
+      $match = TRUE;
     }
 
     return $match;

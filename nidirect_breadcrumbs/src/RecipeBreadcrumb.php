@@ -25,6 +25,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
@@ -64,18 +65,24 @@ class RecipeBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
-    $this->node = $route_match->getParameter('node');
 
-    if (!empty($this->node)) {
-      if (is_object($this->node) == FALSE) {
+    $route_name = $route_match->getRouteName();
+
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
 
-      $match = $this->node->bundle() == 'recipe';
+      if (!empty($this->node)) {
+        $match = $this->node->bundle() == 'recipe';
+      }
     }
-    else {
+
+    if ($route_name == 'view.recipes.search_page') {
       // Also match on recipe search page.
-      $match = $route_match->getRouteName() == 'view.recipes.search_page';
+      $match = TRUE;
     }
 
     return $match;

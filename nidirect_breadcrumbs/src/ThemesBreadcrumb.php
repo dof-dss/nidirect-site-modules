@@ -20,6 +20,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
@@ -28,6 +29,13 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
 
   /**
    * Class constructor.
@@ -51,19 +59,25 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    $applies_to_types = [
-      'article',
-      'application',
-      'publication',
-    ];
+    $route_name = $route_match->getRouteName();
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
+        // Node route but needs loaded entity to check bundle.
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
 
-      $match = in_array($bundle, $applies_to_types);
+      if (!empty($this->node)) {
+        $applies_to_types = [
+          'article',
+          'application',
+          'publication',
+        ];
+
+        $match = in_array($this->node->bundle(), $applies_to_types);
+      }
     }
 
     return $match;

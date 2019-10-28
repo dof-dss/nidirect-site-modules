@@ -21,6 +21,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class NewsBreadcrumb implements BreadcrumbBuilderInterface {
@@ -59,18 +60,23 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    $this->node = $route_match->getParameter('node');
+    $route_name = $route_match->getRouteName();
 
-    if (!empty($this->node)) {
-      if (is_object($this->node) == FALSE) {
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
 
-      $match = $this->node->bundle() == 'news';
+      if (!empty($this->node)) {
+        $match = $this->node->bundle() == 'news';
+      }
     }
-    else {
+
+    if ($route_name == 'nidirect_news.news_listing') {
       // Also match on news listing page.
-      $match = $route_match->getRouteName() == 'nidirect_news.news_listing';
+      $match = TRUE;
     }
 
     return $match;

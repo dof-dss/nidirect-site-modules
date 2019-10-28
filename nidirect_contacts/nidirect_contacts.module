@@ -99,10 +99,10 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
       unset($variables['links']['reset']);
     }
 
-    if ($q['sort_by'] == 'title') {
+    if (($q['sort_by'] ?? '') == 'title') {
       unset($variables['links']['sort_title']);
     }
-    if (empty($q['sort_by']) || $q['sort_by'] == 'search_api_relevance') {
+    if (empty($q['sort_by']) || ($q['sort_by'] ?? '') == 'search_api_relevance') {
       unset($variables['links']['sort_by_relevance']);
     }
   }

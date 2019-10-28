@@ -27,6 +27,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
@@ -64,17 +65,21 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
-    $this->node = $route_match->getParameter('node');
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
+    $route_name = $route_match->getRouteName();
+
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
+        $match = $this->node->bundle() == 'gp_practice';
       }
-      $match = $node->bundle() == 'gp_practice';
     }
-    else {
+
+    if ($route_name == 'view.gp_practices.find_a_gp') {
       // Also match on GP search page.
-      $match = $route_match->getRouteName() == 'view.gp_practices.find_a_gp';
+      $match = TRUE;
     }
 
     return $match;

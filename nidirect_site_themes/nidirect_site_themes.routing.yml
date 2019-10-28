@@ -1,0 +1,8 @@
+
+nidirect_site_themes.site_theme_controller_disp:
+  path: '/admin/site_themes'
+  defaults:
+    _controller: '\Drupal\nidirect_site_themes\Controller\SiteThemeController::display'
+    _title: 'Site Themes'
+  requirements:
+    _permission: 'view terms in site_themes'

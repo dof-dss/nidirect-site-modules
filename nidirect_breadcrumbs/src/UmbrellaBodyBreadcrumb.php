@@ -25,6 +25,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class UmbrellaBodyBreadcrumb implements BreadcrumbBuilderInterface {
@@ -33,6 +34,13 @@ class UmbrellaBodyBreadcrumb implements BreadcrumbBuilderInterface {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
+
+  /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
 
   /**
    * Class constructor.
@@ -56,12 +64,18 @@ class UmbrellaBodyBreadcrumb implements BreadcrumbBuilderInterface {
   public function applies(RouteMatchInterface $route_match) {
     $match = FALSE;
 
-    if ($node = $route_match->getParameter('node')) {
-      if (is_object($node) == FALSE) {
-        $node = $this->entityTypeManager->getStorage('node')->load($node);
+    $route_name = $route_match->getRouteName();
+
+    if ($route_name == 'entity.node.canonical') {
+      $this->node = $route_match->getParameter('node');
+
+      if ($this->node instanceof NodeInterface == FALSE) {
+        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
       }
-      $bundle = $node->bundle();
-      $match = $node->bundle() == 'umbrella_body';
+
+      if (!empty($this->node)) {
+        $match = $this->node->bundle() == 'umbrella_body';
+      }
     }
 
     return $match;

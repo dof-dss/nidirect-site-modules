@@ -1,0 +1,7 @@
+name: 'nidirect_backlinks'
+type: module
+description: 'NI Direct backlinks'
+core: 8.x
+package: 'NIDirect'
+dependencies:
+  - drupal:views

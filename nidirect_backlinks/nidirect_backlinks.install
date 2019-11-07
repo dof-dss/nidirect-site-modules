@@ -1,0 +1,58 @@
+<?php
+
+/**
+ * @file
+ * Schema and update functions for nidirect_backlinks module.
+ */
+
+/**
+ * Implements hook_schema().
+ */
+function nidirect_backlinks_schema() {
+  $schema['nidirect_backlinks'] = [
+    'description' => 'Stores the relationships between content entities',
+    'fields' => [
+      'id' => [
+        'description' => 'The entity id this record affects.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'reference_id' => [
+        'description' => 'The entity id referenced by the id column of this record',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
+      'reference_field' => [
+        'description' => 'The machine id of the field linking the two items together',
+        'type' => 'varchar_ascii',
+        // Entity type and bundle machine names have a maximum length of 32 characters.
+        // See https://www.drupal.org/node/2232665.
+        'length' => 32,
+        'not null' => TRUE,
+        'default' => '',
+      ],
+    ],
+    'primary key' => ['id', 'reference_id'],
+    'indexes' => [
+      'backref' => ['reference_id', 'id'],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ */
+function nidirect_backlinks_install() {
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function nidirect_backlinks_uninstall() {
+}

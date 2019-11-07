@@ -28,14 +28,14 @@ function nidirect_backlinks_help($route_name, RouteMatchInterface $route_match) 
  * Implements hook_entity_insert().
  */
 function nidirect_backlinks_entity_insert(EntityInterface $entity) {
-  //\Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
+  // \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
 }
 
 /**
  * Implements hook_entity_update().
  */
 function nidirect_backlinks_entity_update(EntityInterface $entity) {
-  //\Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
+  // \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
 }
 
 /**

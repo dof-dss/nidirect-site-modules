@@ -1,4 +1,4 @@
 services:
   nidirect_backlinks.linkmanager:
     class: Drupal\nidirect_backlinks\LinkManager
-    arguments: ['@entity_type.manager', '@database', '@entity_field.manager']
+    arguments: ['@entity_type.manager', '@database']

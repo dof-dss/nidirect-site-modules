@@ -36,7 +36,7 @@ function nidirect_backlinks_schema() {
         'default' => '',
       ],
     ],
-    'primary key' => ['id', 'reference_id'],
+    'primary key' => ['id', 'reference_id', 'reference_field'],
     'indexes' => [
       'backref' => ['reference_id', 'id'],
     ],

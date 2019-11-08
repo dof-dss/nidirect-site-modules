@@ -79,16 +79,25 @@ class LinkManager implements LinkManagerInterface {
    */
   public function getReferenceContent(EntityInterface $entity) {
     $query = $this->database->select('node_field_data', 'nfd');
-    $query->fields('nfd', ['nid', 'title']);
+    $query->fields('nfd', ['nid', 'title', 'type']);
     $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
+    $query->addExpression('GROUP_CONCAT(b.reference_field)', 'reference_fields');
     $query->condition('b.reference_id', $entity->id(), '=');
+    $query->groupBy('nfd.nid, nfd.title, nfd.type');
+    $query->orderBy('nfd.title');
 
     $result = $query->execute();
 
     $related_content = [];
 
     foreach ($result as $record) {
-      $related_content[$record->nid] = $record->title;
+      $related_content[] = [
+        'nid' => $record->nid,
+        'type' => $this->entityTypeManager->getStorage('node_type')->load($record->type)->label(),
+        'title' => $record->title,
+        // Pad commas with trailing space to improve readability.
+        'reference_fields' => str_replace(',', ', ', $record->reference_fields),
+      ];
     }
 
     return $related_content;

@@ -82,10 +82,12 @@ class WhatLinksHereController extends ControllerBase {
     $related_content = $this->linkManager->getReferenceContent($entity);
 
     $rows = [];
-    foreach ($related_content as $nid => $title) {
+    foreach ($related_content as $item) {
       $rows[] = [
-        Link::createFromRoute($title, 'entity.node.canonical', ['node' => $nid]),
-        Link::createFromRoute($this->t->translate('Edit'), 'entity.node.edit_form', ['node' => $nid]),
+        Link::createFromRoute($item['title'], 'entity.node.canonical', ['node' => $item['nid']]),
+        $item['type'],
+        $item['reference_fields'],
+        Link::createFromRoute($this->t->translate('Edit'), 'entity.node.edit_form', ['node' => $item['nid']]),
       ];
     }
 
@@ -93,6 +95,8 @@ class WhatLinksHereController extends ControllerBase {
       '#type' => 'table',
       '#header' => [
         $this->t->translate('Content title'),
+        $this->t->translate('Type'),
+        $this->t->translate('From field(s)'),
         $this->t->translate('Tasks'),
       ],
       '#rows' => $rows,

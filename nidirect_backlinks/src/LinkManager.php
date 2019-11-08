@@ -80,8 +80,8 @@ class LinkManager implements LinkManagerInterface {
   public function getReferenceContent(EntityInterface $entity) {
     $query = $this->database->select('node_field_data', 'nfd');
     $query->fields('nfd', ['nid', 'title']);
-    $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.reference_id');
-    $query->condition('b.id', $entity->id(), '=');
+    $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
+    $query->condition('b.reference_id', $entity->id(), '=');
 
     $result = $query->execute();
 

@@ -25,22 +25,22 @@ function nidirect_backlinks_help($route_name, RouteMatchInterface $route_match) 
 }
 
 /**
- * Implements hook_entity_insert().
+ * Implements hook_node_insert().
  */
-function nidirect_backlinks_entity_insert(EntityInterface $entity) {
-  // \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
+function nidirect_backlinks_node_insert(EntityInterface $entity) {
+  \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
 }
 
 /**
- * Implements hook_entity_update().
+ * Implements hook_node_update().
  */
-function nidirect_backlinks_entity_update(EntityInterface $entity) {
-  // \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
+function nidirect_backlinks_node_update(EntityInterface $entity) {
+  \Drupal::service('nidirect_backlinks.linkmanager')->processEntity($entity);
 }
 
 /**
- * Implements hook_entity_delete().
+ * Implements hook_node_delete().
  */
-function nidirect_backlinks_entity_delete(EntityInterface $entity) {
+function nidirect_backlinks_node_delete(EntityInterface $entity) {
   \Drupal::service('nidirect_backlinks.linkmanager')->deleteEntity($entity);
 }

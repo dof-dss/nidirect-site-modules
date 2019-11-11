@@ -35,8 +35,15 @@ function nidirect_backlinks_schema() {
         'not null' => TRUE,
         'default' => '',
       ],
+      'delta' => [
+        'description' => 'The sequence number for this data item, used for multi-value fields',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'default' => 0,
+      ],
     ],
-    'primary key' => ['id', 'reference_id', 'reference_field'],
+    'primary key' => ['id', 'reference_id', 'reference_field', 'delta'],
     'indexes' => [
       'backref' => ['reference_id', 'id'],
     ],

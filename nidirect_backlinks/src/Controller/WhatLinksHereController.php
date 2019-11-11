@@ -100,7 +100,7 @@ class WhatLinksHereController extends ControllerBase {
         $this->t->translate('Tasks'),
       ],
       '#rows' => $rows,
-      '#empty' => $this->t->translate('Nothing content links to this.'),
+      '#empty' => $this->t->translate('No content links here.'),
     ];
     $content['pager'] = [
       '#type' => 'pager',

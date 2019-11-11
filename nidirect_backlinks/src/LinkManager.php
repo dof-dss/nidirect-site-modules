@@ -7,10 +7,13 @@ namespace Drupal\nidirect_backlinks;
  * Link Manager class instance for handling references between content entities.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class LinkManager implements LinkManagerInterface {
@@ -51,20 +54,97 @@ class LinkManager implements LinkManagerInterface {
    * {@inheritdoc}
    */
   public function processEntity(EntityInterface $entity) {
-    // $reference_values = [].
-    //
-    // // Check all entity reference fields.
-    //
-    // // Check all link fields.
-    //
-    // // Check all text fields.
-    //
-    // // Store the values in the table; multi-insert as per https://www.drupal.org/docs/8/api/database-api/insert-queries#multi-insert-form.
-    // $query = $this->database->insert('nidirect_backlinks')->fields(['id', 'reference_id', 'reference_field']);
-    // foreach ($reference_values as $record) {
-    // $query->values($record);
-    // }
-    // $query->execute();
+    $fields = $entity->getFieldDefinitions();
+
+    $types_of_interest = [
+      'entity_reference',
+      'text_with_summary',
+    ];
+
+    // Array to store entity ids of things this entity references.
+    $reference_values = [];
+
+    foreach ($fields as $field) {
+      $type = $field->getType();
+      $field_name = $field->getName();
+
+      // Skip over any fields we don't believe would contain a reference.
+      if (in_array($type, $types_of_interest) == FALSE || preg_match('/^field_(.+)|body/', $field_name) == FALSE) {
+        continue;
+      }
+
+      if ($type == 'text_with_summary' || $type == 'text_long') {
+        $field_value = $entity->get($field->getName())->value;
+        // Scan for link elements in this chunk of HTML.
+        $dom = Html::load($field_value);
+        $link_elements = $dom->getElementsByTagName('a');
+
+        $extracted_nids = [];
+
+        foreach ($link_elements as $link) {
+          $href = $link->getAttribute('href');
+
+          if (preg_match('/^http/', $href)) {
+            // Skip over absolute or external links.
+            continue;
+          }
+          else {
+            // Lookup content by path alias.
+            $matches = [];
+            preg_match('/node\/(\d+)/', \Drupal::service('path.alias_manager')->getPathByAlias($href), $matches);
+
+            if (!empty($matches[1])) {
+              $ref_nid = $matches[1];
+
+              $extracted_nids[] = $ref_nid;
+            }
+          }
+        }
+
+        // Dedupe the array and store in the 'field values' variable to use in the query later.
+        $field_value = array_unique($extracted_nids);
+      }
+
+      if ($type == 'entity_reference' && $field->getSetting('target_type') == 'node') {
+        $field_value = $entity->get($field->getName())->target_id;
+      }
+
+      if ($type == 'link') {
+        $field_value = $entity->get($field->getName())->value;
+      }
+
+      if (!empty($field_value)) {
+        // Cast field value to array for ease of iterating.
+        $field_value = (array) $field_value;
+
+        for ($i = 0; $i < count($field_value); $i++) {
+          $reference_values[] = [
+            'id' => $entity->id(),
+            'reference_id' => $field_value[$i],
+            'reference_field' => $field_name,
+            'delta' => $i,
+          ];
+        }
+      }
+    }
+
+    // Delete existing values.
+    $this->database->delete('nidirect_backlinks')
+      ->condition('id', $entity->id())
+      ->execute();
+
+    // Insert new values.
+    $query = $this->database->insert('nidirect_backlinks')->fields([
+      'id',
+      'reference_id',
+      'reference_field',
+      'delta',
+    ]);
+    foreach ($reference_values as $record) {
+      $query->values($record);
+    }
+
+    $query->execute();
   }
 
   /**
@@ -81,7 +161,7 @@ class LinkManager implements LinkManagerInterface {
     $query = $this->database->select('node_field_data', 'nfd');
     $query->fields('nfd', ['nid', 'title', 'type']);
     $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
-    $query->addExpression('GROUP_CONCAT(b.reference_field)', 'reference_fields');
+    $query->addExpression('GROUP_CONCAT(DISTINCT b.reference_field)', 'reference_fields');
     $query->condition('b.reference_id', $entity->id(), '=');
     $query->groupBy('nfd.nid, nfd.title, nfd.type');
     $query->orderBy('nfd.title');

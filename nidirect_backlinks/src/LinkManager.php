@@ -54,7 +54,8 @@ class LinkManager implements LinkManagerInterface {
    * {@inheritdoc}
    */
   public function processEntity(EntityInterface $entity) {
-    $fields = $entity->getFieldDefinitions();
+    // TODO: inject service
+    $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $entity->bundle());
 
     $types_of_interest = [
       'entity_reference',
@@ -62,12 +63,13 @@ class LinkManager implements LinkManagerInterface {
       'link',
     ];
 
-    // Array to store entity ids of things this entity references.
+    // Array to store entity ids of things that this entity references.
     $reference_values = [];
 
     foreach ($fields as $field) {
       $type = $field->getType();
       $field_name = $field->getName();
+      $field_value = NULL;
 
       // Skip over any fields we don't believe would contain a reference.
       if (in_array($type, $types_of_interest) == FALSE || preg_match('/^field_(.+)|body/', $field_name) == FALSE) {
@@ -94,6 +96,7 @@ class LinkManager implements LinkManagerInterface {
           else {
             // Lookup content by path alias.
             $matches = [];
+            // TODO: inject service
             preg_match('/node\/(\d+)/', \Drupal::service('path.alias_manager')->getPathByAlias($href), $matches);
 
             if (!empty($matches[1])) {
@@ -106,11 +109,6 @@ class LinkManager implements LinkManagerInterface {
 
         // Dedupe the array and store in the 'field values' variable to use in the query later.
         $field_value = array_unique($extracted_nids);
-      }
-
-      // Entity reference fields (only interested in Node for PoC).
-      if ($type == 'entity_reference' && $field->getSetting('target_type') == 'node') {
-        $field_value = $entity->get($field->getName())->target_id;
       }
 
       // Any link fields.
@@ -133,6 +131,20 @@ class LinkManager implements LinkManagerInterface {
         $field_value = array_unique($extracted_nids);
       }
 
+      // Entity reference fields (only interested in Node for PoC).
+      if ($type == 'entity_reference' && $field->getSetting('target_type') == 'node') {
+        $field_value = $entity->get($field->getName())->getValue();
+
+        if (!empty($field_value)) {
+          foreach ($field_value as $value) {
+            $extracted_nids[] = $value['target_id'];
+          }
+
+          $field_value = array_unique($extracted_nids);
+        }
+      }
+
+      // Bundle the gathered values into an array to pass into our DB layer.
       if (!empty($field_value)) {
         // Cast field value to array for ease of iterating.
         $field_value = (array) $field_value;

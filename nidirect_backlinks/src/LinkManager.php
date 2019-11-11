@@ -59,6 +59,7 @@ class LinkManager implements LinkManagerInterface {
     $types_of_interest = [
       'entity_reference',
       'text_with_summary',
+      'link',
     ];
 
     // Array to store entity ids of things this entity references.
@@ -73,13 +74,15 @@ class LinkManager implements LinkManagerInterface {
         continue;
       }
 
+      // Array to capture any extracted nids from any field type.
+      $extracted_nids = [];
+
+      // Text fields that may contain link markup.
       if ($type == 'text_with_summary' || $type == 'text_long') {
         $field_value = $entity->get($field->getName())->value;
         // Scan for link elements in this chunk of HTML.
         $dom = Html::load($field_value);
         $link_elements = $dom->getElementsByTagName('a');
-
-        $extracted_nids = [];
 
         foreach ($link_elements as $link) {
           $href = $link->getAttribute('href');
@@ -105,12 +108,29 @@ class LinkManager implements LinkManagerInterface {
         $field_value = array_unique($extracted_nids);
       }
 
+      // Entity reference fields (only interested in Node for PoC).
       if ($type == 'entity_reference' && $field->getSetting('target_type') == 'node') {
         $field_value = $entity->get($field->getName())->target_id;
       }
 
+      // Any link fields.
       if ($type == 'link') {
-        $field_value = $entity->get($field->getName())->value;
+        $link_field_values = $entity->get($field->getName())->getValue();
+
+        foreach ($link_field_values as $link) {
+          $url = Url::fromUri($link['uri']);
+
+          if ($url->isExternal() == FALSE) {
+            $uri_path = $url->getInternalPath();
+            $matches = [];
+
+            if (preg_match('/node\/(\d+)/', $uri_path, $matches)) {
+              $extracted_nids[] = $matches[1];
+            }
+          }
+        }
+
+        $field_value = array_unique($extracted_nids);
       }
 
       if (!empty($field_value)) {

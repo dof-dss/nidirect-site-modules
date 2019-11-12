@@ -77,6 +77,7 @@ class LinkManager implements LinkManagerInterface {
     $types_of_interest = [
       'entity_reference',
       'text_with_summary',
+      'text_long',
       'link',
     ];
 
@@ -89,7 +90,7 @@ class LinkManager implements LinkManagerInterface {
       $field_value = NULL;
 
       // Skip over any fields we don't believe would contain a reference.
-      if (in_array($type, $types_of_interest) == FALSE || preg_match('/^field_(.+)|body/', $field_name) == FALSE) {
+      if (in_array($type, $types_of_interest) == FALSE) {
         continue;
       }
 
@@ -199,7 +200,7 @@ class LinkManager implements LinkManagerInterface {
    * {@inheritdoc}
    */
   public function deleteEntity(EntityInterface $entity) {
-    $this->database->delete('nidirect_backlinks')->condition('id', $entity->id());
+    $this->database->delete('nidirect_backlinks')->condition('id', $entity->id())->execute();
   }
 
   /**

@@ -14,6 +14,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\Url;
+use Drush\Log\LogLevel;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 class LinkManager implements LinkManagerInterface {
@@ -117,9 +118,7 @@ class LinkManager implements LinkManagerInterface {
             preg_match('/node\/(\d+)/', $this->pathAliasManager->getPathByAlias($href), $matches);
 
             if (!empty($matches[1])) {
-              $ref_nid = $matches[1];
-
-              $extracted_nids[] = $ref_nid;
+              $extracted_nids[] = $matches[1];
             }
           }
         }
@@ -133,10 +132,25 @@ class LinkManager implements LinkManagerInterface {
         $link_field_values = $entity->get($field->getName())->getValue();
 
         foreach ($link_field_values as $link) {
+          if (empty($link['uri'])) {
+            continue;
+          }
+
           $url = Url::fromUri($link['uri']);
 
           if ($url->isExternal() == FALSE) {
-            $uri_path = $url->getInternalPath();
+            $uri_path = '';
+
+            try {
+              $uri_path = $url->getInternalPath();
+            }
+            catch (\UnexpectedValueException $ex) {
+              // TODO: pass params as placeholders rather than string interpolation.
+              \Drupal::service('logger.channel.php')->log(LogLevel::WARNING, 'Could not resolve internal path for Url (' . $link['uri'] . '), entity ID: ' . $entity->id());
+              // Log the problem (likely a broken link) and continue the wider loop.
+              continue 2;
+            }
+
             $matches = [];
 
             if (preg_match('/node\/(\d+)/', $uri_path, $matches)) {
@@ -161,12 +175,16 @@ class LinkManager implements LinkManagerInterface {
         }
       }
 
-      // Bundle the gathered values into an array to pass into our DB layer.
-      if (!empty($field_value)) {
-        // Cast field value to array for ease of iterating.
-        $field_value = (array) $field_value;
+      // Cast field value to array for ease of iterating.
+      $field_value = (array) $field_value;
 
+      // Bundle the gathered values into an array to pass into our DB layer.
+      if (count($field_value) > 0) {
         for ($i = 0; $i < count($field_value); $i++) {
+          if (empty($field_value[$i])) {
+            continue;
+          }
+
           $reference_values[] = [
             'id' => $entity->id(),
             'reference_id' => $field_value[$i],

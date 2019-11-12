@@ -42,7 +42,7 @@ class LinkManager implements LinkManagerInterface {
   /**
    * Path alias manager service.
    *
-   * @var \Drupal\Core\Path\AliasManagerInterface;
+   * @var \Drupal\Core\Path\AliasManagerInterface
    */
   protected $pathAliasManager;
 
@@ -50,10 +50,10 @@ class LinkManager implements LinkManagerInterface {
    * Class constructor.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, EntityFieldManagerInterface $entity_field_manager, AliasManagerInterface $path_alias_manager) {
-      $this->entityTypeManager = $entity_type_manager;
-      $this->database = $database;
-      $this->entityFieldManager = $entity_field_manager;
-      $this->pathAliasManager = $path_alias_manager;
+    $this->entityTypeManager = $entity_type_manager;
+    $this->database = $database;
+    $this->entityFieldManager = $entity_field_manager;
+    $this->pathAliasManager = $path_alias_manager;
   }
 
   /**

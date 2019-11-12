@@ -12,7 +12,7 @@ use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Link;
+use Drupal\Core\Path\AliasManagerInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -33,11 +33,27 @@ class LinkManager implements LinkManagerInterface {
   protected $database;
 
   /**
+   * Drupal entity field manager service.
+   *
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
+   * Path alias manager service.
+   *
+   * @var \Drupal\Core\Path\AliasManagerInterface;
+   */
+  protected $pathAliasManager;
+
+  /**
    * Class constructor.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database) {
-    $this->entityTypeManager = $entity_type_manager;
-    $this->database = $database;
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $database, EntityFieldManagerInterface $entity_field_manager, AliasManagerInterface $path_alias_manager) {
+      $this->entityTypeManager = $entity_type_manager;
+      $this->database = $database;
+      $this->entityFieldManager = $entity_field_manager;
+      $this->pathAliasManager = $path_alias_manager;
   }
 
   /**
@@ -46,7 +62,9 @@ class LinkManager implements LinkManagerInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('entity_field.manager'),
+      $container->get('path.alias_manager')
     );
   }
 
@@ -54,8 +72,7 @@ class LinkManager implements LinkManagerInterface {
    * {@inheritdoc}
    */
   public function processEntity(EntityInterface $entity) {
-    // TODO: inject service
-    $fields = \Drupal::service('entity_field.manager')->getFieldDefinitions('node', $entity->bundle());
+    $fields = $this->entityFieldManager->getFieldDefinitions('node', $entity->bundle());
 
     $types_of_interest = [
       'entity_reference',
@@ -96,8 +113,7 @@ class LinkManager implements LinkManagerInterface {
           else {
             // Lookup content by path alias.
             $matches = [];
-            // TODO: inject service
-            preg_match('/node\/(\d+)/', \Drupal::service('path.alias_manager')->getPathByAlias($href), $matches);
+            preg_match('/node\/(\d+)/', $this->pathAliasManager->getPathByAlias($href), $matches);
 
             if (!empty($matches[1])) {
               $ref_nid = $matches[1];

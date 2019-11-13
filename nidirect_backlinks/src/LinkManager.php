@@ -224,7 +224,7 @@ class LinkManager implements LinkManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getReferenceContent(EntityInterface $entity) {
+  public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset) {
     $query = $this->database->select('node_field_data', 'nfd');
     $query->fields('nfd', ['nid', 'title', 'type']);
     $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
@@ -232,13 +232,19 @@ class LinkManager implements LinkManagerInterface {
     $query->condition('b.reference_id', $entity->id(), '=');
     $query->groupBy('nfd.nid, nfd.title, nfd.type');
     $query->orderBy('nfd.title');
+    $query->execute()->fetchAll();
 
-    $result = $query->execute();
+    // First query excludes pager range; just for total result set size.
+    $related_content = [
+      'total' => count($query->execute()->fetchAll()),
+    ];
 
-    $related_content = [];
+    // Re-query with range (pager support).
+    $query->range($offset, $num_per_page);
+    $result = $query->execute()->fetchAll();
 
     foreach ($result as $record) {
-      $related_content[] = [
+      $related_content['rows'][] = [
         'nid' => $record->nid,
         'type' => $this->entityTypeManager->getStorage('node_type')->load($record->type)->label(),
         'title' => $record->title,

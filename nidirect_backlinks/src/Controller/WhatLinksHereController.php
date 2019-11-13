@@ -76,13 +76,22 @@ class WhatLinksHereController extends ControllerBase {
    *   Render array for Drupal to convert to HTML.
    */
   public function default($node) {
-    $content = [];
+    $build = [];
 
+    // Pager init.
+    $page = pager_find_page();
+    $num_per_page = 25;
+    $offset = $num_per_page * $page;
+
+    // Fetch data about what content links to this node.
     $entity = $this->entityTypeManager->getStorage('node')->load($node);
-    $related_content = $this->linkManager->getReferenceContent($entity);
+    $related_content = $this->linkManager->getReferenceContent($entity, $num_per_page, $offset);
+
+    // Now that we have the total number of results, initialize the pager.
+    pager_default_initialize($related_content['total'], $num_per_page);
 
     $rows = [];
-    foreach ($related_content as $item) {
+    foreach ($related_content['rows'] as $item) {
       $rows[] = [
         Link::createFromRoute($item['title'], 'entity.node.canonical', ['node' => $item['nid']]),
         $item['type'],
@@ -91,7 +100,7 @@ class WhatLinksHereController extends ControllerBase {
       ];
     }
 
-    $content['links_table'] = [
+    $build['links_table'] = [
       '#type' => 'table',
       '#header' => [
         $this->t->translate('Content title'),
@@ -102,11 +111,12 @@ class WhatLinksHereController extends ControllerBase {
       '#rows' => $rows,
       '#empty' => $this->t->translate('No content links here.'),
     ];
-    $content['pager'] = [
+
+    $build['pager'] = [
       '#type' => 'pager',
     ];
 
-    return $content;
+    return $build;
   }
 
 }

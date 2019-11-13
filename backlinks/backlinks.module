@@ -1,0 +1,51 @@
+<?php
+
+/**
+ * @file
+ * Contains backlinks.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function backlinks_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.backlinks':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Provides a local task item on node content entities to outline what other content
+        refers to it from one of the following field types:') . '</p>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Entity reference') . '</li>';
+      $output .= '<li>' . t('Link') . '</li>';
+      $output .= '<li>' . t('Text (long / with summary)') . '</li>';
+      $output .= '</ul>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_node_insert().
+ */
+function backlinks_node_insert(EntityInterface $entity) {
+  \Drupal::service('backlinks.linkmanager')->processEntity($entity);
+}
+
+/**
+ * Implements hook_node_update().
+ */
+function backlinks_node_update(EntityInterface $entity) {
+  \Drupal::service('backlinks.linkmanager')->processEntity($entity);
+}
+
+/**
+ * Implements hook_node_delete().
+ */
+function backlinks_node_delete(EntityInterface $entity) {
+  \Drupal::service('backlinks.linkmanager')->deleteEntity($entity);
+}

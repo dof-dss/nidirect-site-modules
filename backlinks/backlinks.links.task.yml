@@ -1,5 +1,5 @@
 entity.node.backlinks:
-  route_name: nidirect_backlinks.what_links_here
+  route_name: backlinks.what_links_here
   base_route: entity.node.canonical
   title: What links here
   weight: 30

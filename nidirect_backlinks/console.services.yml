@@ -1,6 +1,0 @@
-services:
-  nidirect_backlinks.nidirect_backlinks_scan:
-    class: Drupal\nidirect_backlinks\Command\ScanCommand
-    arguments: []
-    tags:
-      - { name: drupal.command }

@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\nidirect_backlinks\Controller;
+namespace Drupal\backlinks\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\Translator\TranslatorInterface;
-use Drupal\nidirect_backlinks\LinkManagerInterface;
+use Drupal\backlinks\LinkManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class WhatLinksHereController.
  *
- * Handles requests for routes defined in nidirect_backlinks.routing.yml.
+ * Handles requests for routes defined in backlinks.routing.yml.
  */
 class WhatLinksHereController extends ControllerBase {
 
@@ -32,9 +32,9 @@ class WhatLinksHereController extends ControllerBase {
   protected $request;
 
   /**
-   * Drupal\nidirect_backlinks\LinkManagerInterface definition.
+   * Drupal\backlinks\LinkManagerInterface definition.
    *
-   * @var \Drupal\nidirect_backlinks\LinkManagerInterface
+   * @var \Drupal\backlinks\LinkManagerInterface
    */
   protected $linkManager;
 
@@ -62,7 +62,7 @@ class WhatLinksHereController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('nidirect_backlinks.linkmanager'),
+      $container->get('backlinks.linkmanager'),
       $container->get('string_translation')
     );
   }

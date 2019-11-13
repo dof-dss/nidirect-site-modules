@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_backlinks;
+namespace Drupal\backlinks;
 
 /**
  * @file

@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Schema and update functions for nidirect_backlinks module.
+ * Schema and update functions for backlinks module.
  */
 
 /**
  * Implements hook_schema().
  */
-function nidirect_backlinks_schema() {
-  $schema['nidirect_backlinks'] = [
+function backlinks_schema() {
+  $schema['backlinks'] = [
     'description' => 'Stores the relationships between content entities',
     'fields' => [
       'id' => [
@@ -50,16 +50,4 @@ function nidirect_backlinks_schema() {
   ];
 
   return $schema;
-}
-
-/**
- * Implements hook_install().
- */
-function nidirect_backlinks_install() {
-}
-
-/**
- * Implements hook_uninstall().
- */
-function nidirect_backlinks_uninstall() {
 }

@@ -1,7 +1,7 @@
-nidirect_backlinks.what_links_here:
+backlinks.what_links_here:
   path: '/node/{node}/backlinks'
   defaults:
-    _controller: '\Drupal\nidirect_backlinks\Controller\WhatLinksHereController::default'
+    _controller: '\Drupal\backlinks\Controller\WhatLinksHereController::default'
     _title: 'What links here'
   requirements:
     _permission: 'view backlinks'

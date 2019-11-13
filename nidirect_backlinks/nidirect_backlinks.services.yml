@@ -1,8 +1,0 @@
-services:
-  nidirect_backlinks.linkmanager:
-    class: Drupal\nidirect_backlinks\LinkManager
-    arguments: ['@entity_type.manager', '@database', '@entity_field.manager', '@path.alias_manager']
-  nidirect_backlinks.fieldeventsubscriber:
-    class: Drupal\nidirect_backlinks\EventSubscriber\FieldListener
-    tags:
-      - { name: 'event_subscriber' }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_backlinks;
+namespace Drupal\backlinks;
 
 /**
  * @file
@@ -196,12 +196,12 @@ class LinkManager implements LinkManagerInterface {
     }
 
     // Delete existing values.
-    $this->database->delete('nidirect_backlinks')
+    $this->database->delete('backlinks')
       ->condition('id', $entity->id())
       ->execute();
 
     // Insert new values.
-    $query = $this->database->insert('nidirect_backlinks')->fields([
+    $query = $this->database->insert('backlinks')->fields([
       'id',
       'reference_id',
       'reference_field',
@@ -218,7 +218,7 @@ class LinkManager implements LinkManagerInterface {
    * {@inheritdoc}
    */
   public function deleteEntity(EntityInterface $entity) {
-    $this->database->delete('nidirect_backlinks')->condition('id', $entity->id())->execute();
+    $this->database->delete('backlinks')->condition('id', $entity->id())->execute();
   }
 
   /**
@@ -227,7 +227,7 @@ class LinkManager implements LinkManagerInterface {
   public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset, array $sort_options = []) {
     $query = $this->database->select('node_field_data', 'nfd');
     $query->fields('nfd', ['nid', 'title', 'type']);
-    $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
+    $query->innerJoin('backlinks', 'b', 'nfd.nid = b.id');
     $query->addExpression('GROUP_CONCAT(DISTINCT b.reference_field)', 'reference_fields');
     $query->condition('b.reference_id', $entity->id(), '=');
     $query->groupBy('nfd.nid, nfd.title, nfd.type');

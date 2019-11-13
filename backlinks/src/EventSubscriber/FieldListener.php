@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_backlinks\EventSubscriber;
+namespace Drupal\backlinks\EventSubscriber;
 
 use Drupal\Core\Field\FieldStorageDefinitionEvent;
 use Drupal\Core\Field\FieldStorageDefinitionEvents;
@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class FieldListener
- * @package Drupal\nidirect_backlinks\EventSubscriber
+ * @package Drupal\backlinks\EventSubscriber
  */
 class FieldListener implements EventSubscriberInterface {
 
@@ -40,7 +40,7 @@ class FieldListener implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public function onFieldStorageDefinitionDelete(FieldStorageDefinitionEvent $storage_definition) {
-    \Drupal::database()->delete('nidirect_backlinks')
+    \Drupal::database()->delete('backlinks')
       ->condition('reference_field', $storage_definition->getFieldStorageDefinition()->getName())
       ->execute();
   }

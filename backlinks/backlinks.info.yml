@@ -1,7 +1,5 @@
-name: 'NIDirect Backlinks'
+name: 'Backlinks'
 type: module
 description: 'Provides tracking table and display of content relations from text, link and entity reference field types.'
 core: 8.x
-package: 'NIDirect'
-dependencies:
-  - drupal:views
+package: 'Backlinks'

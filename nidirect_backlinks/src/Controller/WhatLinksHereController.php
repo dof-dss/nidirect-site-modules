@@ -78,6 +78,18 @@ class WhatLinksHereController extends ControllerBase {
   public function default($node) {
     $build = [];
 
+    // Table header/sort options.
+    $header = [
+      'title' => [
+        'data' => $this->t->translate('Title'),
+        'field' => 'title',
+        'sort' => 'asc'
+      ],
+      'type' => $this->t->translate('Type'),
+      'fields' => $this->t->translate('From field(s)'),
+      'tasks' => $this->t->translate('Tasks'),
+    ];
+
     // Pager init.
     $page = pager_find_page();
     $num_per_page = 25;
@@ -85,7 +97,7 @@ class WhatLinksHereController extends ControllerBase {
 
     // Fetch data about what content links to this node.
     $entity = $this->entityTypeManager->getStorage('node')->load($node);
-    $related_content = $this->linkManager->getReferenceContent($entity, $num_per_page, $offset);
+    $related_content = $this->linkManager->getReferenceContent($entity, $num_per_page, $offset, $header);
 
     // Now that we have the total number of results, initialize the pager.
     pager_default_initialize($related_content['total'], $num_per_page);
@@ -102,12 +114,7 @@ class WhatLinksHereController extends ControllerBase {
 
     $build['links_table'] = [
       '#type' => 'table',
-      '#header' => [
-        $this->t->translate('Content title'),
-        $this->t->translate('Type'),
-        $this->t->translate('From field(s)'),
-        $this->t->translate('Tasks'),
-      ],
+      '#header' => $header,
       '#rows' => $rows,
       '#empty' => $this->t->translate('No content links here.'),
     ];

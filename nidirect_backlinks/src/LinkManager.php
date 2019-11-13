@@ -224,14 +224,14 @@ class LinkManager implements LinkManagerInterface {
   /**
    * {@inheritdoc}
    */
-  public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset) {
+  public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset, array $sort_options = []) {
     $query = $this->database->select('node_field_data', 'nfd');
     $query->fields('nfd', ['nid', 'title', 'type']);
     $query->innerJoin('nidirect_backlinks', 'b', 'nfd.nid = b.id');
     $query->addExpression('GROUP_CONCAT(DISTINCT b.reference_field)', 'reference_fields');
     $query->condition('b.reference_id', $entity->id(), '=');
     $query->groupBy('nfd.nid, nfd.title, nfd.type');
-    $query->orderBy('nfd.title');
+    $query->extend('Drupal\Core\Database\Query\TableSortExtender')->orderByHeader($sort_options);
     $query->execute()->fetchAll();
 
     // First query excludes pager range; just for total result set size.
@@ -239,7 +239,7 @@ class LinkManager implements LinkManagerInterface {
       'total' => count($query->execute()->fetchAll()),
     ];
 
-    // Re-query with range (pager support).
+    // Re-query with range (pager support and sort support).
     $query->range($offset, $num_per_page);
     $result = $query->execute()->fetchAll();
 

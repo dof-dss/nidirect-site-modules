@@ -36,10 +36,12 @@ interface LinkManagerInterface {
    *   Number of items per page of results.
    * @param int $offset
    *   The row offset to begin fetching results from.
+   * @param array $sort_options
+   *   Query support/ordering options; usually passed in format from table header.
    *
    * @return array
    *   Array of entity IDs as [bundle][entity_id]
    */
-  public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset);
+  public function getReferenceContent(EntityInterface $entity, int $num_per_page, int $offset, array $sort_options = []);
 
 }

@@ -1,0 +1,5 @@
+name: 'What Links Here'
+type: module
+description: 'Provides tracking table and display of content references from text, link and entity reference field types.'
+core: 8.x
+package: 'What Links Here'

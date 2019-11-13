@@ -1,10 +1,10 @@
 <?php
 
-namespace Drupal\backlinks\Command;
+namespace Drupal\whatlinkshere\Command;
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManager;
-use Drupal\backlinks\LinkManagerInterface;
+use Drupal\whatlinkshere\LinkManagerInterface;
 use Drupal\node\NodeInterface;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,7 +14,7 @@ use Drupal\Console\Core\Command\Command;
  * Class ScanCommand.
  *
  * Drupal\Console\Annotations\DrupalCommand (
- *     extension="backlinks",
+ *     extension="whatlinkshere",
  *     extensionType="module"
  * )
  */
@@ -23,7 +23,7 @@ class ScanCommand extends Command {
   /**
    * Entity type manager service.
    *
-   * @var EntityTypeManager
+   * @var \Drupal\Core\Entity\EntityTypeManager
    */
   protected $entityTypeManager;
 
@@ -34,7 +34,11 @@ class ScanCommand extends Command {
    */
   protected $database;
 
-
+  /**
+   * Link manager service.
+   *
+   * @var \Drupal\whatlinkshere\LinkManagerInterface
+   */
   protected $linkManager;
 
   /**
@@ -53,24 +57,24 @@ class ScanCommand extends Command {
    */
   protected function configure() {
     $this
-      ->setName('backlinks:scan')
-      ->setDescription($this->trans('commands.backlinks.scan.description'));
+      ->setName('whatlinkshere:scan')
+      ->setDescription($this->trans('commands.whatlinkshere.scan.description'));
   }
 
   /**
    * {@inheritdoc}
    */
   protected function execute(InputInterface $input, OutputInterface $output) {
-    $this->getIo()->info('Executing content scan for backlinks...');
+    $this->getIo()->info('Executing content scan for whatlinkshere...');
 
     $db_conn = $this->database::getConnection('default', 'default');
 
-    // Verify Drupal 8 backlinks table exists.
-    if (!$db_conn->schema()->tableExists('backlinks')) {
+    // Verify Drupal 8 whatlinkshere table exists.
+    if (!$db_conn->schema()->tableExists('whatlinkshere')) {
       return 3;
     }
 
-    $query = $db_conn->query('select nid from {node}');
+    $query = $db_conn->query('SELECT nid FROM {node}');
     $results = $query->fetchAll();
 
     // Potentially long running task here; may need batching in future.
@@ -84,7 +88,7 @@ class ScanCommand extends Command {
       }
     }
 
-    $this->getIo()->info($this->trans('commands.backlinks.scan.messages.success'));
+    $this->getIo()->info($this->trans('commands.whatlinkshere.scan.messages.success'));
   }
 
 }

@@ -1,0 +1,12 @@
+whatlinkshere.references_page:
+  path: '/node/{node}/whatlinkshere'
+  defaults:
+    _controller: '\Drupal\whatlinkshere\Controller\WhatLinksHereController::default'
+    _title: 'What links here'
+  requirements:
+    _permission: 'view content references'
+    node: \d+
+  options:
+    _admin_route: TRUE
+  methods: GET
+

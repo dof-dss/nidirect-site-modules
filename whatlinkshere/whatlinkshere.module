@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains backlinks.module.
+ * Contains hooks for whatlinkshere.module.
  */
 
 use Drupal\Core\Entity\EntityInterface;
@@ -11,9 +11,9 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Implements hook_help().
  */
-function backlinks_help($route_name, RouteMatchInterface $route_match) {
+function whatlinkshere_help($route_name, RouteMatchInterface $route_match) {
   switch ($route_name) {
-    case 'help.page.backlinks':
+    case 'help.page.whatlinkshere':
       $output = '';
       $output .= '<h3>' . t('About') . '</h3>';
       $output .= '<p>' . t('Provides a local task item on node content entities to outline what other content
@@ -32,20 +32,20 @@ function backlinks_help($route_name, RouteMatchInterface $route_match) {
 /**
  * Implements hook_node_insert().
  */
-function backlinks_node_insert(EntityInterface $entity) {
-  \Drupal::service('backlinks.linkmanager')->processEntity($entity);
+function whatlinkshere_node_insert(EntityInterface $entity) {
+  \Drupal::service('whatlinkshere.linkmanager')->processEntity($entity);
 }
 
 /**
  * Implements hook_node_update().
  */
-function backlinks_node_update(EntityInterface $entity) {
-  \Drupal::service('backlinks.linkmanager')->processEntity($entity);
+function whatlinkshere_node_update(EntityInterface $entity) {
+  \Drupal::service('whatlinkshere.linkmanager')->processEntity($entity);
 }
 
 /**
  * Implements hook_node_delete().
  */
-function backlinks_node_delete(EntityInterface $entity) {
-  \Drupal::service('backlinks.linkmanager')->deleteEntity($entity);
+function whatlinkshere_node_delete(EntityInterface $entity) {
+  \Drupal::service('whatlinkshere.linkmanager')->deleteEntity($entity);
 }

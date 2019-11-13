@@ -1,5 +1,5 @@
-entity.node.backlinks:
-  route_name: backlinks.what_links_here
+entity.node.whatlinkshere:
+  route_name: whatlinkshere.references_page
   base_route: entity.node.canonical
   title: What links here
   weight: 30

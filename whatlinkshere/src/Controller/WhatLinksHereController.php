@@ -1,19 +1,19 @@
 <?php
 
-namespace Drupal\backlinks\Controller;
+namespace Drupal\whatlinkshere\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\Translator\TranslatorInterface;
-use Drupal\backlinks\LinkManagerInterface;
+use Drupal\whatlinkshere\LinkManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class WhatLinksHereController.
  *
- * Handles requests for routes defined in backlinks.routing.yml.
+ * Handles requests for routes defined in whatlinkshere.routing.yml.
  */
 class WhatLinksHereController extends ControllerBase {
 
@@ -32,9 +32,9 @@ class WhatLinksHereController extends ControllerBase {
   protected $request;
 
   /**
-   * Drupal\backlinks\LinkManagerInterface definition.
+   * Drupal\whatlinkshere\LinkManagerInterface definition.
    *
-   * @var \Drupal\backlinks\LinkManagerInterface
+   * @var \Drupal\whatlinkshere\LinkManagerInterface
    */
   protected $linkManager;
 
@@ -62,7 +62,7 @@ class WhatLinksHereController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('backlinks.linkmanager'),
+      $container->get('whatlinkshere.linkmanager'),
       $container->get('string_translation')
     );
   }

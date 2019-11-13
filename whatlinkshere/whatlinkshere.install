@@ -2,14 +2,14 @@
 
 /**
  * @file
- * Schema and update functions for backlinks module.
+ * Schema and update functions for whatlinkshere module.
  */
 
 /**
  * Implements hook_schema().
  */
-function backlinks_schema() {
-  $schema['backlinks'] = [
+function whatlinkshere_schema() {
+  $schema['whatlinkshere'] = [
     'description' => 'Stores the relationships between content entities',
     'fields' => [
       'id' => [

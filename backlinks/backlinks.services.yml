@@ -1,8 +1,0 @@
-services:
-  backlinks:
-    class: Drupal\backlinks\LinkManager
-    arguments: ['@entity_type.manager', '@database', '@entity_field.manager', '@path.alias_manager']
-  backlinks.fieldeventsubscriber:
-    class: Drupal\backlinks\EventSubscriber\FieldListener
-    tags:
-      - { name: 'event_subscriber' }

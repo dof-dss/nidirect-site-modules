@@ -1,0 +1,8 @@
+services:
+  whatlinkshere:
+    class: Drupal\whatlinkshere\LinkManager
+    arguments: ['@entity_type.manager', '@database', '@entity_field.manager', '@path.alias_manager']
+  whatlinkshere.fieldeventsubscriber:
+    class: Drupal\whatlinkshere\EventSubscriber\FieldListener
+    tags:
+      - { name: 'event_subscriber' }

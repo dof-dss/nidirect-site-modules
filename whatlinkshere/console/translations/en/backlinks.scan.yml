@@ -1,0 +1,5 @@
+description: 'whatlinkshere utility commands.'
+options: {}
+arguments: {}
+messages:
+    success: 'Finished scanning existing content for references.'

@@ -1,6 +1,0 @@
-services:
-  backlinks.backlinks_scan:
-    class: Drupal\backlinks\Command\ScanCommand
-    arguments: ['@entity_type.manager', '@database', '@backlinks.linkmanager]
-    tags:
-      - { name: drupal.command }

@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\backlinks\EventSubscriber;
+namespace Drupal\whatlinkshere\EventSubscriber;
 
 use Drupal\Core\Field\FieldStorageDefinitionEvent;
 use Drupal\Core\Field\FieldStorageDefinitionEvents;
@@ -8,7 +8,7 @@ use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
  * Class FieldListener
- * @package Drupal\backlinks\EventSubscriber
+ * @package Drupal\whatlinkshere\EventSubscriber
  */
 class FieldListener implements EventSubscriberInterface {
 
@@ -40,7 +40,7 @@ class FieldListener implements EventSubscriberInterface {
    * {@inheritdoc}
    */
   public function onFieldStorageDefinitionDelete(FieldStorageDefinitionEvent $storage_definition) {
-    \Drupal::database()->delete('backlinks')
+    \Drupal::database()->delete('whatlinkshere')
       ->condition('reference_field', $storage_definition->getFieldStorageDefinition()->getName())
       ->execute();
   }

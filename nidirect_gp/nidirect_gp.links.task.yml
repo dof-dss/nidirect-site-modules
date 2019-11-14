@@ -1,10 +1,4 @@
 # GP routing definition
-gp.collection:
-  title: 'GPs'
-  route_name: entity.gp.collection
-  description: 'Show GP list'
-  base_route: system.admin_content
-
 gp.settings_tab:
   route_name: gp.settings
   title: 'Settings'

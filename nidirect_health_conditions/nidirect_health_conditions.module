@@ -35,23 +35,11 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
       $build['field_summary']['#format'] = 'basic_html';
     }
 
-    // Extract the linked related conditions and convert to array for presentation as an unordered list.
-    $related_conditions = $entity->get('field_related_conditions')->referencedEntities();
-    if (!empty($related_conditions)) {
-      $conditions = [];
-      foreach ($related_conditions as $condition_node) {
-        $conditions[] = Link::fromTextAndUrl(
-          $condition_node->label(),
-          Url::fromRoute('entity.node.canonical', ['node' => $condition_node->id()])
-        )->toRenderable();
-      }
-
-      $build['related_conditions'] = [
-        '#theme' => 'item_list',
-        '#list_type' => 'ul',
-        '#items' => $conditions,
-      ];
-    }
+    // Glue on the related conditions block as part of the render array. Re-use the block render
+    // array because it's displayed in a similar way to the health condition node sidebar contents
+    // for related conditions.
+    $build['related_conditions'] = \Drupal::service('plugin.manager.block')
+      ->createInstance('healthconditions_related_conditions', ['node' => $entity])->build();
   }
 
   if ($entity->bundle() == 'health_condition_alternative' && $view_mode == 'search_result') {

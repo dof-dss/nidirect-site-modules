@@ -98,7 +98,7 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
     }
 
     // But check it's what we're expecting anyway.
-    if (!empty($this->node)) {
+    if (!empty($this->node) && $this->node->hasField('field_parent_condition') && $this->node->hasField('field_related_conditions')) {
       // Load the parent condition field first.
       $parent_condition_nid = $this->node->get('field_parent_condition')->target_id;
 

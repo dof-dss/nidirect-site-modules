@@ -7,6 +7,8 @@
 
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\nidirect_driving_instructors\Form\DrivingInstructorSearchForm;
+use \Drupal\search_api\Query\QueryInterface;
 
 /**
  * Implements hook_help().
@@ -51,13 +53,35 @@ function nidirect_driving_instructors_tokens($type, $tokens, array $data, array 
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'driving_instructor_search':
-          $output = 'Driving instructor search form';
+          $output = \Drupal::formBuilder()->getForm(DrivingInstructorSearchForm::class);
           $replacements[$original] = render($output);
           break;
       }
     }
   }
   return $replacements;
+}
+
+/**
+ * Implements hook_search_api_query_alter().
+ */
+function nidirect_driving_instructors_search_api_query_alter(QueryInterface $query) {
+  if ($query->getDisplayPlugin()->getPluginDefinition()['view_display'] == "driving_instructor_results") {
+    $keys = $query->getKeys();
+
+    // Remove the second part of any postcode queries.
+    foreach ($keys as $id => $key) {
+      // Match inward codes
+      if (preg_match('/^[0-9]{1}[a-z]{2}$/i', $key)) {
+        unset($keys[$id]);
+      }
+      // Match full codes with no spaces
+      if (preg_match('/^bt.*([0-9]{1}[a-z]{2})/i', $key, $matches)) {
+        $keys[$id] = str_replace($matches[1], '', $key);
+      }
+    }
+    $query->keys(array_values($keys));
+  }
 }
 
 /**

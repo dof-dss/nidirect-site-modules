@@ -39,8 +39,15 @@ services:
     arguments: ['%breadcrumb.search.matches%']
     tags:
       - { name: breadcrumb_builder }
+  nidirect_breadcrumbs.breadcrumb.schoolclosures:
+    class: Drupal\nidirect_breadcrumbs\SchoolClosuresBreadcrumb
+    arguments: ['%breadcrumb.schoolclosures.matches%', '@path.alias_manager', '@request_stack']
+    tags:
+      - { name: breadcrumb_builder }
 
 parameters:
   breadcrumb.search.matches:
     - view.search.page_1
     - view.publications.search_page
+  breadcrumb.schoolclosures.matches:
+    - /services/school-closures

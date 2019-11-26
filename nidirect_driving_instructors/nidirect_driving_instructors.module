@@ -5,6 +5,7 @@
  * Contains nidirect_driving_instructors.module.
  */
 
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -21,6 +22,42 @@ function nidirect_driving_instructors_help($route_name, RouteMatchInterface $rou
 
     default:
   }
+}
+
+/**
+ * Implements hook_token_info().
+ */
+function nidirect_driving_instructors_token_info() {
+  $types['nidirect'] = ['name' => 'NI Direct'];
+
+  $tokens['driving_instructor_search'] = [
+    'name' => t('Driving instructor search'),
+    'description' => t('Search form for finding driving instructors by postcode area.'),
+  ];
+
+  return [
+    'types' => $types,
+    'tokens' => ['nidirect' => $tokens],
+  ];
+}
+
+/**
+ * Implements hook_tokens().
+ */
+function nidirect_driving_instructors_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $replacements = [];
+
+  if ($type == 'nidirect') {
+    foreach ($tokens as $name => $original) {
+      switch ($name) {
+        case 'driving_instructor_search':
+          $output = 'Driving instructor search form';
+          $replacements[$original] = render($output);
+          break;
+      }
+    }
+  }
+  return $replacements;
 }
 
 /**

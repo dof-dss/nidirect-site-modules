@@ -5,6 +5,8 @@
  * Contains nidirect_school_closures.module.
  */
 
+use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 
@@ -90,4 +92,17 @@ function nidirect_school_closures_render() {
     '#updated' => $service->getUpdated(),
     '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
   ];
+}
+
+/**
+ * Implements hook_entity_view().
+ */
+function nidirect_school_closures_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+  $current_path = \Drupal::request()->getPathInfo();
+  $closures_paths = \Drupal::getContainer()->getParameter('breadcrumb.schoolclosures.matches');
+
+  if (in_array($current_path, $closures_paths) && ($entity instanceof NodeInterface && $view_mode == 'full')) {
+    // Append the school closures info to the render array for this page.
+    $build['closures_info'] = nidirect_school_closures_render();
+  }
 }

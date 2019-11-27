@@ -5,8 +5,10 @@
  * Contains nidirect_driving_instructors.module.
  */
 
+use Drupal\Core\Link;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
 use Drupal\nidirect_driving_instructors\Form\DrivingInstructorSearchForm;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\views\ViewExecutable;
@@ -69,8 +71,8 @@ function nidirect_driving_instructors_tokens($type, $tokens, array $data, array 
 function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id) {
   // Don't display the sort by or order options on the driving instructor exposed search form.
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
-    $form['sort_by']['#access'] = FALSE;
-    $form['sort_order']['#access'] = FALSE;
+//    $form['sort_by']['#access'] = FALSE;
+//    $form['sort_order']['#access'] = FALSE;
   }
 }
 
@@ -101,7 +103,27 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
  */
 function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
   if ($display_id == 'driving_instructor_results') {
-    $options = [
+    
+    // Generate sort order link based on current URI parameters.
+    $uri = Drupal::request()->getUri();
+
+    if (preg_match('/sort_by=field_di_lastname/', $uri)) {
+      // already sorted by last name - change to sort by relevance
+      $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
+      $link_text = 'Sort by relevance';
+    } elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
+      // already sorted by last name - change to sort alphabetically
+      $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
+      $link_text = 'Sort alphabetically';
+    } else {
+      // not already sorted - sort alphabetically
+      $uri .= '&sort_by=field_di_lastname';
+      $link_text = 'Sort alphabetically';
+    }
+
+    $sort_link = Link::fromTextandUrl(t($link_text), Url::fromUri($uri));
+
+    $sort_hander = [
       'id' => 'area_text_custom',
       'table' => 'views',
       'field' => 'area',
@@ -111,13 +133,14 @@ function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $disp
       'empty' => TRUE,
       'tokenize' => FALSE,
       'content' => [
-        'value' => 'sort link',
+        'value' => $sort_link->toString(),
         'format' => 'full_html',
         ],
       'plugin_id' => 'text'
     ];
 
-    $view->setHandler('driving_instructor_results', 'header', 'sort_alphabetically', $options);
+    $view->setHandler('driving_instructor_results', 'header', 'sort_alphabetically', $sort_hander);
   }
 
 }
+

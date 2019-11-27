@@ -9,7 +9,6 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Component\Utility\Xss;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 
@@ -74,16 +73,6 @@ function nidirect_common_cron() {
 function nidirect_common_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
   if ($entity->getEntityTypeId() == 'node') {
-    switch ($entity->bundle()) {
-      case 'driving_instructor':
-        // Construct the title.
-        $forename = Xss::filter($entity->get('field_di_firstname')->value);
-        $surname = Xss::filter($entity->get('field_di_lastname')->value);
-        $adi = Xss::filter($entity->get('field_di_adi_no')->value);
-        $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
-        $entity->setTitle($title);
-        break;
-    }
     /*
      * Programmatically sets the field_top_level_theme based on
      * the parent taxonomy tids of the field_subtheme value.

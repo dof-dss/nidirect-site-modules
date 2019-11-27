@@ -5,11 +5,13 @@
  * Contains nidirect_driving_instructors.module.
  */
 
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\views\ViewExecutable;
+use Drupal\Component\Utility\Xss;
 
 /**
  * Implements hook_help().
@@ -24,6 +26,24 @@ function nidirect_driving_instructors_help($route_name, RouteMatchInterface $rou
       return $output;
 
     default:
+  }
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    // Construct the node title for driving instructors based
+    // on name and ADI number.
+    if ($entity->bundle() == 'driving_instructor') {
+      $forename = Xss::filter($entity->get('field_di_firstname')->value);
+      $surname = Xss::filter($entity->get('field_di_lastname')->value);
+      $adi = Xss::filter($entity->get('field_di_adi_no')->value);
+      $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
+      $entity->setTitle($title);
+    }
   }
 }
 

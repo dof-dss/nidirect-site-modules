@@ -71,8 +71,8 @@ function nidirect_driving_instructors_tokens($type, $tokens, array $data, array 
 function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id) {
   // Don't display the sort by or order options on the driving instructor exposed search form.
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
-//    $form['sort_by']['#access'] = FALSE;
-//    $form['sort_order']['#access'] = FALSE;
+    $form['sort_by']['#access'] = FALSE;
+    $form['sort_order']['#access'] = FALSE;
   }
 }
 
@@ -83,18 +83,20 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
   if ($query->getDisplayPlugin()->getPluginDefinition()['view_display'] == "driving_instructor_results") {
     $keys = $query->getKeys();
 
-    // Remove the second part of any postcode queries.
-    foreach ($keys as $id => $key) {
-      // Match inward codes.
-      if (preg_match('/^[0-9]{1}[a-z]{2}$/i', $key)) {
-        unset($keys[$id]);
+    if ($keys) {
+      // Remove the second part of any postcode queries.
+      foreach ($keys as $id => $key) {
+        // Match inward codes.
+        if (preg_match('/^[0-9]{1}[a-z]{2}$/i', $key)) {
+          unset($keys[$id]);
+        }
+        // Match full codes with no spaces.
+        if (preg_match('/^bt.*([0-9]{1}[a-z]{2})/i', $key, $matches)) {
+          $keys[$id] = str_replace($matches[1], '', $key);
+        }
       }
-      // Match full codes with no spaces.
-      if (preg_match('/^bt.*([0-9]{1}[a-z]{2})/i', $key, $matches)) {
-        $keys[$id] = str_replace($matches[1], '', $key);
-      }
+      $query->keys($keys);
     }
-    $query->keys($keys);
   }
 }
 

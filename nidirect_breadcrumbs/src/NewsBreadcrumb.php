@@ -62,7 +62,7 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if ($route_name == 'entity.node.canonical') {
+    if ($route_name == 'entity.node.canonical' && !empty($route_match->getParameter('node'))) {
       $this->node = $route_match->getParameter('node');
 
       if ($this->node instanceof NodeInterface == FALSE) {

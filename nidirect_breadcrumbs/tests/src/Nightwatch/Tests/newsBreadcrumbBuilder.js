@@ -10,7 +10,7 @@ module.exports = {
   '@tags': ['nidirect-breadcrumbs'],
 
   before: function (browser) {
-    // GP Practice nodes.
+    // News nodes.
     http.get(process.env.TEST_D7_URL + '/migrate/news', (response) => {
       let data = '';
       response.on('data', (chunk) => { data += chunk });
@@ -30,11 +30,8 @@ module.exports = {
       .pause(2000, function () {
         browser
           .drupalRelativeURL('/node/' + nid)
-          .waitForElementVisible('body', 1000);
-
-        breadcrumbSegments.forEach(function (item) {
-          browser.expect.element('nav.breadcrumb').text.to.contain(item);
-        });
+          .waitForElementVisible('body', 2000)
+          .expect.element('nav.breadcrumb .breadcrumb--list').to.have.text.to.match(/(Home)\W+(News)$/);
       })
   }
 

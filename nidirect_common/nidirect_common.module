@@ -5,6 +5,7 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -196,5 +197,51 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Invalidate taxonomy cache tags after node save.
+ */
+function nidirect_common_node_presave(EntityInterface $entity) {
+  // Check that the node is published.
+  if ($entity->get('status')->value) {
+    _invalidate_theme_cache_tags($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ *
+ * Invalidate taxonomy cache tags after node deletion.
+ */
+function nidirect_common_node_delete(EntityInterface $entity) {
+  _invalidate_theme_cache_tags($entity);
+}
+
+/**
+ * Invalidate taxonomy cache tags.
+ */
+function _invalidate_theme_cache_tags($entity) {
+  // If a node references any point in the 'site themes'
+  // vocabulary, make sure that the appropriate taxonomy
+  // cache tags are invalidated.
+  $taxonomy_tags = [];
+  if ($entity->hasField('field_subtheme')) {
+    $tid = $entity->get('field_subtheme')->target_id;
+    if (isset($tid)) {
+      $taxonomy_tags[] = 'taxonomy_term:' . $tid;
+    }
+  }
+  if ($entity->hasField('field_site_themes')) {
+    $tid = $entity->get('field_site_themes')->target_id;
+    if (isset($tid)) {
+      $taxonomy_tags[] = 'taxonomy_term:' . $tid;
+    }
+  }
+  if (count($taxonomy_tags) > 0) {
+    Cache::invalidateTags($taxonomy_tags);
   }
 }

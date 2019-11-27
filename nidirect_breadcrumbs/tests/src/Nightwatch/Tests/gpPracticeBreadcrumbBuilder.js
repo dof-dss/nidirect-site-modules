@@ -33,10 +33,10 @@ module.exports = {
       .pause(2000, function () {
         browser
           .drupalRelativeURL('/node/' + nid)
-          .waitForElementVisible('body', 1000);
+          .waitForElementVisible('body', 2000);
 
         breadcrumbSegments.forEach(function (item) {
-          browser.expect.element('nav.breadcrumb').text.to.contain(item);
+          browser.expect.element('nav.breadcrumb .breadcrumb--list').text.to.contain(item);
         });
       })
   }

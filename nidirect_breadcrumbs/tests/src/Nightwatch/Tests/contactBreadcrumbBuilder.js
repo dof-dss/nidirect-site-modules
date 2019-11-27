@@ -26,8 +26,8 @@ module.exports = {
       .pause(2000, function () {
         browser
           .drupalRelativeURL('/node/' + nid)
-          .waitForElementVisible('body', 1000)
-          .expect.element('nav.breadcrumb')
+          .waitForElementVisible('body', 2000)
+          .expect.element('nav.breadcrumb .breadcrumb--list')
           .to.have.text.to.match(/(Home)\W+(Contacts)$/);
       })
   }

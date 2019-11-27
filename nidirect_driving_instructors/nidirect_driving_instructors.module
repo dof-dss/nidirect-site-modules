@@ -9,6 +9,7 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\nidirect_driving_instructors\Form\DrivingInstructorSearchForm;
 use Drupal\search_api\Query\QueryInterface;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -93,4 +94,30 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
     }
     $query->keys($keys);
   }
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
+  if ($display_id == 'driving_instructor_results') {
+    $options = [
+      'id' => 'area_text_custom',
+      'table' => 'views',
+      'field' => 'area',
+      'relationship' => 'none',
+      'group_type' => 'none',
+      'admin_label' => '',
+      'empty' => TRUE,
+      'tokenize' => FALSE,
+      'content' => [
+        'value' => 'sort link',
+        'format' => 'full_html',
+        ],
+      'plugin_id' => 'text'
+    ];
+
+    $view->setHandler('driving_instructor_results', 'header', 'sort_alphabetically', $options);
+  }
+
 }

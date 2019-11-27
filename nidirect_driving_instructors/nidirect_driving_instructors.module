@@ -82,26 +82,15 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
 
     // Remove the second part of any postcode queries.
     foreach ($keys as $id => $key) {
-      // Match inward codes
+      // Match inward codes.
       if (preg_match('/^[0-9]{1}[a-z]{2}$/i', $key)) {
         unset($keys[$id]);
       }
-      // Match full codes with no spaces
+      // Match full codes with no spaces.
       if (preg_match('/^bt.*([0-9]{1}[a-z]{2})/i', $key, $matches)) {
         $keys[$id] = str_replace($matches[1], '', $key);
       }
     }
-    $query->keys(array_values($keys));
+    $query->keys($keys);
   }
-}
-
-/**
- * Implements hook_theme().
- */
-function nidirect_driving_instructors_theme() {
-  return [
-    'nidirect_driving_instructors' => [
-      'render element' => 'children',
-    ],
-  ];
 }

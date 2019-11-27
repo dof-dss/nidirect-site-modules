@@ -31,11 +31,49 @@ function nidirect_driving_instructors_help($route_name, RouteMatchInterface $rou
  * Implements hook_form_alter().
  */
 function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id) {
-  // Don't display the sort by or order options on the driving instructor exposed search form.
+  // Don't display the sort/order by options on the
+  // driving instructor exposed search form.
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
     $form['sort_by']['#access'] = FALSE;
     $form['sort_order']['#access'] = FALSE;
   }
+
+  // Special processing for Driving Instructor title.
+  if (($form_id == "node_driving_instructor_form")
+    || ($form_id == "node_driving_instructor_edit_form")) {
+    // Make title field readonly and set a placeholder.
+    if (empty($form['title']['widget'][0]['value']['#default_value'])) {
+      $form['title']['widget'][0]['value']['#default_value'] = ' ';
+    }
+    $form['title']['widget'][0]['value']['#description'] =
+      t('You cannot edit the title. It is created automatically from the first name, last name, and ADI number.');
+    $form['title']['#disabled'] = 'TRUE';
+    $form['#after_build'][] = 'nidirect_driving_instructors_after_build';
+  }
+}
+
+/**
+ * Driving instructor node form #after_build function.
+ *
+ * For usability on the driving instructor search page, instructors are
+ * displayed using two parent terms, driving instruction and motorcycle
+ * instruction. We don't want instructors ever to be tagged with these
+ * terms so we'll hide them from the list.
+ */
+function nidirect_driving_instructors_after_build($form, &$form_state) {
+  $categories = &$form['field_di_categories']['widget']['#options'];
+
+  foreach ($categories as $tid => $label) {
+    if (substr($label, 0, 1) != '-') {
+      unset($categories[$tid]);
+    }
+    else {
+      $categories[$tid] = substr($label, 1);
+    }
+  }
+  asort($categories);
+
+  return $form;
 }
 
 /**
@@ -67,25 +105,26 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
  */
 function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
   if ($display_id == 'driving_instructor_results') {
-    
     // Generate sort order link based on current URI parameters.
     $uri = Drupal::request()->getUri();
 
     if (preg_match('/sort_by=field_di_lastname/', $uri)) {
-      // already sorted by last name - change to sort by relevance
+      // If sorted by last name, change to sort by relevance.
       $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
-      $link_text = 'Sort by relevance';
-    } elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
-      // already sorted by last name - change to sort alphabetically
+      $link_text = t('Sort by relevance');
+    }
+    elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
+      // If sorted by last name, change to sort alphabetically.
       $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
-      $link_text = 'Sort alphabetically';
-    } else {
-      // not already sorted - sort alphabetically
+      $link_text = t('Sort alphabetically');
+    }
+    else {
+      // Set default sort to alphabetically.
       $uri .= '&sort_by=field_di_lastname';
-      $link_text = 'Sort alphabetically';
+      $link_text = t('Sort alphabetically');
     }
 
-    $sort_link = Link::fromTextandUrl(t($link_text), Url::fromUri($uri));
+    $sort_link = Link::fromTextandUrl($link_text, Url::fromUri($uri));
 
     $sort_hander = [
       'id' => 'area_text_custom',
@@ -99,12 +138,11 @@ function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $disp
       'content' => [
         'value' => $sort_link->toString(),
         'format' => 'full_html',
-        ],
-      'plugin_id' => 'text'
+      ],
+      'plugin_id' => 'text',
     ];
 
-    $view->setHandler('driving_instructor_results', 'header', 'sort_alphabetically', $sort_hander);
+    $view->setHandler('driving_instructor_results', 'header', 'sort_and_count', $sort_hander);
   }
 
 }
-

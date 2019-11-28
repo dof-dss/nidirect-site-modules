@@ -228,17 +228,22 @@ function _invalidate_theme_cache_tags($entity) {
   // If a node references any point in the 'site themes'
   // vocabulary, make sure that the appropriate taxonomy
   // cache tags are invalidated.
+  $field_list = ['field_subtheme', 'field_site_themes'];
   $taxonomy_tags = [];
-  if ($entity->hasField('field_subtheme')) {
-    $tid = $entity->get('field_subtheme')->target_id;
-    if (isset($tid)) {
-      $taxonomy_tags[] = 'taxonomy_term:' . $tid;
-    }
-  }
-  if ($entity->hasField('field_site_themes')) {
-    $tid = $entity->get('field_site_themes')->target_id;
-    if (isset($tid)) {
-      $taxonomy_tags[] = 'taxonomy_term:' . $tid;
+  foreach($field_list as $thisfield) {
+    if ($entity->hasField($thisfield)) {
+      $tid = $entity->get($thisfield)->target_id;
+      if (isset($tid)) {
+        $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
+      }
+      // If this is an update, invalidate cache tag for
+      // original taxonomy term as well.
+      if (isset($entity->original)) {
+        $tid = $entity->original->get($thisfield)->target_id;
+        if (isset($tid)) {
+          $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
+        }
+      }
     }
   }
   if (count($taxonomy_tags) > 0) {

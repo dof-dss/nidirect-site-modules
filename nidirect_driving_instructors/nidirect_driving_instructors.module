@@ -1,0 +1,170 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_driving_instructors.module.
+ */
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\Core\Url;
+use Drupal\search_api\Query\QueryInterface;
+use Drupal\views\ViewExecutable;
+use Drupal\Component\Utility\Xss;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_driving_instructors_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_driving_instructors module.
+    case 'help.page.nidirect_driving_instructors':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Code and hooks for driving instructor nodes, edit form, search form and results') . '</p>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id) {
+  // Don't display the sort/order by options on the
+  // driving instructor exposed search form.
+  if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
+    $form['sort_by']['#access'] = FALSE;
+    $form['sort_order']['#access'] = FALSE;
+  }
+
+  // Adjustments to the driving instructor node add/edit form.
+  if (($form_id == "node_driving_instructor_form")
+    || ($form_id == "node_driving_instructor_edit_form")) {
+    // Make title field readonly and set a placeholder.
+    if (empty($form['title']['widget'][0]['value']['#default_value'])) {
+      $form['title']['widget'][0]['value']['#default_value'] = ' ';
+    }
+    $form['title']['widget'][0]['value']['#description'] =
+      t('You cannot edit the title. It is created automatically from the first name, last name, and ADI number.');
+    $form['title']['#disabled'] = 'TRUE';
+    $form['#after_build'][] = 'nidirect_driving_instructors_after_build';
+  }
+}
+
+/**
+ * Driving instructor node form #after_build function.
+ *
+ * For usability on the driving instructor search page, instructors are
+ * displayed using two parent terms, driving instruction and motorcycle
+ * instruction. We don't want instructors ever to be tagged with these
+ * terms so we'll hide them from the list.
+ */
+function nidirect_driving_instructors_after_build($form, &$form_state) {
+  $categories = &$form['field_di_categories']['widget']['#options'];
+
+  foreach ($categories as $tid => $label) {
+    if (substr($label, 0, 1) != '-') {
+      unset($categories[$tid]);
+    }
+    else {
+      $categories[$tid] = substr($label, 1);
+    }
+  }
+  asort($categories);
+
+  return $form;
+}
+
+/**
+ * Implements hook_entity_presave().
+ */
+function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    // Construct the node title for driving instructors based
+    // on name and ADI number.
+    if ($entity->bundle() == 'driving_instructor') {
+      $forename = Xss::filter($entity->get('field_di_firstname')->value);
+      $surname = Xss::filter($entity->get('field_di_lastname')->value);
+      $adi = Xss::filter($entity->get('field_di_adi_no')->value);
+      $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
+      $entity->setTitle($title);
+    }
+  }
+}
+
+/**
+ * Implements hook_search_api_query_alter().
+ */
+function nidirect_driving_instructors_search_api_query_alter(QueryInterface $query) {
+  if ($query->getDisplayPlugin()->getPluginDefinition()['view_display'] == "driving_instructor_results") {
+    $keys = $query->getKeys();
+
+    // If present remove the second part of any postcode entry as we only want
+    // to search against the first part of the postcode.
+    if ($keys) {
+      // Remove the second part of any postcode queries.
+      foreach ($keys as $id => $key) {
+        // Match inward codes.
+        if (preg_match('/^[0-9]{1}[a-z]{2}$/i', $key)) {
+          unset($keys[$id]);
+        }
+        // Match full codes with no spaces.
+        if (preg_match('/^bt.*([0-9]{1}[a-z]{2})/i', $key, $matches)) {
+          $keys[$id] = str_replace($matches[1], '', $key);
+        }
+      }
+      $query->keys($keys);
+    }
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
+
+    // Display singular or plural result count.
+    $result_count = Drupal::translation()->formatPlural(
+      $view->pager->total_items,
+      '@number result',
+      '@number results', [
+        '@number' => $view->pager->total_items,
+      ]
+    );
+
+    // Generate sort order link based on current URI parameters.
+    $uri = Drupal::request()->getUri();
+    if (preg_match('/sort_by=field_di_lastname/', $uri)) {
+      // If sorted by last name, change to sort by relevance.
+      $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
+      $link_text = t('Sort by relevance');
+    }
+    elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
+      // If sorted by relevance, change to sort alphabetically.
+      $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
+      $link_text = t('Sort alphabetically');
+    }
+    else {
+      // Set default sort to alphabetically.
+      $uri .= '&sort_by=field_di_lastname';
+      $link_text = t('Sort alphabetically');
+    }
+
+    $view->attachment_before = [
+      'result_count' => [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $result_count,
+      ],
+      'sort_by' => [
+        '#title' => $link_text,
+        '#type' => 'link',
+        '#url' => Url::fromUri($uri),
+      ],
+    ];
+  }
+}

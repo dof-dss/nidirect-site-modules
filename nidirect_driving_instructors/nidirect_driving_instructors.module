@@ -29,24 +29,6 @@ function nidirect_driving_instructors_help($route_name, RouteMatchInterface $rou
 }
 
 /**
- * Implements hook_entity_presave().
- */
-function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
-  // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'node') {
-    // Construct the node title for driving instructors based
-    // on name and ADI number.
-    if ($entity->bundle() == 'driving_instructor') {
-      $forename = Xss::filter($entity->get('field_di_firstname')->value);
-      $surname = Xss::filter($entity->get('field_di_lastname')->value);
-      $adi = Xss::filter($entity->get('field_di_adi_no')->value);
-      $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
-      $entity->setTitle($title);
-    }
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id) {
@@ -57,7 +39,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['sort_order']['#access'] = FALSE;
   }
 
-  // Special processing for Driving Instructor title.
+  // Adjustments to the driving instructor node add/edit form.
   if (($form_id == "node_driving_instructor_form")
     || ($form_id == "node_driving_instructor_edit_form")) {
     // Make title field readonly and set a placeholder.
@@ -96,12 +78,32 @@ function nidirect_driving_instructors_after_build($form, &$form_state) {
 }
 
 /**
+ * Implements hook_entity_presave().
+ */
+function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    // Construct the node title for driving instructors based
+    // on name and ADI number.
+    if ($entity->bundle() == 'driving_instructor') {
+      $forename = Xss::filter($entity->get('field_di_firstname')->value);
+      $surname = Xss::filter($entity->get('field_di_lastname')->value);
+      $adi = Xss::filter($entity->get('field_di_adi_no')->value);
+      $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
+      $entity->setTitle($title);
+    }
+  }
+}
+
+/**
  * Implements hook_search_api_query_alter().
  */
 function nidirect_driving_instructors_search_api_query_alter(QueryInterface $query) {
   if ($query->getDisplayPlugin()->getPluginDefinition()['view_display'] == "driving_instructor_results") {
     $keys = $query->getKeys();
 
+    // If present remove the second part of any postcode entry as we only want
+    // to search against the first part of the postcode.
     if ($keys) {
       // Remove the second part of any postcode queries.
       foreach ($keys as $id => $key) {
@@ -142,7 +144,7 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
       $link_text = t('Sort by relevance');
     }
     elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
-      // If sorted by last name, change to sort alphabetically.
+      // If sorted by relevance, change to sort alphabetically.
       $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
       $link_text = t('Sort alphabetically');
     }

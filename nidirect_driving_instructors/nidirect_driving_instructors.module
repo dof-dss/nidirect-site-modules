@@ -6,7 +6,6 @@
  */
 
 use Drupal\Core\Entity\EntityInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Drupal\search_api\Query\QueryInterface;
@@ -121,13 +120,22 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
 }
 
 /**
- * Implements hook_views_pre_view().
+ * Implements hook_views_pre_render().
  */
-function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $display_id, array &$args) {
-  if ($display_id == 'driving_instructor_results') {
+function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
+
+    // Display singular or plural result count.
+    $result_count = Drupal::translation()->formatPlural(
+      $view->pager->total_items,
+      '@number result',
+      '@number results', [
+        '@number' => $view->pager->total_items,
+      ]
+    );
+
     // Generate sort order link based on current URI parameters.
     $uri = Drupal::request()->getUri();
-
     if (preg_match('/sort_by=field_di_lastname/', $uri)) {
       // If sorted by last name, change to sort by relevance.
       $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
@@ -144,25 +152,17 @@ function nidirect_driving_instructors_views_pre_view(ViewExecutable $view, $disp
       $link_text = t('Sort alphabetically');
     }
 
-    $sort_link = Link::fromTextandUrl($link_text, Url::fromUri($uri));
-
-    $sort_hander = [
-      'id' => 'area_text_custom',
-      'table' => 'views',
-      'field' => 'area',
-      'relationship' => 'none',
-      'group_type' => 'none',
-      'admin_label' => '',
-      'empty' => TRUE,
-      'tokenize' => FALSE,
-      'content' => [
-        'value' => $sort_link->toString(),
-        'format' => 'full_html',
+    $view->attachment_before = [
+      'result_count' => [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => $result_count,
       ],
-      'plugin_id' => 'text',
+      'sort_by' => [
+        '#title' => $link_text,
+        '#type' => 'link',
+        '#url' => Url::fromUri($uri),
+      ],
     ];
-
-    $view->setHandler('driving_instructor_results', 'header', 'sort_and_count', $sort_hander);
   }
-
 }

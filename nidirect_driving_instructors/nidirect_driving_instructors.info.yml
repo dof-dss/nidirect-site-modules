@@ -1,5 +1,5 @@
 name: 'NIDirect Driving Instructors'
 type: module
-description: 'Driving instructor search form and results'
+description: 'Custom code and hooks for driving instructors.'
 core: 8.x
 package: 'NIDirect'

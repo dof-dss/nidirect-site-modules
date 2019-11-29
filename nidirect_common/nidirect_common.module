@@ -222,6 +222,22 @@ function nidirect_common_node_delete(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_presave() for taxonomy_term entities.
+ */
+function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
+  // Invalidate 'taxonomy_term_list' custom cache tag for the
+  // parent when a new taxonomy term is created.
+  if ($entity->get('vid')->target_id == 'site_themes') {
+    if ($entity->isNewRevision()) {
+      $parent = $entity->get('parent')->target_id;
+      if ($parent) {
+        Cache::invalidateTags(['taxonomy_term_list:' . $parent]);
+      }
+    }
+  }
+}
+
+/**
  * Invalidate taxonomy cache tags.
  */
 function _invalidate_theme_cache_tags($entity) {

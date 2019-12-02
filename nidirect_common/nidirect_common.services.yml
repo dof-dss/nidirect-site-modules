@@ -1,0 +1,7 @@
+services:
+  logger.channel.nidirect_common:
+    parent: logger.channel_base
+    arguments: ['nidirect_common']
+  nidirect_common.invalidate_taxonomy_list_cache_tags:
+    class: Drupal\nidirect_common\InvalidateTaxonomyListCacheTags
+    arguments: []

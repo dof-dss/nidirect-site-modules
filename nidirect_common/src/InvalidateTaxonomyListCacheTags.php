@@ -2,12 +2,22 @@
 
 namespace Drupal\nidirect_common;
 
-use Drupal\Core\Cache\Cache;
+use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 
 /**
  * Class InvalidateTaxonomyListCacheTags.
  */
 class InvalidateTaxonomyListCacheTags {
+
+  /**
+   * Constructs a new \Drupal\Core\Menu\MenuTreeStorage.
+   *
+   * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
+   *   The cache tags invalidator.
+   */
+  public function __construct(CacheTagsInvalidatorInterface $cache_tags_invalidator) {
+    $this->cacheTagsInvalidator = $cache_tags_invalidator;
+  }
 
   /**
    * Invalidate custom cache tags for this entity.
@@ -35,7 +45,7 @@ class InvalidateTaxonomyListCacheTags {
       }
     }
     if (count($taxonomy_tags) > 0) {
-      Cache::invalidateTags($taxonomy_tags);
+      $this->cacheTagsInvalidator->invalidateTags($taxonomy_tags);
     }
   }
 

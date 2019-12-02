@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_common;
 
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Class InvalidateTaxonomyListCacheTags.
@@ -22,7 +23,7 @@ class InvalidateTaxonomyListCacheTags {
   /**
    * Invalidate custom cache tags for this entity.
    */
-  public function invalidateForEntity($entity) {
+  public function invalidateForEntity(EntityInterface $entity) {
     // If a node references any point in the 'site themes'
     // vocabulary, make sure that the appropriate taxonomy
     // cache tags are invalidated.

@@ -207,7 +207,6 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 function nidirect_common_node_presave(EntityInterface $entity) {
   // Check that the node is published.
   if ($entity->get('status')->value) {
-    //_invalidate_theme_cache_tags($entity);
     $cache_service = \Drupal::service('nidirect_common.invalidate_taxonomy_list_cache_tags');
     $cache_service->invalidateForEntity($entity);
   }
@@ -219,7 +218,6 @@ function nidirect_common_node_presave(EntityInterface $entity) {
  * Invalidate taxonomy cache tags after node deletion.
  */
 function nidirect_common_node_delete(EntityInterface $entity) {
-  //_invalidate_theme_cache_tags($entity);
   $cache_service = \Drupal::service('nidirect_common.invalidate_taxonomy_list_cache_tags');
   $cache_service->invalidateForEntity($entity);
 }
@@ -237,35 +235,5 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
         Cache::invalidateTags(['taxonomy_term_list:' . $parent]);
       }
     }
-  }
-}
-
-/**
- * Invalidate taxonomy cache tags.
- */
-function _invalidate_theme_cache_tags($entity) {
-  // If a node references any point in the 'site themes'
-  // vocabulary, make sure that the appropriate taxonomy
-  // cache tags are invalidated.
-  $field_list = ['field_subtheme', 'field_site_themes'];
-  $taxonomy_tags = [];
-  foreach ($field_list as $thisfield) {
-    if ($entity->hasField($thisfield)) {
-      $tid = $entity->get($thisfield)->target_id;
-      if (isset($tid)) {
-        $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
-      }
-      // If this is an update, invalidate cache tag for
-      // original taxonomy term as well.
-      if (isset($entity->original)) {
-        $tid = $entity->original->get($thisfield)->target_id;
-        if (isset($tid)) {
-          $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
-        }
-      }
-    }
-  }
-  if (count($taxonomy_tags) > 0) {
-    Cache::invalidateTags($taxonomy_tags);
   }
 }

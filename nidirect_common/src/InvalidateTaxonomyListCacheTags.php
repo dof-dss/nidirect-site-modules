@@ -9,6 +9,9 @@ use Drupal\Core\Cache\Cache;
  */
 class InvalidateTaxonomyListCacheTags {
 
+  /**
+   * Invalidate custom cache tags for this entity.
+   */
   public function invalidateForEntity($entity) {
     // If a node references any point in the 'site themes'
     // vocabulary, make sure that the appropriate taxonomy

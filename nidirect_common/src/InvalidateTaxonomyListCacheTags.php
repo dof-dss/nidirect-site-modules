@@ -11,6 +11,13 @@ use Drupal\Core\Entity\EntityInterface;
 class InvalidateTaxonomyListCacheTags {
 
   /**
+   * The cache tags invalidator.
+   *
+   * @var \Drupal\Core\Cache\CacheTagsInvalidatorInterface
+   */
+  protected $cacheTagsInvalidator;
+
+  /**
    * Constructs a new \Drupal\Core\Menu\MenuTreeStorage.
    *
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator

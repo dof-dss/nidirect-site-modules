@@ -5,6 +5,7 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -30,7 +31,6 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
 
 /**
  * Implements hook_cron().
- *
  */
 function nidirect_common_cron() {
   // Process anything in the 'audit_date_updates' queue which was
@@ -52,8 +52,8 @@ function nidirect_common_cron() {
         foreach ($nodes as $node) {
           // Double check that auditing is enabled for this content type.
           if ($node->hasField('field_next_audit_due')) {
-            // Just set next audit date to today as will show in 'needs audit' report
-            // if next audit date is today or earlier.
+            // Just set next audit date to today as will show in 'needs audit'
+            // report if next audit date is today or earlier.
             $node->set('field_next_audit_due', $today);
             $node->save();
           }
@@ -118,7 +118,7 @@ function nidirect_common_views_pre_render(ViewExecutable $view) {
       '#markup' => \Drupal::translation()->formatPlural(
         $view->pager->total_items,
         '@number recipe',
-        '@number recipes', ['@number' => $view->pager->total_items])
+        '@number recipes', ['@number' => $view->pager->total_items]),
     ];
   }
 
@@ -196,5 +196,44 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ *
+ * Invalidate taxonomy cache tags after node save.
+ */
+function nidirect_common_node_presave(EntityInterface $entity) {
+  // Check that the node is published.
+  if ($entity->get('status')->value) {
+    $cache_service = \Drupal::service('nidirect_common.invalidate_taxonomy_list_cache_tags');
+    $cache_service->invalidateForEntity($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_delete().
+ *
+ * Invalidate taxonomy cache tags after node deletion.
+ */
+function nidirect_common_node_delete(EntityInterface $entity) {
+  $cache_service = \Drupal::service('nidirect_common.invalidate_taxonomy_list_cache_tags');
+  $cache_service->invalidateForEntity($entity);
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave() for taxonomy_term entities.
+ */
+function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
+  // Invalidate 'taxonomy_term_list' custom cache tag for the
+  // parent when a new taxonomy term is created.
+  if ($entity->get('vid')->target_id == 'site_themes') {
+    if ($entity->isNewRevision()) {
+      $parent = $entity->get('parent')->target_id;
+      if ($parent) {
+        Cache::invalidateTags(['taxonomy_term_list:' . $parent]);
+      }
+    }
   }
 }

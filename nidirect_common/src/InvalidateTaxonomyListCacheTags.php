@@ -4,6 +4,7 @@ namespace Drupal\nidirect_common;
 
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Class InvalidateTaxonomyListCacheTags.
@@ -18,13 +19,24 @@ class InvalidateTaxonomyListCacheTags {
   protected $cacheTagsInvalidator;
 
   /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * Constructs a new \Drupal\Core\Menu\MenuTreeStorage.
    *
    * @param \Drupal\Core\Cache\CacheTagsInvalidatorInterface $cache_tags_invalidator
    *   The cache tags invalidator.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
-  public function __construct(CacheTagsInvalidatorInterface $cache_tags_invalidator) {
+  public function __construct(CacheTagsInvalidatorInterface $cache_tags_invalidator,
+                              EntityTypeManagerInterface $entity_type_manager) {
     $this->cacheTagsInvalidator = $cache_tags_invalidator;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -39,6 +51,8 @@ class InvalidateTaxonomyListCacheTags {
     foreach ($field_list as $thisfield) {
       if ($entity->hasField($thisfield)) {
         $tid = $entity->get($thisfield)->target_id;
+        // If landing page, get parent.
+        $tid = $this->checkLandingPageParent($entity, $tid);
         if (isset($tid)) {
           $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
         }
@@ -46,6 +60,7 @@ class InvalidateTaxonomyListCacheTags {
         // original taxonomy term as well.
         if (isset($entity->original)) {
           $tid = $entity->original->get($thisfield)->target_id;
+          $tid = $this->checkLandingPageParent($entity, $tid);
           if (isset($tid)) {
             $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
           }
@@ -57,4 +72,21 @@ class InvalidateTaxonomyListCacheTags {
     }
   }
 
+  /**
+   * Get parent taxonomy term for landing pages.
+   */
+  private function checkLandingPageParent($entity, $tid) {
+    // Landing page is a special case.
+    if ($entity->type->target_id == 'landing_page') {
+      // In this case we want to invalidate the cache tag for
+      // the parent of the current term.
+      $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+      if (isset($term->parent->target_id)) {
+        $tid = $term->parent->target_id;
+      }
+    }
+    return $tid;
+  }
+
 }
+

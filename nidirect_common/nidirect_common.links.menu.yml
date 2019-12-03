@@ -1,3 +1,8 @@
+nidirect.main.home:
+  title: 'Home'
+  route_name: <front>
+  menu_name: main
+  weight: 4
 nidirect.main.news:
   title: 'News'
   url: internal:/news

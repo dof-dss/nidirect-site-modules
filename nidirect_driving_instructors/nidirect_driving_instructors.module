@@ -99,7 +99,8 @@ function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
  * Implements hook_search_api_query_alter().
  */
 function nidirect_driving_instructors_search_api_query_alter(QueryInterface $query) {
-  if ($query->getDisplayPlugin()->getPluginDefinition()['view_display'] == "driving_instructor_results") {
+  $display_plugin = $query->getDisplayPlugin();
+  if (!empty($display_plugin) && $display_plugin->getPluginDefinition()['view_display'] == "driving_instructor_results") {
     $keys = $query->getKeys();
 
     // If present remove the second part of any postcode entry as we only want

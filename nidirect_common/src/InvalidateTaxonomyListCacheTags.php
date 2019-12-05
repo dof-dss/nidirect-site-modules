@@ -52,16 +52,16 @@ class InvalidateTaxonomyListCacheTags {
       if ($entity->hasField($thisfield)) {
         $tid = $entity->get($thisfield)->target_id;
         // If landing page, get parent.
-        $tid = $this->checkLandingPageParent($entity, $tid);
-        if (isset($tid)) {
+        if (!empty($tid)) {
+          $tid = $this->checkLandingPageParent($entity, $tid);
           $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
         }
         // If this is an update, invalidate cache tag for
         // original taxonomy term as well.
         if (isset($entity->original)) {
           $tid = $entity->original->get($thisfield)->target_id;
-          $tid = $this->checkLandingPageParent($entity, $tid);
-          if (isset($tid)) {
+          if (!empty($tid)) {
+            $tid = $this->checkLandingPageParent($entity, $tid);
             $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
           }
         }

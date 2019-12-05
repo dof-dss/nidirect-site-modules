@@ -237,3 +237,18 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
     }
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add description to theme/subtheme field for landing pages.
+  if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {
+    if (isset($form['field_subtheme'])) {
+      $msg = "Note that the theme/subtheme that you choose here will be overridden by this landing page. <br/>";
+      $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
+      $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
+      $form['field_subtheme']['widget']['#description'] = t($msg);
+    }
+  }
+}

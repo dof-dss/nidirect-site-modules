@@ -94,7 +94,7 @@ class GpRevisionRevertTranslationForm extends GpRevisionRevertForm {
     $revert_untranslated_fields = $form_state->getValue('revert_untranslated_fields');
 
     /** @var \Drupal\nidirect_gp\Entity\GpInterface $default_revision */
-    $latest_revision = $this->GpStorage->load($revision->id());
+    $latest_revision = $this->gpStorage->load($revision->id());
     $latest_revision_translation = $latest_revision->getTranslation($this->langcode);
 
     $revision_translation = $revision->getTranslation($this->langcode);

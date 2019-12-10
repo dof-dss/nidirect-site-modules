@@ -31,7 +31,7 @@ class GpRevisionRevertForm extends ConfirmFormBase {
    *
    * @var \Drupal\Core\Entity\EntityStorageInterface
    */
-  protected $GpStorage;
+  protected $gpStorage;
 
   /**
    * The date formatter service.
@@ -49,7 +49,7 @@ class GpRevisionRevertForm extends ConfirmFormBase {
    *   The date formatter service.
    */
   public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter) {
-    $this->GpStorage = $entity_storage;
+    $this->gpStorage = $entity_storage;
     $this->dateFormatter = $date_formatter;
   }
 
@@ -102,7 +102,7 @@ class GpRevisionRevertForm extends ConfirmFormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, $gp_revision = NULL) {
-    $this->revision = $this->GpStorage->loadRevision($gp_revision);
+    $this->revision = $this->gpStorage->loadRevision($gp_revision);
     $form = parent::buildForm($form, $form_state);
 
     return $form;

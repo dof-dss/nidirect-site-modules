@@ -25,6 +25,13 @@ use Symfony\Component\HttpFoundation\RequestStack;
 class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Route matches from the service container parameters.
+   *
+   * @var array
+   */
+  protected $routeMatches;
+
+  /**
    * Path alias manager service.
    *
    * @var \Drupal\Core\Path\AliasManagerInterface

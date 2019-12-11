@@ -99,7 +99,7 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
       $theme_tid = $node->field_subtheme->target_id;
 
       // Find parent terms, if any and begin to build up link chain.
-      $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($theme_tid);
+      $ancestors = $this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($theme_tid);
       // Flip so we have oldest > youngest ancestors.
       $ancestors = array_reverse($ancestors, TRUE);
 

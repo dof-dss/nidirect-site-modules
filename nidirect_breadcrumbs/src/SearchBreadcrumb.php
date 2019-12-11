@@ -15,6 +15,13 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class SearchBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Route matches from the service container parameters.
+   *
+   * @var array
+   */
+  protected $routeMatches;
+
+  /**
    * Class constructor.
    */
   public function __construct(array $route_matches) {

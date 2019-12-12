@@ -72,22 +72,22 @@ class DrivingInstructorsBreadcrumb implements BreadcrumbBuilderInterface {
   public function build(RouteMatchInterface $route_match) {
     $breadcrumb = new Breadcrumb();
     $term_storage = $this->entityTypeManager->getStorage('taxonomy_term');
+    // Motoring (12)
+    // Learners and new drivers (163)
+    // Learn to drive (366)
+    $tids = [12, 163, 366];
+    $terms = $term_storage->loadMultiple($tids);
 
     $links = [];
     // Home.
     $links[] = Link::createFromRoute(t('Home'), '<front>');
-    // Motoring term (12).
-    $term = $term_storage->load(12);
-    $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
-    $cache_tags[] = 'taxonomy_term:' . $term->id();
-    // Learners and new drivers (163).
-    $term = $term_storage->load(163);
-    $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
-    $cache_tags[] = 'taxonomy_term:' . $term->id();
-    // Learn to drive (366).
-    $term = $term_storage->load(366);
-    $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
-    $cache_tags[] = 'taxonomy_term:' . $term->id();
+
+    if (!empty($terms)) {
+      foreach ($terms as $term) {
+        $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
+        $cache_tags[] = 'taxonomy_term:' . $term->id();
+      }
+    }
 
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);

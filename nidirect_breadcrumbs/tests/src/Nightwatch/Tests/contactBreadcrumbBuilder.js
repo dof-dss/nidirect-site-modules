@@ -30,6 +30,16 @@ module.exports = {
           .expect.element('nav.breadcrumb .breadcrumb--list')
           .to.have.text.to.match(/(Home)\W+(Contacts)$/);
       })
-  }
+  },
+
+  'Test that Contact listing page does not show a breadcrumb': browser => {
+    browser
+      .pause(2000, function () {
+        browser
+          .drupalRelativeURL('/contacts')
+          .waitForElementVisible('body', 2000)
+          .expect.element('nav.breadcrumb .breadcrumb--list').to.not.be.present;
+      })
+  },
 
 };

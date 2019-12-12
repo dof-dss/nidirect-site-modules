@@ -14,6 +14,11 @@ services:
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+  nidirect_breadcrumbs.breadcrumb.driving_instructors:
+    class: Drupal\nidirect_breadcrumbs\DrivingInstructorsBreadcrumb
+    arguments: ['%breadcrumb.driving_instructors.matches%', '@entity_type.manager']
+    tags:
+      - { name: breadcrumb_builder }
   nidirect_breadcrumbs.breadcrumb.gp_practice:
     class: Drupal\nidirect_breadcrumbs\GpPracticeBreadcrumb
     arguments: ['@entity_type.manager']
@@ -51,3 +56,5 @@ parameters:
     - view.publications.search_page
   breadcrumb.schoolclosures.matches:
     - /services/school-closures
+  breadcrumb.driving_instructors.matches:
+    - view.driving_instructors.driving_instructor_results

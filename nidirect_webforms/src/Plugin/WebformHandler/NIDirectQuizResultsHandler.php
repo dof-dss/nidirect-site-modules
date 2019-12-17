@@ -80,14 +80,6 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
-    $form['pass_mark'] = [
-      '#type' => 'number',
-      '#title' => $this->t('Pass mark'),
-      '#value' => $this->configuration['pass_mark'],
-      '#description' => $this->t('Number of questions to get correct for a pass grade.'),
-      '#weight' => 1,
-    ];
-
     // Result display.
     $form['result'] = [
       '#type' => 'details',
@@ -122,6 +114,35 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
       '#format' => 'full_html',
       '#value' => $this->configuration['feedback'],
     ];
+
+    // Result display.
+    $form['answers'] = [
+      '#type' => 'details',
+      '#title' => $this->t('Answers'),
+      '#weight' => 5,
+    ];
+
+    $form['answers']['pass_mark'] = [
+      '#type' => 'number',
+      '#title' => $this->t('Pass mark'),
+      '#value' => $this->configuration['pass_mark'],
+      '#description' => $this->t('Number of questions to get correct for a pass grade.'),
+    ];
+
+    $webform_elements = $form_state->getFormObject()->getWebform()->getElementsDecodedAndFlattened();
+    $webform_questions = [];
+
+    // Iterate Webform and extract question elements.
+    foreach ($webform_elements as $key => $element) {
+      if ($element['#type'] == 'radios') {
+        $webform_questions[$key] = $element;
+        $form['answers'][$key] = [
+            '#type' => 'details',
+            '#title' => ucfirst(str_replace('_', ' ', $key)),
+            '#weight' => 5,
+        ];
+      }
+    }
 
     return $form;
   }

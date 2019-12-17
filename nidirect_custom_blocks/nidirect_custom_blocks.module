@@ -1,0 +1,20 @@
+<?php
+
+/**
+ * @file
+ * module file.
+ */
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_custom_blocks_theme() {
+  return [
+    'nidirect_article_teasers_by_topic' => [
+      'variables' => [
+        'content' => NULL
+      ],
+      'render element' => 'children',
+    ],
+  ];
+}

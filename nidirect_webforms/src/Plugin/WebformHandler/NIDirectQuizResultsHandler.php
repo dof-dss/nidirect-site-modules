@@ -127,6 +127,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
       '#title' => $this->t('Pass mark'),
       '#value' => $this->configuration['pass_mark'],
       '#description' => $this->t('Number of questions to get correct for a pass grade.'),
+      '#min' => 0,
     ];
 
     $webform_elements = $form_state->getFormObject()->getWebform()->getElementsDecodedAndFlattened();
@@ -169,6 +170,11 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
         ];
       }
     }
+
+    // Update maximum pass mark value based on the number of questions.
+    $total_questions = count($webform_questions);
+    $form['answers']['pass_mark']['#max'] = $total_questions;
+    $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
 
     return $form;
   }

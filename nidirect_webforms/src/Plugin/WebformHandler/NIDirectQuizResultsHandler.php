@@ -141,6 +141,32 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
             '#title' => ucfirst(str_replace('_', ' ', $key)),
             '#weight' => 5,
         ];
+
+        // Display the question text.
+        $form['answers'][$key]['question'] = [
+          '#markup' => $element['#title'],
+        ];
+
+        // Select the correct answer.
+        $form['answers'][$key]['correct_answer'] = [
+          '#type' => 'select',
+          '#title' => $this->t('Correct answer'),
+          '#options' => $element['#options']
+        ];
+
+        // Correct text response.
+        $form['answers'][$key]['correct_feedback'] = [
+          '#type' => 'webform_html_editor',
+          '#title' => $this->t('Correct answer feedback'),
+          '#format' => 'full_html',
+        ];
+
+        // Incorrect text response.
+        $form['answers'][$key]['incorrect_feedback'] = [
+          '#type' => 'webform_html_editor',
+          '#title' => $this->t('Incorrect answer feedback'),
+          '#format' => 'full_html',
+        ];
       }
     }
 

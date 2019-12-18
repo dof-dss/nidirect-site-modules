@@ -78,8 +78,6 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-
-    ksm($this->configuration);
     // Result display.
     $form['result'] = [
       '#type' => 'details',
@@ -197,6 +195,42 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     // Remove the passmark and set the question answers.
     unset($values['answers']['pass_mark']);
     $this->configuration['answers'] = $values['answers'];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function preprocessConfirmation(array &$variables) {
+    $handlers = $variables['webform']->getHandlers();
+
+    foreach ($handlers as $handler) {
+      if ($handler->getPluginId() == $this->getPluginId()) {
+        $user_response = $variables['webform_submission']->getData();;
+        $config = $handler->getConfiguration();
+        $config = $config['settings'];
+        $elements = $variables['webform']->getElementsDecodedAndFlattened();
+
+        $answers = $config['answers'];
+        $message = '';
+
+        foreach ($answers as $id => $answer) {
+            $question_number = '<h2>' . ucfirst(str_replace('_', ' ', $id)) . '</h2>';
+            $question_title = '<p>' . $elements[$id]['#title'] . '</p>';
+
+            if ($user_response[$id] == $answer['correct_answer']) {
+              $answer_feedback = '<h3>Correct</h3>' . $answer['correct_feedback'];
+            } else {
+              $answer_feedback = '<h3>Incorrect</h3>' . $answer['incorrect_feedback'];
+            }
+
+          $message .= $question_number . $question_title . $answer_feedback;
+        }
+
+      $variables['message'] = [
+        '#markup' => $message
+      ];
+      }
+    }
   }
 
 }

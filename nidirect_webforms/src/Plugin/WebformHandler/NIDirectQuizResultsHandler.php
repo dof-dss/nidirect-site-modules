@@ -79,7 +79,6 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
-
     $form = parent::buildConfigurationForm($form, $form_state);
 
     // Result display.
@@ -137,7 +136,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
     // Iterate Webform and extract question elements.
     foreach ($webform_elements as $key => $element) {
-      if ($element['#type'] == 'radios') {
+      if ($element['#type'] == 'radios' || $element['#type'] == 'checkboxes') {
         $webform_questions[$key] = $element;
         $form['answers'][$key] = [
             '#type' => 'details',
@@ -157,6 +156,12 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           '#options' => $element['#options'],
           '#default_value' => $this->configuration['answers'][$key]['correct_answer'] ?? '',
         ];
+
+        // Support multiple answers if form element is checkboxes.
+        if ($element['#type'] == 'checkboxes') {
+          $form['answers'][$key]['correct_answer']['#title'] = $this->t('Correct answer(s)');
+          $form['answers'][$key]['correct_answer']['#multiple'] = TRUE;
+        }
 
         // Correct text response.
         $form['answers'][$key]['correct_feedback'] = [

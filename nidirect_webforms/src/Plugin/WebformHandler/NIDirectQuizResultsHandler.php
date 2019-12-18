@@ -71,6 +71,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       'feedback' => '',
       'answers' => [],
       'message' => '',
+      'delete_submissions' => FALSE,
     ];
   }
 
@@ -78,6 +79,9 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
+
+    $form = parent::buildConfigurationForm($form, $form_state);
+
     // Result display.
     $form['result'] = [
       '#type' => 'details',
@@ -177,7 +181,14 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     $form['answers']['pass_mark']['#max'] = $total_questions;
     $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
 
-    return $form;
+    $form['delete_submissions'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Delete quiz submissions when completed.'),
+      '#default_value' => $this->configuration['delete_submissions'],
+      '#group' => 'advanced',
+    ];
+
+    return $this->setSettingsParents($form);
   }
 
   /**
@@ -186,11 +197,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
   public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
     parent::submitConfigurationForm($form, $form_state);
     $values = $form_state->getValues();
-    $this->configuration['introduction'] = $values['result']['introduction'];
-    $this->configuration['pass_text'] = $values['result']['pass_text'];
-    $this->configuration['fail_text'] = $values['result']['fail_text'];
-    $this->configuration['feedback'] = $values['result']['feedback'];
-    $this->configuration['pass_mark'] = $values['answers']['pass_mark'];
+
+    $this->configuration['introduction'] = $values['introduction'];
+    $this->configuration['pass_text'] = $values['pass_text'];
+    $this->configuration['fail_text'] = $values['fail_text'];
+    $this->configuration['feedback'] = $values['feedback'];
+    $this->configuration['pass_mark'] = $values['pass_mark'];
+    $this->configuration['delete_submissions'] = $values['delete_submissions'];
 
     // Remove the passmark and set the question answers.
     unset($values['answers']['pass_mark']);
@@ -239,6 +252,11 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $variables['message'] = [
           '#markup' => $message
         ];
+
+        // Delete this submission from the database.
+        if ($config['delete_submissions']) {
+          $variables['webform_submission']->delete();
+        }
       }
     }
   }

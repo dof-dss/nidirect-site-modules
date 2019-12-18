@@ -123,7 +123,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     $form['answers']['pass_mark'] = [
       '#type' => 'number',
       '#title' => $this->t('Pass mark'),
-      '#description' => $this->t('Number of questions to get correct for a pass grade.'),
+      '#description' => $this->t('Number of questions to get correct for a pass grade. Set to zero to disable pass/fail display.'),
       '#default_value' => $this->configuration['pass_mark'],
       '#min' => 0,
     ];
@@ -228,10 +228,12 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           $message .= $question_number . $question_title . $answer_feedback;
         }
 
-        // Determine if the user has passed.
-        $passed = FALSE;
-        if ($user_mark >= $config['pass_mark']) {
-          $passed = TRUE;
+        // Determine if the user has passed if we have grading enabled.
+        if ($config['pass_mark'] > 0) {
+          $passed = FALSE;
+          if ($user_mark >= $config['pass_mark']) {
+            $passed = TRUE;
+          }
         }
 
         $variables['message'] = [

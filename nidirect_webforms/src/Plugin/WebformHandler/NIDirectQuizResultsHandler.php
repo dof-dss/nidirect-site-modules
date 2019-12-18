@@ -27,8 +27,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *   submission = \Drupal\webform\Plugin\WebformHandlerInterface::SUBMISSION_REQUIRED,
  * )
  */
-class NIDirectQuizResultsHandler extends WebformHandlerBase
-{
+class NIDirectQuizResultsHandler extends WebformHandlerBase {
   /**
    * {@inheritdoc}
    */
@@ -80,6 +79,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
    */
   public function buildConfigurationForm(array $form, FormStateInterface $form_state) {
 
+    ksm($this->configuration);
     // Result display.
     $form['result'] = [
       '#type' => 'details',
@@ -91,28 +91,28 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Introduction'),
       '#format' => 'full_html',
-      '#value' => $this->configuration['introduction'],
+      '#default_value' => $this->configuration['introduction'],
     ];
 
     $form['result']['pass_text'] = [
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Pass text'),
       '#format' => 'full_html',
-      '#value' => $this->configuration['pass_text'],
+      '#default_value' => $this->configuration['pass_text'],
     ];
 
     $form['result']['fail_text'] = [
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Fail text'),
       '#format' => 'full_html',
-      '#value' => $this->configuration['fail_text'],
+      '#default_value' => $this->configuration['fail_text'],
     ];
 
     $form['result']['feedback'] = [
       '#type' => 'webform_html_editor',
       '#title' => $this->t('Feedback text'),
       '#format' => 'full_html',
-      '#value' => $this->configuration['feedback'],
+      '#default_value' => $this->configuration['feedback'],
     ];
 
     // Result display.
@@ -125,8 +125,8 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
     $form['answers']['pass_mark'] = [
       '#type' => 'number',
       '#title' => $this->t('Pass mark'),
-      '#value' => $this->configuration['pass_mark'],
       '#description' => $this->t('Number of questions to get correct for a pass grade.'),
+      '#default_value' => $this->configuration['pass_mark'],
       '#min' => 0,
     ];
 
@@ -152,7 +152,8 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
         $form['answers'][$key]['correct_answer'] = [
           '#type' => 'select',
           '#title' => $this->t('Correct answer'),
-          '#options' => $element['#options']
+          '#options' => $element['#options'],
+          '#default_value' => $this->configuration['answers'][$key]['correct_answer'] ?? '',
         ];
 
         // Correct text response.
@@ -160,6 +161,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
           '#type' => 'webform_html_editor',
           '#title' => $this->t('Correct answer feedback'),
           '#format' => 'full_html',
+          '#default_value' => $this->configuration['answers'][$key]['correct_feedback'] ?? '',
         ];
 
         // Incorrect text response.
@@ -167,6 +169,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
           '#type' => 'webform_html_editor',
           '#title' => $this->t('Incorrect answer feedback'),
           '#format' => 'full_html',
+          '#default_value' => $this->configuration['answers'][$key]['incorrect_feedback'] ?? '',
         ];
       }
     }
@@ -177,6 +180,23 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase
     $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitConfigurationForm(array &$form, FormStateInterface $form_state) {
+    parent::submitConfigurationForm($form, $form_state);
+    $values = $form_state->getValues();
+    $this->configuration['introduction'] = $values['result']['introduction'];
+    $this->configuration['pass_text'] = $values['result']['pass_text'];
+    $this->configuration['fail_text'] = $values['result']['fail_text'];
+    $this->configuration['feedback'] = $values['result']['feedback'];
+    $this->configuration['pass_mark'] = $values['answers']['pass_mark'];
+
+    // Remove the passmark and set the question answers.
+    unset($values['answers']['pass_mark']);
+    $this->configuration['answers'] = $values['answers'];
   }
 
 }

@@ -212,6 +212,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
         $answers = $config['answers'];
         $message = '';
+        $user_mark = 0;
 
         foreach ($answers as $id => $answer) {
             $question_number = '<h2>' . ucfirst(str_replace('_', ' ', $id)) . '</h2>';
@@ -219,6 +220,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
             if ($user_response[$id] == $answer['correct_answer']) {
               $answer_feedback = '<h3>Correct</h3>' . $answer['correct_feedback'];
+              $user_mark++;
             } else {
               $answer_feedback = '<h3>Incorrect</h3>' . $answer['incorrect_feedback'];
             }
@@ -226,9 +228,15 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           $message .= $question_number . $question_title . $answer_feedback;
         }
 
-      $variables['message'] = [
-        '#markup' => $message
-      ];
+        // Determine if the user has passed.
+        $passed = FALSE;
+        if ($user_mark >= $config['pass_mark']) {
+          $passed = TRUE;
+        }
+
+        $variables['message'] = [
+          '#markup' => $message
+        ];
       }
     }
   }

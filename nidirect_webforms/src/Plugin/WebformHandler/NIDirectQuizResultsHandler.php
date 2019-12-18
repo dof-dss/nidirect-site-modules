@@ -2,17 +2,8 @@
 
 namespace Drupal\nidirect_webforms\Plugin\WebformHandler;
 
-use Drupal\Component\Utility\Xss;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Logger\LoggerChannelFactoryInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\webform\Plugin\WebformHandlerBase;
-use Drupal\webform\WebformInterface;
-use Drupal\webform\WebformSubmissionConditionsValidatorInterface;
-use Drupal\webform\WebformSubmissionInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * NIDirect Quiz Results Webform Handler.
@@ -28,36 +19,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * )
  */
 class NIDirectQuizResultsHandler extends WebformHandlerBase {
-  /**
-   * {@inheritdoc}
-   */
-  public function __construct(
-    array $configuration,
-    $plugin_id,
-    $plugin_definition,
-    LoggerChannelFactoryInterface $logger_factory,
-    ConfigFactoryInterface $config_factory,
-    EntityTypeManagerInterface $entity_type_manager,
-    WebformSubmissionConditionsValidatorInterface $conditions_validator)
-  {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $logger_factory, $config_factory, $entity_type_manager, $conditions_validator);
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition)
-  {
-    return new static(
-      $configuration,
-      $plugin_id,
-      $plugin_definition,
-      $container->get('logger.factory'),
-      $container->get('config.factory'),
-      $container->get('entity_type.manager'),
-      $container->get('webform_submission.conditions_validator')
-    );
-  }
 
   /**
    * {@inheritdoc}
@@ -139,9 +100,9 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       if ($element['#type'] == 'radios' || $element['#type'] == 'checkboxes') {
         $webform_questions[$key] = $element;
         $form['answers'][$key] = [
-            '#type' => 'details',
-            '#title' => ucfirst(str_replace('_', ' ', $key)),
-            '#weight' => 5,
+          '#type' => 'details',
+          '#title' => ucfirst(str_replace('_', ' ', $key)),
+          '#weight' => 5,
         ];
 
         // Display the question text.
@@ -233,15 +194,17 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $user_mark = 0;
 
         foreach ($answers as $id => $answer) {
-            $question_number = '<h2>' . ucfirst(str_replace('_', ' ', $id)) . '</h2>';
-            $question_title = '<p>' . $elements[$id]['#title'] . '</p>';
+          $question_number = '<h2>' . ucfirst(str_replace('_', ' ', $id)) . '</h2>';
+          $question_title = '<p>' . $elements[$id]['#title'] . '</p>';
 
-            if ($user_response[$id] == $answer['correct_answer']) {
-              $answer_feedback = '<h3>Correct</h3>' . $answer['correct_feedback'];
-              $user_mark++;
-            } else {
-              $answer_feedback = '<h3>Incorrect</h3>' . $answer['incorrect_feedback'];
-            }
+          // todo: add support for multiple answers.
+          if ($user_response[$id] == $answer['correct_answer']) {
+            $answer_feedback = '<h3>Correct</h3>' . $answer['correct_feedback'];
+            $user_mark++;
+          }
+          else {
+            $answer_feedback = '<h3>Incorrect</h3>' . $answer['incorrect_feedback'];
+          }
 
           $message .= $question_number . $question_title . $answer_feedback;
         }
@@ -255,7 +218,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         }
 
         $variables['message'] = [
-          '#markup' => $message
+          '#markup' => $message,
         ];
 
         // Delete this submission from the database.

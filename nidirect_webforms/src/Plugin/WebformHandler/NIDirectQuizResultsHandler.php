@@ -124,6 +124,25 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           $form['answers'][$key]['correct_answer']['#title'] = $this->t('Correct answer(s)');
           $form['answers'][$key]['correct_answer']['#multiple'] = TRUE;
           $multiple_answers = TRUE;
+
+          $form['answers'][$key]['match_all_answers'] = [
+            '#type' => 'checkbox',
+            '#title' => $this->t('Match all for a correct answer'),
+            '#default_value' => $this->configuration['answers'][$key]['match_all_answers'] ?? TRUE,
+          ];
+
+          $form['answers'][$key]['match_total'] = [
+            '#type' => 'number',
+            '#title' => $this->t('Number to match for correct answer'),
+            '#default_value' => $this->configuration['answers'][$key]['match_total'] ?? 0,
+            '#min' => 0,
+            '#max' => count($element['#options']),
+            '#states' => [
+              'invisible' => [
+                ':input[name="settings[answers][' . $key . '][match_all_answers]"]' => ['checked' => TRUE],
+              ],
+            ],
+          ];
         }
 
         // Correct text response.

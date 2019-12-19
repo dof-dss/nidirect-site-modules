@@ -94,6 +94,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
     $webform_elements = $form_state->getFormObject()->getWebform()->getElementsDecodedAndFlattened();
     $webform_questions = [];
+    $multiple_answers = FALSE;
 
     // Iterate Webform and extract question elements.
     foreach ($webform_elements as $key => $element) {
@@ -122,6 +123,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         if ($element['#type'] == 'checkboxes') {
           $form['answers'][$key]['correct_answer']['#title'] = $this->t('Correct answer(s)');
           $form['answers'][$key]['correct_answer']['#multiple'] = TRUE;
+          $multiple_answers = TRUE;
         }
 
         // Correct text response.
@@ -142,10 +144,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       }
     }
 
-    // Update maximum pass mark value based on the number of questions.
-    $total_questions = count($webform_questions);
-    $form['answers']['pass_mark']['#max'] = $total_questions;
-    $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
+    // Update maximum pass mark value based on the number of questions
+    // if we only have single answer options, i.e radios.
+    if (!$multiple_answers) {
+      $total_questions = count($webform_questions);
+      $form['answers']['pass_mark']['#max'] = $total_questions;
+      $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
+    }
 
     $form['delete_submissions'] = [
       '#type' => 'checkbox',

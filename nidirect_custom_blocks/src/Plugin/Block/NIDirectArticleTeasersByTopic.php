@@ -2,8 +2,6 @@
 
 namespace Drupal\nidirect_custom_blocks\Plugin\Block;
 
-use Drupal\aggregator\FeedStorageInterface;
-use Drupal\aggregator\ItemStorageInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\RendererInterface;
@@ -73,11 +71,15 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
    */
   public function build() {
     $build = [];
+    // Get the current node.
     $node = $this->routeMatch->getParameter('node');
+    // Get a list of article teasers by term.
     $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
+    // Get a list of article teasers by topic.
     $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id);
     // Sort entries alphabetically (regardless of type).
     ksort($results);
+    // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
     $build['nidirect_article_teasers_by_topic'] = $results;
     return $build;
   }
@@ -93,8 +95,9 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     foreach ($articles_view['view_build']['#view']->result as $row) {
       $thisresult = [];
       // Exclude the current page from the list.
-      if ($row->nid == $current_nid)
+      if ($row->nid == $current_nid) {
         continue;
+      }
       // This will be a link to an article.
       $thisresult['title_link'] = [
         '#type' => 'link',
@@ -118,7 +121,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
    * Utility function to render 'site subtopics' view.
    */
   private function renderArticleTeasersByTopic($tid) {
-    // Render the 'articles by term' view and process the results.
+    // Render the 'site subtopics' view and process the results.
     $results = [];
     $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
     $this->renderer->renderRoot($articles_view);

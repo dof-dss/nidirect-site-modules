@@ -37,16 +37,23 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
     $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
+      $thisresult = [];
       // Exclude the current page from the list.
       if ($row->nid == $current_nid)
         continue;
       // This will be a link to an article.
-      $results[strtolower($row->_entity->getTitle())] = [
+      $thisresult['title_link'] = [
         '#type' => 'link',
         '#title' => $row->_entity->getTitle(),
         '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
-        '#suffix' => $row->_entity->field_summary->value
       ];
+      $thisresult['more_link'] = [
+        '#type' => 'link',
+        '#title' => '... ' . t('more'),
+        '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+      ];
+      $thisresult['summary_text'] = $row->_entity->field_summary->value;
+      $results[strtolower($row->_entity->getTitle())] = $thisresult;
       // Add cache tag for each article.
       $cache_tags[] = 'node:' . $row->nid;
     }
@@ -62,16 +69,20 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
     $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
-      // This will be a link to an article.
-      $title = $row->_entity->getName();
-      $summary = $row->_entity->field_teaser->value;
-      $tid = $row->tid;
-      $results[strtolower($row->_entity->getName())] = [
+      $thisresult = [];
+      // This will be a link to a taxonomy term.
+      $thisresult['title_link'] = [
         '#type' => 'link',
         '#title' => $row->_entity->getName(),
         '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
-        '#suffix' => $summary
       ];
+      $thisresult['more_link'] = [
+        '#type' => 'link',
+        '#title' => '... ' . t('more'),
+        '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+      ];
+      $thisresult['summary_text'] = $row->_entity->field_teaser->value;
+      $results[strtolower($row->_entity->getName())] = $thisresult;
       // Add cache tag for each listed term.
       $cache_tags[] = 'taxonomy_term:' . $row->tid;
     }

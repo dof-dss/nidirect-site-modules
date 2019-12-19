@@ -74,6 +74,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     $cache_tags = [];
     // Get the current node.
     $node = $this->routeMatch->getParameter('node');
+    $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
     // Get a list of article teasers by term.
     $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
     // Get a list of article teasers by topic.

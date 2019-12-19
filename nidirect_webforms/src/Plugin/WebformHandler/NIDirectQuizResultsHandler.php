@@ -28,8 +28,8 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       'introduction' => '',
       'pass_text' => '',
       'fail_text' => '',
-      'pass_mark' => 0,
-      'feedback' => '',
+      'pass_score' => 0,
+      'feedback_introduction' => '',
       'answers' => [],
       'message' => '',
       'delete_submissions' => FALSE,
@@ -70,11 +70,11 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#default_value' => $this->configuration['fail_text'],
     ];
 
-    $form['result']['feedback'] = [
+    $form['result']['feedback_introduction'] = [
       '#type' => 'webform_html_editor',
-      '#title' => $this->t('Feedback text'),
+      '#title' => $this->t('Feedback introduction'),
       '#format' => 'full_html',
-      '#default_value' => $this->configuration['feedback'],
+      '#default_value' => $this->configuration['feedback_introduction'],
     ];
 
     // Result display.
@@ -84,11 +84,11 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#weight' => 5,
     ];
 
-    $form['answers']['pass_mark'] = [
+    $form['answers']['pass_score'] = [
       '#type' => 'number',
-      '#title' => $this->t('Pass mark'),
+      '#title' => $this->t('Pass score'),
       '#description' => $this->t('Number of questions to get correct for a pass grade. Set to zero to disable pass/fail display.'),
-      '#default_value' => $this->configuration['pass_mark'],
+      '#default_value' => $this->configuration['pass_score'],
       '#min' => 0,
     ];
 
@@ -148,8 +148,8 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     // if we only have single answer options, i.e radios.
     if (!$multiple_answers) {
       $total_questions = count($webform_questions);
-      $form['answers']['pass_mark']['#max'] = $total_questions;
-      $form['answers']['pass_mark']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
+      $form['answers']['pass_score']['#max'] = $total_questions;
+      $form['answers']['pass_score']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
     }
 
     $form['delete_submissions'] = [
@@ -170,14 +170,14 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     $values = $form_state->getValues();
 
     $this->configuration['introduction'] = $values['introduction'];
+    $this->configuration['pass_score'] = $values['pass_score'];
     $this->configuration['pass_text'] = $values['pass_text'];
     $this->configuration['fail_text'] = $values['fail_text'];
-    $this->configuration['feedback'] = $values['feedback'];
-    $this->configuration['pass_mark'] = $values['pass_mark'];
+    $this->configuration['feedback_introduction'] = $values['feedback_introduction'];
     $this->configuration['delete_submissions'] = $values['delete_submissions'];
 
     // Remove the passmark and set the question answers.
-    unset($values['answers']['pass_mark']);
+    unset($values['answers']['pass_score']);
     $this->configuration['answers'] = $values['answers'];
   }
 

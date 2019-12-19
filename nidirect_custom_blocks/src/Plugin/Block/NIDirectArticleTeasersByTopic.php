@@ -71,23 +71,27 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
    */
   public function build() {
     $build = [];
+    $cache_tags = [];
     // Get the current node.
     $node = $this->routeMatch->getParameter('node');
     // Get a list of article teasers by term.
-    $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
+    $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
     // Get a list of article teasers by topic.
-    $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id);
+    $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
     // Sort entries alphabetically (regardless of type).
     ksort($results);
     // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
     $build['nidirect_article_teasers_by_topic'] = $results;
+    $build['nidirect_article_teasers_by_topic']['#cache'] = [
+      'tags' => $cache_tags,
+    ];
     return $build;
   }
 
   /**
    * Utility function to render 'articles by term' view.
    */
-  private function renderArticleTeasersByTerm($tid, $current_nid) {
+  private function renderArticleTeasersByTerm($tid, $current_nid, &$cache_tags) {
     // Render the 'articles by term' view and process the results.
     $results = [];
     $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -120,7 +124,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
   /**
    * Utility function to render 'site subtopics' view.
    */
-  private function renderArticleTeasersByTopic($tid) {
+  private function renderArticleTeasersByTopic($tid, &$cache_tags) {
     // Render the 'site subtopics' view and process the results.
     $results = [];
     $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);

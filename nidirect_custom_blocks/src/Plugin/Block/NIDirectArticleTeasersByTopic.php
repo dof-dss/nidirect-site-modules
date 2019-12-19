@@ -23,7 +23,8 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
     $node = \Drupal::routeMatch()->getParameter('node');
     $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
     $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id);
-    //$build['nidirect_article_teasers_by_topic']['#markup'] = 'Implement NIDirectArticleTeasersByTopic.';
+    // Sort entries alphabetically (regardless of type).
+    ksort($results);
     $build['nidirect_article_teasers_by_topic'] = $results;
     return $build;
   }
@@ -52,7 +53,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
         '#title' => '... ' . t('more'),
         '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
       ];
-      $thisresult['summary_text'] = $row->_entity->field_summary->value;
+      $thisresult['summary_text'] = ['#markup' => $row->_entity->field_summary->value];
       $results[strtolower($row->_entity->getTitle())] = $thisresult;
       // Add cache tag for each article.
       $cache_tags[] = 'node:' . $row->nid;
@@ -81,7 +82,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
         '#title' => '... ' . t('more'),
         '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
       ];
-      $thisresult['summary_text'] = $row->_entity->field_teaser->value;
+      $thisresult['summary_text'] = ['#markup' => $row->_entity->field_teaser->value];
       $results[strtolower($row->_entity->getName())] = $thisresult;
       // Add cache tag for each listed term.
       $cache_tags[] = 'taxonomy_term:' . $row->tid;

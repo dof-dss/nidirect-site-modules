@@ -2,8 +2,13 @@
 
 namespace Drupal\nidirect_custom_blocks\Plugin\Block;
 
+use Drupal\aggregator\FeedStorageInterface;
+use Drupal\aggregator\ItemStorageInterface;
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Provides a 'NIDirectArticleTeasersByTopic' block.
@@ -13,7 +18,43 @@ use Drupal\Core\Url;
  *  admin_label = @Translation("NIDirect Article Teasers by Topic"),
  * )
  */
-class NIDirectArticleTeasersByTopic extends BlockBase {
+class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The renderer.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected $renderer;
+
+  /**
+   * Constructs an AggregatorFeedBlock object.
+   *
+   * @param array $configuration
+   *   A configuration array containing information about the plugin instance.
+   * @param string $plugin_id
+   *   The plugin_id for the plugin instance.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Render\RendererInterface $renderer
+   *   The renderer.
+   */
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, RendererInterface $renderer = NULL) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->renderer = $renderer;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $configuration,
+      $plugin_id,
+      $plugin_definition,
+      $container->get('renderer')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -36,7 +77,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
     // Render the 'articles by term' view and process the results.
     $results = [];
     $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
-    \Drupal::service('renderer')->renderRoot($articles_view);
+    $this->renderer->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
       $thisresult = [];
       // Exclude the current page from the list.
@@ -68,7 +109,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase {
     // Render the 'articles by term' view and process the results.
     $results = [];
     $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
-    \Drupal::service('renderer')->renderRoot($articles_view);
+    $this->renderer->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
       $thisresult = [];
       // This will be a link to a taxonomy term.

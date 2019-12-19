@@ -77,7 +77,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#default_value' => $this->configuration['feedback_introduction'],
     ];
 
-    // Result display.
+    // Answers display.
     $form['answers'] = [
       '#type' => 'details',
       '#title' => $this->t('Answers'),
@@ -145,7 +145,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     }
 
     // Update maximum pass mark value based on the number of questions
-    // if we only have single answer options, i.e radios.
+    // if we only have single answer options, i.e radios and no checkboxes.
     if (!$multiple_answers) {
       $total_questions = count($webform_questions);
       $form['answers']['pass_score']['#max'] = $total_questions;
@@ -176,7 +176,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     $this->configuration['feedback_introduction'] = $values['feedback_introduction'];
     $this->configuration['delete_submissions'] = $values['delete_submissions'];
 
-    // Remove the passmark and set the question answers.
+    // Remove the pass score value so we can assign all the answer values.
     unset($values['answers']['pass_score']);
     $this->configuration['answers'] = $values['answers'];
   }
@@ -187,35 +187,38 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
   public function preprocessConfirmation(array &$variables) {
     $handlers = $variables['webform']->getHandlers();
 
+    // Iterate each webform handler until we match one of this type.
     foreach ($handlers as $handler) {
       if ($handler->getPluginId() == $this->getPluginId()) {
-        $user_response = $variables['webform_submission']->getData();;
         $config = $handler->getConfiguration();
-        $config = $config['settings'];
+        $settings = $config['settings'];
+
+        $user_responses = $variables['webform_submission']->getData();
         $elements = $variables['webform']->getElementsDecodedAndFlattened();
 
-        $answers = $config['answers'];
+        $answers = $settings['answers'];
         $user_score = 0;
         $max_score = count($answers);
-        $pass_score = $config['pass_score'];
+        $pass_score = $settings['pass_score'];
         $user_response_feedback = [];
 
+        // Iterate each answer and generate user feedback and scoring.
         foreach ($answers as $id => $answer) {
-
           // Process multiple and single answer elements.
           if (is_array($answer['correct_answer'])) {
             // User response must match all correct answers.
-            $incorrect = array_diff_assoc($user_response[$id], array_keys($answer['correct_answer']));
+            $incorrect = array_diff_assoc($user_responses[$id], array_keys($answer['correct_answer']));
             $passed = (count($incorrect) == 0) ? TRUE : FALSE;
           }
           else {
-            $passed = ($user_response[$id] == $answer['correct_answer']) ? TRUE : FALSE;
+            $passed = ($user_responses[$id] == $answer['correct_answer']) ? TRUE : FALSE;
           }
 
           if ($passed) {
             $feedback = $answer['correct_feedback'];
             $user_score++;
-          } else {
+          }
+          else {
             $feedback = $answer['incorrect_feedback'];
           }
 
@@ -225,32 +228,32 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             'feedback' => $feedback,
             'passed' => $passed,
           ];
-
         }
 
         $variables['message'] = [
           '#theme' => 'nidirect_webforms_quiz_results',
-          '#introduction' => $config['introduction'],
-          '#feedback' => $config['feedback'],
+          '#introduction' => $settings['introduction'],
+          '#feedback' => $settings['feedback'],
           '#answers' => $user_response_feedback,
           '#score' => $user_score,
           '#max_score' => $max_score,
           '#pass_score' => $pass_score,
         ];
 
-        // Determine if the user has passed if we have grading enabled.
-        if ($config['pass_score'] > 0) {
-          if ($user_score >= $config['pass_score']) {
-            $variables['message']['#result'] = $config['pass_text'];
+        // Determine if the user has passed if we have scoring enabled.
+        if ($settings['pass_score'] > 0) {
+          if ($user_score >= $settings['pass_score']) {
+            $variables['message']['#result'] = $settings['pass_text'];
             $variables['message']['#passed'] = TRUE;
-          } else {
-            $variables['message']['#result'] = $config['fail_text'];
+          }
+          else {
+            $variables['message']['#result'] = $settings['fail_text'];
             $variables['message']['#passed'] = FALSE;
           }
         }
 
         // Delete this submission from the database.
-        if ($config['delete_submissions']) {
+        if ($settings['delete_submissions']) {
           $variables['webform_submission']->delete();
         }
       }

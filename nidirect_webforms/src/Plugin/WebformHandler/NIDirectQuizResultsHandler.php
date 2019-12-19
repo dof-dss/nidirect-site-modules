@@ -197,6 +197,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $answers = $config['answers'];
         $user_score = 0;
         $max_score = count($answers);
+        $pass_score = $config['pass_score'];
         $user_response_feedback = [];
 
         foreach ($answers as $id => $answer) {
@@ -234,6 +235,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           '#answers' => $user_response_feedback,
           '#score' => $user_score,
           '#max_score' => $max_score,
+          '#pass_score' => $pass_score,
         ];
 
         // Determine if the user has passed if we have grading enabled.

@@ -196,23 +196,27 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
         $answers = $config['answers'];
         $user_score = 0;
-        $max_score = 0;
+        $max_score = count($answers);
         $user_response_feedback = [];
 
         foreach ($answers as $id => $answer) {
 
-          // todo: add support for multiple answers.
-          if ($user_response[$id] == $answer['correct_answer']) {
-            $feedback = $answer['correct_feedback'];
-            $passed = TRUE;
-            $user_score++;
+          // Process multiple and single answer elements.
+          if (is_array($answer['correct_answer'])) {
+            // User response must match all correct answers.
+            $incorrect = array_diff_assoc($user_response[$id], array_keys($answer['correct_answer']));
+            $passed = (count($incorrect) == 0) ? TRUE : FALSE;
           }
           else {
-            $feedback = $answer['incorrect_feedback'];
-            $passed = FALSE;
+            $passed = ($user_response[$id] == $answer['correct_answer']) ? TRUE : FALSE;
           }
 
-          $max_score++;
+          if ($passed) {
+            $feedback = $answer['correct_feedback'];
+            $user_score++;
+          } else {
+            $feedback = $answer['incorrect_feedback'];
+          }
 
           $user_response_feedback[] = [
             'title' => ucfirst(str_replace('_', ' ', $id)),

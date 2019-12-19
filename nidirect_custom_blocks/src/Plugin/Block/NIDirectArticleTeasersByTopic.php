@@ -7,6 +7,7 @@ use Drupal\aggregator\ItemStorageInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Render\RendererInterface;
+use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -28,6 +29,13 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
   protected $renderer;
 
   /**
+   * The route match service.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $routeMatch;
+
+  /**
    * Constructs an AggregatorFeedBlock object.
    *
    * @param array $configuration
@@ -38,10 +46,13 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
    *   The plugin implementation definition.
    * @param \Drupal\Core\Render\RendererInterface $renderer
    *   The renderer.
+   * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+   *   Current route match service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, RendererInterface $renderer = NULL) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, RendererInterface $renderer = NULL, RouteMatchInterface $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->renderer = $renderer;
+    $this->routeMatch = $route_match;
   }
 
   /**
@@ -52,7 +63,8 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('renderer')
+      $container->get('renderer'),
+      $container->get('current_route_match')
     );
   }
 
@@ -61,7 +73,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
    */
   public function build() {
     $build = [];
-    $node = \Drupal::routeMatch()->getParameter('node');
+    $node = $this->routeMatch->getParameter('node');
     $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
     $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id);
     // Sort entries alphabetically (regardless of type).

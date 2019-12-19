@@ -195,36 +195,53 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $elements = $variables['webform']->getElementsDecodedAndFlattened();
 
         $answers = $config['answers'];
-        $message = '';
-        $user_mark = 0;
+        $user_score = 0;
+        $max_score = 0;
+        $user_response_feedback = [];
 
         foreach ($answers as $id => $answer) {
-          $question_number = '<h2>' . ucfirst(str_replace('_', ' ', $id)) . '</h2>';
-          $question_title = '<p>' . $elements[$id]['#title'] . '</p>';
 
           // todo: add support for multiple answers.
           if ($user_response[$id] == $answer['correct_answer']) {
-            $answer_feedback = '<h3>Correct</h3>' . $answer['correct_feedback'];
-            $user_mark++;
+            $feedback = $answer['correct_feedback'];
+            $passed = TRUE;
+            $user_score++;
           }
           else {
-            $answer_feedback = '<h3>Incorrect</h3>' . $answer['incorrect_feedback'];
+            $feedback = $answer['incorrect_feedback'];
+            $passed = FALSE;
           }
 
-          $message .= $question_number . $question_title . $answer_feedback;
-        }
+          $max_score++;
 
-        // Determine if the user has passed if we have grading enabled.
-        if ($config['pass_mark'] > 0) {
-          $passed = FALSE;
-          if ($user_mark >= $config['pass_mark']) {
-            $passed = TRUE;
-          }
+          $user_response_feedback[] = [
+            'title' => ucfirst(str_replace('_', ' ', $id)),
+            'question' => $elements[$id]['#title'],
+            'feedback' => $feedback,
+            'passed' => $passed,
+          ];
+
         }
 
         $variables['message'] = [
-          '#markup' => $message,
+          '#theme' => 'nidirect_webforms_quiz_results',
+          '#introduction' => $config['introduction'],
+          '#feedback' => $config['feedback'],
+          '#answers' => $user_response_feedback,
+          '#score' => $user_score,
+          '#max_score' => $max_score,
         ];
+
+        // Determine if the user has passed if we have grading enabled.
+        if ($config['pass_score'] > 0) {
+          if ($user_score >= $config['pass_score']) {
+            $variables['message']['#result'] = $config['pass_text'];
+            $variables['message']['#passed'] = TRUE;
+          } else {
+            $variables['message']['#result'] = $config['fail_text'];
+            $variables['message']['#passed'] = FALSE;
+          }
+        }
 
         // Delete this submission from the database.
         if ($config['delete_submissions']) {

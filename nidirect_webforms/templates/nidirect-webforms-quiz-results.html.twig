@@ -1,0 +1,18 @@
+<div class="introduction">
+  {{ introduction|raw }}
+</div>
+{% if result %}
+  <div class="grade"> {{ result|raw }}</div>
+{% endif %}
+{% if score and max_score %}
+<h3>You scored {{ score }} out of {{ max_score }}</h3>
+{% endif %}
+<div class="feedback"> {{ feedback|raw }}</div>
+<h2>Summary and feedback</h2>
+{% for answer in answers %}
+  <div class="answer">
+    <h2>{{ answer.title }}</h2>
+    <p class="question">{{ answer.question }}</p>
+    <div class="grade"> {{ answer.feedback|raw }}</div>
+  </div>
+{% endfor %}

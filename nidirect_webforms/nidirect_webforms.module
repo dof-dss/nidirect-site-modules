@@ -28,8 +28,16 @@ function nidirect_webforms_help($route_name, RouteMatchInterface $route_match) {
  */
 function nidirect_webforms_theme() {
   return [
-    'nidirect_webforms' => [
+    'nidirect_webforms_quiz_results' => [
       'render element' => 'children',
+      'variables' => [
+        'introduction' => NULL,
+        'result' => NULL,
+        'score' => 0,
+        'max_score' => 0,
+        'feedback' => NULL,
+        'answers' => [],
+      ],
     ],
   ];
 }

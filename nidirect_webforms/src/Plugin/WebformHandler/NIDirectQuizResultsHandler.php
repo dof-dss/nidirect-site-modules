@@ -219,7 +219,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $user_score = 0;
         $max_score = count($answers);
         $pass_score = $settings['pass_score'];
-        $user_response_feedback = [];
+        $answer_feedback = [];
 
         // Iterate each answer and generate user feedback and scoring.
         foreach ($answers as $id => $answer) {
@@ -253,7 +253,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             $feedback = $answer['incorrect_feedback'];
           }
 
-          $user_response_feedback[] = [
+          $answer_feedback[] = [
             'title' => ucfirst(str_replace('_', ' ', $id)),
             'question' => $elements[$id]['#title'],
             'feedback' => $feedback,
@@ -263,9 +263,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
         $variables['message'] = [
           '#theme' => 'nidirect_webforms_quiz_results',
-          '#introduction' => $settings['introduction'],
-          '#feedback' => $settings['feedback'],
-          '#answers' => $user_response_feedback,
+          '#introduction' => [
+            '#markup' => $settings['introduction']
+          ],
+          '#feedback_introduction' => [
+            '#markup' => $settings['feedback_introduction']
+          ],
+          '#feedback' => $answer_feedback,
           '#score' => $user_score,
           '#max_score' => $max_score,
           '#pass_score' => $pass_score,

@@ -1,26 +1,24 @@
 {% set classes = [
   'webform--quiz',
+  passed ? 'passed' : 'failed'
 ]
 %}
 <div {{ attributes.addClass(classes) }}>
-<div class="introduction">
-  {{ introduction }}
-</div>
-{% if score and max_score and pass_score %}
-<h3>You scored {{ score }} out of {{ max_score }}</h3>
-<span>(the pass mark is {{ pass_score }} or above)</span>
-{% endif %}
-<div class="feedback">
-  {{ feedback_introduction }}
-</div>
-<h2>Summary and feedback</h2>
-{% for answer in answers %}
-  <div class="answer">
-    <h2>{{ answer.title }}</h2>
-    <p class="question">{{ answer.question }}</p>
-    <div class="grade"> {{ answer.feedback|raw }}</div>
+  <div class="introduction">
+    {{ introduction }}
   </div>
-{% endfor %}
+  <div class="result">
+    {{ result }}
+  </div>
+  {% if score and max_score and pass_score %}
+    <h3>{% trans %}You scored {{ score }} out of {{ max_score }}{% endtrans %}</h3>
+    <span>({% trans %}the pass mark is {{ pass_score }} or above{% endtrans %})</span>
+  {% endif %}
+  <div class="feedback">
+    {{ feedback_introduction }}
+  </div>
+  <h2>{% trans %}Summary and feedback{% endtrans %}</h2>
+  {{ feedback }}
 </div>
 
-{{ kint() }}
+{{  kint() }}

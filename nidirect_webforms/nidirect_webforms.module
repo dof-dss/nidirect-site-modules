@@ -32,9 +32,9 @@ function nidirect_webforms_theme() {
       'render element' => 'children',
       'variables' => [
         'introduction' => NULL,
+        'result' => NULL,
         'feedback_introduction' => NULL,
         'feedback' => [],
-        'result' => NULL,
         'score' => 0,
         'max_score' => 0,
         'pass_score' => 0,

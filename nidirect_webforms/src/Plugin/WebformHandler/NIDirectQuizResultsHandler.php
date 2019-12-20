@@ -278,11 +278,15 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         // Determine if the user has passed if we have scoring enabled.
         if ($settings['pass_score'] > 0) {
           if ($user_score >= $settings['pass_score']) {
-            $variables['message']['#result'] = $settings['pass_text'];
+            $variables['message']['#result'] = [
+              '#markup' => $settings['pass_text'],
+            ];
             $variables['message']['#passed'] = TRUE;
           }
           else {
-            $variables['message']['#result'] = $settings['fail_text'];
+            $variables['message']['#result'] = [
+              '#markup' => $settings['fail_text'],
+            ];
             $variables['message']['#passed'] = FALSE;
           }
         }

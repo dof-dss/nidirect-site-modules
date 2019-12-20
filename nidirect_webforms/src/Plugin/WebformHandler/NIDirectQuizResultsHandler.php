@@ -225,9 +225,21 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         foreach ($answers as $id => $answer) {
           // Process multiple and single answer elements.
           if (is_array($answer['correct_answer'])) {
-            // User response must match all correct answers.
-            $incorrect = array_diff_assoc($user_responses[$id], array_keys($answer['correct_answer']));
-            $passed = (count($incorrect) == 0) ? TRUE : FALSE;
+            // User response must match all correct answers or a set number.
+            if ($answer['match_all_answers']) {
+              $incorrect = array_diff_assoc($user_responses[$id], array_keys($answer['correct_answer']));
+              $passed = (count($incorrect) == 0) ? TRUE : FALSE;
+            }
+            else {
+              // Preliminary check.
+              if (count($user_responses[$id]) < $answer['match_total']) {
+                $passed = FALSE;
+              }
+              else {
+                $total = array_intersect($user_responses[$id], array_keys($answer['correct_answer']));
+                $passed = (count($total) >= $answer['match_total']) ? TRUE : FALSE;
+              }
+            }
           }
           else {
             $passed = ($user_responses[$id] == $answer['correct_answer']) ? TRUE : FALSE;

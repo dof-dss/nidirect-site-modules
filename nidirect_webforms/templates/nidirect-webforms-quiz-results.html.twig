@@ -2,7 +2,7 @@
   {{ introduction|raw }}
 </div>
 {% if result %}
-  <div class="grade"> {{ result|raw }}</div>
+  <div class="messages"> {{ result|raw }}</div>
 {% endif %}
 {% if score and max_score and pass_score %}
 <h3>You scored {{ score }} out of {{ max_score }}</h3>

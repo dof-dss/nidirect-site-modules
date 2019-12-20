@@ -93,7 +93,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
   /**
    * Utility function to render 'articles by term' view.
    */
-  private function renderArticleTeasersByTerm($tid, $current_nid, &$cache_tags) {
+  private function renderArticleTeasersByTerm(int $tid, int $current_nid, array &$cache_tags) {
     // Render the 'articles by term' view and process the results.
     $results = [];
     $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -127,7 +127,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
   /**
    * Utility function to render 'site subtopics' view.
    */
-  private function renderArticleTeasersByTopic($tid, &$cache_tags) {
+  private function renderArticleTeasersByTopic(int $tid, array &$cache_tags) {
     // Render the 'site subtopics' view and process the results.
     $results = [];
     $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);

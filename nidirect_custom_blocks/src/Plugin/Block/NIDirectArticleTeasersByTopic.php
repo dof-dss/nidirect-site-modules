@@ -74,6 +74,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     $cache_tags = [];
     // Get the current node.
     $node = $this->routeMatch->getParameter('node');
+    // Add custom cache tag for taxonomy term listing.
     $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
     // Get a list of article teasers by term.
     $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
@@ -115,6 +116,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
         '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
       ];
       $thisresult['summary_text'] = ['#markup' => $row->_entity->field_summary->value];
+      // Place in an array keyed by lower case title (for sorting).
       $results[strtolower($row->_entity->getTitle())] = $thisresult;
       // Add cache tag for each article.
       $cache_tags[] = 'node:' . $row->nid;
@@ -144,6 +146,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
         '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
       ];
       $thisresult['summary_text'] = ['#markup' => $row->_entity->field_teaser->value];
+      // Place in an array keyed by lower case title (for sorting).
       $results[strtolower($row->_entity->getName())] = $thisresult;
       // Add cache tag for each listed term.
       $cache_tags[] = 'taxonomy_term:' . $row->tid;

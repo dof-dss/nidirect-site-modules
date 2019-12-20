@@ -254,10 +254,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           }
 
           $answer_feedback[] = [
-            'title' => ucfirst(str_replace('_', ' ', $id)),
-            'question' => $elements[$id]['#title'],
-            'feedback' => $feedback,
-            'passed' => $passed,
+            '#theme' => 'nidirect_webforms_quiz_answer_feedback',
+            '#title' => ucfirst(str_replace('_', ' ', $id)),
+            '#question' => $elements[$id]['#title'],
+            '#feedback' => [
+              '#markup' => $feedback
+            ],
+            '#passed' => $passed,
           ];
         }
 

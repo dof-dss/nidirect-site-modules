@@ -38,6 +38,16 @@ function nidirect_webforms_theme() {
         'score' => 0,
         'max_score' => 0,
         'pass_score' => 0,
+        'passed' => NULL,
+      ],
+    ],
+    'nidirect_webforms_quiz_answer_feedback' => [
+      'render element' => 'children',
+      'variables' => [
+        'title' => NULL,
+        'question' => NULL,
+        'feedback' => NULL,
+        'passed' => NULL,
       ],
     ],
   ];

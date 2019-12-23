@@ -98,7 +98,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
     // Iterate the Webform and extract question elements.
     foreach ($webform_elements as $key => $element) {
-      if ($element['#type'] == 'radios' || $element['#type'] == 'checkboxes') {
+      if (($element['#type'] == 'radios' || $element['#type'] == 'checkboxes') && substr($key, 0, 9) == 'question_') {
         $webform_questions[$key] = $element;
         $form['answers'][$key] = [
           '#type' => 'details',

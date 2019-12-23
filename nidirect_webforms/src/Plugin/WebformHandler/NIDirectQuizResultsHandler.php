@@ -96,13 +96,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     $webform_questions = [];
     $multiple_answers = FALSE;
 
-    // Iterate Webform and extract question elements.
+    // Iterate the Webform and extract question elements.
     foreach ($webform_elements as $key => $element) {
       if ($element['#type'] == 'radios' || $element['#type'] == 'checkboxes') {
         $webform_questions[$key] = $element;
         $form['answers'][$key] = [
           '#type' => 'details',
-          '#title' => ucfirst(str_replace('_', ' ', $key)),
+          '#title' => $this->getReadableQuestionId($key),
           '#weight' => 5,
         ];
 
@@ -163,7 +163,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       }
     }
 
-    // Update maximum pass mark value based on the number of questions
+    // Update maximum pass score value based on the number of questions
     // if we only have single answer options, i.e radios and no checkboxes.
     if (!$multiple_answers) {
       $total_questions = count($webform_questions);
@@ -171,6 +171,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       $form['answers']['pass_score']['#suffix'] = $this->t('out of %total questions.', ['%total' => $total_questions]);
     }
 
+    // Option to delete the Webform submission when the results are displayed.
     $form['delete_submissions'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Delete quiz submissions when completed.'),
@@ -198,6 +199,18 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
     // Remove the pass score value so we can assign all the answer values.
     unset($values['answers']['pass_score']);
     $this->configuration['answers'] = $values['answers'];
+
+    // Notify answers with blank pass or fail feedback entries.
+    $incomplete_feedback = [];
+    foreach ($values['answers'] as $key => $answer) {
+      if (empty($answer['correct_feedback']) || empty($answer['incorrect_feedback'])) {
+        $incomplete_feedback[] = $this->getReadableQuestionId($key);
+      }
+    }
+
+    if (count($incomplete_feedback) > 0) {
+      $this->messenger()->addMessage("Incomplete feedback for questions: " . implode(',', $incomplete_feedback));
+    }
   }
 
   /**
@@ -206,7 +219,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
   public function preprocessConfirmation(array &$variables) {
     $handlers = $variables['webform']->getHandlers();
 
-    // Iterate each webform handler until we match one of this type.
+    // Iterate each Webform handler until we match one of this type.
     foreach ($handlers as $handler) {
       if ($handler->getPluginId() == $this->getPluginId()) {
         $config = $handler->getConfiguration();
@@ -231,7 +244,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
               $passed = (count($incorrect) == 0) ? TRUE : FALSE;
             }
             else {
-              // Preliminary check.
+              // Preliminary check that we meet the minimum number of answers.
               if (count($user_responses[$id]) < $answer['match_total']) {
                 $passed = FALSE;
               }
@@ -258,7 +271,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             '#title' => ucfirst(str_replace('_', ' ', $id)),
             '#question' => $elements[$id]['#title'],
             '#feedback' => [
-              '#markup' => $feedback
+              '#markup' => $feedback,
             ],
             '#passed' => $passed,
           ];
@@ -267,15 +280,15 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $variables['message'] = [
           '#theme' => 'nidirect_webforms_quiz_results',
           '#introduction' => [
-            '#markup' => $settings['introduction']
+            '#markup' => $settings['introduction'],
           ],
-          '#feedback_introduction' => [
-            '#markup' => $settings['feedback_introduction']
-          ],
-          '#feedback' => $answer_feedback,
           '#score' => $user_score,
           '#max_score' => $max_score,
           '#pass_score' => $pass_score,
+          '#feedback_introduction' => [
+            '#markup' => $settings['feedback_introduction'],
+          ],
+          '#feedback' => $answer_feedback,
         ];
 
         // Determine if the user has passed if we have scoring enabled.
@@ -294,12 +307,25 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           }
         }
 
-        // Delete this submission from the database.
+        // Delete this submission from the database if option is enabled.
         if ($settings['delete_submissions']) {
           $variables['webform_submission']->delete();
         }
       }
     }
+  }
+
+  /**
+   * Displays the question machine name in a readable form.
+   *
+   * @param string $id
+   *   Question machine name to convert.
+   *
+   * @return string
+   *   Human readable version of a machine name.
+   */
+  private function getReadableQuestionId($id) {
+    return ucfirst(str_replace('_', ' ', $id));
   }
 
 }

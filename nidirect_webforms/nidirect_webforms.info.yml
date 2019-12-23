@@ -3,3 +3,5 @@ type: module
 description: 'Custom Weform handlers and components'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - 'webform:webform'

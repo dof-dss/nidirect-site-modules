@@ -1,4 +1,8 @@
-<div class="answer-feedback messages">
+{% set classes = [
+  passed ? 'success-notice' : 'error-notice'
+]
+%}
+<div {{ attributes.addClass(classes) }}>
   <h2>{{ title }}</h2>
   <p class="question">{{ question }}</p>
   <div class="feedback"> {{ feedback }}</div>

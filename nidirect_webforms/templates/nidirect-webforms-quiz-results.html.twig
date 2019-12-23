@@ -1,20 +1,19 @@
-{% set classes = [
-  'webform--quiz',
-  passed ? 'passed' : 'failed'
+{% set result_classes = [
+  passed ? 'success-notice' : 'error-notice'
 ]
 %}
-<div {{ attributes.addClass(classes) }}>
-  <div class="introduction">
+<div >
+  <div class="quiz-introduction">
     {{ introduction }}
   </div>
-  <div class="result">
+  <div {{ attributes.addClass(result_classes) }}>
     {{ result }}
   </div>
   {% if score and max_score and pass_score %}
     <h3>{% trans %}You scored {{ score }} out of {{ max_score }}{% endtrans %}</h3>
     <span>({% trans %}the pass mark is {{ pass_score }} or above{% endtrans %})</span>
   {% endif %}
-  <div class="feedback">
+  <div class="feedback-introduction">
     {{ feedback_introduction }}
   </div>
   <h2>{% trans %}Summary and feedback{% endtrans %}</h2>

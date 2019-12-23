@@ -95,7 +95,7 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
     if (!empty($this->node)) {
       // Only add to contact node pages.
       $links[] = Link::createFromRoute(t('Home'), '<front>');
-      $links[] = Link::fromTextandUrl(t('Contacts'), Url::fromUserInput('/contacts'));
+      $links[] = Link::createFromRoute(t('Contacts'), 'nidirect_contacts.default');
     }
 
     $breadcrumb->setLinks($links);

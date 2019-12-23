@@ -4,38 +4,25 @@ namespace Drupal\nidirect_breadcrumbs;
 
 /**
  * @file
- * Generates the breadcrumb trail for school closure page(s)
+ * Generates the breadcrumb trail for a few ad-hoc pages,
+ * sourced from the services container parameters.
  */
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
-use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\Core\Url;
+use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-/**
- * Breadcrumb builder class to assemble breadcrumb trail
- * for paths relating to school closures.
- *
- * @package Drupal\nidirect_breadcrumbs
- */
-class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
+class GovernmentContactBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
-   * Route matches from the service container parameters.
+   * Drupal entity type manager.
    *
-   * @var array
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $routeMatches;
-
-  /**
-   * Request stack service.
-   *
-   * @var \Symfony\Component\HttpFoundation\RequestStack
-   */
-  protected $requestStack;
+  protected $entityTypeManager;
 
   /**
    * Class constructor.
@@ -54,7 +41,7 @@ class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('breadcrumb.schoolclosures.matches'),
+      $container->get('breadcrumb.contacts_govt.matches'),
       $container->get('request_stack')
     );
   }
@@ -76,13 +63,12 @@ class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
    * {@inheritdoc}
    */
   public function build(RouteMatchInterface $route_match) {
-
     $breadcrumb = new Breadcrumb();
+
+    $links = [];
     $links[] = Link::createFromRoute(t('Home'), '<front>');
-    // TODO: replace fixed text/paths with routes to actual nodes or taxonomy term pages.
-    $links[] = Link::fromTextAndUrl('Education', Url::fromUserInput('/information-and-services/education'));
-    $links[] = Link::fromTextAndUrl('Schools, learning and development', Url::fromUserInput('/information-and-services/education/schools-learning-and-development'));
-    $links[] = Link::fromTextAndUrl('School life', Url::fromUserInput('/information-and-services/schools-learning-and-development/school-life'));
+    $links[] = Link::createFromRoute(t('Contacts'), 'nidirect_contacts.default');
+
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 

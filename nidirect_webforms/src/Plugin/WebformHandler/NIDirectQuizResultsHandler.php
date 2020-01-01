@@ -29,6 +29,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       'pass_text' => '',
       'fail_text' => '',
       'display_score' => TRUE,
+      'display_feedback' => TRUE,
       'pass_score' => 0,
       'feedback_introduction' => '',
       'answers' => [],
@@ -83,12 +84,6 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#type' => 'details',
       '#title' => $this->t('Answers'),
       '#weight' => 5,
-    ];
-
-    $form['answers']['display_score'] = [
-      '#type' => 'checkbox',
-      '#title' => $this->t('Display score on results page'),
-      '#default_value' => $this->configuration['display_score'],
     ];
 
     $form['answers']['pass_score'] = [
@@ -186,6 +181,20 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#group' => 'advanced',
     ];
 
+    $form['display']['display_score'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Display score on results page.'),
+      '#default_value' => $this->configuration['display_score'],
+      '#group' => 'advanced',
+    ];
+
+    $form['display']['display_feedback'] = [
+      '#type' => 'checkbox',
+      '#title' => $this->t('Display feedback on results page.'),
+      '#default_value' => $this->configuration['display_feedback'],
+      '#group' => 'advanced',
+    ];
+
     return $this->setSettingsParents($form);
   }
 
@@ -198,16 +207,16 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
     $this->configuration['introduction'] = $values['introduction'];
     $this->configuration['display_score'] = $values['display_score'];
+    $this->configuration['display_feedback'] = $values['display_feedback'];
     $this->configuration['pass_score'] = $values['pass_score'];
     $this->configuration['pass_text'] = $values['pass_text'];
     $this->configuration['fail_text'] = $values['fail_text'];
     $this->configuration['feedback_introduction'] = $values['feedback_introduction'];
     $this->configuration['delete_submissions'] = $values['delete_submissions'];
 
-    // Remove the display score and pass score value so we can
+    // Remove the pass score value so we can
     // assign all the answer values.
     unset($values['answers']['pass_score']);
-    unset($values['answers']['display_score']);
     $this->configuration['answers'] = $values['answers'];
 
     // Notify answers with blank pass or fail feedback entries.
@@ -296,6 +305,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           '#max_score' => $max_score,
           '#pass_score' => $pass_score,
           '#display_score' => $settings['display_score'],
+          '#display_feedback' => $settings['display_feedback'],
           '#feedback_introduction' => [
             '#markup' => $settings['feedback_introduction'],
           ],

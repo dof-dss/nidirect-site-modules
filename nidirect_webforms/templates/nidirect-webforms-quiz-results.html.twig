@@ -15,9 +15,11 @@
       <span>({% trans %}the pass mark is {{ pass_score }} or above{% endtrans %})</span>
     {% endif %}
   {% endif %}
-  <div class="feedback-introduction">
-    {{ feedback_introduction }}
-  </div>
-  <h2>{% trans %}Summary and feedback{% endtrans %}</h2>
-  {{ feedback }}
+  {% if display_feedback %}
+    <div class="feedback-introduction">
+      {{ feedback_introduction }}
+    </div>
+    <h2>{% trans %}Summary and feedback{% endtrans %}</h2>
+    {{ feedback }}
+  {% endif %}
 </div>

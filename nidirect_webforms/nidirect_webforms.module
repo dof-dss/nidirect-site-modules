@@ -46,6 +46,7 @@ function nidirect_webforms_theme() {
         'score' => 0,
         'max_score' => 0,
         'display_score' => 1,
+        'display_feedback' => 1,
         'pass_score' => 0,
         'passed' => NULL,
       ],

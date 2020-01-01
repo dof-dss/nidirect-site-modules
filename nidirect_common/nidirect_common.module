@@ -261,11 +261,13 @@ function nidirect_common_entity_embed_alter(array &$build, EntityInterface $enti
     // Swap between entity embed view modes for Maps depending on whether you're viewing or editing nodes.
     // Dynamic iframes are prohibited in CKEditor which breaks the display of maps for editors, so we
     // swap view mode to use a static map instead.
-    if ($build['#entity']->getParagraphType()->id() == 'map') {
-      $context['data-entity-embed-display'] = str_replace('.preview', '.embed', $context['data-entity-embed-display']);
-      $build['#context']['data-entity-embed-display'] = str_replace('.preview', '.embed', $build['#context']['data-entity-embed-display']);
-      $build['#attributes']['data-entity-embed-display'] = str_replace('.preview', '.embed', $build['#attributes']['data-entity-embed-display']);
-      $build['entity']['#view_mode'] = 'embed';
+    if (method_exists($build['#entity'], 'getParagraphType')) {
+      if ($build['#entity']->getParagraphType()->id() == 'map') {
+        $context['data-entity-embed-display'] = str_replace('.preview', '.embed', $context['data-entity-embed-display']);
+        $build['#context']['data-entity-embed-display'] = str_replace('.preview', '.embed', $build['#context']['data-entity-embed-display']);
+        $build['#attributes']['data-entity-embed-display'] = str_replace('.preview', '.embed', $build['#attributes']['data-entity-embed-display']);
+        $build['entity']['#view_mode'] = 'embed';
+      }
     }
   }
 }

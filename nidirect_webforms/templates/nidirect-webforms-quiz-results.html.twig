@@ -9,9 +9,11 @@
   <div {{ attributes.addClass(result_classes) }}>
     {{ result }}
   </div>
-  {% if score and max_score and pass_score %}
+  {% if display_score %}
     <h3>{% trans %}You scored {{ score }} out of {{ max_score }}{% endtrans %}</h3>
-    <span>({% trans %}the pass mark is {{ pass_score }} or above{% endtrans %})</span>
+    {% if pass_score > 0 %}
+      <span>({% trans %}the pass mark is {{ pass_score }} or above{% endtrans %})</span>
+    {% endif %}
   {% endif %}
   <div class="feedback-introduction">
     {{ feedback_introduction }}

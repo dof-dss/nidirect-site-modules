@@ -7,7 +7,8 @@ Custom handlers and components for the Webform module.
 
 Displays user scores and feedback.
 
-1. Create questions (radios/checkboxes) using the machine name *question_XX* (replacing XX with a number).
+1. Create questions (radios/checkboxes) using the machine name *question_XX* 
+(replacing XX with a number).
 2. Click on the Webform settings and *Emails/Handlers*.
 3. Add a new handler and click on *Quiz Results* from the popup.
 4. Complete the handler settings outlined below.
@@ -36,4 +37,4 @@ Displays user scores and feedback.
 #### Quiz Results templates
 The Quiz Results handler provides 2 twig templates:
 * nidirect_webforms_quiz_results - Template for Quiz Results section.
-* nidirect_webforms_quiz_answer_feedback - Template for individual answer feedback.
+* nidirect_webforms_quiz_answer_feedback - Template for answer feedback.

@@ -24,7 +24,7 @@ function nidirect_webforms_help($route_name, RouteMatchInterface $route_match) {
       $output .= '<li>' . t('Once complete, go to the Webform "Settings" tab and "Emails/Handlers".') . '</li>';
       $output .= '<li>' . t('Add a new Handler of type "Quiz Results".') . '</li>';
       $output .= '<li>' . t('Complete the "Result Text" and "Answers" sections, an individual answer section will be provided for each radio or checkbox element with a machine name beginning "question_".') . '</li>';
-      $output .= '<li>' . t('Under the "Advanced tab you have the option to delete the users Webform submission when the results are displayed.') . '</li></ul>';
+      $output .= '<li>' . t('Under the "Advanced tab you have the option toggle the score/feedback display and to delete the users Webform submission when completed.') . '</li></ul>';
       return $output;
 
     default:

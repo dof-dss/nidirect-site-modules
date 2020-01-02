@@ -1,0 +1,64 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_webforms.module.
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ */
+function nidirect_webforms_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    // Main module help for the nidirect_webforms module.
+    case 'help.page.nidirect_webforms':
+      $output = '';
+      $output .= '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('Custom Webform handlers and components.') . '</p>';
+      $output .= '<h4>' . t('Quiz Results Handler') . '</h4>';
+      $output .= '<p>' . t('The Quiz Results handler provides a submit handler for display quiz results, scoring and feedback to the user.') . '</p>';
+      $output .= '<p>' . t('Instructions:') . '</p>';
+      $output .= '<ul><li>' . t('Build your Webform with the question elements (radios or checkboxes) given a machine name of "question_XX".') . '</li>';
+      $output .= '<li>' . t('Once complete, go to the Webform "Settings" tab and "Emails/Handlers".') . '</li>';
+      $output .= '<li>' . t('Add a new Handler of type "Quiz Results".') . '</li>';
+      $output .= '<li>' . t('Complete the "Result Text" and "Answers" sections, an individual answer section will be provided for each radio or checkbox element with a machine name beginning "question_".') . '</li>';
+      $output .= '<li>' . t('Under the "Advanced tab you have the option toggle the score/feedback display and to delete the users Webform submission when completed.') . '</li></ul>';
+      return $output;
+
+    default:
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function nidirect_webforms_theme() {
+  return [
+    'nidirect_webforms_quiz_results' => [
+      'render element' => 'children',
+      'variables' => [
+        'introduction' => NULL,
+        'result' => NULL,
+        'feedback_introduction' => NULL,
+        'feedback' => [],
+        'score' => 0,
+        'max_score' => 0,
+        'display_score' => 1,
+        'display_feedback' => 1,
+        'pass_score' => 0,
+        'passed' => NULL,
+      ],
+    ],
+    'nidirect_webforms_quiz_answer_feedback' => [
+      'render element' => 'children',
+      'variables' => [
+        'title' => NULL,
+        'question' => NULL,
+        'feedback' => NULL,
+        'passed' => NULL,
+      ],
+    ],
+  ];
+}

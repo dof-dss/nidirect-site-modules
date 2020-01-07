@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\StringTranslation\TranslationManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Block\BlockManagerInterface;
@@ -35,7 +36,10 @@ class NewsListingController extends ControllerBase {
   /**
    * Constructs a new NewsListingController object.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, BlockManagerInterface $plugin_manager_block, RequestStack $request_stack) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager,
+                              BlockManagerInterface $plugin_manager_block,
+                              RequestStack $request_stack) {
+
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManagerBlock = $plugin_manager_block;
     $this->requestStack = $request_stack;
@@ -69,6 +73,11 @@ class NewsListingController extends ControllerBase {
       '#type' => 'view',
       '#name' => 'news',
       '#display_id' => 'latest_news',
+    ];
+
+    // View title: see views_embed_view() which the render array relies on for details of why this is missing.
+    $content['older_news_title'] = [
+      '#markup' => '<h2 class="hr-above">' . t('Older news items') . '</h2>',
     ];
 
     // Older news.

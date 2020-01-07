@@ -3,7 +3,6 @@
 namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\StringTranslation\TranslationManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Block\BlockManagerInterface;

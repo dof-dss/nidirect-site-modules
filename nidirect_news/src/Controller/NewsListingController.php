@@ -35,7 +35,10 @@ class NewsListingController extends ControllerBase {
   /**
    * Constructs a new NewsListingController object.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, BlockManagerInterface $plugin_manager_block, RequestStack $request_stack) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager,
+                              BlockManagerInterface $plugin_manager_block,
+                              RequestStack $request_stack) {
+
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManagerBlock = $plugin_manager_block;
     $this->requestStack = $request_stack;
@@ -69,6 +72,16 @@ class NewsListingController extends ControllerBase {
       '#type' => 'view',
       '#name' => 'news',
       '#display_id' => 'latest_news',
+    ];
+
+    // View title: see views_embed_view() which the render array relies on for details of why this is missing.
+    $content['older_news_title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#attributes' => [
+        'class' => 'hr-above',
+      ],
+      '#value' => t('Older news items'),
     ];
 
     // Older news.

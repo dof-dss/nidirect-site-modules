@@ -38,20 +38,25 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['sort_by']['#access'] = FALSE;
     $form['sort_order']['#access'] = FALSE;
 
+    // Add additional form classes.
+    $form['#attributes']['class'][] = 'search-form';
+    $form['categories']['#attributes']['class'][] = 'container-inline';
+
+    // Add postcode placeholder example.
+    $form['search_api_fulltext']['#placeholder'] = "e.g. 'BT1'";
+
     // Update exposed Categories element and text.
     $form['categories']['#type'] = 'radios';
     $form['categories']['#options']['All'] = t('All');
     $form['categories']['#options']['1160'] = t('Driving instructors');
     $form['categories']['#options']['1161'] = t('Motorcycle instructors');
 
-    // Add additional form classes.
-    $form['#attributes']['class'][] = 'search-form';
-    $form['categories']['#attributes']['class'][] = 'container-inline';
-
     // Reorder exposed search form fields.
     $form['search_api_fulltext']['#weight'] = 1;
     $form['actions']['#weight'] = 2;
     $form['categories']['#weight'] = 3;
+
+    ksm($form);
   }
 
   // Adjustments to the driving instructor node add/edit form.

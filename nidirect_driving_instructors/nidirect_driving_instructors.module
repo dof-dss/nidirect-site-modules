@@ -43,8 +43,10 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['categories']['#options']['All'] = t('All');
     $form['categories']['#options']['1160'] = t('Driving instructors');
     $form['categories']['#options']['1161'] = t('Motorcycle instructors');
-    
+
+    // Add additional form classes.
     $form['#attributes']['class'][] = 'search-form';
+    $form['categories']['#attributes']['class'][] = 'container-inline';
 
     // Reorder exposed search form fields.
     $form['search_api_fulltext']['#weight'] = 1;

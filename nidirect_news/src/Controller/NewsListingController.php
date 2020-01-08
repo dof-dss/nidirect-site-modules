@@ -76,7 +76,12 @@ class NewsListingController extends ControllerBase {
 
     // View title: see views_embed_view() which the render array relies on for details of why this is missing.
     $content['older_news_title'] = [
-      '#markup' => '<h2 class="hr-above">' . t('Older news items') . '</h2>',
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#attributes' => [
+        'class' => 'hr-above',
+      ],
+      '#value' => t('Older news items'),
     ];
 
     // Older news.

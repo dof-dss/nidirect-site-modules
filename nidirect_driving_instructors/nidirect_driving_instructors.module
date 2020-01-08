@@ -44,6 +44,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['categories']['#options']['1160'] = t('Driving instructors');
     $form['categories']['#options']['1161'] = t('Motorcycle instructors');
 
+    $form['#attributes']['class'][] = 'search-form';
   }
 
   // Adjustments to the driving instructor node add/edit form.

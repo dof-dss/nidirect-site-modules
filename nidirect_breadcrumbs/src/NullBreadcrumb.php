@@ -13,7 +13,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
-class BlackholeCrumb implements BreadcrumbBuilderInterface {
+class NullBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
    * Route matches from the service container parameters.
@@ -46,7 +46,7 @@ class BlackholeCrumb implements BreadcrumbBuilderInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('breadcrumb.blackhole.matches'),
+      $container->get('breadcrumb.null_breadcrumb.matches'),
       $container->get('request_stack')
     );
   }

@@ -65,9 +65,9 @@ services:
     tags:
       - { name: breadcrumb_builder }
 
-  nidirect_breadcrumbs.breadcrumb.blackhole_crumb:
-    class: Drupal\nidirect_breadcrumbs\BlackholeCrumb
-    arguments: ['%breadcrumb.blackhole.matches%', '@request_stack']
+  nidirect_breadcrumbs.breadcrumb.null_breadcrumb:
+    class: Drupal\nidirect_breadcrumbs\NullBreadcrumb
+    arguments: ['%breadcrumb.nullbreadcrumb.matches%', '@request_stack']
     tags:
       - { name: breadcrumb_builder, priority: 5000 }
 
@@ -82,6 +82,6 @@ parameters:
   breadcrumb.contacts_govt.matches:
     - /contacts/government-departments-in-northern-ireland
     - /contacts/local-councils-in-northern-ireland
-  breadcrumb.blackhole.matches:
+  breadcrumb.nullbreadcrumb.matches:
     - /forms/feedback
     - entity.taxonomy_term.canonical

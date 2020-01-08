@@ -37,6 +37,13 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
     $form['sort_by']['#access'] = FALSE;
     $form['sort_order']['#access'] = FALSE;
+
+    // Update exposed Categories element and text.
+    $form['categories']['#type'] = 'radios';
+    $form['categories']['#options']['All'] = t('All');
+    $form['categories']['#options']['1160'] = t('Driving instructors');
+    $form['categories']['#options']['1161'] = t('Motorcycle instructors');
+
   }
 
   // Adjustments to the driving instructor node add/edit form.

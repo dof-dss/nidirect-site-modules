@@ -151,6 +151,11 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
 function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
 
+    // Hide 'no results' on initial View display.
+    if (count($view->getExposedInput()) == 0) {
+      unset($view->empty['area']);
+    }
+
     // Display singular or plural result count.
     $result_count = Drupal::translation()->formatPlural(
       $view->pager->total_items,

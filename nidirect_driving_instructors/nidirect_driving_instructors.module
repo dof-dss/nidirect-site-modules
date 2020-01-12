@@ -178,17 +178,19 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
       $link_text = t('Sort alphabetically');
     }
 
-    $view->attachment_before = [
-      'result_count' => [
-        '#type' => 'html_tag',
-        '#tag' => 'h2',
-        '#value' => $result_count,
-      ],
-      'sort_by' => [
-        '#title' => $link_text,
-        '#type' => 'link',
-        '#url' => Url::fromUri($uri),
-      ],
-    ];
+    if ($view->pager->total_items > 0) {
+      $view->attachment_before = [
+        'result_count' => [
+          '#type' => 'html_tag',
+          '#tag' => 'h2',
+          '#value' => $result_count,
+        ],
+        'sort_by' => [
+          '#title' => $link_text,
+          '#type' => 'link',
+          '#url' => Url::fromUri($uri),
+        ],
+      ];
+    }
   }
 }

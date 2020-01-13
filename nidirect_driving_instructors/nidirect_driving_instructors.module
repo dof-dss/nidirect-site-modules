@@ -43,7 +43,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['categories']['#attributes']['class'][] = 'container-inline';
 
     // Add postcode placeholder example.
-    $form['search_api_fulltext']['#placeholder'] = "e.g. 'BT1'";
+    $form['search_api_fulltext']['#placeholder'] = t("e.g. 'BT1'");
 
     // Update exposed Categories element and text.
     $form['categories']['#type'] = 'radios';

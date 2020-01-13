@@ -37,6 +37,29 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
     $form['sort_by']['#access'] = FALSE;
     $form['sort_order']['#access'] = FALSE;
+
+    // Add additional form classes.
+    $form['#attributes']['class'][] = 'search-form';
+    $form['categories']['#attributes']['class'][] = 'container-inline';
+
+    // Add postcode placeholder example.
+    $form['search_api_fulltext']['#placeholder'] = t("e.g. 'BT1'");
+
+    // Update exposed Categories element and text.
+    $form['categories']['#type'] = 'radios';
+    $form['categories']['#options']['All'] = t('All');
+    $form['categories']['#options']['1160'] = t('Driving instructors');
+    $form['categories']['#options']['1161'] = t('Motorcycle instructors');
+
+    // Reorder the choices so 'All' appears first.
+    if (array_key_first($form['categories']['#options']) != 'All') {
+      $form['categories']['#options'] = array_reverse($form['categories']['#options'], TRUE);
+    }
+
+    // Reorder exposed search form fields.
+    $form['search_api_fulltext']['#weight'] = 1;
+    $form['actions']['#weight'] = 2;
+    $form['categories']['#weight'] = 3;
   }
 
   // Adjustments to the driving instructor node add/edit form.
@@ -128,6 +151,11 @@ function nidirect_driving_instructors_search_api_query_alter(QueryInterface $que
 function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
 
+    // Hide 'no results' on initial View display.
+    if (count($view->getExposedInput()) == 0) {
+      unset($view->empty['area']);
+    }
+
     // Display singular or plural result count.
     $result_count = Drupal::translation()->formatPlural(
       $view->pager->total_items,
@@ -155,17 +183,19 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
       $link_text = t('Sort alphabetically');
     }
 
-    $view->attachment_before = [
-      'result_count' => [
-        '#type' => 'html_tag',
-        '#tag' => 'h2',
-        '#value' => $result_count,
-      ],
-      'sort_by' => [
-        '#title' => $link_text,
-        '#type' => 'link',
-        '#url' => Url::fromUri($uri),
-      ],
-    ];
+    if ($view->pager->total_items > 0) {
+      $view->attachment_before = [
+        'result_count' => [
+          '#type' => 'html_tag',
+          '#tag' => 'h2',
+          '#value' => $result_count,
+        ],
+        'sort_by' => [
+          '#title' => $link_text,
+          '#type' => 'link',
+          '#url' => Url::fromUri($uri),
+        ],
+      ];
+    }
   }
 }

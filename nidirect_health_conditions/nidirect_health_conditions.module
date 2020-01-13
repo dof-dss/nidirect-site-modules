@@ -14,16 +14,6 @@ use Drupal\Core\Url;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
-/**
- * Implements hook_form_FORM_ID_alter().
- */
-function nidirect_health_conditions_form_views_exposed_form_alter(&$form, FormStateInterface $form_state) {
-  if ($form['#id'] == 'views-exposed-form-health-conditions-search-page') {
-    // Inject a reset link between the textfield and submit button.
-    $reset = Link::createFromRoute(t('new search | show a-z'), 'view.health_conditions.search_page');
-    $form['reset_az'] = $reset->toRenderable();
-  }
-}
 
 /**
  * Implements hook_ENTITY_TYPE_view().

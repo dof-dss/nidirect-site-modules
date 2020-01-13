@@ -79,7 +79,7 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
     return;
   }
 
-  $results_summary = \Drupal::translation()->formatPlural(
+  $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
     $view->total_rows,
     $single_message,
     $plural_message, [
@@ -87,10 +87,6 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
       '@search_term' => $search_term,
     ]
   );
-
-  $view->header = [
-    '#markup' => $results_summary,
-  ];
 }
 
 /**

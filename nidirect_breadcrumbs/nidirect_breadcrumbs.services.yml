@@ -4,56 +4,72 @@ services:
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.umbrella_bodies:
     class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.contact:
     class: Drupal\nidirect_breadcrumbs\ContactBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.govt_contact:
     class: Drupal\nidirect_breadcrumbs\GovernmentContactBreadcrumb
     arguments: ['%breadcrumb.contacts_govt.matches%', '@request_stack']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.driving_instructors:
     class: Drupal\nidirect_breadcrumbs\DrivingInstructorsBreadcrumb
     arguments: ['%breadcrumb.driving_instructors.matches%', '@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.gp_practice:
     class: Drupal\nidirect_breadcrumbs\GpPracticeBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.health_condition:
     class: Drupal\nidirect_breadcrumbs\HealthConditionBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.news:
     class: Drupal\nidirect_breadcrumbs\NewsBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.recipe:
     class: Drupal\nidirect_breadcrumbs\RecipeBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
       - { name: breadcrumb_builder, priority: 5000 }
+
   nidirect_breadcrumbs.breadcrumb.search:
     class: Drupal\nidirect_breadcrumbs\SearchBreadcrumb
     arguments: ['%breadcrumb.search.matches%']
     tags:
       - { name: breadcrumb_builder }
+
   nidirect_breadcrumbs.breadcrumb.schoolclosures:
     class: Drupal\nidirect_breadcrumbs\SchoolClosuresBreadcrumb
     arguments: ['%breadcrumb.schoolclosures.matches%', '@request_stack']
     tags:
       - { name: breadcrumb_builder }
+
+  nidirect_breadcrumbs.breadcrumb.null_breadcrumb:
+    class: Drupal\nidirect_breadcrumbs\NullBreadcrumb
+    arguments: ['%breadcrumb.nullbreadcrumb.matches%', '@request_stack']
+    tags:
+      - { name: breadcrumb_builder, priority: 5000 }
 
 parameters:
   breadcrumb.search.matches:
@@ -66,3 +82,6 @@ parameters:
   breadcrumb.contacts_govt.matches:
     - /contacts/government-departments-in-northern-ireland
     - /contacts/local-councils-in-northern-ireland
+  breadcrumb.nullbreadcrumb.matches:
+    - /forms/feedback
+    - entity.taxonomy_term.canonical

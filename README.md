@@ -6,7 +6,7 @@ This repository houses the custom modules required for the NI Direct website.
 
 
 ## Breadcrumbs
-Custom navigation breadcrumbs.
+- Custom navigation breadcrumbs.
 
 ## Cold Weather Payments
 - Weather station entity.

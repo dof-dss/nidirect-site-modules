@@ -88,7 +88,7 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
     $build['healthconditions_az_block_intro'] = [
       '#type' => 'html_tag',
       '#tag' => 'p',
-      '#value' => 'Or find conditions beginning with ...'
+      '#value' => $this->t('Or find conditions beginning with ...')
     ];
 
     $build['healthconditions_az_block'] = [

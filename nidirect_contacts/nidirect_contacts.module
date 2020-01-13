@@ -17,8 +17,8 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
   if ($form['#id'] == 'views-exposed-form-contacts-contact-search') {
     // Make sort options invisible, but because the view embed filters are defined as exposed,
     // we still get to use URL parameters despite having no visible form elements.
-    unset($form['sort_by']);
-    unset($form['sort_order']);
+    hide($form['sort_by']);
+    hide($form['sort_order']);
   }
 
   if ($form['#id'] == 'views-exposed-form-contacts-a-z-contacts-by-letter') {
@@ -97,6 +97,9 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     if (empty($q['query_contacts_az'])) {
       unset($variables['links']['show_az']);
       unset($variables['links']['reset']);
+    }
+    else {
+      $variables['exposed']['#info']['filter-title']['label'] = t('Search results for');
     }
 
     if (($q['sort_by'] ?? '') == 'title') {

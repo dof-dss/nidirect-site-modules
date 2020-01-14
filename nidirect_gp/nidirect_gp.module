@@ -43,7 +43,6 @@ function nidirect_gp_theme() {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBuilderEntityViewDisplay $display, $view_mode) {
-
   // Check for the presence of a 'gp_names' field in the node display.
   if (array_key_exists('gp_names', $display->getComponents())) {
     $gp_names = [];
@@ -105,6 +104,14 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     $form['title']['widget'][0]['value']['#description'] =
       t('You cannot edit the title. It is created automatically from the practice name and surgery name.');
     $form['title']['#disabled'] = 'TRUE';
+
+    // Hide the Prescriptions URL title as we will use a default.
+    $form['field_gp_prescriptions']['widget']['0']['title']['#type'] = 'hidden';
+    $form['field_gp_prescriptions']['widget']['0']['title']['#default_value'] = 'Repeat prescriptions';
+
+    // Hide the Appointments URL title as we will use a default.
+    $form['field_gp_appointments']['widget']['0']['title']['#type'] = 'hidden';
+    $form['field_gp_appointments']['widget']['0']['title']['#default_value'] = 'Online appointments';
 
     // Add a validator.
     array_unshift($form['#validate'], 'nidirect_gp_gp_practice_form_validate');

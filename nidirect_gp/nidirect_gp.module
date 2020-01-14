@@ -88,6 +88,14 @@ function nidirect_gp_entity_extra_field_info() {
  * Implements hook_form_alter().
  */
 function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Process GP Practices View form.
+  if ($form['#id'] == 'views-exposed-form-gp-practices-find-a-gp') {
+    // Add additional form classes.
+    $form['#attributes']['class'][] = 'search-form';
+    $form['categories']['#attributes']['class'][] = 'container-inline';
+  }
+
   // Special processing for GP Practice title on node edit/add forms.
   if (preg_match('/^node_gp_practice_(edit_)*form$/', $form_id)) {
     // Make title field readonly and set a placeholder.

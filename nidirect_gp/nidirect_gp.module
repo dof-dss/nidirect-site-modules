@@ -44,7 +44,7 @@ function nidirect_gp_theme() {
 function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBuilderEntityViewDisplay $display, $view_mode) {
 
   // Check for the presence of a 'gp_names' field in the node display.
-  if (in_array('gp_names', $display->getComponents())) {
+  if (array_key_exists('gp_names', $display->getComponents())) {
     $gp_names = [];
 
     // Lead GP.
@@ -58,6 +58,14 @@ function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBui
       foreach ($entity->field_gp_practice_member->referencedEntities() as $index => $gp) {
         $gp_names[] = $gp->label();
       }
+    }
+
+    foreach ($gp_names as $gp) {
+      $build['gp_names'][] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => $gp,
+      ];
     }
   }
 }

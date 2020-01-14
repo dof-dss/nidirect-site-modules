@@ -43,21 +43,21 @@ function nidirect_gp_theme() {
  */
 function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBuilderEntityViewDisplay $display, $view_mode) {
 
-  $node = &$variables['node'];
-  if ($node->bundle() != 'gp_practice' || $variables['view_mode'] != 'teaser') {
-    return;
-  }
+  // Check for the presence of a 'gp_names' field in the node display.
+  if (in_array('gp_names', $display->getComponents())) {
+    $gp_names = [];
 
-  // Lead GP.
-  if (!empty($node->field_gp_practice_lead->referencedEntities())) {
-    $gp = $node->field_gp_practice_lead->referencedEntities()[0];
-    $variables['gp_names'][] = $gp->label();
-  }
+    // Lead GP.
+    if (!empty($entity->field_gp_practice_lead->referencedEntities())) {
+      $gp = $entity->field_gp_practice_lead->referencedEntities()[0];
+      $gp_names[] = $gp->label();
+    }
 
-  // Member GPs.
-  if (!empty($node->field_gp_practice_member->referencedEntities())) {
-    foreach ($node->field_gp_practice_member->referencedEntities() as $index => $gp) {
-      $variables['gp_names'][] = $gp->label();
+    // Member GPs.
+    if (!empty($entity->field_gp_practice_member->referencedEntities())) {
+      foreach ($entity->field_gp_practice_member->referencedEntities() as $index => $gp) {
+        $gp_names[] = $gp->label();
+      }
     }
   }
 }

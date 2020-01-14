@@ -171,7 +171,6 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   }
   // 4. Neither provided - this generates an error that
   // will be caught by validation.
-
   // Re-encode &amp; to just &.
   $title = str_replace('&amp;', '&', $title);
 

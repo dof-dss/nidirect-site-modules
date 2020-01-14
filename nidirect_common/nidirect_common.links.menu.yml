@@ -52,7 +52,7 @@ nidirect.footer_related_sites.govuk:
   weight: 4
 nidirect.footer_related_sites.nibusinessinfo:
   title: 'nibusinessinfo.co.uk'
-  url: https://www.nibusinessinfo.co.uk/
+  url: https://www.nibusinessinfo.co.uk
   menu_name: footer-related-sites
   weight: 5
 

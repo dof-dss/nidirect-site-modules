@@ -85,3 +85,4 @@ parameters:
   breadcrumb.nullbreadcrumb.matches:
     - /forms/feedback
     - entity.taxonomy_term.canonical
+    - nidirect_news.news_listing

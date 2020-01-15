@@ -74,11 +74,6 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    if ($route_name == 'nidirect_news.news_listing') {
-      // Also match on news listing page.
-      $match = TRUE;
-    }
-
     return $match;
   }
 
@@ -89,12 +84,10 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
     $breadcrumb = new Breadcrumb();
 
-    if ($this->node) {
-      $links[] = Link::createFromRoute(t('Home'), '<front>');
-      $links[] = Link::fromTextandUrl(t('News'), Url::fromRoute('nidirect_news.news_listing'));
+    $links[] = Link::createFromRoute(t('Home'), '<front>');
+    $links[] = Link::fromTextandUrl(t('News'), Url::fromRoute('nidirect_news.news_listing'));
 
-      $breadcrumb->setLinks($links);
-    }
+    $breadcrumb->setLinks($links);
 
     $breadcrumb->addCacheContexts(['url.path']);
 

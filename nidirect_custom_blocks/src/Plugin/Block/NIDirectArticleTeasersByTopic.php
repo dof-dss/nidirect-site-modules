@@ -74,11 +74,13 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     $cache_tags = [];
     // Get the current node.
     $node = $this->routeMatch->getParameter('node');
-    if (!empty($node)) {
+    if (is_object($node) && !empty($node->field_subtheme->target_id)) {
       // Add custom cache tag for taxonomy term listing.
       $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
       // Get a list of article teasers by term.
-      $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+      if (!empty($node->id())) {
+        $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+      }
       // Get a list of article teasers by topic.
       $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
       // Sort entries alphabetically (regardless of type).

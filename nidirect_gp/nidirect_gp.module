@@ -163,7 +163,7 @@ function nidirect_gp_views_pre_render(ViewExecutable $view) {
 
   if ($view->id() == 'gp_practices' && $view->current_display == 'find_a_gp') {
     // Display singular or plural result count.
-    $result_count = Drupal::translation()->formatPlural(
+    $result_count = \Drupal::translation()->formatPlural(
       $view->pager->total_items,
       '@number GP practice',
       '@number GP practices', [

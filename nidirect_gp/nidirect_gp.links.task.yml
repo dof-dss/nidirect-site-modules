@@ -24,4 +24,3 @@ entity.gp.delete_form:
   base_route:  entity.gp.canonical
   title: Delete
   weight: 10
-

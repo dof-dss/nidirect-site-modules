@@ -18,6 +18,8 @@ use Drupal\nidirect_gp\Entity\GpInterface;
 class GpController extends ControllerBase {
 
   /**
+   * Date Formatter object.
+   *
    * @var \Drupal\Core\Datetime\DateFormatterInterface
    */
   protected $dateFormatter;
@@ -70,7 +72,7 @@ class GpController extends ControllerBase {
     $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
     return $this->t('Revision of %title from %date', [
       '%title' => $gp->label(),
-      '%date' => $this->dateFormatter->format($gp->getRevisionCreationTime())
+      '%date' => $this->dateFormatter->format($gp->getRevisionCreationTime()),
     ]);
   }
 

@@ -9,6 +9,8 @@ use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_help().
@@ -38,24 +40,32 @@ function nidirect_gp_theme() {
 }
 
 /**
- * Implements hook_preprocess_node().
+ * Implements hook_ENTITY_TYPE_view().
  */
-function nidirect_gp_preprocess_node(&$variables) {
-  $node = &$variables['node'];
-  if ($node->bundle() != 'gp_practice' || $variables['view_mode'] != 'teaser') {
-    return;
-  }
+function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBuilderEntityViewDisplay $display, $view_mode) {
+  // Check for the presence of a 'gp_names' field in the node display.
+  if (array_key_exists('gp_names', $display->getComponents())) {
+    $gp_names = [];
 
-  // Lead GP.
-  if (!empty($node->field_gp_practice_lead->referencedEntities())) {
-    $gp = $node->field_gp_practice_lead->referencedEntities()[0];
-    $variables['gp_names'][] = $gp->label();
-  }
+    // Lead GP.
+    if (!empty($entity->field_gp_practice_lead->referencedEntities())) {
+      $gp = $entity->field_gp_practice_lead->referencedEntities()[0];
+      $gp_names[] = $gp->label();
+    }
 
-  // Member GPs.
-  if (!empty($node->field_gp_practice_member->referencedEntities())) {
-    foreach ($node->field_gp_practice_member->referencedEntities() as $index => $gp) {
-      $variables['gp_names'][] = $gp->label();
+    // Member GPs.
+    if (!empty($entity->field_gp_practice_member->referencedEntities())) {
+      foreach ($entity->field_gp_practice_member->referencedEntities() as $index => $gp) {
+        $gp_names[] = $gp->label();
+      }
+    }
+
+    foreach ($gp_names as $gp) {
+      $build['gp_names'][] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => $gp,
+      ];
     }
   }
 }
@@ -77,6 +87,14 @@ function nidirect_gp_entity_extra_field_info() {
  * Implements hook_form_alter().
  */
 function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Process GP Practices View form.
+  if ($form['#id'] == 'views-exposed-form-gp-practices-find-a-gp') {
+    // Add additional form classes.
+    $form['#attributes']['class'][] = 'search-form';
+    $form['categories']['#attributes']['class'][] = 'container-inline';
+  }
+
   // Special processing for GP Practice title on node edit/add forms.
   if (preg_match('/^node_gp_practice_(edit_)*form$/', $form_id)) {
     // Make title field readonly and set a placeholder.
@@ -86,6 +104,14 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     $form['title']['widget'][0]['value']['#description'] =
       t('You cannot edit the title. It is created automatically from the practice name and surgery name.');
     $form['title']['#disabled'] = 'TRUE';
+
+    // Hide the Prescriptions URL title as we will use a default.
+    $form['field_gp_prescriptions']['widget']['0']['title']['#type'] = 'hidden';
+    $form['field_gp_prescriptions']['widget']['0']['title']['#default_value'] = t('Repeat prescriptions');
+
+    // Hide the Appointments URL title as we will use a default.
+    $form['field_gp_appointments']['widget']['0']['title']['#type'] = 'hidden';
+    $form['field_gp_appointments']['widget']['0']['title']['#default_value'] = t('Online appointments');
 
     // Add a validator.
     array_unshift($form['#validate'], 'nidirect_gp_gp_practice_form_validate');
@@ -131,6 +157,33 @@ function nidirect_gp_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_gp_views_pre_render(ViewExecutable $view) {
+
+  if ($view->id() == 'gp_practices' && $view->current_display == 'find_a_gp') {
+    // Display singular or plural result count.
+    $result_count = \Drupal::translation()->formatPlural(
+      $view->pager->total_items,
+      '@number GP practice',
+      '@number GP practices', [
+        '@number' => $view->pager->total_items,
+      ]
+    );
+
+    if ($view->pager->total_items > 0) {
+      $view->attachment_before = [
+        'result_count' => [
+          '#type' => 'html_tag',
+          '#tag' => 'h2',
+          '#value' => $result_count,
+        ],
+      ];
+    }
+  }
+}
+
+/**
  * Utility function to handle GP Practice submit.
  */
 function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
@@ -161,7 +214,6 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   }
   // 4. Neither provided - this generates an error that
   // will be caught by validation.
-
   // Re-encode &amp; to just &.
   $title = str_replace('&amp;', '&', $title);
 

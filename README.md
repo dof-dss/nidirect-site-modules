@@ -44,8 +44,8 @@ This repository houses the custom modules required for the NI Direct website.
 - Prevent selection of parent category terms on node edit form.
 - Remove second portion of the postcode if present on search query.
 - Hide empty text, result count and sort options on initial display of search View.
-- Provide custom sort links based on url parameters. 
- 
+- Provide custom sort links based on url parameters.
+
 ## Error Pages
 - Provides template suggestions for error pages.
 
@@ -57,6 +57,8 @@ This repository houses the custom modules required for the NI Direct website.
 - GPs field for practices.
 - Disable Practice title field and generate title on node save.
 - Validation on Practice form for practice pr surgery name.
+- Provides default and hides title field for appointment and prescription links on GP Practice form.
+- Adds result count and form tweaks to View display.
 
 ## Health Conditions
 - Blocks for AtoZ and Related Conditions.
@@ -75,7 +77,7 @@ This repository houses the custom modules required for the NI Direct website.
 ## Money Advice Articles
 - Migration API configuration for importing Money Advice Service articles.
 - Ultimate Cron job calling Migration API.
-- Migration process function to alter article fields. 
+- Migration process function to alter article fields.
 
 ## News
 - News listings controller.
@@ -84,7 +86,7 @@ This repository houses the custom modules required for the NI Direct website.
 ## Related Content
 - Blocks for Recipes by Course, ingredient, season, special diet.
 - Display related content on View.
-- Set View title to parent theme title. 
+- Set View title to parent theme title.
 
 ## School Closures
 - School closures service and interface.

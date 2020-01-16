@@ -99,7 +99,7 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
       unset($variables['links']['reset']);
     }
     else {
-      $variables['exposed']['#info']['filter-title']['label'] = t('Search results for');
+      $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
     }
 
     if (($q['sort_by'] ?? '') == 'title') {

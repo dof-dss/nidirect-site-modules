@@ -1,0 +1,4 @@
+nidirect_sharing:
+  css:
+    theme:
+      css/nidirect_sharing.css: {}

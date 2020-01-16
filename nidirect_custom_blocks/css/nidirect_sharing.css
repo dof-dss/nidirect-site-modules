@@ -1,0 +1,27 @@
+.social_sharing {
+  box-sizing: border-box;
+  display: inline;
+}
+.facebook_share, .twitter_share, .email_share {
+  border-radius: 4px;
+  height: 32px;
+  line-height: 32px;
+  opacity: 1;
+  width: 32px;
+  float: none;
+  display: inline-block;
+}
+.facebook_share svg, .twitter_share svg, .email_share svg {
+  background-repeat: no-repeat;
+  background-position: 50% 50%;
+  border: none;
+  display: block;
+  left: 0;
+  margin: 0 auto;
+  overflow: hidden;
+  padding: 0;
+  position: relative;
+  top: 0;
+  width: auto;
+  height: auto;
+}

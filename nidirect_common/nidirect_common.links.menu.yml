@@ -20,7 +20,7 @@ nidirect.main.help:
   weight: 7
 nidirect.main.feedback:
   title: 'Feedback'
-  url: internal:/forms/feedback?s=/front
+  url: internal:/form/site-feedback
   menu_name: main
   weight: 8
 

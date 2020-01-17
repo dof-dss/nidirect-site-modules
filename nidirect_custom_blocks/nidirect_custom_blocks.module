@@ -5,16 +5,23 @@
  * module file.
  */
 
+use Drupal\Core\Url;
+
 /**
  * Implements hook_theme().
  */
 function nidirect_custom_blocks_theme() {
 
+  // 'fb_link' => 'https://www.facebook.com/sharer/sharer.php?src=sdkpreparse&amp;u=',
+  // 'fb_link' => 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.nidirect.gov.uk%2Farticles%2Fbaking-with-your-child&amp;src=sdkpreparse'
+  $url = Url::fromRoute('<current>',array(),array('absolute'=>'true'));
+  $fb_link = 'https://www.facebook.com/sharer/sharer.php?u=' . rawurlencode($url->toString()) .  '&amp;src=sdkpreparse';
+
   return [
     'nidirect_sharing' => [
       'variables' => [
         'content' => NULL,
-        'fb_link' => 'https://www.facebook.com/sharer/sharer.php?u=https%3A%2F%2Fwww.nidirect.gov.uk%2Farticles%2Fbaking-with-your-child&amp;src=sdkpreparse',
+        'fb_link' => $fb_link,
         'tw_link' => 'https://twitter.com/intent/tweet?text=Hello%20world',
         'mail_link' => 'mailto:?subject=Shared%20from%20nidirect.gov.uk&body=Baking%20with%20your%20child'
       ],

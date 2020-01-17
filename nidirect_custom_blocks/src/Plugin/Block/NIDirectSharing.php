@@ -20,8 +20,6 @@ class NIDirectSharing extends BlockBase {
   public function build() {
     $build = [];
     $build['#theme'] = 'nidirect_sharing';
-    $build['nidirect_sharing']['#markup'] = 'Implement NIDirectSharing.';
-
     return $build;
   }
 

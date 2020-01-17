@@ -21,13 +21,3 @@ function nidirect_custom_blocks_theme() {
     ],
   ];
 }
-
-/**
- * Implements hook_preprocess_HOOK()
- */
-function nidirect_custom_blocks_preprocess_block(&$variables) {
-  if ($variables['plugin_id'] == 'nidirect_sharing') {
-    $variables['#attached']['library'][] = 'nidirect_custom_blocks/nidirect_sharing_css';
-    $variables['#attached']['library'][] = 'nidirect_custom_blocks/nidirect_sharing_js';
-  }
-}

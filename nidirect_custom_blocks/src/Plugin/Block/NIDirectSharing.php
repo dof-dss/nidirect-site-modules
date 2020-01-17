@@ -20,8 +20,8 @@ class NIDirectSharing extends BlockBase {
   public function build() {
     $build = [];
     $build['#theme'] = 'nidirect_sharing';
-    //$build['nidirect_sharing']['#attached'] = [];
-    //$build['nidirect_sharing']['#attached']['library'] = ['nidirect_custom_blocks/nidirect_sharing'];
+    $build['nidirect_sharing']['#attached'] = [];
+    $build['nidirect_sharing']['#attached']['library'] = ['nidirect_custom_blocks/nidirect_sharing'];
     $build['nidirect_sharing']['#markup'] = '<span class="social_sharing" style="line-height: 32px;">
       <a class="facebook_share_link" target="_blank" href="https://www.facebook.com/dialog/share?app_id=5303202981&display=popup&href=http%3A%2F%2Fnidirect8.local%3A8080%2Farticles%2Fbaking-with-your-child&redirect_uri=https%3A%2F%2Fstatic.addtoany.com%2Fmenu%2Fthanks.html%23url%3Dhttp%3A%2F%2Fnidirect8.local%3A8080%2Farticles%2Fbaking-with-your-child&quote=" rel="nofollow noopener">
         <span class="facebook_share" style="background-color: rgb(59, 89, 152);">

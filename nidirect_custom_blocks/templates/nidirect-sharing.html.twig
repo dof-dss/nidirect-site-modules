@@ -8,16 +8,6 @@
 * @ingroup themeable
 */
 #}
-{% set classes = [
-    'clear-both',
-] %}
-<div{{ attributes.addClass(classes) }}>
-    {% for value in content %}
-        <p>{{value}}</p>
-    {% endfor %}
-</div>
-
-
 <span class="social_sharing" style="line-height: 32px;">
     <a class="facebook_share_link" target="_blank" href="{{ fb_link }}" rel="nofollow noopener">
       <span class="facebook_share" style="background-color: rgb(59, 89, 152);">

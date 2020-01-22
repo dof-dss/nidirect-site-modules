@@ -18,7 +18,7 @@ class GovDeptController extends ControllerBase {
   public function disp() {
     // Once the site is in production, this controller may be replaced by simply creating  a node of
     // type 'Page' with a title of 'Northern Ireland government departments' and a path of
-    // '/contacts/government-departments-in-northern-ireland'
+    // '/contacts/government-departments-in-northern-ireland'.
     return [
       '#type' => 'markup',
       '#markup' => $this->t('')

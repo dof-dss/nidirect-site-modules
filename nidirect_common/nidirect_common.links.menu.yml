@@ -20,7 +20,11 @@ nidirect.main.help:
   weight: 7
 nidirect.main.feedback:
   title: 'Feedback'
-  url: internal:/forms/feedback?s=/front
+  route_name: entity.webform.canonical
+  route_parameters: { webform: 'site_feedback' }
+  options:
+    query:
+      s: 'front'
   menu_name: main
   weight: 8
 

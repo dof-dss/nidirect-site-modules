@@ -1,9 +1,15 @@
 services:
-  nidirect_breadcrumbs.breadcrumb.themes:
-    class: Drupal\nidirect_breadcrumbs\ThemesBreadcrumb
+  nidirect_breadcrumbs.breadcrumb.node.themes:
+    class: Drupal\nidirect_breadcrumbs\NodeThemesBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
+
+  nidirect_breadcrumbs.breadcrumb.taxonomy_term.themes:
+    class: Drupal\nidirect_breadcrumbs\TaxonomyTermThemesBreadcrumb
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.umbrella_bodies:
     class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb

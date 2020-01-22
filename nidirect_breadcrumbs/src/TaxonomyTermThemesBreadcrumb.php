@@ -4,14 +4,7 @@ namespace Drupal\nidirect_breadcrumbs;
 
 /**
  * @file
- * Generates the breadcrumb trail for content including:
- * - Article
- * - Application
- * - Publications
- *
- * In the format:
- * > Themes /themes
- * > [node:field_subtheme] /themes/[entity:taxonomy_term/tid]
+ * Generates the breadcrumb trail for Taxonomy term pages.
  */
 
 use Drupal\Core\Breadcrumb\Breadcrumb;
@@ -20,10 +13,10 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
+use Drupal\taxonomy\TermInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
+class TaxonomyTermThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
@@ -31,11 +24,11 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
   protected $entityTypeManager;
 
   /**
-   * Node object, or null if on a non-node page.
+   * Taxonomy term object.
    *
-   * @var \Drupal\node\Entity\Node
+   * @var \Drupal\taxonomy\TermInterface
    */
-  protected $node;
+  protected $term;
 
   /**
    * Class constructor.
@@ -61,23 +54,8 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if ($route_name == 'entity.node.canonical') {
-      $this->node = $route_match->getParameter('node');
-
-      if ($this->node instanceof NodeInterface == FALSE) {
-        // Node route but needs loaded entity to check bundle.
-        $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
-      }
-
-      if (!empty($this->node)) {
-        $applies_to_types = [
-          'article',
-          'application',
-          'publication',
-        ];
-
-        $match = in_array($this->node->bundle(), $applies_to_types);
-      }
+    if ($route_name == 'entity.taxonomy_term.canonical') {
+      $match = TRUE;
     }
 
     return $match;
@@ -89,21 +67,19 @@ class ThemesBreadcrumb implements BreadcrumbBuilderInterface {
   public function build(RouteMatchInterface $route_match) {
 
     $cache_tags = [];
+    $links = [];
 
-    $links[] = Link::createFromRoute(t('Home'), '<front>');
-    $links[] = Link::fromTextandUrl(t('Themes'), Url::fromUserInput('/themes'));
+    $this->term = $route_match->getParameter('taxonomy_term');
 
-    $node = $route_match->getParameter('node');
+    $ancestors = $this->entityTypeManager->getStorage("taxonomy_term")->loadParents($this->term->id());
 
-    if ($node->hasField('field_subtheme')) {
-      $theme_tid = $node->field_subtheme->target_id;
+    // Show the trail if has at least one ancestor term.
+    if (!empty($ancestors)) {
+      $links[] = Link::createFromRoute(t('Home'), '<front>');
 
-      // Find parent terms, if any and begin to build up link chain.
-      $ancestors = $this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($theme_tid);
-      // Flip so we have oldest > youngest ancestors.
-      $ancestors = array_reverse($ancestors, TRUE);
+      $terms = (count($ancestors) > 1) ? array_reverse($ancestors, TRUE) : $ancestors;
 
-      foreach ($ancestors as $term) {
+      foreach ($terms as $term) {
         $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
         $cache_tags[] = 'taxonomy_term:' . $term->id();
       }

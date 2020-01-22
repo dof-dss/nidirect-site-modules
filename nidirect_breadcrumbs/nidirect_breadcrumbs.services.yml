@@ -90,5 +90,11 @@ parameters:
     - /contacts/local-councils-in-northern-ireland
   breadcrumb.nullbreadcrumb.matches:
     - /forms/feedback
-    - entity.taxonomy_term.canonical
     - nidirect_news.news_listing
+    - entity.user.canonical
+    - user.register
+    - user.login
+    - user.logout
+    - user.pass
+    - user.reset
+    - user.reset.login

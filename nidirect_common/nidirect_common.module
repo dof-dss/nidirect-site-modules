@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\redirect\Entity\Redirect;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -87,6 +88,25 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
       if (!empty($parent_terms)) {
         $root_term = array_pop($parent_terms);
         $entity->set('field_top_level_theme', $root_term);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function nidirect_common_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'node') {
+    if ($entity->getType() == 'landing_page') {
+      if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
+        $subtheme_tid = $entity->get('field_subtheme')->getString();
+        Redirect::create([
+          'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
+          'redirect_redirect' => 'internal:/node/' . $entity->id(),
+          'language' => 'und',
+          'status_code' => '301',
+        ])->save();
       }
     }
   }

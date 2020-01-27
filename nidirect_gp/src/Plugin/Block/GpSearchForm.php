@@ -6,12 +6,17 @@ use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a GP search block.
+ * Provides a GP search block for the gp_practices view,
+ * as well as (via the GpSearchController) the gp_practices_proximity view.
+ *
+ * Exposed blocks tend to use AJAX and aren't available to embed displays
+ * so we wrap the form in a custom Block so we don't have to write a full
+ * custom form + handler from scratch and re-use as much of the exposed
+ * views filters as possible.
  *
  * @Block(
  *  id = "gp_search_form",
@@ -41,14 +46,11 @@ class GpSearchForm extends BlockBase implements ContainerFactoryPluginInterface 
    *   The plugin id.
    * @param mixed $plugin_definition
    *   Plugin definition.
-   * @param Drupal\Core\Routing\CurrentRouteMatch $route_match
-   *   Route match object.
    * @param Drupal\Core\Form\FormBuilderInterface $form_builder
    *   Form builder object.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match, FormBuilderInterface $form_builder) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, FormBuilderInterface $form_builder) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
-    $this->routeMatch = $route_match;
     $this->formBuilder = $form_builder;
   }
 
@@ -60,7 +62,6 @@ class GpSearchForm extends BlockBase implements ContainerFactoryPluginInterface 
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('current_route_match'),
       $container->get('form_builder')
     );
   }
@@ -69,16 +70,12 @@ class GpSearchForm extends BlockBase implements ContainerFactoryPluginInterface 
    * {@inheritdoc}
    */
   public function build() {
-    // Have we got a proximity search active?
-    $is_proximity_search = FALSE; // TODO: swap out for service that can detect, say, a postcode as the trigger for this.
-
-    // TODO: do we need the swap in/out as exposed filter is supposed to look the same across both views displays??
-    $view_id = $is_proximity_search ? 'gp_practices_proximity' : 'gp_practices';
-    $display_id = $is_proximity_search ? 'gps_by_proximity' : 'find_a_gp';
+    $view_id = 'gp_practices';
+    $display_id = 'find_a_gp';
     $view = Views::getView($view_id);
 
     // See https://blog.werk21.de/en/2017/03/08/programmatically-render-exposed-filter-form.
-    if ($view) {
+    if ($view->access($display_id)) {
       $view->setDisplay($display_id);
       $view->initHandlers();
 
@@ -88,12 +85,10 @@ class GpSearchForm extends BlockBase implements ContainerFactoryPluginInterface 
           'display' => &$view->display_handler->display,
           'rerender' => TRUE,
         ])
-        ->setMethod('get')
         ->setAlwaysProcess()
         ->disableRedirect();
 
       $form_state->set('rerender', NULL);
-
       $form = $this->formBuilder->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
     }
 

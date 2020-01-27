@@ -1,0 +1,10 @@
+services:
+  nidirect.postcode_extractor:
+    class: Drupal\nidirect_gp\PostcodeExtractor
+    arguments: ['%postcode_matches.uk%', '@request_stack']
+
+parameters:
+  nidirect_gp.proximity_max_distance: 10
+
+  # Regex sourced from https://andrewwburns.com/2018/04/10/uk-postcode-validation-regex/.
+  postcode_matches.uk: '(([A-Z][0-9]{1,2})|(([A-Z][A-HJ-Y][0-9]{1,2})|(([A-Z][0-9][A-Z])|([A-Z][A-HJ-Y][0-9]?[A-Z]))))(| )[0-9][A-Z]{2}'

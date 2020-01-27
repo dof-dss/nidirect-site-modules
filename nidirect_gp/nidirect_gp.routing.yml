@@ -5,3 +5,4 @@ nidirect_gp.gp_search:
     _title: 'Find a GP'
   requirements:
     _permission: 'access content'
+    search_api_views_fulltext: ^(\w)+

@@ -24,6 +24,8 @@ class NidirectFeedbackmenuLinkDerivative extends DeriverBase implements Containe
    * {@inheritdoc}
    */
   public function getDerivativeDefinitions($base_plugin_definition) {
+    // Use a route to build a link to the site
+    // feedback webform.
     $links = [];
     $links['nidirect_feedbackmenulink'] = [
       'title' => 'Feedback',

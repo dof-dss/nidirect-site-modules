@@ -1,21 +1,8 @@
 <?php
 
-/**
- * @file
- * Contains \Drupal\nidirect_common\Menu\NidirectFeedbackMenu.
- */
-
 namespace Drupal\nidirect_common\Plugin\Menu;
 
-use Drupal\Core\Cache\CacheBackendInterface;
-use Drupal\Core\Config\ConfigFactoryInterface;
-use Drupal\Core\Language\LanguageManagerInterface;
-use Drupal\Core\Lock\LockBackendInterface;
 use Drupal\Core\Menu\StaticMenuLinkOverridesInterface;
-use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\Core\Session\AccountInterface;
-use Drupal\Core\Url;
-use Drupal\locale\StringStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Menu\MenuLinkDefault;
 use Symfony\Component\HttpFoundation\RequestStack;
@@ -72,7 +59,7 @@ class NidirectFeedbackMenu extends MenuLinkDefault {
     $options = parent::getOptions();
 
     // Append the current path as 's' parameter.
-    //$page = \Drupal::request()->getRequestUri();
+    // $page = \Drupal::request()->getRequestUri();
     $page = $this->requestStack->getCurrentRequest()->getRequestUri();
     if ($page == '/') {
       // Homepage is a special case.

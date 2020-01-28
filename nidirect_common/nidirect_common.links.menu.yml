@@ -20,6 +20,7 @@ nidirect.main.help:
   weight: 7
 nidirect.main.feedback:
   deriver: \Drupal\nidirect_common\Plugin\Derivative\NidirectFeedbackmenuLinkDerivative
+  class: \Drupal\nidirect_common\Plugin\Menu\NidirectFeedbackMenu
 nidirect.footer.copyright:
   title: 'Crown copyright'
   url: internal:/articles/crown-copyright

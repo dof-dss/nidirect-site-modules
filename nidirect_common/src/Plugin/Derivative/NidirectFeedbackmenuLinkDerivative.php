@@ -33,13 +33,12 @@ class NidirectFeedbackmenuLinkDerivative extends DeriverBase implements Containe
   {
     $links = array();
     $links['nidirect_feedbackmenulink'] = [
-        'title' => 'Feedback ZZ',
+        'title' => 'Feedback',
         'menu_name' => 'main',
         'route_name' => 'entity.webform.canonical',
         'route_parameters' => [
           'webform' => 'site_feedback',
         ],
-        'options' => ['query' => ['s' => '/front']],
         'weight' => 8
       ] + $base_plugin_definition;
     return $links;

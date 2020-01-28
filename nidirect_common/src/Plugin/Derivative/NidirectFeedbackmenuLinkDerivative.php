@@ -9,6 +9,7 @@ namespace Drupal\nidirect_common\Plugin\Derivative;
 use Drupal\Component\Plugin\Derivative\DeriverBase;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Plugin\Discovery\ContainerDeriverInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -31,24 +32,14 @@ class NidirectFeedbackmenuLinkDerivative extends DeriverBase implements Containe
   public function getDerivativeDefinitions($base_plugin_definition)
   {
     $links = array();
-
-    /*
-     * title: 'Feedback'
-  route_name: entity.webform.canonical
-  route_parameters: { webform: 'site_feedback' }
-  options:
-    query:
-      s: 'front'
-  menu_name: main
-  weight: 8
-     */
     $links['nidirect_feedbackmenulink'] = [
-        'title' => 'Feedback XX',
+        'title' => 'Feedback ZZ',
         'menu_name' => 'main',
         'route_name' => 'entity.webform.canonical',
         'route_parameters' => [
           'webform' => 'site_feedback',
         ],
+        'options' => ['query' => ['s' => '/front']],
         'weight' => 8
       ] + $base_plugin_definition;
     return $links;

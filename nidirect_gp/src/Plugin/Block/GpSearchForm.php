@@ -85,11 +85,16 @@ class GpSearchForm extends BlockBase implements ContainerFactoryPluginInterface 
           'display' => &$view->display_handler->display,
           'rerender' => TRUE,
         ])
+        ->setMethod('get')
         ->setAlwaysProcess()
         ->disableRedirect();
 
       $form_state->set('rerender', NULL);
       $form = $this->formBuilder->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
+      // Set a specific cache context because we want to vary the render output depending on whether
+      // someone has set a different query parameter. Without this, the value entered in the input
+      // box will persist for later requests making it look broken.
+      $form['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
     }
 
     return $form;

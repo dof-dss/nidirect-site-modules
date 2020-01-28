@@ -16,14 +16,17 @@ use Drupal\Core\Menu\MenuLinkDefault;
  * Provides a default implementation for menu link plugins.
  */
 class NidirectFeedbackMenu extends MenuLinkDefault {
+  
   /**
    * {@inheritdoc}
    */
   public function getOptions() {
     $options = parent::getOptions();
+
     // Append the current path as 's' parameter.
     $page = \Drupal::request()->getRequestUri();
     if ($page == '/') {
+      // Homepage is a special case.
       $page = '/front';
     }
     $options['query']['s'] = $page;
@@ -31,11 +34,10 @@ class NidirectFeedbackMenu extends MenuLinkDefault {
   }
 
   /**
-   * {@inheritdoc}
-   *
+   * Cache this menu entry as much as possible.
    */
-  public function getCacheMaxAge() {
-    return 0;
+  public function getCacheContexts() {
+    return ['url.path'];
   }
 
 }

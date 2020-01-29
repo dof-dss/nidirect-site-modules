@@ -19,15 +19,8 @@ nidirect.main.help:
   menu_name: main
   weight: 7
 nidirect.main.feedback:
-  title: 'Feedback'
-  route_name: entity.webform.canonical
-  route_parameters: { webform: 'site_feedback' }
-  options:
-    query:
-      s: 'front'
-  menu_name: main
-  weight: 8
-
+  deriver: \Drupal\nidirect_common\Plugin\Derivative\NidirectFeedbackmenuLinkDerivative
+  class: \Drupal\nidirect_common\Plugin\Menu\NidirectFeedbackMenu
 nidirect.footer.copyright:
   title: 'Crown copyright'
   url: internal:/articles/crown-copyright

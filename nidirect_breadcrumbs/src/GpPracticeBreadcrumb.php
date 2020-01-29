@@ -80,7 +80,7 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    if ($route_name == 'view.gp_practices.find_a_gp') {
+    if ($route_name == 'nidirect_gp.gp_search') {
       // Also match on GP search page.
       $match = TRUE;
     }

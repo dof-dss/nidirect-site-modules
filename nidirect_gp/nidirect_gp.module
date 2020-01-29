@@ -71,6 +71,19 @@ function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBui
 }
 
 /**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_gp_preprocess_node(&$variables) {
+  if ($variables['node']->bundle() == 'gp_practice' && $variables['view_mode'] == 'search_result') {
+    // Prune a trailing '#weight' item key in the GP names array which is added
+    // By something after hook_entity_type_view() above.
+    if (array_key_exists('#weight', $variables['content']['gp_names'])) {
+      unset($variables['content']['gp_names']['#weight']);
+    }
+  }
+}
+
+/**
  * Implements hook_entity_extra_field_info().
  */
 function nidirect_gp_entity_extra_field_info() {
@@ -160,27 +173,6 @@ function nidirect_gp_entity_presave(EntityInterface $entity) {
  * Implements hook_views_pre_render().
  */
 function nidirect_gp_views_pre_render(ViewExecutable $view) {
-
-  if ($view->id() == 'gp_practices' && $view->current_display == 'find_a_gp') {
-    // Display singular or plural result count.
-    $result_count = \Drupal::translation()->formatPlural(
-      $view->pager->total_items,
-      '@number GP practice',
-      '@number GP practices', [
-        '@number' => $view->pager->total_items,
-      ]
-    );
-
-    if ($view->pager->total_items > 0) {
-      $view->attachment_before = [
-        'result_count' => [
-          '#type' => 'html_tag',
-          '#tag' => 'h2',
-          '#value' => $result_count,
-        ],
-      ];
-    }
-  }
 }
 
 /**

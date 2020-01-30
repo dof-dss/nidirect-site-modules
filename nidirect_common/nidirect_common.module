@@ -301,6 +301,11 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
       $form['field_subtheme']['widget']['#description'] = t($msg);
     }
+    // Only show 'Listing' field if 'manually control listing'
+    // checkbox has been checked.
+    if (isset($form['field_listing'])) {
+      $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+    }
   }
 }
 

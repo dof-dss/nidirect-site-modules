@@ -74,22 +74,29 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     $cache_tags = [];
     // Get the current node.
     $node = $this->routeMatch->getParameter('node');
-    if (is_object($node) && !empty($node->field_subtheme->target_id)) {
-      // Add custom cache tag for taxonomy term listing.
-      $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
-      // Get a list of article teasers by term.
-      if (!empty($node->id())) {
-        $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+    if (is_object($node)) {
+      if ($node->field_manually_control_listing->value) {
+        // content editor has taken charge of the contents, so don't
+        // do any more work in here.
+        return $build;
       }
-      // Get a list of article teasers by topic.
-      $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
-      // Sort entries alphabetically (regardless of type).
-      ksort($results);
-      // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
-      $build['nidirect_article_teasers_by_topic'] = $results;
-      $build['nidirect_article_teasers_by_topic']['#cache'] = [
-        'tags' => $cache_tags,
-      ];
+      if (!empty($node->field_subtheme->target_id)) {
+        // Add custom cache tag for taxonomy term listing.
+        $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
+        // Get a list of article teasers by term.
+        if (!empty($node->id())) {
+          $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+        }
+        // Get a list of article teasers by topic.
+        $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
+        // Sort entries alphabetically (regardless of type).
+        ksort($results);
+        // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
+        $build['nidirect_article_teasers_by_topic'] = $results;
+        $build['nidirect_article_teasers_by_topic']['#cache'] = [
+          'tags' => $cache_tags,
+        ];
+      }
     }
     return $build;
   }

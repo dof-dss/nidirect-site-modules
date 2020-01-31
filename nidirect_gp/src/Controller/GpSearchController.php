@@ -125,16 +125,20 @@ class GpSearchController extends ControllerBase {
     // If it's a proximity search (detected postcode) then add arguments to the view.
     if ($view_id == 'gp_practices_proximity' && $is_proximity_search) {
       // Geocode the first postcode (only accepting single values in our search).
-      $geocode_coordinates = $this->geocoder->geocode($postcode[0], [$this->geocodingServiceId])->first()->getCoordinates();
+      $geocode_task_results = $this->geocoder->geocode($postcode[0], [$this->geocodingServiceId]);
 
-      // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
-      // Ie: LAT,LON[OPERATOR]MAX_DISTANCE.
-      // Units of distance are pre-set on the views argument handler config.
-      $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%d',
-        $geocode_coordinates->getLatitude(),
-        $geocode_coordinates->getLongitude(),
-        $this->proximityMaxDistance)
-      ];
+      if (!empty(($geocode_task_results))) {
+        $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
+
+        // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
+        // Ie: LAT,LON[OPERATOR]MAX_DISTANCE.
+        // Units of distance are pre-set on the views argument handler config.
+        $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%d',
+          $geocode_coordinates->getLatitude(),
+          $geocode_coordinates->getLongitude(),
+          $this->proximityMaxDistance)
+        ];
+      }
     }
 
     return $build;

@@ -55,19 +55,19 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
 
   // Links for sorting options.
-  $sort_relevance = Link::createFromRoute('Sort by relevance', 'nidirect_contacts.default', [], [
+  $sort_relevance = Link::createFromRoute('sort by relevance', 'nidirect_contacts.default', [], [
     'query' => array_merge($q, [
       'sort_by' => 'search_api_relevance',
     ])
   ]);
-  $sort_title = Link::createFromRoute('Sort alphabetically', 'nidirect_contacts.default', [], [
+  $sort_title = Link::createFromRoute('sort alphabetically', 'nidirect_contacts.default', [], [
     'query' => array_merge($q, [
       'sort_by' => 'title',
     ])
   ]);
   // Convenience links.
-  $show_az = Link::createFromRoute('Show A-Z', 'nidirect_contacts.default');
-  $reset_search = Link::createFromRoute('Reset search', 'nidirect_contacts.default');
+  $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default');
+  $reset_search = Link::createFromRoute('reset a-z', 'nidirect_contacts.default');
 
   // Add to render array by default; toggle visibility after.
   $variables['links']['sort_by_relevance'] = $sort_relevance->toRenderable();

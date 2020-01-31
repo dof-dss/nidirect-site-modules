@@ -306,13 +306,13 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     // Only show 'Listing' field if 'manually control listing'
     // checkbox has been checked.
     if (isset($form['field_listing'])) {
-      //$form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+      $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
     }
     if (isset($form['field_manually_control_listing'])) {
       $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
         'callback' => 'nidirect_common_populate_listing',
         'event' => 'change',
-        'wrapper' => 'edit-field-teaser-0-value'
+        'wrapper' => 'edit-field-teaser-wrapper'
       ];
     }
   }
@@ -327,9 +327,8 @@ function nidirect_common_populate_listing(array &$form, FormStateInterface $form
   ]);
   $paragraph->save();*/
 
-  $form['field_teaser']['value'] = 'AAAAAAA';
+  //$form['field_teaser']['value'] = 'AAAAAAA';
   $form['field_teaser']['widget'][0]['value']['#value'] = 'CCCCCCCC';
-  //$form['field_teaser']['widget'][0]['#title'] = 'Changed';
   return $form['field_teaser'];
 /*
   $node = entity_load('node', $nid);

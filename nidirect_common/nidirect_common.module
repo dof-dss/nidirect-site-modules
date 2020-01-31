@@ -5,6 +5,8 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Core\Ajax\AjaxResponse;
+use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -304,9 +306,28 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     // Only show 'Listing' field if 'manually control listing'
     // checkbox has been checked.
     if (isset($form['field_listing'])) {
-      $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+      //$form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+    }
+    if (isset($form['field_manually_control_listing'])) {
+      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
+        'callback' => 'myAjaxCallback',
+        'event' => 'change',
+        'wrapper' => 'edit-field-teaser-0-value'
+      ];
     }
   }
+}
+
+function myAjaxCallback(array &$form, FormStateInterface $form_state) {
+  \Drupal::logger('nidirect_common')->notice(t('in callback'));
+  $ajax_response = new AjaxResponse();
+  $ajax_response->addCommand(new HtmlCommand('#edit-field-teaser-0-value', 'Yessssssss'));
+
+  $response = [
+    '#markup' => '<div>Saved</div>',
+  ];
+
+  return $response;
 }
 
 /**

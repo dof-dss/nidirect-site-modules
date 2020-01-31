@@ -292,6 +292,35 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_ENTITY_TYPE_prepare_form().
+ */
+function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
+  // Prepopulate the 'field_listing' paragraphs field with the
+  // content returned from the view.
+  if (!$entity->isNew()) {
+    return;
+  }
+
+  // Don't bother if user has taken manual control.
+  if (isset($form['field_listing'])) {
+    return;
+  }
+
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $langcode = $form_state->get('langcode');
+  $field = $entity->get('field_listing');
+
+  $paragraphs_entity = $storage->create([
+    'type' => 'term_teaser',
+    'langcode' => $langcode,
+    'field_term' =>['target_id' => '195'],
+  ]);
+
+  $field->appendItem($paragraphs_entity);
+}
+
+
+/**
  * Implements hook_form_alter().
  */
 function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -308,41 +337,7 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     if (isset($form['field_listing'])) {
       $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
     }
-    if (isset($form['field_manually_control_listing'])) {
-      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
-        'callback' => 'nidirect_common_populate_listing',
-        'event' => 'change',
-        'wrapper' => 'edit-field-teaser-wrapper'
-      ];
-    }
   }
-}
-
-function nidirect_common_populate_listing(array &$form, FormStateInterface $form_state) {
-  /*$paragraph = Paragraph::create([
-    'type' => 'term_teaser',
-    'field_term' => array(
-      "target_id"  =>  '195'
-    ),
-  ]);
-  $paragraph->save();*/
-
-  //$form['field_teaser']['value'] = 'AAAAAAA';
-  $form['field_teaser']['widget'][0]['value']['#value'] = 'CCCCCCCC';
-  return $form['field_teaser'];
-/*
-  $node = entity_load('node', $nid);
-  $node->field_content = array(
-    array(
-      'target_id' => $paragraph->id(),
-      'target_revision_id' => $paragraph->getRevisionId(),
-    )
-  );*/
-
-  $response = [
-    '#markup' => 'Saved',
-  ];
-  return $response;
 }
 
 /**

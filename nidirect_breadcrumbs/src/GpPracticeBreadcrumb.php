@@ -99,7 +99,7 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
     $links[] = Link::fromTextandUrl(t('Health services'), Url::fromUri('entity:taxonomy_term/262'));
     $links[] = Link::fromTextandUrl(t('Doctors, dentists and other health services'), Url::fromUri('entity:taxonomy_term/263'));
     $links[] = Link::fromTextandUrl(
-      t('Find a GP practice'), Url::fromRoute(($this->node) ? 'view.gp_practices.find_a_gp' : '<none>')
+      t('Find a GP practice'), Url::fromRoute(($this->node) ? 'nidirect_gp.gp_search' : '<none>')
     );
 
     $breadcrumb->setLinks($links);

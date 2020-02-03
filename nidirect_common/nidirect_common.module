@@ -359,7 +359,6 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
         'wrapper' => 'edit-field-listing-wrapper'
       ];
     }
-    $form['new_submit'] = ['#type' => 'submit'];
   }
 }
 

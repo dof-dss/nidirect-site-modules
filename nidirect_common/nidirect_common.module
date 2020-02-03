@@ -13,6 +13,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\views\ViewExecutable;
 
@@ -306,6 +307,11 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
     return;
   }
 
+  $subtheme = $form_state->getUserInput()['field_subtheme'];
+  if ($subtheme != 18) {
+    return;
+  }
+
   $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   $langcode = $form_state->get('langcode');
   $field = $entity->get('field_listing');
@@ -313,10 +319,20 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   $paragraphs_entity = $storage->create([
     'type' => 'term_teaser',
     'langcode' => $langcode,
-    'field_term' =>['target_id' => '195'],
+    'field_term' =>['target_id' => '165'],
   ]);
 
   $field->appendItem($paragraphs_entity);
+
+  $paragraphs_entity = $storage->create([
+    'type' => 'term_teaser',
+    'langcode' => $langcode,
+    'field_term' =>['target_id' => '185'],
+  ]);
+
+  $field->appendItem($paragraphs_entity);
+
+  $form_state->setRebuild();
 }
 
 
@@ -335,10 +351,76 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
     // Only show 'Listing' field if 'manually control listing'
     // checkbox has been checked.
     if (isset($form['field_listing'])) {
-      $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+      //$form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
     }
+    //'edit-field-listing-wrapper'
+    if (isset($form['field_manually_control_listing'])) {
+      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
+        'callback' => 'nidirect_common_populate_listing',
+        'event' => 'change',
+        'wrapper' => 'edit-field-listing-wrapper'
+      ];
+    }
+    $form['new_submit'] = ['#type' => 'submit'];
   }
 }
+
+function nidirect_common_populate_listing(array &$form, FormStateInterface $form_state) {
+  /*\Drupal::formBuilder()->submitForm($form, $form_state);
+  return;
+  $response = new AjaxResponse();
+  $url = '/my_module/my_controller?selected_value=' . $selectedValue;
+  $response->addCommand(new RedirectCommand($url));
+  return $response;*/
+  $form_state->setRebuild();
+  return $form['field_listing'];
+  $paragraph = Paragraph::create([
+    'type' => 'term_teaser',
+    'field_term' => array(
+      "target_id"  =>  '195'
+    ),
+  ]);
+  $paragraph->save();
+
+  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
+  $langcode = $form_state->get('langcode');
+
+  $paragraphs_entity = $storage->create([
+    'type' => 'term_teaser',
+    'langcode' => $langcode,
+    'field_term' =>['target_id' => '195'],
+  ]);
+
+  //$form['field_listing']['widget']->appendItem($paragraph);
+  $entity = $form_state->getFormObject()->getEntity();
+
+  $field = $entity->get('field_listing');
+  $field->appendItem($paragraphs_entity);
+
+
+  //$form_state->setRebuild();
+  $renderer = \Drupal::service('renderer');
+  return $renderer->render($field);
+  //return $field;
+
+  //$form['field_teaser']['value'] = 'AAAAAAA';
+  $form['field_teaser']['widget'][0]['value']['#value'] = 'CCCCCCCC';
+  return $form['field_teaser'];
+  /*
+    $node = entity_load('node', $nid);
+    $node->field_content = array(
+      array(
+        'target_id' => $paragraph->id(),
+        'target_revision_id' => $paragraph->getRevisionId(),
+      )
+    );*/
+
+  $response = [
+    '#markup' => 'Saved',
+  ];
+  return $response;
+}
+
 
 /**
  * Implements hook_entity_embed_alter().

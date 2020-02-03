@@ -68,15 +68,12 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     }
 
     $build['title'] = [
-      '#markup' => '<p>' . $title . '</p>',
+      '#markup' => '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
     ];
 
     foreach (array_merge(range('a', 'z'), range('0', '9')) as $item) {
-      $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_contacts.letter', ['letter' => $item], [
-        'attributes' => [
-          'title' => $this->t('View entries under :item', [':item' => strtoupper($item)]),
-        ]
-      ])->toRenderable();
+      $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_contacts.letter', ['letter' => $item])
+        ->toRenderable();
     }
 
     $build['contact_az_block'] = [
@@ -85,6 +82,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
       '#attributes' => [
         'class' => 'az-facet-list',
         'id' => 'contacts-az',
+        'aria-describedby' => 'contacts-az--title',
       ],
     ];
 

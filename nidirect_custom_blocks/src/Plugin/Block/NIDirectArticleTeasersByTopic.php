@@ -83,14 +83,8 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       if (!empty($node->field_subtheme->target_id)) {
         // Add custom cache tag for taxonomy term listing.
         $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
-        // Get a list of article teasers by term.
-        if (!empty($node->id())) {
-          $results = $this->renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
-        }
-        // Get a list of article teasers by topic.
-        $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
-        // Sort entries alphabetically (regardless of type).
-        ksort($results);
+        // Get list of articles.
+        $results = $this->retrieveArticlesBySubTheme($node->field_subtheme->target_id, $node->id(), $cache_tags);
         // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
         $build['nidirect_article_teasers_by_topic'] = $results;
         $build['nidirect_article_teasers_by_topic']['#cache'] = [
@@ -99,6 +93,16 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       }
     }
     return $build;
+  }
+
+  public function retrieveArticlesBySubTheme($tid, $nid = NULL, array &$cache_tags = []) {
+    // Get a list of article teasers by term.
+    $results = $this->renderArticleTeasersByTerm($tid, $nid, $cache_tags);
+    // Get a list of article teasers by topic.
+    $results += $this->renderArticleTeasersByTopic($tid, $cache_tags);
+    // Sort entries alphabetically (regardless of type).
+    ksort($results);
+    return $results;
   }
 
   /**

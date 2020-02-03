@@ -12,6 +12,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\Entity\Redirect;
@@ -308,9 +309,11 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   }
 
   $subtheme = $form_state->getUserInput()['field_subtheme'];
-  if ($subtheme != 18) {
+  if (empty($subtheme)) {
     return;
   }
+
+  $teasers = nidirect_common_article_teasers($subtheme);
 
   $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   $langcode = $form_state->get('langcode');
@@ -331,6 +334,61 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   ]);
 
   $field->appendItem($paragraphs_entity);
+
+  $paragraphs_entity = $storage->create([
+    'type' => 'article_teaser',
+    'langcode' => $langcode,
+    'field_article' =>['target_id' => '12965'],
+  ]);
+
+  $field->appendItem($paragraphs_entity);
+}
+
+/**
+ * Utility function to get teasers.
+ */
+function nidirect_common_article_teasers(int $tid) {
+  $results = [];
+  // get a list of article teasers by term.
+  $results = nidirect_common_get_article_teasers_by_term($tid);
+  // Get a list of article teasers by topic.
+  $results += nidirect_common_get_article_teasers_by_topic($tid);
+  return $results;
+}
+
+/**
+ * Utility function to get teasers by term.
+ */
+function nidirect_common_get_article_teasers_by_term(int $tid) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    // This will be a link to an article.
+    $results[strtolower($row->_entity->getTitle())] = [
+      'type' => 'article_teaser',
+      'target_id' => $row->nid
+    ];
+  }
+  return $results;
+}
+
+/**
+ * Utility function to get teasers by topic.
+ */
+function nidirect_common_get_article_teasers_by_topic(int $tid) {
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    // This will be a link to a taxonomy term.
+    $results[strtolower($row->_entity->getName())] = [
+      'type' => 'term_teaser',
+      'target_id' => $row->tid
+    ];
+  }
+  return $results;
 }
 
 

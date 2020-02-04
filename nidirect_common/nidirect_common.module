@@ -323,22 +323,23 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   // Populate field_listing with paragraphs.
   $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   $langcode = $form_state->get('langcode');
-  $field = $entity->get('field_listing');
-
+  $paras = [];
   foreach ($teasers as $title => $atts) {
-    $paragraphs_entity = $storage->create([
+    $paragraph = Paragraph::create([
       'type' => $atts['type'],
       'langcode' => $langcode,
       $atts['field'] =>['target_id' => $atts['target_id']],
     ]);
-    $field->appendItem($paragraphs_entity);
+    $paragraph->save();
+    $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
   }
+  $entity->field_listing = $paras;
 }
 
 /**
  * Utility function to get teasers.
  */
-function nidirect_common_article_teasers(int $tid) {
+function nidirect_common_article_teasers(string $tid) {
   $results = [];
   // get a list of article teasers by term.
   $results = nidirect_common_get_article_teasers_by_term($tid);

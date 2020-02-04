@@ -85,7 +85,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
       if ($node->field_manually_control_listing->value) {
         // Order has been set by the user.
-        $results = userSortResults($node, $results);
+        $results = $this->userSortResults($node, $results);
       } else {
         // Sort entries alphabetically (regardless of type).
         ksort($results);

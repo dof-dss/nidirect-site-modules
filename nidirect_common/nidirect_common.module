@@ -108,12 +108,12 @@ function nidirect_common_entity_insert(EntityInterface $entity) {
       if ($entity->isPublished()) {
         if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
           $subtheme_tid = $entity->get('field_subtheme')->getString();
-          Redirect::create([
+          /*Redirect::create([
             'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
             'redirect_redirect' => 'internal:/node/' . $entity->id(),
             'language' => 'und',
             'status_code' => '301',
-          ])->save();
+          ])->save();*/
         }
       }
     }
@@ -132,12 +132,12 @@ function nidirect_common_entity_update(EntityInterface $entity) {
         if (!$entity->original->isPublished()) {
           if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
             $subtheme_tid = $entity->get('field_subtheme')->getString();
-            Redirect::create([
+            /*Redirect::create([
               'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
               'redirect_redirect' => 'internal:/node/' . $entity->id(),
               'language' => 'und',
               'status_code' => '301',
-            ])->save();
+            ])->save();*/
           }
         }
       }
@@ -299,22 +299,37 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
 function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
   // Prepopulate the 'field_listing' paragraphs field with the
   // content returned from the view.
-  if (!$entity->isNew()) {
+
+  // Don't bother unless user has checked 'manual control'.
+  if ($entity->isNew()) {
+    if (isset($form_state->getUserInput()['_drupal_ajax'])) {
+      if (!$form_state->getUserInput()['field_manually_control_listing']) {
+        return;
+      }
+    } elseif (!$form_state->getValue('field_manually_control_listing')) {
+      return;
+    }
+  } else {
+      return;
+  }
+
+  // Can't do anything unless a subtheme has been selected.
+  $subtheme = $form_state->getUserInput()['field_subtheme'];
+  if (empty($subtheme)) {
     return;
   }
+
+  $n = $entity->isNew();
 
   // Don't bother if user has taken manual control.
   if (isset($form['field_listing'])) {
     return;
   }
 
-  $subtheme = $form_state->getUserInput()['field_subtheme'];
-  if (empty($subtheme)) {
-    return;
-  }
-
+  // Get a list of terms and articles taht match this subtheme.
   $teasers = nidirect_common_article_teasers($subtheme);
 
+  // Populate field_listing with paragraphs.
   $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   $langcode = $form_state->get('langcode');
   $field = $entity->get('field_listing');
@@ -410,8 +425,8 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
 }
 
 function nidirect_common_populate_listing(array &$form, FormStateInterface $form_state) {
-  // Simply return the listings field that has been rebuilt
-  // in nidirect_common_node_prepare_form.
+  // The sole purpose of this is to make sure that
+  // nidirect_common_node_prepare_form is called.
   return $form['field_listing'];
 }
 

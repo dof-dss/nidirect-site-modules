@@ -45,21 +45,28 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     // Add postcode placeholder example.
     $form['search_api_fulltext']['#placeholder'] = t("e.g. 'BT1'");
 
+    // Wrap categories in an inline fieldset.
+    $form['categories_wrapper'] = [
+      '#type' => 'fieldset',
+      '#title' => t('Find:'),
+      '#attributes' => ['class' => ['container-inline']],
+    ];
+
     // Update exposed Categories element and text.
-    $form['categories']['#type'] = 'radios';
-    $form['categories']['#options']['All'] = t('All');
-    $form['categories']['#options']['1160'] = t('Driving instructors');
-    $form['categories']['#options']['1161'] = t('Motorcycle instructors');
+    $form['categories_wrapper']['categories']['#type'] = 'radios';
+    $form['categories_wrapper']['categories']['#options']['All'] = t('All');
+    $form['categories_wrapper']['categories']['#options']['1160'] = t('Driving instructors');
+    $form['categories_wrapper']['categories']['#options']['1161'] = t('Motorcycle instructors');
 
     // Reorder the choices so 'All' appears first.
-    if (array_key_first($form['categories']['#options']) != 'All') {
-      $form['categories']['#options'] = array_reverse($form['categories']['#options'], TRUE);
+    if (array_key_first($form['categories_wrapper']['categories']['#options']) != 'All') {
+      $form['categories_wrapper']['categories']['#options'] = array_reverse($form['categories_wrapper']['categories']['#options'], TRUE);
     }
 
     // Reorder exposed search form fields.
     $form['search_api_fulltext']['#weight'] = 1;
     $form['actions']['#weight'] = 2;
-    $form['categories']['#weight'] = 3;
+    $form['categories_wrapper']['#weight'] = 3;
   }
 
   // Adjustments to the driving instructor node add/edit form.

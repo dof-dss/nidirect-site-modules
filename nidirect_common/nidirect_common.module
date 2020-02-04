@@ -297,20 +297,18 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
  * Implements hook_ENTITY_TYPE_prepare_form().
  */
 function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
-  // Prepopulate the 'field_listing' paragraphs field with the
-  // content returned from the view.
+  // Prepopulate the 'field_listing' paragraphs field when the user
+  // checks 'manually control listing'.
 
-  // Don't bother unless user has checked 'manual control'.
-  if ($entity->isNew()) {
-    if (isset($form_state->getUserInput()['_drupal_ajax'])) {
-      if (!$form_state->getUserInput()['field_manually_control_listing']) {
-        return;
-      }
-    } elseif (!$form_state->getValue('field_manually_control_listing')) {
+  // Has this hook been invoked by ajax ?
+  if (count($form_state->getUserInput()) > 0) {
+    // Don't bother unless user has checked 'manual control'.
+    if (!$form_state->getUserInput()['field_manually_control_listing']) {
       return;
     }
   } else {
-      return;
+    //Not ajax, do nothing.
+    return;
   }
 
   // Can't do anything unless a subtheme has been selected.
@@ -319,14 +317,7 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
     return;
   }
 
-  $n = $entity->isNew();
-
-  // Don't bother if user has taken manual control.
-  if (isset($form['field_listing'])) {
-    return;
-  }
-
-  // Get a list of terms and articles taht match this subtheme.
+  // Get a list of terms and articles that match this subtheme.
   $teasers = nidirect_common_article_teasers($subtheme);
 
   // Populate field_listing with paragraphs.

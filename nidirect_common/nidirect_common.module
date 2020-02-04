@@ -319,29 +319,14 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   $langcode = $form_state->get('langcode');
   $field = $entity->get('field_listing');
 
-  $paragraphs_entity = $storage->create([
-    'type' => 'term_teaser',
-    'langcode' => $langcode,
-    'field_term' =>['target_id' => '165'],
-  ]);
-
-  $field->appendItem($paragraphs_entity);
-
-  $paragraphs_entity = $storage->create([
-    'type' => 'term_teaser',
-    'langcode' => $langcode,
-    'field_term' =>['target_id' => '185'],
-  ]);
-
-  $field->appendItem($paragraphs_entity);
-
-  $paragraphs_entity = $storage->create([
-    'type' => 'article_teaser',
-    'langcode' => $langcode,
-    'field_article' =>['target_id' => '12965'],
-  ]);
-
-  $field->appendItem($paragraphs_entity);
+  foreach ($teasers as $title => $atts) {
+    $paragraphs_entity = $storage->create([
+      'type' => $atts['type'],
+      'langcode' => $langcode,
+      $atts['field'] =>['target_id' => $atts['target_id']],
+    ]);
+    $field->appendItem($paragraphs_entity);
+  }
 }
 
 /**
@@ -353,6 +338,8 @@ function nidirect_common_article_teasers(int $tid) {
   $results = nidirect_common_get_article_teasers_by_term($tid);
   // Get a list of article teasers by topic.
   $results += nidirect_common_get_article_teasers_by_topic($tid);
+  // Alpha sort.
+  ksort($results);
   return $results;
 }
 
@@ -368,6 +355,7 @@ function nidirect_common_get_article_teasers_by_term(int $tid) {
     // This will be a link to an article.
     $results[strtolower($row->_entity->getTitle())] = [
       'type' => 'article_teaser',
+      'field' => 'field_article',
       'target_id' => $row->nid
     ];
   }
@@ -385,6 +373,7 @@ function nidirect_common_get_article_teasers_by_topic(int $tid) {
     // This will be a link to a taxonomy term.
     $results[strtolower($row->_entity->getName())] = [
       'type' => 'term_teaser',
+      'field' => 'field_term',
       'target_id' => $row->tid
     ];
   }

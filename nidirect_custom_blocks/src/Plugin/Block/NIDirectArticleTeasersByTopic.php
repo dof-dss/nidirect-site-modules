@@ -85,21 +85,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $results += $this->renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
       if ($node->field_manually_control_listing->value) {
         // Order has been set by the user.
-        $new_results = [];
-        foreach ($node->field_listing->referencedEntities() as $para) {
-          if ($para->getType() == 'term_teaser') {
-            $id = 't:' . $para->get('field_term')->getValue()[0]['target_id'];
-          } else {
-            $id = 'a:' . $para->get('field_article')->getValue()[0]['target_id'];
-          }
-          foreach($results as $title => $this_result) {
-            if ($this_result['key'] == $id) {
-              $new_results[$title] = $this_result;
-              break;
-            }
-          }
-        }
-        $results = $new_results;
+        $results = userSortResults($node, $results);
       } else {
         // Sort entries alphabetically (regardless of type).
         ksort($results);
@@ -115,6 +101,29 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       ];
     }
     return $build;
+  }
+
+  /**
+   * Utility function to sort article teasers.
+   */
+  private function userSortResults($node, array $results) {
+    // Use the 'field_listing' paragraph field on the node
+    // to sort the teasers.
+    $new_results = [];
+    foreach ($node->field_listing->referencedEntities() as $para) {
+      if ($para->getType() == 'term_teaser') {
+        $id = 't:' . $para->get('field_term')->getValue()[0]['target_id'];
+      } else {
+        $id = 'a:' . $para->get('field_article')->getValue()[0]['target_id'];
+      }
+      foreach($results as $title => $this_result) {
+        if ($this_result['key'] == $id) {
+          $new_results[$title] = $this_result;
+          break;
+        }
+      }
+    }
+    return $new_results;
   }
 
   /**

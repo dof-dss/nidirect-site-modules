@@ -56,6 +56,12 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['search_api_fulltext']['#weight'] = 1;
     $form['actions']['#weight'] = 2;
     $form['categories']['#weight'] = 3;
+
+    // Hide category options from results page.
+    $inputs = $form_state->getUserInput();
+    if (!empty($inputs['search_api_fulltext'])) {
+      $form['categories']['#type'] = 'hidden';
+    }
   }
 
   // Adjustments to the driving instructor node add/edit form.

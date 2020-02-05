@@ -148,7 +148,7 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
 
     // Hide 'no results' on initial View display.
-    if (count($view->getExposedInput()) == 0) {
+    if ($view->exposed_raw_input['search_api_fulltext'] == '') {
       unset($view->empty['area']);
     }
 

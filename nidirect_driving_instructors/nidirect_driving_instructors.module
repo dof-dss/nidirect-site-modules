@@ -172,11 +172,13 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
     if (preg_match('/sort_by=field_di_lastname/', $uri)) {
       // If sorted by last name, change to sort by relevance.
       $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
+      $uri = str_replace('sort_order=ASC', 'sort_order=DESC', $uri);
       $link_text = t('Sort by relevance');
     }
     elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
       // If sorted by relevance, change to sort alphabetically.
       $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
+      $uri = str_replace('sort_order=DESC', 'sort_order=ASC', $uri);
       $link_text = t('Sort alphabetically');
     }
     else {

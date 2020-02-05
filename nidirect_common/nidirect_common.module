@@ -419,6 +419,11 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
 function nidirect_common_populate_listing(array &$form, FormStateInterface $form_state) {
   // The sole purpose of this is to make sure that
   // nidirect_common_node_prepare_form is called.
+  if (!$form_state->getValue('field_manually_control_listing')['value']) {
+    // If 'manual control' checkbox is unchecked, make sure
+    // that listing field is not shown.
+    $form['field_listing']['#access'] = FALSE;
+  }
   return $form['field_listing'];
 }
 

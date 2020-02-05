@@ -35,8 +35,8 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
   // Don't display the sort/order by options on the
   // driving instructor exposed search form.
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
-    $form['sort_by']['#access'] = FALSE;
-    $form['sort_order']['#access'] = FALSE;
+    $form['sort_by']['#type'] = 'hidden';
+    $form['sort_order']['#type'] = 'hidden';
 
     // Add additional form classes.
     $form['#attributes']['class'][] = 'search-form';

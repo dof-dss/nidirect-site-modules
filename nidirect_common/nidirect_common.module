@@ -321,7 +321,6 @@ function nidirect_common_node_prepare_form(EntityInterface $entity, $operation, 
   $teasers = nidirect_common_article_teasers($subtheme);
 
   // Populate field_listing with paragraphs.
-  $storage = \Drupal::entityTypeManager()->getStorage('paragraph');
   $langcode = $form_state->get('langcode');
   $paras = [];
   foreach ($teasers as $title => $atts) {

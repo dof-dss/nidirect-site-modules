@@ -7,11 +7,9 @@
 
 include_once 'inc/landing_page.redirects.inc';
 
-use Drupal\Core\Form\FormState;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\redirect\Entity\Redirect;
 
 /**
  * Implements hook_entity_insert().
@@ -38,8 +36,7 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_ENTITY_TYPE_prepare_form().
  */
-function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state)
-{
+function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
   // Prepopulate the 'field_listing' paragraphs field when the user
   // checks 'manually control listing'.
   // Has this hook been invoked by ajax ?
@@ -50,7 +47,8 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
       && ($user_input['field_manually_control_listing'] == 0)) {
       return;
     }
-  } else {
+  }
+  else {
     // Not ajax, do nothing.
     return;
   }
@@ -58,7 +56,8 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
   // Can't do anything unless a subtheme has been selected.
   if (isset($user_input['field_subtheme']) && !empty($user_input['field_subtheme'])) {
     $subtheme = $user_input['field_subtheme'];
-  } else {
+  }
+  else {
     return;
   }
 
@@ -204,7 +203,7 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
 function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
   if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->hasField('field_manually_control_listing'))  {
+    if ($entity->hasField('field_manually_control_listing')) {
       $manual_field = $entity->get('field_manually_control_listing');
       if ($manual_field->getValue()[0]['value'] == 0) {
         // If 'manually control listing' is un-checked ensure

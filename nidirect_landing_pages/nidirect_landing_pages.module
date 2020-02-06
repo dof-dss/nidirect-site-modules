@@ -5,6 +5,8 @@
  * Contains nidirect_landing_pages.module.
  */
 
+include_once 'inc/landing_page.redirects.inc';
+
 use Drupal\Core\Form\FormState;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -17,20 +19,8 @@ use Drupal\redirect\Entity\Redirect;
 function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
   // (as long as a subtheme has been selected).
-  if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->getType() == 'landing_page') {
-      if ($entity->isPublished()) {
-        if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
-          $subtheme_tid = $entity->get('field_subtheme')->getString();
-          Redirect::create([
-            'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
-            'redirect_redirect' => 'internal:/node/' . $entity->id(),
-            'language' => 'und',
-            'status_code' => '301',
-          ])->save();
-        }
-      }
-    }
+  if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+    nidirect_landing_pages_create_landing_page_redirect($entity);
   }
 }
 
@@ -38,24 +28,10 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function nidirect_landing_pages_entity_update(EntityInterface $entity) {
-  // If landing page has been published, create the redirect
-  // from the taxonomy term.
-  if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->getType() == 'landing_page') {
-      if ($entity->isPublished()) {
-        if (!$entity->original->isPublished()) {
-          if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
-            $subtheme_tid = $entity->get('field_subtheme')->getString();
-            Redirect::create([
-              'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
-              'redirect_redirect' => 'internal:/node/' . $entity->id(),
-              'language' => 'und',
-              'status_code' => '301',
-            ])->save();
-          }
-        }
-      }
-    }
+  // Create a redirect from the taxonomy term when a landing page is created
+  // (as long as a subtheme has been selected).
+  if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+    nidirect_landing_pages_create_landing_page_redirect($entity);
   }
 }
 
@@ -203,6 +179,8 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
         'wrapper' => 'edit-field-listing-wrapper',
       ];
     }
+    // Add a validate handler to detect any duplicates.
+    $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
 }
 

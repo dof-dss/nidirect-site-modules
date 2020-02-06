@@ -168,7 +168,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     // Only show 'Listing' field if 'manually control listing'
     // checkbox has been checked.
     if (isset($form['field_listing'])) {
-      $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+      //$form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
     }
     // Add ajax to the 'manually control listing' checkbox.
     if (isset($form['field_manually_control_listing'])) {

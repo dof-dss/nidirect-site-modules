@@ -78,7 +78,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
   }
 
   // Get a list of terms and articles that match this subtheme.
-  $teasers = nidirect_common_article_teasers($subtheme);
+  $teasers = nidirect_landing_pages_article_teasers($subtheme);
 
   // Populate field_listing with paragraphs.
   $langcode = $form_state->get('langcode');
@@ -101,9 +101,9 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
 function nidirect_landing_pages_article_teasers(string $tid) {
   $results = [];
   // get a list of article teasers by term.
-  $results = nidirect_common_get_article_teasers_by_term($tid);
+  $results = nidirect_landing_pages_get_article_teasers_by_term($tid);
   // Get a list of article teasers by topic.
-  $results += nidirect_common_get_article_teasers_by_topic($tid);
+  $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
   // Alpha sort.
   ksort($results);
   return $results;
@@ -164,7 +164,7 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
     }
   }
   if ($add_js) {
-    $attachments['#attached']['library'][] = 'nidirect_common/landing_listing';
+    $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
   }
 }
 
@@ -189,7 +189,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     //'edit-field-listing-wrapper'
     if (isset($form['field_manually_control_listing'])) {
       $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
-        'callback' => 'nidirect_common_populate_listing',
+        'callback' => 'nidirect_landing_pages_populate_listing',
         'event' => 'change',
         'wrapper' => 'edit-field-listing-wrapper'
       ];

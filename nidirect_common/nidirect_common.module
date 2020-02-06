@@ -5,8 +5,6 @@
  * Contains nidirect_common.module.
  */
 
-include_once 'inc/landing_page.redirects.inc';
-
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;

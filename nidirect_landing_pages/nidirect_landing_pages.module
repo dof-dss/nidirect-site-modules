@@ -68,7 +68,9 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
   // Has this hook been invoked by ajax ?
   if (count($form_state->getUserInput()) > 0) {
     // Don't bother unless user has checked 'manual control'.
-    if (!$form_state->getUserInput()['field_manually_control_listing']) {
+    $user_input = $form_state->getUserInput();
+    if (isset($user_input['field_manually_control_listing'])
+        && ($user_input['field_manually_control_listing'] == 0)) {
       return;
     }
   }

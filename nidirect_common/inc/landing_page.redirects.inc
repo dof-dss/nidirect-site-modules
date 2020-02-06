@@ -10,7 +10,6 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\redirect\Entity\Redirect;
 
@@ -21,7 +20,7 @@ use Drupal\redirect\Entity\Redirect;
  *
  * @param array $form
  *   The form array.
- * @param FormStateInterface $form_state
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state collection.
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
@@ -36,16 +35,25 @@ function nidirect_common_landing_page_form_validate(array &$form, FormStateInter
 
   if (!empty($result)) {
     $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($theme_selected);
-    $form_state->setErrorByName('field_subtheme', t('There is already a landing page associated with \':term_name\'', [':term_name' => $term->label()]));
+    $node = \Drupal::entityTypeManager()->getStorage('node')->load(array_pop($result));
+    $link = Link::createFromRoute($node->label(), 'entity.node.edit_form', ['node' => $node->id()])->toRenderable();
+
+    $message = new TranslatableMarkup("There is already a landing page node (@landing_page) associated with '@term_name'", [
+      '@landing_page' => \Drupal::service('renderer')->render($link),
+      '@term_name' => $term->label()
+    ]);
+
+    $form_state->setErrorByName('field_subtheme', $message);
   }
 }
 
 /**
- * Utility function to re-use checks for landing page node with valid theme field selection.
+ * Function to re-use checks for landing page node with valid theme field selection.
  *
- * @param EntityInterface $entity
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity to evaluate.
  * @return bool
+ *   TRUE if it is a landing page with theme field value, otherwise FALSE.
  */
 function nidirect_common_is_landing_page_with_theme_value(EntityInterface &$entity) {
   if ($entity instanceof Node == FALSE) {
@@ -59,14 +67,15 @@ function nidirect_common_is_landing_page_with_theme_value(EntityInterface &$enti
 }
 
 /**
- * Utility function to detect whether a redirect already exists, return a URL of the
+ * Detect whether a redirect already exists, return a URL of the
  * destination if it does.
  *
  * @param string $source_path
  *   The source path.
  * @return string
+ *   Redirect URL if found, empty string if not.
  */
-function nidirect_common_redirect_exists(string $source_path) {
+function nidirect_common_get_redirect_url(string $source_path) {
   $redirect = \Drupal::service('redirect.repository')->findBySourcePath($source_path);
 
   if (!empty(($redirect))) {
@@ -85,13 +94,13 @@ function nidirect_common_redirect_exists(string $source_path) {
  * - Whether there is already a landing page node associated with the theme selected.
  * - Create a redirect or warn user if there is already a landing page for this theme.
  *
- * @param EntityInterface $entity
+ * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The landing page node entity.
  */
 function nidirect_common_create_landing_page_redirect(EntityInterface $entity) {
   $subtheme_tid = $entity->get('field_subtheme')->getString();
   $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
-  $redirect_url = nidirect_common_redirect_exists($taxonomy_term_path);
+  $redirect_url = nidirect_common_get_redirect_url($taxonomy_term_path);
 
   if (empty($redirect_url)) {
     Redirect::create([
@@ -108,8 +117,13 @@ function nidirect_common_create_landing_page_redirect(EntityInterface $entity) {
 
     // Add a convenience link for users who can administer redirects.
     if (\Drupal::currentUser()->hasPermission('administer redirects')) {
-      $link = Link::createFromRoute('review existing redirects', 'redirect.list', [], ['query' => ['text' => $taxonomy_term_path]])->toString();
-      \Drupal::messenger()->addWarning(new TranslatableMarkup("You can @link to remove any unwanted redirects.", ["@link" => $link]));
+      $link = Link::createFromRoute('review existing redirects', 'redirect.list', [], [
+        'query' => ['text' => $taxonomy_term_path]
+      ])->toString();
+
+      \Drupal::messenger()->addWarning(new TranslatableMarkup(
+        "You can @link to remove any unwanted redirects.", ["@link" => $link])
+      );
     }
   }
 }

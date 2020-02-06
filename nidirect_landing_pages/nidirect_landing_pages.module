@@ -202,8 +202,6 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
         'wrapper' => 'edit-field-listing-wrapper',
       ];
     }
-    // Add a custom submit function.
-    $form['actions']['submit']['#submit'][] = 'nidirect_landing_pages_submit';
   }
 }
 
@@ -222,12 +220,18 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
 }
 
 /**
- * Custom submit function.
+ * Implements hook_entity_presave().
  */
-function nidirect_landing_pages_submit(&$form, FormState $form_state) {
-  // If 'manually control listing' is un-checked ensure that no
-  // listings are saved.
-  if (!$form_state->getValue('field_manually_control_listing')['value']) {
-    $form_state->setValue('field_listing', NULL);
+function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    if ($entity->hasField('field_manually_control_listing'))  {
+      $manual_field = $entity->get('field_manually_control_listing');
+      if ($manual_field->getValue[0]['value'] == 0) {
+        // If 'manually control listing' is un-checked ensure
+        // that no listings are saved.
+        $entity->set('field_listing', NULL);
+      }
+    }
   }
 }

@@ -187,7 +187,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
  * Utility Ajax function.
  */
 function nidirect_landing_pages_populate_listing(array &$form, FormStateInterface $form_state) {
-  // The sole purpose of this is to make sure that
+  // The main purpose of this is to make sure that
   // nidirect_common_node_prepare_form is called.
   if (!$form_state->getValue('field_manually_control_listing')['value']) {
     // If 'manual control' checkbox is unchecked, make sure

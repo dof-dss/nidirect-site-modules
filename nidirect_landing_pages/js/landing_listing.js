@@ -20,7 +20,7 @@
                 .trigger('click');
               $(context).find('#edit-field-manually-control-listing-wrapper')
                 .hide();
-              $(context).find('.field--type-entity-reference-revisions.field--name-field-listing.field--widget-paragraphs.js-form-wrapper.form-wrapper')
+              $(context).find('.field--type-entity-reference-revisions.field--name-field-listing')
                 .hide();
             }
           });
@@ -36,6 +36,12 @@
             alert('Please select a subtheme first');
             $(this).prop('checked', false);
           }
+        } else {
+          // User has un-checked manual control, so hide the listing.
+          $(context).find('.field--type-entity-reference-revisions.field--name-field-listing')
+            .hide();
+          $(context).find('#edit-field-manually-control-listing-wrapper')
+            .hide();
         }
       });
     }

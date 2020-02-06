@@ -77,7 +77,7 @@ function nidirect_gp_preprocess_node(&$variables) {
   if ($variables['node']->bundle() == 'gp_practice' && $variables['view_mode'] == 'search_result') {
     // Prune a trailing '#weight' item key in the GP names array which is added
     // By something after hook_entity_type_view() above.
-    if (array_key_exists('#weight', $variables['content']['gp_names'])) {
+    if (!empty($variables['content']['gp_names']) && array_key_exists('#weight', $variables['content']['gp_names'])) {
       unset($variables['content']['gp_names']['#weight']);
     }
   }
@@ -103,8 +103,6 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
 
   // Process GP Practices View form.
   if ($form['#id'] == 'views-exposed-form-gp-practices-find-a-gp') {
-    // Add additional form classes.
-    $form['#attributes']['class'][] = 'search-form';
     $form['categories']['#attributes']['class'][] = 'container-inline';
   }
 

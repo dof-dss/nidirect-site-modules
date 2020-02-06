@@ -227,7 +227,7 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   if ($entity->getEntityTypeId() == 'node') {
     if ($entity->hasField('field_manually_control_listing'))  {
       $manual_field = $entity->get('field_manually_control_listing');
-      if ($manual_field->getValue[0]['value'] == 0) {
+      if ($manual_field->getValue()[0]['value'] == 0) {
         // If 'manually control listing' is un-checked ensure
         // that no listings are saved.
         $entity->set('field_listing', NULL);

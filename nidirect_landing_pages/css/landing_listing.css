@@ -7,5 +7,5 @@
 }
 /* Hide the paragraphs field until it has been populated by Ajax */
 #edit-field-listing-wrapper {
-  display: none;
+  display: none !important;
 }

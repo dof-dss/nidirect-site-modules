@@ -1,5 +1,11 @@
 <?php
 
+/**
+ * @file
+ * Contains nidirect_landing_pages.module.
+ */
+
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\paragraphs\Entity\Paragraph;
@@ -59,15 +65,15 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
   // Prepopulate the 'field_listing' paragraphs field when the user
   // checks 'manually control listing'.
-
   // Has this hook been invoked by ajax ?
   if (count($form_state->getUserInput()) > 0) {
     // Don't bother unless user has checked 'manual control'.
     if (!$form_state->getUserInput()['field_manually_control_listing']) {
       return;
     }
-  } else {
-    //Not ajax, do nothing.
+  }
+  else {
+    // Not ajax, do nothing.
     return;
   }
 
@@ -87,7 +93,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
     $paragraph = Paragraph::create([
       'type' => $atts['type'],
       'langcode' => $langcode,
-      $atts['field'] =>['target_id' => $atts['target_id']],
+      $atts['field'] => ['target_id' => $atts['target_id']],
     ]);
     $paragraph->save();
     $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
@@ -100,7 +106,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
  */
 function nidirect_landing_pages_article_teasers(string $tid) {
   $results = [];
-  // get a list of article teasers by term.
+  // Get a list of article teasers by term.
   $results = nidirect_landing_pages_get_article_teasers_by_term($tid);
   // Get a list of article teasers by topic.
   $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
@@ -122,7 +128,7 @@ function nidirect_landing_pages_get_article_teasers_by_term(int $tid) {
     $results[strtolower($row->_entity->getTitle())] = [
       'type' => 'article_teaser',
       'field' => 'field_article',
-      'target_id' => $row->nid
+      'target_id' => $row->nid,
     ];
   }
   return $results;
@@ -140,7 +146,7 @@ function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
     $results[strtolower($row->_entity->getName())] = [
       'type' => 'term_teaser',
       'field' => 'field_term',
-      'target_id' => $row->tid
+      'target_id' => $row->tid,
     ];
   }
   return $results;
@@ -156,7 +162,8 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {
       $add_js = TRUE;
-    } else {
+    }
+    else {
       $node = \Drupal::routeMatch()->getParameter('node');
       if (!empty($node) && ($node->getType() == 'landing_page')) {
         $add_js = TRUE;
@@ -167,7 +174,6 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
     $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
   }
 }
-
 
 /**
  * Implements hook_form_alter().
@@ -186,17 +192,22 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     if (isset($form['field_listing'])) {
       $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
     }
-    //'edit-field-listing-wrapper'
+    // Add ajax to the 'manually control listing' checkbox.
     if (isset($form['field_manually_control_listing'])) {
       $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
         'callback' => 'nidirect_landing_pages_populate_listing',
         'event' => 'change',
-        'wrapper' => 'edit-field-listing-wrapper'
+        'wrapper' => 'edit-field-listing-wrapper',
       ];
     }
+    // Add a custom submit function.
+    $form['actions']['submit']['#submit'][] = 'nidirect_landing_pages_submit';
   }
 }
 
+/**
+ * Utility Ajax function.
+ */
 function nidirect_landing_pages_populate_listing(array &$form, FormStateInterface $form_state) {
   // The sole purpose of this is to make sure that
   // nidirect_common_node_prepare_form is called.
@@ -206,4 +217,15 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
     $form['field_listing']['#access'] = FALSE;
   }
   return $form['field_listing'];
+}
+
+/**
+ * Custom submit function.
+ */
+function nidirect_landing_pages_submit(&$form, FormState $form_state) {
+  // If 'manually control listing' is un-checked ensure that no
+  // listings are saved.
+  if (!$form_state->getValue('field_manually_control_listing')['value']) {
+    $form_state->setValue('field_listing', NULL);
+  }
 }

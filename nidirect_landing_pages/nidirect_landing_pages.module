@@ -62,26 +62,27 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_ENTITY_TYPE_prepare_form().
  */
-function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
+function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state)
+{
   // Prepopulate the 'field_listing' paragraphs field when the user
   // checks 'manually control listing'.
   // Has this hook been invoked by ajax ?
-  if (count($form_state->getUserInput()) > 0) {
+  $user_input = $form_state->getUserInput();
+  if (count($user_input) > 0) {
     // Don't bother unless user has checked 'manual control'.
-    $user_input = $form_state->getUserInput();
     if (isset($user_input['field_manually_control_listing'])
-        && ($user_input['field_manually_control_listing'] == 0)) {
+      && ($user_input['field_manually_control_listing'] == 0)) {
       return;
     }
-  }
-  else {
+  } else {
     // Not ajax, do nothing.
     return;
   }
 
   // Can't do anything unless a subtheme has been selected.
-  $subtheme = $form_state->getUserInput()['field_subtheme'];
-  if (empty($subtheme)) {
+  if (isset($user_input['field_subtheme']) && !empty($user_input['field_subtheme'])) {
+    $subtheme = $user_input['field_subtheme'];
+  } else {
     return;
   }
 
@@ -160,6 +161,14 @@ function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
 function nidirect_landing_pages_page_attachments(array &$attachments) {
   // Add landing page js if we are creating or editing
   // a landing page node.
+
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  // Attach global libraries only to webform specific pages and module list.
+  if (preg_match('/^\/node\/add\/landing_page/', $route_name)) {
+    $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
+  }
+
   $add_js = FALSE;
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {

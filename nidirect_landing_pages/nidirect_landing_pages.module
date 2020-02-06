@@ -161,14 +161,6 @@ function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
 function nidirect_landing_pages_page_attachments(array &$attachments) {
   // Add landing page js if we are creating or editing
   // a landing page node.
-
-  $route_name = \Drupal::routeMatch()->getRouteName();
-
-  // Attach global libraries only to webform specific pages and module list.
-  if (preg_match('/^\/node\/add\/landing_page/', $route_name)) {
-    $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
-  }
-
   $add_js = FALSE;
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {

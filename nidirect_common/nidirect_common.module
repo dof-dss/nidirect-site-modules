@@ -5,13 +5,14 @@
  * Contains nidirect_common.module.
  */
 
+include_once 'inc/landing_page.redirects.inc';
+
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
-use Drupal\redirect\Entity\Redirect;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -99,20 +100,8 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 function nidirect_common_entity_insert(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
   // (as long as a subtheme has been selected).
-  if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->getType() == 'landing_page') {
-      if ($entity->isPublished()) {
-        if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
-          $subtheme_tid = $entity->get('field_subtheme')->getString();
-          Redirect::create([
-            'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
-            'redirect_redirect' => 'internal:/node/' . $entity->id(),
-            'language' => 'und',
-            'status_code' => '301',
-          ])->save();
-        }
-      }
-    }
+  if (nidirect_common_is_landing_page_with_theme_value($entity)) {
+    nidirect_common_create_landing_page_redirect($entity);
   }
 }
 
@@ -120,24 +109,10 @@ function nidirect_common_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function nidirect_common_entity_update(EntityInterface $entity) {
-  // If landing page has been published, create the redirect
-  // from the taxonomy term.
-  if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->getType() == 'landing_page') {
-      if ($entity->isPublished()) {
-        if (!$entity->original->isPublished()) {
-          if ($entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString())) {
-            $subtheme_tid = $entity->get('field_subtheme')->getString();
-            Redirect::create([
-              'redirect_source' => 'taxonomy/term/' . $subtheme_tid,
-              'redirect_redirect' => 'internal:/node/' . $entity->id(),
-              'language' => 'und',
-              'status_code' => '301',
-            ])->save();
-          }
-        }
-      }
-    }
+  // Create a redirect from the taxonomy term when a landing page is created
+  // (as long as a subtheme has been selected).
+  if (nidirect_common_is_landing_page_with_theme_value($entity)) {
+    nidirect_common_create_landing_page_redirect($entity);
   }
 }
 
@@ -300,6 +275,9 @@ function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $for
       $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
       $form['field_subtheme']['widget']['#description'] = t($msg);
+
+      // Add a validate handler to detect any duplicates.
+      $form['#validate'][] = 'nidirect_common_landing_page_form_validate';
     }
   }
 }

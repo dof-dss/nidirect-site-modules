@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Contains functions Layout Builder search indexing.
+ * Contains functions for handling landing page creation.
  */
 
 use Drupal\Core\Link;
@@ -77,13 +77,11 @@ function nidirect_common_is_landing_page_with_theme_value(EntityInterface &$enti
  */
 function nidirect_common_get_redirect_url(string $source_path) {
   $redirect = \Drupal::service('redirect.repository')->findBySourcePath($source_path);
+  $redirect_url = '';
 
   if (!empty(($redirect))) {
     $redirect = array_pop($redirect);
     $redirect_url = $redirect->getRedirectUrl()->toString();
-  }
-  else {
-    $redirect_url = '';
   }
 
   return $redirect_url;

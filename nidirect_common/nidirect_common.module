@@ -390,7 +390,7 @@ function nidirect_common_get_article_teasers_by_topic(int $tid) {
  * Implements hook_page_attachments().
  */
 function nidirect_common_page_attachments(array &$attachments) {
-  if ($_SERVER['REQUEST_URI'] == '/node/add/landing_page') {
+  if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {
     $attachments['#attached']['library'][] = 'nidirect_common/landing_listing';
   }
 }

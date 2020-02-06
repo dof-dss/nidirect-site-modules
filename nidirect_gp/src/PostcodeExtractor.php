@@ -49,7 +49,7 @@ class PostcodeExtractor {
    */
   public function getPostCode(string $text_to_match) {
     $matches = [];
-    preg_match_all('/' . $this->postcodeRegex . '/', $text_to_match, $matches);
+    preg_match_all('/' . $this->postcodeRegex . '/i', $text_to_match, $matches);
 
     return $matches[0];
   }

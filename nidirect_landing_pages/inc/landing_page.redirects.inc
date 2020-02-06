@@ -16,12 +16,14 @@ use Drupal\redirect\Entity\Redirect;
 /**
  * Validation handler for landing page node forms.
  *
- * Checks whether there is already a landing page associated with the theme selected.
+ * Checks whether there is already a landing page associated with
+ * the theme selected.
  *
  * @param array $form
  *   The form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state collection.
+ *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
@@ -40,7 +42,7 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
 
     $message = new TranslatableMarkup("There is already a landing page node (@landing_page) associated with '@term_name'", [
       '@landing_page' => \Drupal::service('renderer')->render($link),
-      '@term_name' => $term->label()
+      '@term_name' => $term->label(),
     ]);
 
     $form_state->setErrorByName('field_subtheme', $message);
@@ -48,10 +50,11 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
 }
 
 /**
- * Function to re-use checks for landing page node with valid theme field selection.
+ * Re-use checks for landing page node with valid theme field selection.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity to evaluate.
+ *
  * @return bool
  *   TRUE if it is a landing page with theme field value, otherwise FALSE.
  */
@@ -62,16 +65,17 @@ function nidirect_landing_pages_is_landing_page_with_theme_value(EntityInterface
 
   $has_subtheme_value = $entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString());
 
-  // Chain logic conditions: if one condition fails any remaining checks are skipped and the expression returns FALSE.
+  // Chain logic conditions: if one condition fails any remaining checks are
+  // skipped and the expression returns FALSE.
   return ($entity->bundle() == 'landing_page' && $has_subtheme_value);
 }
 
 /**
- * Detect whether a redirect already exists, return a URL of the
- * destination if it does.
+ * Detect whether a redirect already exists.
  *
  * @param string $source_path
  *   The source path.
+ *
  * @return string
  *   Redirect URL if found, empty string if not.
  */
@@ -116,7 +120,7 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
     // Add a convenience link for users who can administer redirects.
     if (\Drupal::currentUser()->hasPermission('administer redirects')) {
       $link = Link::createFromRoute('review existing redirects', 'redirect.list', [], [
-        'query' => ['text' => $taxonomy_term_path]
+        'query' => ['text' => $taxonomy_term_path],
       ])->toString();
 
       \Drupal::messenger()->addWarning(new TranslatableMarkup(

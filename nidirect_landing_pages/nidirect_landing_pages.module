@@ -62,7 +62,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
   }
 
   // Get a list of terms and articles that match this subtheme.
-  $teasers = nidirect_landing_pages_article_teasers($subtheme);
+  $teasers = nidirect_landing_pages_article_teasers($subtheme, $entity->id());
 
   // Populate field_listing with paragraphs.
   $langcode = $form_state->get('langcode');
@@ -82,10 +82,10 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
 /**
  * Utility function to get teasers.
  */
-function nidirect_landing_pages_article_teasers(string $tid) {
+function nidirect_landing_pages_article_teasers(string $tid, int $nid_to_exclude) {
   $results = [];
   // Get a list of article teasers by term.
-  $results = nidirect_landing_pages_get_article_teasers_by_term($tid);
+  $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
   // Get a list of article teasers by topic.
   $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
   // Alpha sort.
@@ -96,18 +96,20 @@ function nidirect_landing_pages_article_teasers(string $tid) {
 /**
  * Utility function to get teasers by term.
  */
-function nidirect_landing_pages_get_article_teasers_by_term(int $tid) {
+function nidirect_landing_pages_get_article_teasers_by_term(int $tid, int $nid_to_exclude) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
   \Drupal::service('renderer')->renderRoot($articles_view);
   foreach ($articles_view['view_build']['#view']->result as $row) {
     // This will be a link to an article.
-    $results[strtolower($row->_entity->getTitle())] = [
-      'type' => 'article_teaser',
-      'field' => 'field_article',
-      'target_id' => $row->nid,
-    ];
+    if ($nid_to_exclude != $row->nid) {
+      $results[strtolower($row->_entity->getTitle())] = [
+        'type' => 'article_teaser',
+        'field' => 'field_article',
+        'target_id' => $row->nid,
+      ];
+    }
   }
   return $results;
 }

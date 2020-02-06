@@ -33,6 +33,7 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
   $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
   $result = $query->condition('type', 'landing_page', '=')
     ->condition('field_subtheme', $theme_selected, '=')
+    ->condition('status', 1)
     ->execute();
 
   if (!empty($result)) {

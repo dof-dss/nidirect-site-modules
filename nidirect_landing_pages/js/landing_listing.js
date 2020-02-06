@@ -14,8 +14,8 @@
           $(this).on("change", function(){
             if ($(context).find('#edit-field-manually-control-listing-value').prop('checked') == true) {
               // This is an edge case, user has already ordered the listings but then
-              // changes the subtheme. Just hide the fields until after the node is
-              // saved for now.
+              // changes the subtheme. Just un-check the 'manual control' button and
+              // hide the fields until after the node is saved for now.
               $(context).find('#edit-field-manually-control-listing-value')
                 .trigger('click');
               $(context).find('#edit-field-manually-control-listing-wrapper')

@@ -5,17 +5,12 @@
  * Contains nidirect_common.module.
  */
 
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
-use Drupal\paragraphs\Entity\Paragraph;
-use Drupal\redirect\Entity\Redirect;
 use Drupal\views\ViewExecutable;
 
 /**

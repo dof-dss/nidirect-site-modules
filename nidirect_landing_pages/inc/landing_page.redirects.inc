@@ -30,6 +30,10 @@ use Drupal\redirect\Entity\Redirect;
 function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $form_state) {
   $theme_selected = $form_state->getValue('field_subtheme')[0]['target_id'];
 
+  $current_node = \Drupal::routeMatch()->getParameter('node');
+
+  //need to check that this isn't null and add it into the query below'
+
   $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
   $result = $query->condition('type', 'landing_page', '=')
     ->condition('field_subtheme', $theme_selected, '=')

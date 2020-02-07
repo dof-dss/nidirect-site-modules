@@ -82,7 +82,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $oper
 /**
  * Utility function to get teasers.
  */
-function nidirect_landing_pages_article_teasers(string $tid, int $nid_to_exclude) {
+function nidirect_landing_pages_article_teasers(string $tid, $nid_to_exclude) {
   $results = [];
   // Get a list of article teasers by term.
   $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
@@ -96,7 +96,7 @@ function nidirect_landing_pages_article_teasers(string $tid, int $nid_to_exclude
 /**
  * Utility function to get teasers by term.
  */
-function nidirect_landing_pages_get_article_teasers_by_term(int $tid, int $nid_to_exclude) {
+function nidirect_landing_pages_get_article_teasers_by_term(int $tid, $nid_to_exclude) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);

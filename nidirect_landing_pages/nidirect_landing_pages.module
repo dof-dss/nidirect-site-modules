@@ -184,4 +184,3 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
     }
   }
 }
-

@@ -9,7 +9,6 @@ include_once 'inc/landing_page.redirects.inc';
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
@@ -56,4 +55,3 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     }
   }
 }
-

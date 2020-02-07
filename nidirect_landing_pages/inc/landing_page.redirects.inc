@@ -51,7 +51,7 @@ function nidirect_landing_pages_landing_page_form_validate(array &$form, FormSta
 
     $message = new TranslatableMarkup("There is already a landing page node (@landing_page) associated with '@term_name'", [
       '@landing_page' => \Drupal::service('renderer')->render($link),
-      '@term_name' => $term->label()
+      '@term_name' => $term->label(),
     ]);
 
     $form_state->setErrorByName('field_subtheme', $message);

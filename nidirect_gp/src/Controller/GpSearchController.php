@@ -131,9 +131,9 @@ class GpSearchController extends ControllerBase {
         $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
 
         // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
-        // Ie: LAT,LON[OPERATOR]MAX_DISTANCE.
+        // Ie: LAT,LON[OPERATOR]MAX_DISTANCE[mi|km].
         // Units of distance are pre-set on the views argument handler config.
-        $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%d',
+        $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%dmi',
           $geocode_coordinates->getLatitude(),
           $geocode_coordinates->getLongitude(),
           $this->proximityMaxDistance)

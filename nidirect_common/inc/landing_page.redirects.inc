@@ -38,6 +38,8 @@ function nidirect_common_landing_page_form_validate(array &$form, FormStateInter
     $query->condition('nid', $current_node->id(), '!=');
   }
   $query->condition('field_subtheme', $theme_selected, '=');
+  // We are only worried about published nodes.
+  $query->condition('status', 1);
   $result = $query->execute();
 
   if (!empty($result)) {

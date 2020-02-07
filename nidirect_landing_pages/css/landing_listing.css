@@ -9,3 +9,7 @@
 #edit-field-listing-wrapper {
   display: none !important;
 }
+/* Unless we are in the node edit form ! */
+.page-node-type-landing-page #edit-field-listing-wrapper {
+  display: block !important;
+}

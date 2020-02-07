@@ -5,8 +5,6 @@
  * Contains nidirect_common.module.
  */
 
-include_once 'inc/landing_page.redirects.inc';
-
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
@@ -90,34 +88,6 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
         $root_term = array_pop($parent_terms);
         $entity->set('field_top_level_theme', $root_term);
       }
-    }
-  }
-}
-
-/**
- * Implements hook_entity_insert().
- */
-function nidirect_common_entity_insert(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_common_is_landing_page_with_theme_value($entity)) {
-      nidirect_common_create_landing_page_redirect($entity);
-    }
-  }
-}
-
-/**
- * Implements hook_entity_update().
- */
-function nidirect_common_entity_update(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_common_is_landing_page_with_theme_value($entity)) {
-      nidirect_common_create_landing_page_redirect($entity);
     }
   }
 }
@@ -266,24 +236,6 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
       if ($parent) {
         Cache::invalidateTags(['taxonomy_term_list:' . $parent]);
       }
-    }
-  }
-}
-
-/**
- * Implements hook_form_alter().
- */
-function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Add description to theme/subtheme field for landing pages.
-  if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {
-    if (isset($form['field_subtheme'])) {
-      $msg = "Note that the theme/subtheme that you choose here will be overridden by this landing page. <br/>";
-      $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
-      $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
-      $form['field_subtheme']['widget']['#description'] = t($msg);
-
-      // Add a validate handler to detect any duplicates.
-      $form['#validate'][] = 'nidirect_common_landing_page_form_validate';
     }
   }
 }

@@ -16,16 +16,18 @@ use Drupal\redirect\Entity\Redirect;
 /**
  * Validation handler for landing page node forms.
  *
- * Checks whether there is already a landing page associated with the theme selected.
+ * Checks whether there is already a landing page associated with
+ * the theme selected.
  *
  * @param array $form
  *   The form array.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state collection.
+ *
  * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
  * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
  */
-function nidirect_common_landing_page_form_validate(array &$form, FormStateInterface $form_state) {
+function nidirect_landing_pages_landing_page_form_validate(array &$form, FormStateInterface $form_state) {
   $theme_selected = $form_state->getValue('field_subtheme')[0]['target_id'];
 
   // Retrieve current node (if we are editing).
@@ -57,34 +59,36 @@ function nidirect_common_landing_page_form_validate(array &$form, FormStateInter
 }
 
 /**
- * Function to re-use checks for landing page node with valid theme field selection.
+ * Re-use checks for landing page node with valid theme field selection.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The entity to evaluate.
+ *
  * @return bool
  *   TRUE if it is a landing page with theme field value, otherwise FALSE.
  */
-function nidirect_common_is_landing_page_with_theme_value(EntityInterface &$entity) {
+function nidirect_landing_pages_is_landing_page_with_theme_value(EntityInterface &$entity) {
   if ($entity instanceof Node == FALSE) {
     return FALSE;
   }
 
   $has_subtheme_value = $entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString());
 
-  // Chain logic conditions: if one condition fails any remaining checks are skipped and the expression returns FALSE.
+  // Chain logic conditions: if one condition fails any remaining checks are
+  // skipped and the expression returns FALSE.
   return ($entity->bundle() == 'landing_page' && $has_subtheme_value);
 }
 
 /**
- * Detect whether a redirect already exists, return a URL of the
- * destination if it does.
+ * Detect whether a redirect already exists.
  *
  * @param string $source_path
  *   The source path.
+ *
  * @return string
  *   Redirect URL if found, empty string if not.
  */
-function nidirect_common_get_redirect_url(string $source_path) {
+function nidirect_landing_pages_get_redirect_url(string $source_path) {
   $redirect = \Drupal::service('redirect.repository')->findBySourcePath($source_path);
   $redirect_url = '';
 
@@ -104,10 +108,10 @@ function nidirect_common_get_redirect_url(string $source_path) {
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The landing page node entity.
  */
-function nidirect_common_create_landing_page_redirect(EntityInterface $entity) {
+function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $entity) {
   $subtheme_tid = $entity->get('field_subtheme')->getString();
   $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
-  $redirect_url = nidirect_common_get_redirect_url($taxonomy_term_path);
+  $redirect_url = nidirect_landing_pages_get_redirect_url($taxonomy_term_path);
 
   if (empty($redirect_url)) {
     Redirect::create([
@@ -125,11 +129,11 @@ function nidirect_common_create_landing_page_redirect(EntityInterface $entity) {
     // Add a convenience link for users who can administer redirects.
     if (\Drupal::currentUser()->hasPermission('administer redirects')) {
       $link = Link::createFromRoute('review existing redirects', 'redirect.list', [], [
-        'query' => ['text' => $taxonomy_term_path]
+        'query' => ['text' => $taxonomy_term_path],
       ])->toString();
 
       \Drupal::messenger()->addWarning(new TranslatableMarkup(
-        "You can @link to remove any unwanted redirects.", ["@link" => $link])
+          "You can @link to remove any unwanted redirects.", ["@link" => $link])
       );
     }
   }

@@ -1,0 +1,59 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_landing_pages.module.
+ */
+
+include_once 'inc/landing_page.redirects.inc';
+
+use Drupal\Core\Entity\EntityInterface;
+use Drupal\Core\Form\FormStateInterface;
+use Drupal\paragraphs\Entity\Paragraph;
+
+/**
+ * Implements hook_entity_insert().
+ */
+function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
+  // Create a redirect from the taxonomy term when a landing page is created
+  // (as long as a subtheme has been selected and the node is being published).
+  if (isset($entity->moderation_state)
+    && ($entity->moderation_state->value == 'published')) {
+    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+      nidirect_landing_pages_create_landing_page_redirect($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_entity_update().
+ */
+function nidirect_landing_pages_entity_update(EntityInterface $entity) {
+  // Create a redirect from the taxonomy term when a landing page is created
+  // (as long as a subtheme has been selected and the node is being published).
+  if (isset($entity->moderation_state)
+    && ($entity->moderation_state->value == 'published')) {
+    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+      nidirect_landing_pages_create_landing_page_redirect($entity);
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Add description to theme/subtheme field for landing pages.
+  if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {
+    if (isset($form['field_subtheme'])) {
+      $msg = "Note that the theme/subtheme that you choose here will be overridden by this landing page. <br/>";
+      $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
+      $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
+      $form['field_subtheme']['widget']['#description'] = t($msg);
+
+      // Add a validate handler to detect any duplicates.
+      $form['#validate'][] = 'nidirect_landing_pages_landing_page_form_validate';
+    }
+  }
+}
+

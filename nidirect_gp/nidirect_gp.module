@@ -171,6 +171,15 @@ function nidirect_gp_entity_presave(EntityInterface $entity) {
  * Implements hook_views_pre_render().
  */
 function nidirect_gp_views_pre_render(ViewExecutable $view) {
+  if (preg_match('/^gp_practices/', $view->id()) && !empty($view->header['area'])) {
+    // Display custom header to show singular/plural result(s) label.
+    $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
+      $view->pager->total_items,
+      '@count GP practice',
+      '@count GP practices',
+      ['@count' => $view->pager->total_items]
+    );
+  }
 }
 
 /**

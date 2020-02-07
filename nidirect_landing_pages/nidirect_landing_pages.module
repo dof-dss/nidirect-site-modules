@@ -5,25 +5,20 @@
  * Contains nidirect_landing_pages.module.
  */
 
-use Drupal\Core\Link;
+include_once 'inc/landing_page.redirects.inc';
+
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Language\Language;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\node\Entity\Node;
-use Drupal\redirect\Entity\Redirect;
+use Drupal\paragraphs\Entity\Paragraph;
 
 /**
  * Implements hook_entity_insert().
  */
 function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
-      nidirect_landing_pages_create_landing_page_redirect($entity);
-    }
+  // (as long as a subtheme has been selected).
+  if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+    nidirect_landing_pages_create_landing_page_redirect($entity);
   }
 }
 
@@ -32,12 +27,131 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
  */
 function nidirect_landing_pages_entity_update(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
-      nidirect_landing_pages_create_landing_page_redirect($entity);
+  // (as long as a subtheme has been selected).
+  if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+    nidirect_landing_pages_create_landing_page_redirect($entity);
+  }
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_prepare_form().
+ */
+function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
+  // Prepopulate the 'field_listing' paragraphs field when the user
+  // checks 'manually control listing'.
+  // Has this hook been invoked by ajax ?
+  $user_input = $form_state->getUserInput();
+  if (count($user_input) > 0) {
+    // Don't bother unless user has checked 'manual control'.
+    if (isset($user_input['field_manually_control_listing'])
+      && ($user_input['field_manually_control_listing'] == 0)) {
+      return;
     }
+  }
+  else {
+    // Not ajax, do nothing.
+    return;
+  }
+
+  // Can't do anything unless a subtheme has been selected.
+  if (isset($user_input['field_subtheme']) && !empty($user_input['field_subtheme'])) {
+    $subtheme = $user_input['field_subtheme'];
+  }
+  else {
+    return;
+  }
+
+  // Get a list of terms and articles that match this subtheme.
+  $teasers = nidirect_landing_pages_article_teasers($subtheme, $entity->id());
+
+  // Populate field_listing with paragraphs.
+  $langcode = $form_state->get('langcode');
+  $paras = [];
+  foreach ($teasers as $title => $atts) {
+    $paragraph = Paragraph::create([
+      'type' => $atts['type'],
+      'langcode' => $langcode,
+      $atts['field'] => ['target_id' => $atts['target_id']],
+    ]);
+    $paragraph->save();
+    $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+  }
+  $entity->field_listing = $paras;
+}
+
+/**
+ * Utility function to get teasers.
+ */
+function nidirect_landing_pages_article_teasers(string $tid, $nid_to_exclude) {
+  $results = [];
+  // Get a list of article teasers by term.
+  $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
+  // Get a list of article teasers by topic.
+  $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
+  // Alpha sort.
+  ksort($results);
+  return $results;
+}
+
+/**
+ * Utility function to get teasers by term.
+ */
+function nidirect_landing_pages_get_article_teasers_by_term(int $tid, $nid_to_exclude) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    // This will be a link to an article.
+    if ($nid_to_exclude != $row->nid) {
+      $results[strtolower($row->_entity->getTitle())] = [
+        'type' => 'article_teaser',
+        'field' => 'field_article',
+        'target_id' => $row->nid,
+      ];
+    }
+  }
+  return $results;
+}
+
+/**
+ * Utility function to get teasers by topic.
+ */
+function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    // This will be a link to a taxonomy term.
+    $results[strtolower($row->_entity->getName())] = [
+      'type' => 'term_teaser',
+      'field' => 'field_term',
+      'target_id' => $row->tid,
+    ];
+  }
+  return $results;
+}
+
+/**
+ * Implements hook_page_attachments().
+ */
+function nidirect_landing_pages_page_attachments(array &$attachments) {
+  // Add landing page js if we are creating or editing
+  // a landing page node.
+  $add_js = FALSE;
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {
+      $add_js = TRUE;
+    }
+    else {
+      $node = \Drupal::routeMatch()->getParameter('node');
+      if (!empty($node) && ($node->getType() == 'landing_page')) {
+        $add_js = TRUE;
+      }
+    }
+  }
+  if ($add_js) {
+    $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
   }
 }
 
@@ -52,135 +166,52 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
       $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
       $form['field_subtheme']['widget']['#description'] = t($msg);
-
-      // Add a validate handler to detect any duplicates.
-      $form['#validate'][] = 'nidirect_landing_pages_landing_page_form_validate';
     }
+    // Only show 'Listing' field if 'manually control listing'
+    // checkbox has been checked.
+    if (isset($form['field_listing'])) {
+      //$form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
+    }
+    // Add ajax to the 'manually control listing' checkbox.
+    if (isset($form['field_manually_control_listing'])) {
+      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
+        'callback' => 'nidirect_landing_pages_populate_listing',
+        'event' => 'change',
+        'wrapper' => 'edit-field-listing-wrapper',
+      ];
+    }
+    // Add a validate handler to detect any duplicates.
+    $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
 }
 
 /**
- * Validation handler for landing page node forms.
- *
- * Checks whether there is already a landing page associated with
- * the theme selected.
- *
- * @param array $form
- *   The form array.
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The form state collection.
- *
- * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
- * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+ * Utility Ajax function.
  */
-function nidirect_landing_pages_landing_page_form_validate(array &$form, FormStateInterface $form_state) {
-  $theme_selected = $form_state->getValue('field_subtheme')[0]['target_id'];
-
-  // Retrieve current node (if we are editing).
-  $current_node = \Drupal::routeMatch()->getParameter('node');
-
-  $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
-  $query->condition('type', 'landing_page', '=');
-  if (!empty($current_node)) {
-    // Exclude current node.
-    $query->condition('nid', $current_node->id(), '!=');
+function nidirect_landing_pages_populate_listing(array &$form, FormStateInterface $form_state) {
+  // The main purpose of this is to make sure that
+  // nidirect_common_node_prepare_form is called.
+  if (!$form_state->getValue('field_manually_control_listing')['value']) {
+    // If 'manual control' checkbox is unchecked, make sure
+    // that listing field is not shown.
+    $form['field_listing']['#access'] = FALSE;
   }
-  $query->condition('field_subtheme', $theme_selected, '=');
-  // We are only worried about published nodes.
-  $query->condition('status', 1);
-  $result = $query->execute();
-
-  if (!empty($result)) {
-    $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($theme_selected);
-    $node = \Drupal::entityTypeManager()->getStorage('node')->load(array_pop($result));
-    $link = Link::createFromRoute($node->label(), 'entity.node.edit_form', ['node' => $node->id()])->toRenderable();
-
-    $message = new TranslatableMarkup("There is already a landing page node (@landing_page) associated with '@term_name'", [
-      '@landing_page' => \Drupal::service('renderer')->render($link),
-      '@term_name' => $term->label(),
-    ]);
-
-    $form_state->setErrorByName('field_subtheme', $message);
-  }
+  return $form['field_listing'];
 }
 
 /**
- * Re-use checks for landing page node with valid theme field selection.
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   The entity to evaluate.
- *
- * @return bool
- *   TRUE if it is a landing page with theme field value, otherwise FALSE.
+ * Implements hook_entity_presave().
  */
-function nidirect_landing_pages_is_landing_page_with_theme_value(EntityInterface &$entity) {
-  if ($entity instanceof Node == FALSE) {
-    return FALSE;
-  }
-
-  $has_subtheme_value = $entity->hasField('field_subtheme') && !empty($entity->get('field_subtheme')->getString());
-
-  // Chain logic conditions: if one condition fails any remaining checks are
-  // skipped and the expression returns FALSE.
-  return ($entity->bundle() == 'landing_page' && $has_subtheme_value);
-}
-
-/**
- * Detect whether a redirect already exists.
- *
- * @param string $source_path
- *   The source path.
- *
- * @return string
- *   Redirect URL if found, empty string if not.
- */
-function nidirect_landing_pages_get_redirect_url(string $source_path) {
-  $redirect = \Drupal::service('redirect.repository')->findBySourcePath($source_path);
-  $redirect_url = '';
-
-  if (!empty(($redirect))) {
-    $redirect = array_pop($redirect);
-    $redirect_url = $redirect->getRedirectUrl()->toString();
-  }
-
-  return $redirect_url;
-}
-
-/**
- * Function to check:
- * - Whether there is already a landing page node associated with the theme selected.
- * - Create a redirect or warn user if there is already a landing page for this theme.
- *
- * @param \Drupal\Core\Entity\EntityInterface $entity
- *   The landing page node entity.
- */
-function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $entity) {
-  $subtheme_tid = $entity->get('field_subtheme')->getString();
-  $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
-  $redirect_url = nidirect_landing_pages_get_redirect_url($taxonomy_term_path);
-
-  if (empty($redirect_url)) {
-    Redirect::create([
-      'redirect_source' => $taxonomy_term_path,
-      'redirect_redirect' => 'internal:/node/' . $entity->id(),
-      'language' => Language::LANGCODE_NOT_SPECIFIED,
-      'status_code' => '301',
-    ])->save();
-  }
-  else {
-    // Notify the user that a redirect could not be created.
-    \Drupal::messenger()->addWarning(t('A redirect from the theme taxonomy page to this content was not created,
-        because there are already one or more redirects used for the theme taxonomy page.'));
-
-    // Add a convenience link for users who can administer redirects.
-    if (\Drupal::currentUser()->hasPermission('administer redirects')) {
-      $link = Link::createFromRoute('review existing redirects', 'redirect.list', [], [
-        'query' => ['text' => $taxonomy_term_path],
-      ])->toString();
-
-      \Drupal::messenger()->addWarning(new TranslatableMarkup(
-          "You can @link to remove any unwanted redirects.", ["@link" => $link])
-      );
+function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
+  // This will fire when nodes are created or edited.
+  if ($entity->getEntityTypeId() == 'node') {
+    if ($entity->hasField('field_manually_control_listing')) {
+      $manual_field = $entity->get('field_manually_control_listing');
+      if ($manual_field->getValue()[0]['value'] == 0) {
+        // If 'manually control listing' is un-checked ensure
+        // that no listings are saved.
+        $entity->set('field_listing', NULL);
+      }
     }
   }
 }

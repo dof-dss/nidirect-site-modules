@@ -1,0 +1,11 @@
+/*
+  Hide the select box that allows the user to add more paragraphs,
+  as it doesn't apply here.
+ */
+.field--type-entity-reference-revisions.field--name-field-listing.field--widget-entity-reference-paragraphs .clearfix {
+  display: none;
+}
+/* Hide the paragraphs field until it has been populated by Ajax */
+#edit-field-listing-wrapper {
+  display: none !important;
+}

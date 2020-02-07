@@ -28,7 +28,7 @@ use Drupal\redirect\Entity\Redirect;
 function nidirect_common_landing_page_form_validate(array &$form, FormStateInterface $form_state) {
   $theme_selected = $form_state->getValue('field_subtheme')[0]['target_id'];
 
-  // retrieve current node (if we are editing).
+  // Retrieve current node (if we are editing).
   $current_node = \Drupal::routeMatch()->getParameter('node');
 
   $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();

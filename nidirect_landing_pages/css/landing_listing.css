@@ -7,9 +7,9 @@
 }
 /* Hide the paragraphs field until it has been populated by Ajax */
 #edit-field-listing-wrapper {
-  display: none !important;
+  display: none;
 }
 /* Unless we are in the node edit form ! */
 .page-node-type-landing-page #edit-field-listing-wrapper {
-  display: block !important;
+  display: block;
 }

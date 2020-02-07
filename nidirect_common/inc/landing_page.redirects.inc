@@ -28,10 +28,19 @@ use Drupal\redirect\Entity\Redirect;
 function nidirect_common_landing_page_form_validate(array &$form, FormStateInterface $form_state) {
   $theme_selected = $form_state->getValue('field_subtheme')[0]['target_id'];
 
+  // Retrieve current node (if we are editing).
+  $current_node = \Drupal::routeMatch()->getParameter('node');
+
   $query = \Drupal::entityTypeManager()->getStorage('node')->getQuery();
-  $result = $query->condition('type', 'landing_page', '=')
-    ->condition('field_subtheme', $theme_selected, '=')
-    ->execute();
+  $query->condition('type', 'landing_page', '=');
+  if (!empty($current_node)) {
+    // Exclude current node.
+    $query->condition('nid', $current_node->id(), '!=');
+  }
+  $query->condition('field_subtheme', $theme_selected, '=');
+  // We are only worried about published nodes.
+  $query->condition('status', 1);
+  $result = $query->execute();
 
   if (!empty($result)) {
     $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($theme_selected);

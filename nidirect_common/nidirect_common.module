@@ -100,7 +100,8 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 function nidirect_common_entity_insert(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
   // (as long as a subtheme has been selected and the node is being published).
-  if ($entity->moderation_state->value == 'published') {
+  if (isset($entity->moderation_state)
+    && ($entity->moderation_state->value == 'published')) {
     if (nidirect_common_is_landing_page_with_theme_value($entity)) {
       nidirect_common_create_landing_page_redirect($entity);
     }
@@ -113,7 +114,8 @@ function nidirect_common_entity_insert(EntityInterface $entity) {
 function nidirect_common_entity_update(EntityInterface $entity) {
   // Create a redirect from the taxonomy term when a landing page is created
   // (as long as a subtheme has been selected and the node is being published).
-  if ($entity->moderation_state->value == 'published') {
+  if (isset($entity->moderation_state)
+    && ($entity->moderation_state->value == 'published')) {
     if (nidirect_common_is_landing_page_with_theme_value($entity)) {
       nidirect_common_create_landing_page_redirect($entity);
     }

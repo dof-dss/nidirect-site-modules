@@ -11,6 +11,40 @@ tips:
     label: 'Introduction'
     body: 'This is the admin content page, from here we can view, filter, create, edit and delete various types of content.'
     weight: 1
-
-
+  entity-types:
+    id: entity-types
+    plugin: text
+    label: 'Entity types'
+    body: 'Navigate between content, media and files from the top menu.'
+    weight: 2
+    location: bottom
+    attributes:
+      data-class: block-local-tasks-block
+  overview-audit:
+    id: overview-audit
+    plugin: text
+    label: 'Overview & Audit'
+    body: 'View all content on the site and content flagged for audit.'
+    weight: 2
+    location: bottom
+    attributes:
+      data-class: secondary
+  content-filter:
+    id: overview-audit
+    plugin: text
+    label: 'Search and filtering'
+    body: 'Perform text searches and filter content by type, theme and status.'
+    weight: 2
+    location: bottom
+    attributes:
+      data-class: view-filters
+  sort-order:
+    id: sort-order
+    plugin: text
+    label: 'Sort order'
+    body: 'Click on the column titles to sort, click again to switch between ascending and descending order.'
+    weight: 4
+    location: top
+    attributes:
+      data-class: tableresponsive-toggle-columns
 

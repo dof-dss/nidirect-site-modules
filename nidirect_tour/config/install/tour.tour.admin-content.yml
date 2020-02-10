@@ -1,0 +1,16 @@
+id: admin-content
+module: nidirect_tour
+label: 'Admin content'
+langcode: en
+routes:
+  - route_name: system.admin_content
+tips:
+  introduction:
+    id: introduction
+    plugin: text
+    label: 'Introduction'
+    body: 'This is the admin content page, from here we can view, filter, create, edit and delete various types of content.'
+    weight: 1
+
+
+

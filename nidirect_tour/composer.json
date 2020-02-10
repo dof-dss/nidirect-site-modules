@@ -1,0 +1,13 @@
+{
+    "name": "nidirect_tour",
+    "type": "drupal-module",
+    "description": "Tours of the NIDirect website",
+    "keywords": [
+    ],
+    "homepage": "https://www.drupal.org/project/nidirect_tour",
+    "minimum-stability": "dev",
+    "support": {
+        "issues": "https://www.drupal.org/project/issues/nidirect_tour",
+        "source": "http://cgit.drupalcode.org/nidirect_tour",
+    },
+}

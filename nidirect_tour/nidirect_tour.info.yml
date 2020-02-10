@@ -1,0 +1,5 @@
+name: 'NIDirect Tour'
+type: module
+description: 'Tours of the NIDirect website'
+core: 8.x
+package: 'NIDirect'

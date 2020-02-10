@@ -1,6 +1,4 @@
 landing_listing:
   js:
     js/landing_listing.js: {}
-  css:
-    component:
-      css/landing_listing.css: {}
+

@@ -3,3 +3,6 @@ type: module
 description: 'NIDirect Landing page functions and overrides'
 core: 8.x
 package: 'NIDirect'
+dependencies:
+  - drupal:shs
+

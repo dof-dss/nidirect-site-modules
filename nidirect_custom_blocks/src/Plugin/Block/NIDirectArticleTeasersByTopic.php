@@ -194,7 +194,7 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $thisresult['summary_text'] = ['#markup' => $row->_entity->field_teaser->value];
       $thisresult['key'] = 't:' . $row->tid;
       // Place in an array keyed by lower case title (for sorting).
-      $title = strtolower($row->_entity->getName())
+      $title = strtolower($row->_entity->getName());
       // Remove HTML.
       $title = strip_tags($title);
       // Now remove non-alpha chars.

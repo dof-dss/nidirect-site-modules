@@ -35,8 +35,8 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
   // Don't display the sort/order by options on the
   // driving instructor exposed search form.
   if ($form['#id'] == 'views-exposed-form-driving-instructors-driving-instructor-results') {
-    $form['sort_by']['#access'] = FALSE;
-    $form['sort_order']['#access'] = FALSE;
+    $form['sort_by']['#type'] = 'hidden';
+    $form['sort_order']['#type'] = 'hidden';
 
     // Add additional form classes.
     $form['#attributes']['class'][] = 'search-form';
@@ -47,19 +47,21 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
 
     // Update exposed Categories element and text.
     $form['categories']['#type'] = 'radios';
+    $form['categories']['#options'] = [];
     $form['categories']['#options']['All'] = t('All');
     $form['categories']['#options']['1160'] = t('Driving instructors');
     $form['categories']['#options']['1161'] = t('Motorcycle instructors');
-
-    // Reorder the choices so 'All' appears first.
-    if (array_key_first($form['categories']['#options']) != 'All') {
-      $form['categories']['#options'] = array_reverse($form['categories']['#options'], TRUE);
-    }
 
     // Reorder exposed search form fields.
     $form['search_api_fulltext']['#weight'] = 1;
     $form['actions']['#weight'] = 2;
     $form['categories']['#weight'] = 3;
+
+    // Hide category options from results page.
+    $inputs = $form_state->getUserInput();
+    if (!empty($inputs['search_api_fulltext'])) {
+      $form['categories']['#type'] = 'hidden';
+    }
   }
 
   // Adjustments to the driving instructor node add/edit form.
@@ -152,7 +154,7 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'driving_instructors' && $view->current_display == 'driving_instructor_results') {
 
     // Hide 'no results' on initial View display.
-    if (count($view->getExposedInput()) == 0) {
+    if ($view->exposed_raw_input['search_api_fulltext'] == '') {
       unset($view->empty['area']);
     }
 
@@ -170,11 +172,13 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
     if (preg_match('/sort_by=field_di_lastname/', $uri)) {
       // If sorted by last name, change to sort by relevance.
       $uri = str_replace('field_di_lastname', 'search_api_relevance', $uri);
+      $uri = str_replace('sort_order=ASC', 'sort_order=DESC', $uri);
       $link_text = t('Sort by relevance');
     }
     elseif (preg_match('/sort_by=search_api_relevance/', $uri)) {
       // If sorted by relevance, change to sort alphabetically.
       $uri = str_replace('search_api_relevance', 'field_di_lastname', $uri);
+      $uri = str_replace('sort_order=DESC', 'sort_order=ASC', $uri);
       $link_text = t('Sort alphabetically');
     }
     else {

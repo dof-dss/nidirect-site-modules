@@ -47,4 +47,13 @@ tips:
     location: top
     attributes:
       data-class: tableresponsive-toggle-columns
+  edit-operations:
+    id: edit-operations
+    plugin: text
+    label: 'operations'
+    body: 'Click to edit or delete an item.'
+    weight: 4
+    location: top
+    attributes:
+      data-class: views-table tbody tr td:last-child
 

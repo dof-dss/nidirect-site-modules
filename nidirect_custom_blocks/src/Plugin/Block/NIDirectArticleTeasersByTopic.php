@@ -159,9 +159,10 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $this_result['key'] = 'a:' . $row->nid;
       // Place in an array keyed by lower case title (for sorting).
       $title = strtolower($row->_entity->getTitle());
-      $title = strip_tags($title); // Remove HTML
+      // Remove HTML.
+      $title = strip_tags($title);
       // Now remove non-alpha chars.
-      $title = preg_replace( '/[^a-z0-9 ]/i', '', $title);
+      $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
       $results[$title] = $this_result;
       // Add cache tag for each article.
       $cache_tags[] = 'node:' . $row->nid;
@@ -194,9 +195,10 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       $thisresult['key'] = 't:' . $row->tid;
       // Place in an array keyed by lower case title (for sorting).
       $title = strtolower($row->_entity->getName())
-      $title = strip_tags($title); // Remove HTML
+      // Remove HTML.
+      $title = strip_tags($title);
       // Now remove non-alpha chars.
-      $title = preg_replace( '/[^a-z0-9 ]/i', '', $title);
+      $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
       $results[$title] = $thisresult;
       // Add cache tag for each listed term.
       $cache_tags[] = 'taxonomy_term:' . $row->tid;

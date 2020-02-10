@@ -86,15 +86,17 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
       if ($node->field_manually_control_listing->value) {
         // Order has been set by the user.
         $results = $this->userSortResults($node, $results);
-      } else {
+      }
+      else {
         // Sort entries alphabetically (regardless of type).
         ksort($results);
       }
       // Remove 'key' that was used internally.
-      foreach ($results as  $key => $val) {
+      foreach ($results as $key => $val) {
         unset($results[$key]['key']);
       }
-      // Will be processed by block--nidirect-article-teasers-by-topic.html.twig.
+      // Will be processed by
+      // block--nidirect-article-teasers-by-topic.html.twig.
       $build['nidirect_article_teasers_by_topic'] = $results;
       $build['nidirect_article_teasers_by_topic']['#cache'] = [
         'tags' => $cache_tags,
@@ -113,10 +115,11 @@ class NIDirectArticleTeasersByTopic extends BlockBase implements ContainerFactor
     foreach ($node->field_listing->referencedEntities() as $para) {
       if ($para->getType() == 'term_teaser') {
         $id = 't:' . $para->get('field_term')->getValue()[0]['target_id'];
-      } else {
+      }
+      else {
         $id = 'a:' . $para->get('field_article')->getValue()[0]['target_id'];
       }
-      foreach($results as $title => $this_result) {
+      foreach ($results as $title => $this_result) {
         if ($this_result['key'] == $id) {
           $new_results[$title] = $this_result;
           break;

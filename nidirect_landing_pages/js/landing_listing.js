@@ -21,7 +21,27 @@
               $(context).find('#edit-field-manually-control-listing-wrapper')
                 .hide();
             }
+            $(context).find('#edit-field-listing-wrapper')
+              .hide();
           });
+        }
+      });
+      // Check when the user clicks on the 'manual control' checkbox.
+      $(context).find('#edit-field-manually-control-listing-value').on("change", function(){
+        if ($(this).prop('checked') == true) {
+          // If the user has chosen manual control but has not selected a
+          // subtheme, show an error.
+          var $subtheme = $(context).find('#edit-field-subtheme-shs-0-0').children("option:selected").val();
+          if ($subtheme == '_none') {
+            alert('Please select a subtheme first');
+            $(this).prop('checked', false);
+          }
+        } else {
+          // User has un-checked manual control, so hide the listing.
+          $(context).find('#edit-field-listing-wrapper')
+            .hide();
+          $(context).find('#edit-field-manually-control-listing-wrapper')
+            .hide();
         }
       });
     }

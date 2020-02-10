@@ -45,7 +45,7 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 /**
  * Implements hook_ENTITY_TYPE_prepare_form().
  */
-function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
+function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
   // Prepopulate the 'field_listing' paragraphs field when the user
   // checks 'manually control listing'.
   // Has this hook been invoked by ajax ?
@@ -149,12 +149,18 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   // a landing page node.
   $add_js = FALSE;
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-    if (\Drupal::request()->server->get('REQUEST_URI') == '/node/add/landing_page') {
-      $add_js = TRUE;
+    $this_route = \Drupal::routeMatch()->getRouteName();
+    if ($this_route == 'node.add') {
+      $node_type = \Drupal::routeMatch()->getParameter('node_type');
+      if ($node_type->get('type') == 'landing_page') {
+        // We are adding a landing page.
+        $add_js = TRUE;
+      }
     }
     else {
       $node = \Drupal::routeMatch()->getParameter('node');
       if (!empty($node) && ($node->getType() == 'landing_page')) {
+        // We are editing a landing page.
         $add_js = TRUE;
       }
     }
@@ -201,7 +207,7 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
   if (!$form_state->getValue('field_manually_control_listing')['value']) {
     // If 'manual control' checkbox is unchecked, make sure
     // that listing field is not shown.
-    $form['field_listing']['#access'] = FALSE;
+    $form['field_listing']['#hidden'] = TRUE;
   }
   return $form['field_listing'];
 }

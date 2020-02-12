@@ -5,6 +5,8 @@ namespace Drupal\nidirect_common\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 
 /**
+ * Block for containing Site Search View.
+ *
  * This block acts as a wrapper around a views embed display.
  * A block display alone requires AJAX on exposed filters which
  * means the search autocomplete will reload the same page if

@@ -52,7 +52,7 @@ class GPPracticeTest extends BrowserTestBase {
     // Create a node with just one field filled in.
     $node = $this->drupalCreateNode([
       'type' => 'gp_practice',
-      'field_gp_practice_name' => [['value' => 'Practice']]
+      'field_gp_practice_name' => [['value' => 'Practice']],
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $new_node = Node::load($node->id());
@@ -63,7 +63,7 @@ class GPPracticeTest extends BrowserTestBase {
     // Create a node with the other field filled in.
     $node = $this->drupalCreateNode([
       'type' => 'gp_practice',
-      'field_gp_surgery_name' => [['value' => 'Surgery']]
+      'field_gp_surgery_name' => [['value' => 'Surgery']],
     ]);
     $this->assertTrue(Node::load($node->id()), 'Node created.');
     $new_node = Node::load($node->id());

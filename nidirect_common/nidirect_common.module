@@ -258,3 +258,29 @@ function nidirect_common_entity_embed_alter(array &$build, EntityInterface $enti
     }
   }
 }
+/*
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#entity_type'] == 'media') {
+
+    // To reduce form clutter, move authoring fields into a collapsed field group.
+    $entity_form['authoring_information'] = [
+      '#type' => 'details',
+      '#title' => t('Authoring information'),
+      '#weight' => 5,
+    ];
+
+    $entity_form['authoring_information']['created'] = $entity_form['created'];
+    unset($entity_form['created']);
+
+    $entity_form['authoring_information']['uid'] = $entity_form['uid'];
+    unset($entity_form['uid']);
+
+    $entity_form['authoring_information']['path'] = $entity_form['path'];
+    unset($entity_form['path']);
+
+    $entity_form['authoring_information']['revision_log_message'] = $entity_form['revision_log_message'];
+    unset($entity_form['revision_log_message']);
+  }
+}

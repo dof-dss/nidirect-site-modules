@@ -207,7 +207,7 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
   if (!$form_state->getValue('field_manually_control_listing')['value']) {
     // If 'manual control' checkbox is unchecked, make sure
     // that listing field is not shown.
-    $form['field_listing']['#hidden'] = TRUE;
+    $form['field_listing']['#access'] = FALSE;
   }
   return $form['field_listing'];
 }

@@ -287,7 +287,7 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
 
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
- */q
+ */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (array_key_exists('field_top_level_theme', $form)) {
 

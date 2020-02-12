@@ -73,7 +73,7 @@ class GPPracticeTest extends EntityKernelTestBase {
     // Create a node with just one field filled in.
     $node = Node::create([
       'type' => 'gp_practice',
-      'field_gp_practice_name' => [['value' => 'Practice']]
+      'field_gp_practice_name' => [['value' => 'Practice']],
     ]);
     $node->save();
     $this->assertEquals('Practice', $node->getTitle());
@@ -81,7 +81,7 @@ class GPPracticeTest extends EntityKernelTestBase {
     // Create a node with the other field filled in.
     $node = Node::create([
       'type' => 'gp_practice',
-      'field_gp_practice_name' => [['value' => 'Surgery']]
+      'field_gp_practice_name' => [['value' => 'Surgery']],
     ]);
     $node->save();
     $this->assertEquals('Surgery', $node->getTitle());

@@ -258,3 +258,14 @@ function nidirect_common_entity_embed_alter(array &$build, EntityInterface $enti
     }
   }
 }
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (array_key_exists('field_top_level_theme', $form)) {
+    // Can't use a hidden input type, or #access as we need the form_state
+    // values, so using the .hidden class to hide from the user.
+    $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
+  }
+}

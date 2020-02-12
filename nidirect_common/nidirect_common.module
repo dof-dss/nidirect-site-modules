@@ -283,16 +283,16 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
     $entity_form['authoring_information']['revision_log_message'] = $entity_form['revision_log_message'];
     unset($entity_form['revision_log_message']);
   }
-}    
-    
+}
+
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
- */
+ */q
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (array_key_exists('field_top_level_theme', $form)) {
-  
-    // Can't use a hidden input type on a container element or 
-    // set #access to FALSE as we need the form_state values, 
+
+    // Can't use a hidden input tqype on a container element or
+    // set #access to FALSE as we need the form_state values,
     // so using the .hidden class to hide from the user.
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
   }

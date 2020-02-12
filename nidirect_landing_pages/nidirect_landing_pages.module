@@ -46,8 +46,14 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
  * Implements hook_ENTITY_TYPE_prepare_form().
  */
 function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
-  // Prepopulate the 'field_listing' paragraphs field when the user
-  // checks 'manually control listing'.
+  // Prepopulate the 'field_listing' paragraphs field on landing pages
+  // when the user checks 'manually control listing'.
+
+  // Only do this for landing pages.
+  if ($entity->getType() != 'landing_page') {
+    return;
+  }
+
   // Has this hook been invoked by ajax ?
   $user_input = $form_state->getUserInput();
   if (count($user_input) > 0) {

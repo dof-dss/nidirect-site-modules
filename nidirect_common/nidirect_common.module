@@ -93,13 +93,10 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 }
 
 /**
+ * Implements hook_form_FORM_ID_alter().
+ *
  * Form alter hook to add extra guidance for the LinkIt
  * dialogue box presented in the WYSIWYG editor.
- *
- * @param array $form
- *   Form definition.
- * @param Drupal\Core\Form\FormStateInterface $form_state
- *   Form state.
  */
 function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, FormStateInterface $form_state) {
   $form['attributes']['href']['#description'] .= '<p>'
@@ -245,9 +242,10 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
  */
 function nidirect_common_entity_embed_alter(array &$build, EntityInterface $entity, array &$context) {
   if (\Drupal::routeMatch()->getRouteName() == 'entity.node.canonical') {
-    // Swap between entity embed view modes for Maps depending on whether you're viewing or editing nodes.
-    // Dynamic iframes are prohibited in CKEditor which breaks the display of maps for editors, so we
-    // swap view mode to use a static map instead.
+    // Swap between entity embed view modes for Maps depending on whether
+    // you're viewing or editing nodes.
+    // Dynamic iframes are prohibited in CKEditor which breaks the display of
+    // maps for editors, so we swap view mode to use a static map instead.
     if (method_exists($build['#entity'], 'getParagraphType')) {
       if ($build['#entity']->getParagraphType()->id() == 'map') {
         $context['data-entity-embed-display'] = str_replace('.preview', '.embed', $context['data-entity-embed-display']);
@@ -260,12 +258,42 @@ function nidirect_common_entity_embed_alter(array &$build, EntityInterface $enti
 }
 
 /**
+ * Implements hook_inline_entity_form_entity_form_alter().
+ */
+function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$form_state) {
+  if ($entity_form['#entity_type'] == 'media') {
+
+    // To reduce form clutter, move authoring fields into a
+    // collapsed field group.
+    $entity_form['authoring_information'] = [
+      '#type' => 'details',
+      '#title' => t('Authoring information'),
+      '#weight' => 5,
+    ];
+
+    $entity_form['authoring_information']['created'] = $entity_form['created'];
+    unset($entity_form['created']);
+
+    $entity_form['authoring_information']['uid'] = $entity_form['uid'];
+    unset($entity_form['uid']);
+
+    $entity_form['authoring_information']['path'] = $entity_form['path'];
+    unset($entity_form['path']);
+
+    $entity_form['authoring_information']['revision_log_message'] = $entity_form['revision_log_message'];
+    unset($entity_form['revision_log_message']);
+  }
+}
+
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (array_key_exists('field_top_level_theme', $form)) {
-    // Can't use a hidden input type, or #access as we need the form_state
-    // values, so using the .hidden class to hide from the user.
+
+    // Can't use a hidden input tqype on a container element or
+    // set #access to FALSE as we need the form_state values,
+    // so using the .hidden class to hide from the user.
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
   }
 }

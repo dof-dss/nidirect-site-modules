@@ -6,12 +6,16 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Language\Language;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\search_api\Query\QueryInterface as SearchApiQueryInterface;
 use Drupal\views\ViewExecutable;
+use Solarium\Core\Query\QueryInterface;
 
 /**
  * Implements hook_help().
@@ -295,5 +299,37 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     // set #access to FALSE as we need the form_state values,
     // so using the .hidden class to hide from the user.
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
+  }
+}
+
+/**
+ * Implements hook_preprocess_search_api_spellcheck_did_you_mean().
+ *
+ * Removes trailing comma on the link text + URL used by the
+ * spelling suggestion returned from Solr dictionary.
+ */
+function nidirect_common_preprocess_search_api_spellcheck_did_you_mean(&$variables) {
+  if ($variables['link'] instanceof Link) {
+    $link_text = $variables['link']->getText();
+    $variables['link']->setText(str_replace(',', '', $link_text));
+
+    $link_url = $variables['link']->getUrl();
+    $link_url_query = $link_url->getRouteParameters()['query'];
+
+    $link_url->setRouteParameter('query', str_replace(',', '', $link_url_query));
+  }
+}
+
+/**
+ * Implements hook_search_api_solr_query_alter().
+ *
+ * Added here because unclear why the spellcheck_en dictionary is not populating/building in Solr.
+ * spellcheck_und is an effective mirror image and has the same configuration so can still be safely used.
+ *
+ * This hook can be removed if/when non-local dev Solr config is more cooperative.
+ */
+function nidirect_common_search_api_solr_query_alter(QueryInterface $solarium_query, SearchApiQueryInterface $query) {
+  if (\Drupal::config('config_split.config_split.local')->get('status') == TRUE) {
+    $solarium_query->getSpellcheck()->setDictionary(Language::LANGCODE_NOT_SPECIFIED);
   }
 }

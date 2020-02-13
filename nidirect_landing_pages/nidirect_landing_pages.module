@@ -165,9 +165,14 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
     }
     else {
       $node = \Drupal::routeMatch()->getParameter('node');
-      if (!empty($node) && ($node->getType() == 'landing_page')) {
-        // We are editing a landing page.
-        $add_js = TRUE;
+      if (!empty($node)) {
+        if (!is_object($node)) {
+          $node = Node::load($node);
+        }
+        if ($node->getType() == 'landing_page') {
+          // We are editing a landing page.
+          $add_js = TRUE;
+        }
       }
     }
   }

@@ -1,0 +1,10 @@
+.view-media-entity-browser-view .view-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.view-media-entity-browser-view .views-row {
+  width: 245px;
+  height: 140px;
+}

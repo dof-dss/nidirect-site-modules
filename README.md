@@ -88,6 +88,12 @@ This repository houses the custom modules required for the NI Direct website.
 - Display related content on View.
 - Set View title to parent theme title.
 
+## Search
+- Query adjustments for local dev:
+  - Lando works with LANGUAGE_UNDEFINED spellcheck but not with EN. Could be env specific so restricted to that environment.
+
+> NB: Review of this recommended once hosting environment is available.
+
 ## School Closures
 - School closures service and interface.
 - C2KSchools closure service.

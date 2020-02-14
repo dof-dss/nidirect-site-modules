@@ -9,6 +9,11 @@
   height: 140px;
 }
 
+.view-media-entity-browser-view .form--inline .form-actions {
+  clear: none;
+  padding-top: 30px;
+}
+
 @media screen and (min-width:37.5em) { /* 600px */
   .view-media-entity-browser-view .views-row {
     float: none;

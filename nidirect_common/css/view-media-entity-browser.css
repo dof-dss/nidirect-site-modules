@@ -8,3 +8,15 @@
   width: 245px;
   height: 140px;
 }
+
+@media screen and (min-width:37.5em) { /* 600px */
+  .view-media-entity-browser-view .views-row {
+    float: none;
+  }
+}
+
+@media screen and (min-width:62.5em) { /* 1000px */
+  .view-media-entity-browser-view .views-row {
+    width: auto;
+  }
+}

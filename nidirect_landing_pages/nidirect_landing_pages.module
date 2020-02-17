@@ -156,11 +156,16 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   $add_js = FALSE;
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     $this_route = \Drupal::routeMatch()->getRouteName();
-    if (($this_route == 'node.add') || ($this_route == 'entity.node.edit_form')) {
+    if ($this_route == 'node.add') {
       $node_type = \Drupal::routeMatch()->getParameter('node_type');
       if ($node_type->get('type') == 'landing_page') {
-        // We are adding or editing a landing page, add
-        // js to handle special behaviour.
+        // We are adding a landing page, add js to handle special behaviour.
+        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
+      }
+    } elseif ($this_route == 'entity.node.edit_form') {
+      $node = \Drupal::routeMatch()->getParameter('node');
+      if (is_object($node) && ($node instanceof Node) && ($node->getType() == 'landing_page')) {
+        // We are editing a landing page, add js to handle special behaviour.
         $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
       }
     }

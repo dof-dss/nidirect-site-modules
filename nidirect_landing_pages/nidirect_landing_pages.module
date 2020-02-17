@@ -48,7 +48,6 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
   // Prepopulate the 'field_listing' paragraphs field on landing pages
   // when the user checks 'manually control listing'.
-
   // Only do this for landing pages.
   if ($entity->getType() != 'landing_page') {
     return;
@@ -159,20 +158,17 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
     if ($this_route == 'node.add') {
       $node_type = \Drupal::routeMatch()->getParameter('node_type');
       if ($node_type->get('type') == 'landing_page') {
-        // We are adding a landing page.
-        $add_js = TRUE;
+        // We are adding a landing page, add js to handle special behaviour.
+        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
       }
     }
-    else {
+    elseif ($this_route == 'entity.node.edit_form') {
       $node = \Drupal::routeMatch()->getParameter('node');
-      if (!empty($node) && ($node->getType() == 'landing_page')) {
-        // We are editing a landing page.
-        $add_js = TRUE;
+      if (is_object($node) && ($node instanceof Node) && ($node->getType() == 'landing_page')) {
+        // We are editing a landing page, add js to handle special behaviour.
+        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
       }
     }
-  }
-  if ($add_js) {
-    $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
   }
 }
 

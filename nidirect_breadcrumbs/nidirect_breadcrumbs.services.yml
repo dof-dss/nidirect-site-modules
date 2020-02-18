@@ -79,7 +79,7 @@ services:
 
 parameters:
   breadcrumb.search.matches:
-    - view.search.page_1
+    - view.search.search_page
     - view.publications.search_page
   breadcrumb.schoolclosures.matches:
     - /services/school-closures

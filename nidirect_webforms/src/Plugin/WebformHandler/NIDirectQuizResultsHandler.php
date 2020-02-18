@@ -284,11 +284,33 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             $feedback = $answer['incorrect_feedback'];
           }
 
+          // Prepare the users response text, if it's a multiple choice
+          // question, display as a list, otherwise in a paragraph tag.
+          if (is_array($user_responses[$id])) {
+            $user_answers = [];
+            foreach ($user_responses[$id] as $answer) {
+              $user_answers[] = $elements[$id]['#options'][$answer];
+            }
+            $user_answer = [
+              '#theme' => 'item_list',
+              '#items' => $user_answers,
+              '#attributes' => ['class' => 'user-answer'],
+            ];
+          }
+          else {
+            $user_answer = [
+              '#type' => 'html_tag',
+              '#tag' => 'p',
+              '#value' => $elements[$id]['#options'][$user_responses[$id]],
+              '#attributes' => ['class' => 'user-answer'],
+            ];
+          }
+
           $answer_feedback[] = [
             '#theme' => 'nidirect_webforms_quiz_answer_feedback',
             '#title' => ucfirst(str_replace('_', ' ', $id)),
             '#question' => $elements[$id]['#title'],
-            '#user_answer' => $elements[$id]['#options'][$user_responses[$id]],
+            '#user_answer' => $user_answer,
             '#feedback' => [
               '#markup' => $feedback,
             ],

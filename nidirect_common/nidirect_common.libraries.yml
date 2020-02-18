@@ -1,0 +1,4 @@
+media_entity_browser:
+  css:
+    theme:
+      css/view-media-entity-browser.css: {}

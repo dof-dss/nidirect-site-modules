@@ -1,0 +1,32 @@
+.view-media-entity-browser-view .view-content {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.view-media-entity-browser-view .views-row {
+  width: 220px;
+  height: 140px;
+}
+
+.view-media-entity-browser-view .form--inline .form-actions {
+  clear: none;
+  padding-top: 30px;
+  margin-top: 0;
+}
+
+.view-media-entity-browser-view .pager {
+  padding: 10px 20px;
+}
+
+@media screen and (min-width:37.5em) { /* 600px */
+  .view-media-entity-browser-view .views-row {
+    float: none;
+  }
+}
+
+@media screen and (min-width:62.5em) { /* 1000px */
+  .view-media-entity-browser-view .views-row {
+    width: auto;
+  }
+}

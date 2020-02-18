@@ -135,6 +135,15 @@ function nidirect_common_views_pre_render(ViewExecutable $view) {
 }
 
 /**
+ * Implements hook_preprocess_views_view().
+ */
+function nidirect_common_preprocess_views_view(&$variables) {
+  if ($variables['view']->id() === 'media_entity_browser') {
+    $variables['view_array']['#attached']['library'][] = 'nidirect_common/media_entity_browser';
+  }
+}
+
+/**
  * Implements hook_entity_extra_field_info().
  */
 function nidirect_common_entity_extra_field_info() {

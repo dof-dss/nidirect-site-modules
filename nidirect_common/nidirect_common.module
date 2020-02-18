@@ -238,6 +238,103 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
 }
 
 /**
+ * Processes the geolocation form element.
+ *
+ * @param array $element
+ *   The form element to process.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   The current state of the form.
+ * @param array $complete_form
+ *   The complete form structure.
+ *
+ * @return array
+ *   The processed element.
+ */
+function nidirect_common_process_geolocation_input(array &$element, FormStateInterface $form_state, array &$complete_form) {
+  $element['latlng'] = [
+    '#type' => 'details',
+    '#title' => t('Coordinate details'),
+    '#open' => FALSE,
+  ];
+  $element['latlng']['lat'] = $element['lat'];
+  $element['latlng']['lng'] = $element['lng'];
+
+  unset($element['lat']);
+  unset($element['lng']);
+  unset($element['#theme_wrappers']);
+
+  return $element;
+}
+
+/**
+ * Implements hook_element_info_alter().
+ */
+function nidirect_common_element_info_alter(array &$info) {
+  if (!array_key_exists('geolocation_input', $info)) {
+    return;
+  }
+
+  $process_stack = [];
+
+  // We want to remove the 'processGroup' process handler/callback
+  // so it doesn't step in and add an annoying container around the
+  // expandable details element we want to put around the coordinate textfields.
+  foreach ($info['geolocation_input']['#process'] as $handler) {
+    if (!is_array($handler)) {
+      continue;
+    }
+
+    foreach ($handler as $item) {
+      if ($item != 'processGroup') {
+        $process_stack[] = $handler;
+      }
+    }
+  }
+
+  $info['geolocation_input']['#process'] = $process_stack;
+  $info['geolocation_input']['#process'][] = 'nidirect_common_process_geolocation_input';
+
+  unset($info['geolocation_input']['#pre_render']);
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function nidirect_common_form_entity_embed_dialog_alter(&$form, FormStateInterface &$form_state) {
+  if (empty($form['entity_browser']['#entity_browser'])) {
+    return;
+  }
+
+  if ($form['entity_browser']['#entity_browser'] == 'location_browser') {
+    $form['#title'] = t('Choose map location');
+
+    // Skip review and embed steps by changing the AJAX callback on the form submit button.
+    $form['actions']['save_modal']['#ajax']['callback'] = '::submitAndShowEmbed';
+
+    // Pre-set a variety of attributes on the form that allow us to skip to the embed complete step
+    // and just see our entity embedded in the WYSIWYG area.
+    $form['attributes']['data-embed-button'] = [
+      '#type' => 'value',
+      '#value' => 'location',
+    ];
+    // NB: view mode is dynamically swapped in hook_entity_embed_alter()
+    // so set here to 'embed' to keep things consistent across embeddable entity types.
+    $form['attributes']['data-entity-embed-display'] = [
+      '#type' => 'value',
+      '#value' => 'view_mode:paragraph.preview',
+    ];
+    $form['attributes']['data-entity-type'] = [
+      '#type' => 'value',
+      '#value' => 'paragraph',
+    ];
+    $form['attributes']['data-entity-embed-display-settings'] = [
+      '#type' => 'value',
+      '#value' => '',
+    ];
+  }
+}
+
+/**
  * Implements hook_entity_embed_alter().
  */
 function nidirect_common_entity_embed_alter(array &$build, EntityInterface $entity, array &$context) {

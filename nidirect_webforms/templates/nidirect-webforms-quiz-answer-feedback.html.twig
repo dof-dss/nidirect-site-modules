@@ -2,9 +2,11 @@
   passed ? 'info-notice info-notice--success' : 'info-notice info-notice--error'
 ]
 %}
+
+<h2>{{ title }}</h2>
+<p class="question">{{ question }}</p>
+{{ user_answer }}
 <div {{ attributes.addClass(classes) }}>
-  <h2>{{ title }}</h2>
-  <p class="question">{{ question }}</p>
-  {{ user_answer }}
+  <h2>{{ passed ? 'Correct' : 'Wrong' }}</h2>
   <div class="feedback">{{ feedback }}</div>
 </div>

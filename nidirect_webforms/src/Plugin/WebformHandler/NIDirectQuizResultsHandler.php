@@ -246,7 +246,6 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
         $user_responses = $variables['webform_submission']->getData();
         $elements = $variables['webform']->getElementsDecodedAndFlattened();
-
         $answers = $settings['answers'];
         $user_score = 0;
         $max_score = count($answers);
@@ -289,6 +288,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             '#theme' => 'nidirect_webforms_quiz_answer_feedback',
             '#title' => ucfirst(str_replace('_', ' ', $id)),
             '#question' => $elements[$id]['#title'],
+            '#user_answer' => $elements[$id]['#options'][$user_responses[$id]],
             '#feedback' => [
               '#markup' => $feedback,
             ],

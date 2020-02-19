@@ -244,6 +244,17 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $config = $handler->getConfiguration();
         $settings = $config['settings'];
 
+        // Check if we have form submission data, if missing warn the user.
+        if ($variables['webform_submission'] === NULL) {
+          $variables['message'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('Sorry, we cannot display the results as the original form submission no longer available.'),
+          ];
+
+          return;
+        }
+
         $user_responses = $variables['webform_submission']->getData();
         $elements = $variables['webform']->getElementsDecodedAndFlattened();
 

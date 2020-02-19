@@ -38,14 +38,10 @@ function nidirect_media_element_info_alter(array &$info) {
 }
 
 /**
- * Processes the geolocation form element.
+ * Callback to adapt the pre-rendering of the geolocation form element.
  *
  * @param array $element
  *   The form element to process.
- * @param \Drupal\Core\Form\FormStateInterface $form_state
- *   The current state of the form.
- * @param array $complete_form
- *   The complete form structure.
  *
  * @return array
  *   The processed element.

@@ -244,9 +244,28 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
         $config = $handler->getConfiguration();
         $settings = $config['settings'];
 
+        // Check if we have form submission data, if missing warn the user.
+        // and provide a link to the webform.
+        if ($variables['webform_submission'] === NULL) {
+          $variables['message'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('Sorry, we cannot display the results as the original form submission no longer available.'),
+          ];
+
+          $webform_link = $variables['webform']->link($variables['webform']->label());
+
+          $variables['message'][] = [
+            '#type' => 'html_tag',
+            '#tag' => 'p',
+            '#value' => $this->t('Return to %link.', ['%link' => $webform_link]),
+          ];
+
+          return;
+        }
+
         $user_responses = $variables['webform_submission']->getData();
         $elements = $variables['webform']->getElementsDecodedAndFlattened();
-
         $answers = $settings['answers'];
         $user_score = 0;
         $max_score = count($answers);
@@ -285,10 +304,33 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             $feedback = $answer['incorrect_feedback'];
           }
 
+          // Prepare the users response text, if it's a multiple choice
+          // question, display as a list, otherwise in a paragraph tag.
+          if (is_array($user_responses[$id])) {
+            $user_answers = [];
+            foreach ($user_responses[$id] as $answer) {
+              $user_answers[] = $elements[$id]['#options'][$answer];
+            }
+            $user_answer = [
+              '#theme' => 'item_list',
+              '#items' => $user_answers,
+              '#attributes' => ['class' => 'user-answer'],
+            ];
+          }
+          else {
+            $user_answer = [
+              '#type' => 'html_tag',
+              '#tag' => 'p',
+              '#value' => $elements[$id]['#options'][$user_responses[$id]],
+              '#attributes' => ['class' => 'user-answer'],
+            ];
+          }
+
           $answer_feedback[] = [
             '#theme' => 'nidirect_webforms_quiz_answer_feedback',
             '#title' => ucfirst(str_replace('_', ' ', $id)),
             '#question' => $elements[$id]['#title'],
+            '#user_answer' => $user_answer,
             '#feedback' => [
               '#markup' => $feedback,
             ],

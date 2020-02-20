@@ -109,18 +109,6 @@ function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, Form
  * Implements hook_views_pre_render().
  */
 function nidirect_common_views_pre_render(ViewExecutable $view) {
-  if ($view->id() == 'recipes' && $view->current_display == 'search_page') {
-    if (!empty($view->header['area'])) {
-      // Display custom header to show singular/plural recipe(s) label.
-      $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
-        $view->pager->total_items,
-        '@count recipe',
-        '@count recipes',
-        ['@count' => $view->pager->total_items]
-      );
-    }
-  }
-
   if ($view->id() == 'publications' && $view->current_display == 'search_page') {
     if (!empty($view->header['area'])) {
       // Generate the header content to show N publication(s).

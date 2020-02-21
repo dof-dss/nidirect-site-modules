@@ -7,7 +7,6 @@
 
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
  * Implements hook_element_info_alter().
@@ -61,7 +60,7 @@ function nidirect_media_pre_render_geolocation_input(array $element) {
 /**
  * Implements hook_form_FORM_ID_alter().
  */
-function nidirect_media_form_nidirect_entity_embed_dialog_alter(&$form, FormStateInterface &$form_state) {
+function nidirect_media_form_entity_embed_dialog_alter(&$form, FormStateInterface &$form_state) {
   if (empty($form['entity_browser'])) {
     // Exit early if there's no entity browser defined (can occur on some steps).
     return;

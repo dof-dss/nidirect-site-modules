@@ -31,6 +31,7 @@ jobs:
     steps:
       - checkout:
           path: /home/circleci/nidirect-site-modules
+      - run: ls -la /home/circleci/nidirect-site-modules/nidirect_media/src/Form
       - run:
           name: Add OS and PHP extensions and config
           command: |
@@ -46,7 +47,9 @@ jobs:
             mkdir -p ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom
       - run:
           name: Download dependent contrib modules.
-          command: cd ${CIRCLE_WORKING_DIRECTORY} && composer require drupal/webform
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            composer require drupal/webform drupal/entity_embed  --no-interaction --optimize-autoloader
       - run:
           name: Move custom code into position
           command: mv /home/circleci/nidirect-site-modules ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom

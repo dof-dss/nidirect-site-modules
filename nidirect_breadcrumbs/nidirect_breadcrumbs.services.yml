@@ -11,12 +11,6 @@ services:
     tags:
       - { name: breadcrumb_builder, priority: 5000 }
 
-  nidirect_breadcrumbs.breadcrumb.umbrella_bodies:
-    class: Drupal\nidirect_breadcrumbs\UmbrellaBodyBreadcrumb
-    arguments: ['@entity_type.manager']
-    tags:
-      - { name: breadcrumb_builder }
-
   nidirect_breadcrumbs.breadcrumb.contact:
     class: Drupal\nidirect_breadcrumbs\ContactBreadcrumb
     arguments: ['@entity_type.manager']

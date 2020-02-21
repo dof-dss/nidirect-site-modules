@@ -36,6 +36,15 @@
             alert('Please select a subtheme first');
             $(this).prop('checked', false);
           }
+          // If the title and teaser fields have not been completed then the
+          // 'nidirect_landing_pages_node_prepare_form' function will not run
+          // and the listing field will not be populated.
+          var $title = $(context).find('#edit-title-0-value').val();
+          var $teaser = $(context).find('#edit-field-teaser-0-value').val();
+          if (($title.length == 0) && ($teaser.length == 0)) {
+            alert('Please complete the title and teaser fields');
+            $(this).prop('checked', false);
+          }
         } else {
           // User has un-checked manual control, so hide the listing.
           $(context).find('#edit-field-listing-wrapper')

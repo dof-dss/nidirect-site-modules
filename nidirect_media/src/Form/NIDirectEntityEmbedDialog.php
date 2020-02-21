@@ -21,19 +21,7 @@ class NIDirectEntityEmbedDialog extends EntityEmbedDialog {
   }
 
   /**
-   * Form constructor.
-   *
-   * Pre-set the form state step value to 'select' but only for location embed button;
-   * we don't have an entity to embed/review for maps.
-   *
-   * @param array $form
-   *   An associative array containing the structure of the form.
-   * @param \Drupal\Core\Form\FormStateInterface $form_state
-   *   The current state of the form.
-   * @param \Drupal\editor\EditorInterface $editor
-   *   The editor to which this dialog corresponds.
-   * @param \Drupal\embed\EmbedButtonInterface $embed_button
-   *   The URL button to which this dialog corresponds.
+   * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state, EditorInterface $editor = NULL, EmbedButtonInterface $embed_button = NULL) {
     // Pass in our pre-set form_state into the origin entity embed form builder

@@ -19,7 +19,7 @@ class RouteSubscriber extends RouteSubscriberBase {
     // It's not possible to pre-inject that setting via a form_alter() hook or
     // any kind of #pre_render, #process or #after_build callback.
     if ($route = $collection->get('entity_embed.dialog')) {
-      $route->setDefault('_form', '\Drupal\nidirect_media\Form\NIDirectEntityEmbedDialog');
+      $route->setDefault('_form', '\Drupal\nidirect_media\Form\NidirectEntityEmbedDialog');
     }
   }
 

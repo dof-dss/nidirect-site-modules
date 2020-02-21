@@ -11,7 +11,7 @@ use Drupal\entity_embed\Form\EntityEmbedDialog;
  * Extend the base entity embed dialog class to ensure
  * we can pre-set a step for location entity embedding.
  */
-class NIDirectEntityEmbedDialog extends EntityEmbedDialog {
+class NidirectEntityEmbedDialog extends EntityEmbedDialog {
 
   /**
    * {@inheritdoc}

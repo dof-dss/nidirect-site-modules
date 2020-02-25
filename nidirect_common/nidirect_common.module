@@ -179,9 +179,8 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 
         if (!empty($parents)) {
           $parent = array_shift($parents);
+          $banner_image = $parent->get('field_banner_image')->first();
         }
-
-        $banner_image = $parent->get('field_banner_image')->first();
       }
     }
 

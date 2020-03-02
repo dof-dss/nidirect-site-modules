@@ -35,7 +35,7 @@ module.exports = {
         browser
           .drupalLogin({name: process.env.TEST_USER, password: process.env.TEST_PASS})
           .drupalRelativeURL('/admin/structure/types')
-          .waitForElementVisible('body', 1000)
+          .waitForElementVisible('body', 9000)
 
         for (var i = 0; i < types.length; i++) {
           browser.expect.element('.region-content table tbody').text.to.contain(types[i]);

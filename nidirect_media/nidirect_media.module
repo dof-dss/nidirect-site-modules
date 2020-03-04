@@ -119,7 +119,7 @@ function nidirect_media_entity_embed_alter(array &$build, EntityInterface $entit
 /**
  * Implements hook_field_widget_form_alter().
  */
-function nidirect_media_field_widget_form_alter(&$element, \Drupal\Core\Form\FormStateInterface $form_state, $context) {
+function nidirect_media_field_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
   if ($context['widget']->getPluginId() == 'entity_browser_entity_reference') {
     $element['#attached']['library'][] = 'nidirect_media/entity_browser_entity_reference';
   }

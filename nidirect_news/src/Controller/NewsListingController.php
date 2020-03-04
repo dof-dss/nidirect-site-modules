@@ -67,22 +67,24 @@ class NewsListingController extends ControllerBase {
   public function default() {
     $content = [];
 
-    // Latest news embed display.
-    $content['latest_news'] = [
-      '#type' => 'view',
-      '#name' => 'news',
-      '#display_id' => 'latest_news',
-    ];
+    if (empty($this->requestStack->getCurrentRequest()->query->get('page'))) {
+      // Latest news embed display.
+      $content['latest_news'] = [
+        '#type' => 'view',
+        '#name' => 'news',
+        '#display_id' => 'latest_news',
+      ];
 
-    // View title: see views_embed_view() which the render array relies on for details of why this is missing.
-    $content['older_news_title'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'h2',
-      '#attributes' => [
-        'class' => 'hr-above',
-      ],
-      '#value' => t('Older news items'),
-    ];
+      // View title: see views_embed_view() which the render array relies on for details of why this is missing.
+      $content['older_news_title'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#attributes' => [
+          'class' => 'hr-above',
+        ],
+        '#value' => t('Older news items'),
+      ];
+    }
 
     // Older news.
     $content['older_news'] = [

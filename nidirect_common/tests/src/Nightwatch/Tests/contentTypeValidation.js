@@ -38,7 +38,8 @@ module.exports = {
           .waitForElementVisible('body', 1000)
 
         for (var i = 0; i < types.length; i++) {
-          browser.expect.element('.region-content table tbody').text.to.contain(types[i]);
+          var regex_pattern = new RegExp(types[i], 'g');
+          browser.expect.element('.region-content table tbody').text.to.match(regex_pattern);
         }
       });
   }

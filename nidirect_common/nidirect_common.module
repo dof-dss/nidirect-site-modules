@@ -265,6 +265,15 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Turn off client-side validation on node base forms; it breaks entity browser preview widgets.
+  if (!empty($form['#after_build'])) {
+    foreach ($form['#after_build'] as $key => $value) {
+      if ($value == 'clientside_validation_form_after_build') {
+        unset($form['#after_build'][$key]);
+      }
+    }
+  }
+
   if (array_key_exists('field_top_level_theme', $form)) {
 
     // Can't use a hidden input tqype on a container element or

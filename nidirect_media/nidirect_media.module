@@ -124,3 +124,15 @@ function nidirect_media_field_widget_form_alter(&$element, FormStateInterface $f
     $element['#attached']['library'][] = 'nidirect_media/entity_browser_entity_reference';
   }
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'entity_browser_media_entity_browser_form') {
+    // If this is not the inline entity form widget, add a CSS class to initially disable the 'Select' button.
+    if (empty($form['widget']['inline_entity_form'])) {
+      $form['widget']['actions']['submit']['#attributes']['class'][] = 'inactive';
+    }
+  }
+}

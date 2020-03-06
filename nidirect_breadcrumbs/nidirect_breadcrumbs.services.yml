@@ -86,3 +86,5 @@ parameters:
     - user.pass
     - user.reset
     - user.reset.login
+    - nidirect_contacts.default
+    - nidirect_contacts.letter

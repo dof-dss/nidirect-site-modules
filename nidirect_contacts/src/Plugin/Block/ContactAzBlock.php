@@ -59,16 +59,19 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
   public function build() {
     $build = [];
     $links = [];
+    $skip_link = '';
 
     $title = $this->t('Find contacts beginning with') . '...';
 
     if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');
       $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
+      $skip_link = '<a href="#contact_links" class="skip-link visually-hidden focusable">';
+      $skip_link .= t('Skip A to Z') . '</a>';
     }
 
     $build['title'] = [
-      '#markup' => '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
+      '#markup' => $skip_link . '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
     ];
 
     foreach (array_merge(range('a', 'z'), range('0', '9')) as $item) {

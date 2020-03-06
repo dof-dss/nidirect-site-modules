@@ -13,7 +13,13 @@
     attach: function (context, settings) {
       // Initially set the Select button state to disabled as the user will
       // not have selected any media element.
-      var $select_button = $('.is-entity-browser-submit', context);
+      // NB: The 'inactive' class is set in nidirect_media.module so that
+      // we only disable the browser widget select button and not the
+      // inline entity form button for creating new entities. The class
+      // is set server-side because it's impractical to handle client-side due to
+      // very small differences in element properties. Far easier/more certain to use
+      // a distinct class that is always present or absent when this code executes.
+      var $select_button = $('.is-entity-browser-submit.inactive', context);
       $select_button.prop('disabled', true);
 
       $('.views-row', context).click(function () {

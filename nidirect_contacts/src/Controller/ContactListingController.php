@@ -56,6 +56,19 @@ class ContactListingController extends ControllerBase {
   }
 
   /**
+   * Controller callback for the page title.
+   *
+   * Use this to examine route parameters/any other conditions
+   * and vary the string that is returned.
+   *
+   * @return string
+   *   The page title.
+   */
+  public function getTitle() {
+    return 'Custom title';
+  }
+
+  /**
    * Default presentation of the contacts listing page.
    *
    * @return array

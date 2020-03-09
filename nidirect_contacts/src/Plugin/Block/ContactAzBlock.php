@@ -66,7 +66,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');
       $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
-      $skip_link = '<a href="#contact_links" class="skip-link visually-hidden focusable">';
+      $skip_link = '<a href="#contact-links" class="skip-link visually-hidden focusable">';
       $skip_link .= t('Skip A to Z') . '</a>';
     }
 

@@ -74,10 +74,8 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   // Add to render array by default; toggle visibility after.
   $variables['links']['sort_by_relevance'] = $sort_relevance->toRenderable();
   $variables['links']['sort_title'] = $sort_title->toRenderable();
-  $variables['links']['reset_search'] = $reset_search->toRenderable();
   $variables['links']['reset_az'] = $reset_az->toRenderable();
   $variables['links']['show_az'] = $show_az->toRenderable();
-  $variables['links']['show_search'] = $show_search->toRenderable();
 
   // Hide the sort options when there is no search term and we're not looking
   // at the contacts A-Z.
@@ -85,8 +83,6 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     // No sort options on this display.
     unset($variables['links']['sort_by_relevance']);
     unset($variables['links']['sort_title']);
-    unset($variables['links']['reset_search']);
-    unset($variables['links']['show_search']);
 
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
@@ -96,19 +92,11 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     if (empty($q)) {
       unset($variables['links']['sort_title']);
       unset($variables['links']['sort_by_relevance']);
-      unset($variables['links']['show_search']);
       unset($variables['links']['show_az']);
-      unset($variables['links']['reset_search']);
       unset($variables['links']['reset_az']);
     }
 
-    if (empty($q['query_contacts_az'])) {
-      unset($variables['links']['show_search']);
-      unset($variables['links']['show_az']);
-      unset($variables['links']['reset_search']);
-      unset($variables['links']['reset_az']);
-    }
-    else {
+    if (!empty($q['query_contacts_az'])) {
       $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
     }
 

@@ -281,4 +281,31 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     // so using the .hidden class to hide from the user.
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
   }
+
+  if (array_key_exists('field_published_date', $form)) {
+
+    // Add validation code to override core bug with date formats as
+    // described here https://www.drupal.org/project/drupal/issues/3093267
+    array_unshift($form['#validate'], 'nidirect_common_validate_publication_date');
+  }
+}
+
+function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
+  $x = 1;
+  $dt = $form_state->getValue('field_published_date');
+
+  // Temporarily store all form errors.
+  $form_errors = $form_state->getErrors();
+
+  // Clear the form errors.
+  $form_state->clearErrors();
+
+  // Now loop through and re-apply the remaining form error messages.
+  foreach ($form_errors as $name => $error_message) {
+    if (substr($name, 0, 20) != 'field_published_date') {
+      $form_state->setErrorByName($name, $error_message);
+    }
+  }
+
+  $form_state->setErrorByName('field_published_date', t('New error message here'));
 }

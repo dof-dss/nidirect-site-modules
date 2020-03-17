@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Cache\Cache;
+use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -291,9 +292,6 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 }
 
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
-  $x = 1;
-  $dt = $form_state->getValue('field_published_date');
-
   // Temporarily store all form errors.
   $form_errors = $form_state->getErrors();
 
@@ -307,5 +305,11 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
     }
   }
 
-  $form_state->setErrorByName('field_published_date', t('New error message here'));
+  $dt = $form_state->getValue('field_published_date');
+  $date = $dt[0]['value']['object'];
+  if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+    // generate error
+    //$format = $form['field_published_date']['widget'][0]['value']['#date_date_format'];
+    $form_state->setErrorByName('field_published_date', t('The publication date is invalid. Please enter a date in the format dd/mm/yyyy'));
+  }
 }

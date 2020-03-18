@@ -5,7 +5,6 @@ namespace Drupal\nidirect_contacts\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -53,6 +52,34 @@ class ContactListingController extends ControllerBase {
       $container->get('plugin.manager.block'),
       $container->get('request_stack')
     );
+  }
+
+  /**
+   * Controller callback for the page title.
+   *
+   * Use this to examine route parameters/any other conditions
+   * and vary the string that is returned.
+   *
+   * @return string
+   *   The page title.
+   */
+  public function getTitle($route_type) {
+    if ($route_type == 'contacts') {
+      // Is there a text search string?
+      $search_string = \Drupal::request()->get('query_contacts_az');
+      if (!empty($search_string)) {
+        return t('Contacts search');
+      }
+      else {
+        return t('Contacts');
+      }
+    }
+    elseif ($route_type == 'contacts_letter') {
+      // A letter has been selected from the A-Z.
+      $letter = \Drupal::routeMatch()->getParameter('letter');
+      return t('Contacts - under :letter', [':letter' => strtoupper($letter)]);
+    }
+    return t('Contacts');
   }
 
   /**

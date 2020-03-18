@@ -266,7 +266,8 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Turn off client-side validation on node base forms; it breaks entity browser preview widgets.
+  // Turn off client-side validation on node base forms;
+  // it breaks entity browser preview widgets.
   if (!empty($form['#after_build'])) {
     foreach ($form['#after_build'] as $key => $value) {
       if ($value == 'clientside_validation_form_after_build') {
@@ -291,6 +292,9 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   }
 }
 
+/**
+ * Utility function to validate publication date.
+ */
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
   // Temporarily store all form errors.
   $form_errors = $form_state->getErrors();
@@ -311,7 +315,7 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   $dt = $form_state->getValue('field_published_date');
   $date = $dt[0]['value'];
   if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
-    // generate error
+    // Generate error to override the erroneous core error.
     $form_state->setErrorByName('field_published_date', t('The publication date is invalid. Please enter a date in the format dd/mm/yyyy'));
   }
 }

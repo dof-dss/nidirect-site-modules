@@ -284,10 +284,16 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
   }
 
-  if (array_key_exists('field_published_date', $form)) {
-
-    // Add validation code to override core bug with date formats as
-    // described here https://www.drupal.org/project/drupal/issues/3093267
+  // Add extra date validation code to override core bug with
+  // date formats as described here
+  // https://www.drupal.org/project/drupal/issues/3093267
+  $add_date_validation = FALSE;
+  foreach ($form as $key => $field) {
+    if (preg_match('/_date$/', $key )) {
+      $add_date_validation = TRUE;
+    }
+  }
+  if ($add_date_validation) {
     array_unshift($form['#validate'], 'nidirect_common_validate_publication_date');
   }
 }

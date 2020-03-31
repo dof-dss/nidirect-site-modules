@@ -302,14 +302,17 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   // Clear the form errors.
   $form_state->clearErrors();
 
-  $date_fields = ['field_published_date', 'field_last_review_date', 'field_next_review_date'];
+  $date_fields = ['field_published_date',
+    'field_last_review_date',
+    'field_next_review_date',
+  ];
 
   // Now loop through and re-apply all form error messages that
   // don't involve the specified date fields.
   foreach ($form_errors as $name => $error_message) {
     if (preg_match('/^[a-z_]*/', $name, $matches)) {
       $field_name = $matches[0];
-      if (in_array($field_name,$date_fields)) {
+      if (in_array($field_name, $date_fields)) {
         continue;
       }
     }

@@ -289,7 +289,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   // https://www.drupal.org/project/drupal/issues/3093267
   $add_date_validation = FALSE;
   foreach ($form as $key => $field) {
-    if (preg_match('/_date$/', $key )) {
+    if (preg_match('/_date$/', $key ) || preg_match('/_period$/', $key )) {
       $add_date_validation = TRUE;
     }
   }
@@ -311,6 +311,7 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   $date_fields = ['field_published_date',
     'field_last_review_date',
     'field_next_review_date',
+    'field_cwp_payments_period',
   ];
 
   // Now loop through and re-apply all form error messages that
@@ -338,10 +339,25 @@ function validate_date_field(&$form_state, $date_field) {
   // if it is invalid.
   $dt = $form_state->getValue($date_field);
   if (!empty($dt)) {
-    $date = $dt[0]['value'];
-    if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
-      // Generate error to override the erroneous core error.
-      $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+    if (preg_match('/_period$/', $date_field )) {
+      // Process a date range.
+      $date = $dt[0]['value'];  // start date
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field . '][0][value', t('Start date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
+      $date = $dt[0]['end_value']; // end date
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field . '][0][end_value', t('End date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
+    } else {
+      // Process a single date.
+      $date = $dt[0]['value'];
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
     }
   }
 }

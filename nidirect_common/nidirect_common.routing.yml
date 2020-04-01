@@ -5,3 +5,11 @@ nidirect.admin_config:
     _title: 'NIDirect'
   requirements:
     _permission: 'access administration pages'
+
+nidirect_common.homepage_controller_default:
+  path: '/homepage'
+  defaults:
+    _controller: '\Drupal\nidirect_common\Controller\HomepageController::default'
+    _title: 'Home'
+  requirements:
+    _permission: 'access content'

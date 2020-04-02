@@ -280,6 +280,9 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['flag']['hide_content']['#access'] = FALSE;
   }
 
+  // Hide Promotion Options.
+  $form['options']['#access'] = FALSE;
+
   // Update description for Table of Contents option.
   if (array_key_exists('field_toc_enable', $form)) {
     $form['field_toc_enable']['widget']['value']['#description'] = t(

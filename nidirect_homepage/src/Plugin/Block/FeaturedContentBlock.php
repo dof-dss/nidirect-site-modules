@@ -49,10 +49,12 @@ class FeaturedContentBlock extends BlockBase implements ContainerFactoryPluginIn
       'type' => 'featured_content_list'
     ]);
 
-    $node_render = $this->entityManager->getViewBuilder('node')->view(reset($fcl_nodes));
+    if (!empty($fcl_nodes)) {
+      $node_render = $this->entityManager->getViewBuilder('node')->view(reset($fcl_nodes));
 
-    $build['#theme'] = 'featured_content';
-    $build['featured_content'] = $node_render;
+      $build['#theme'] = 'featured_content';
+      $build['featured_content'] = $node_render;
+    }
 
     return $build;
   }

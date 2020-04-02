@@ -266,6 +266,14 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Update description for Table of Contents option.
+  if (array_key_exists('field_toc_enable', $form)) {
+    $form['field_toc_enable']['widget']['value']['#description'] = t(
+      'Check this box to display a list of quick links to Heading 2s on this page'
+    );
+  }
+
   // Turn off client-side validation on node base forms;
   // it breaks entity browser preview widgets.
   if (!empty($form['#after_build'])) {

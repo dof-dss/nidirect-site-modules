@@ -54,17 +54,6 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $q = \Drupal::request()->query->all();
   $route_name = \Drupal::routeMatch()->getRouteName();
 
-  // Links for sorting options.
-  $sort_relevance = Link::createFromRoute('sort by relevance', 'nidirect_contacts.default', [], [
-    'query' => array_merge($q, [
-      'sort_by' => 'search_api_relevance',
-    ])
-  ]);
-  $sort_title = Link::createFromRoute('sort alphabetically', 'nidirect_contacts.default', [], [
-    'query' => array_merge($q, [
-      'sort_by' => 'title',
-    ])
-  ]);
   // Convenience links.
   $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default');
   $show_search = Link::createFromRoute('show search', 'nidirect_contacts.default');
@@ -72,39 +61,24 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $reset_search = Link::createFromRoute('reset a-z', 'nidirect_contacts.default');
 
   // Add to render array by default; toggle visibility after.
-  $variables['links']['sort_by_relevance'] = $sort_relevance->toRenderable();
-  $variables['links']['sort_title'] = $sort_title->toRenderable();
   $variables['links']['reset_az'] = $reset_az->toRenderable();
   $variables['links']['show_az'] = $show_az->toRenderable();
 
   // Hide the sort options when there is no search term and we're not looking
   // at the contacts A-Z.
   if ($route_name == 'nidirect_contacts.letter') {
-    // No sort options on this display.
-    unset($variables['links']['sort_by_relevance']);
-    unset($variables['links']['sort_title']);
-
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
   }
 
   if ($route_name == 'nidirect_contacts.default') {
     if (empty($q)) {
-      unset($variables['links']['sort_title']);
-      unset($variables['links']['sort_by_relevance']);
       unset($variables['links']['show_az']);
       unset($variables['links']['reset_az']);
     }
 
     if (!empty($q['query_contacts_az'])) {
       $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
-    }
-
-    if (($q['sort_by'] ?? '') == 'title') {
-      unset($variables['links']['sort_title']);
-    }
-    if (empty($q['sort_by']) || ($q['sort_by'] ?? '') == 'search_api_relevance') {
-      unset($variables['links']['sort_by_relevance']);
     }
   }
 }

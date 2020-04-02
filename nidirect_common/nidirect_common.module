@@ -5,6 +5,7 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -277,6 +278,29 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Update description for Hide Content flag.
+  if (NestedArray::keyExists($form, ['flag', 'hide_content'])) {
+    $form['flag']['hide_content']['#description'] = t('
+      Check this box to prevent links to this page appearing in navigation menus and landing pages.
+    ');
+  }
+
+  // Hide Featured Content flag.
+  if (NestedArray::keyExists($form, ['flag', 'featured_content'])) {
+    $form['flag']['hide_content']['#access'] = FALSE;
+  }
+
+  // Hide Promotion Options.
+  $form['options']['#access'] = FALSE;
+
+  // Update description for Table of Contents option.
+  if (array_key_exists('field_toc_enable', $form)) {
+    $form['field_toc_enable']['widget']['value']['#description'] = t(
+      'Check this box to display a list of quick links to Heading 2s on this page'
+    );
+  }
+
   // Turn off client-side validation on node base forms;
   // it breaks entity browser preview widgets.
   if (!empty($form['#after_build'])) {
@@ -295,16 +319,22 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
   }
 
-  if (array_key_exists('field_published_date', $form)) {
-
-    // Add validation code to override core bug with date formats as
-    // described here https://www.drupal.org/project/drupal/issues/3093267
+  // Add extra date validation code to override core bug with
+  // date formats as described here
+  // https://www.drupal.org/project/drupal/issues/3093267
+  $add_date_validation = FALSE;
+  foreach ($form as $key => $field) {
+    if (preg_match('/_date$/', $key) || preg_match('/_period$/', $key)) {
+      $add_date_validation = TRUE;
+    }
+  }
+  if ($add_date_validation) {
     array_unshift($form['#validate'], 'nidirect_common_validate_publication_date');
   }
 }
 
 /**
- * Utility function to validate publication date.
+ * Form validation handler.
  */
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
   // Temporarily store all form errors.
@@ -313,20 +343,60 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   // Clear the form errors.
   $form_state->clearErrors();
 
+  $date_fields = ['field_published_date',
+    'field_last_review_date',
+    'field_next_review_date',
+    'field_cwp_payments_period',
+  ];
+
   // Now loop through and re-apply all form error messages that
-  // don't involve 'field_published_date'.
+  // don't involve the specified date fields.
   foreach ($form_errors as $name => $error_message) {
-    if (substr($name, 0, 20) != 'field_published_date') {
-      $form_state->setErrorByName($name, $error_message);
+    if (preg_match('/^[a-z_]+/', $name, $matches)) {
+      $field_name = $matches[0];
+      if (in_array($field_name, $date_fields)) {
+        continue;
+      }
     }
+    $form_state->setErrorByName($name, $error_message);
   }
 
-  // Now validate the published date and raise an error
+  foreach ($date_fields as $date_field) {
+    validate_date_field($form_state, $date_field);
+  }
+}
+
+/**
+ * Utility function to validate dates.
+ */
+function validate_date_field(&$form_state, $date_field) {
+  // Now validate the date and raise an error
   // if it is invalid.
-  $dt = $form_state->getValue('field_published_date');
-  $date = $dt[0]['value'];
-  if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
-    // Generate error to override the erroneous core error.
-    $form_state->setErrorByName('field_published_date', t('The publication date is invalid. Please enter a date in the format dd/mm/yyyy'));
+  $dt = $form_state->getValue($date_field);
+  if (!empty($dt)) {
+    if (preg_match('/_period$/', $date_field)) {
+      // Process a date range.
+      //
+      // Start date.
+      $date = $dt[0]['value'];
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field . '][0][value', t('Start date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
+      // End date.
+      $date = $dt[0]['end_value'];
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field . '][0][end_value', t('End date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
+    }
+    else {
+      // Process a single date.
+      $date = $dt[0]['value'];
+      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+        // Generate error to override the erroneous core error.
+        $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      }
+    }
   }
 }

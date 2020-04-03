@@ -19,6 +19,12 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
     // we still get to use URL parameters despite having no visible form elements.
     hide($form['sort_by']);
     hide($form['sort_order']);
+    // Add an extra class if this is a search results page.
+    if (!empty($form_state->getUserInput())) {
+      if (isset($form_state->getUserInput()['query_contacts_az'])) {
+        $form['#attributes']['class'][] = 'search_results';
+      }
+    }
   }
 
   if ($form['#id'] == 'views-exposed-form-contacts-a-z-contacts-by-letter') {

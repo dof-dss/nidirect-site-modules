@@ -88,6 +88,7 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
 
     if (!empty($q['query_contacts_az'])) {
       $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
+      $variables['form_status'] = "search_results";
     }
   }
 }

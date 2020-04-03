@@ -5,6 +5,7 @@
  * Contains nidirect_common.module.
  */
 
+use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Routing\RouteMatchInterface;
@@ -96,10 +97,15 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Form alter hook to add extra guidance for the LinkIt
- * dialogue box presented in the WYSIWYG editor.
+ * Form alter hook for the LinkIt dialogue box
+ * presented in the WYSIWYG editor.
  */
 function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, FormStateInterface $form_state) {
+
+  // Hide option to open link in new window.
+  $form['linkit_attributes']['target']['#access'] = FALSE;
+
+  // Provide additional guidance information.
   $form['attributes']['href']['#description'] .= '<p>'
     . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
@@ -266,6 +272,29 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Update description for Hide Content flag.
+  if (NestedArray::keyExists($form, ['flag', 'hide_content'])) {
+    $form['flag']['hide_content']['#description'] = t('
+      Check this box to prevent links to this page appearing in navigation menus and landing pages.
+    ');
+  }
+
+  // Hide Featured Content flag.
+  if (NestedArray::keyExists($form, ['flag', 'featured_content'])) {
+    $form['flag']['hide_content']['#access'] = FALSE;
+  }
+
+  // Hide Promotion Options.
+  $form['options']['#access'] = FALSE;
+
+  // Update description for Table of Contents option.
+  if (array_key_exists('field_toc_enable', $form)) {
+    $form['field_toc_enable']['widget']['value']['#description'] = t(
+      'Check this box to display a list of quick links to Heading 2s on this page'
+    );
+  }
+
   // Turn off client-side validation on node base forms;
   // it breaks entity browser preview widgets.
   if (!empty($form['#after_build'])) {

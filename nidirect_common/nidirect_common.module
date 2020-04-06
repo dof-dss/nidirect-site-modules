@@ -408,6 +408,8 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
     ],
   ];
 
+  $element['telephone_title']['#title'] = t('Other title');
+
   $element['telephone_title']['#states'] = [
     'visible' => [
       ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'other'],

@@ -401,7 +401,17 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
     '#weight' => '-50',
     '#title' => t('Title'),
     '#options' => [
-      'Telephone', 'Fax', 'Mobile'
+      'telephone' => 'Telephone',
+      'fax' => 'Fax',
+      'mobile' => 'Mobile',
+      'other' => 'Other (please specify)'
     ],
   ];
+
+  $element['telephone_title']['#states'] = [
+    'visible' => [
+      ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'other'],
+    ],
+  ];
+
 }

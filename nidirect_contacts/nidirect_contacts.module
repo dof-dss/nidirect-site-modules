@@ -20,10 +20,9 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
     hide($form['sort_by']);
     hide($form['sort_order']);
     // Add an extra class if this is a search results page.
-    if (!empty($form_state->getUserInput())) {
-      if (isset($form_state->getUserInput()['query_contacts_az'])) {
-        $form['#attributes']['class'][] = 'contact_search_results';
-      }
+    $user_input = $form_state->getUserInput();
+    if (!empty($user_input) && !empty($user_input['query_contacts_az'])) {
+      $form['#attributes']['class'][] = 'contact_search_results';
     }
   }
 

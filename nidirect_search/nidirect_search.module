@@ -53,7 +53,4 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
  */
 function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_query, SearchApiQueryInterface $query) {
   $solarium_query->getSpellcheck()->setDictionary(Language::LANGCODE_NOT_SPECIFIED);
-//  if (\Drupal::config('config_split.config_split.local')->get('status') == TRUE) {
-//    $solarium_query->getSpellcheck()->setDictionary(Language::LANGCODE_NOT_SPECIFIED);
-//  }
 }

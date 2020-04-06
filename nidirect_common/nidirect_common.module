@@ -394,3 +394,14 @@ function validate_date_field(&$form_state, $date_field) {
     }
   }
 }
+
+function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+  $element['telephone_predefined'] = [
+    '#type' => 'select',
+    '#weight' => '-50',
+    '#title' => t('Title'),
+    '#options' => [
+      'Telephone', 'Fax', 'Mobile'
+    ],
+  ];
+}

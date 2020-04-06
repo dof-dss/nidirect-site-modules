@@ -69,6 +69,15 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   if ($route_name == 'nidirect_contacts.letter') {
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
+    // Add result count to letter search.
+    if ($variables['view']->total_rows > 0) {
+      $variables['row_count'] = \Drupal::translation()->formatPlural(
+        $variables['view']->total_rows,
+        '@count result',
+        '@count results',
+        ['@count' => $variables['view']->total_rows]
+      );
+    }
   }
 
   if ($route_name == 'nidirect_contacts.default') {

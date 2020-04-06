@@ -98,10 +98,15 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 /**
  * Implements hook_form_FORM_ID_alter().
  *
- * Form alter hook to add extra guidance for the LinkIt
- * dialogue box presented in the WYSIWYG editor.
+ * Form alter hook for the LinkIt dialogue box
+ * presented in the WYSIWYG editor.
  */
 function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, FormStateInterface $form_state) {
+
+  // Hide option to open link in new window.
+  $form['linkit_attributes']['target']['#access'] = FALSE;
+
+  // Provide additional guidance information.
   $form['attributes']['href']['#description'] .= '<p>'
     . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')

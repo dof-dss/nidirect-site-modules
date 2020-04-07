@@ -14,6 +14,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 /**
  * Implements hook_help().
@@ -198,6 +199,16 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
+  }
+
+  // If we don't have the administer content permission, 301 redirect requests to a 'feature' node's
+  // canonical path to the front page as these are not intended to be viewed as standalone content.
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.node.canonical'
+    && $entity->bundle() == 'feature'
+      && \Drupal::currentUser()->hasPermission('administer nodes') == FALSE) {
+
+    $response = new RedirectResponse(\Drupal::urlGenerator()->generateFromRoute('<front>'), 301);
+    $response->send();
   }
 }
 

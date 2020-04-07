@@ -396,16 +396,28 @@ function validate_date_field(&$form_state, $date_field) {
 }
 
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
+
+  $telephone_predefined = [
+    'telephone' => 'Telephone',
+    'fax' => 'Fax',
+    'mobile' => 'Mobile',
+    'other' => 'Other (please specify)',
+  ];
+
+  $telephone_title = $context['items']->get($context['delta'])->get('telephone_title')->getValue();
+
+  if (!in_array($telephone_title, $telephone_predefined)) {
+    $telephone_predefined_value = 'other';
+  } else {
+    $telephone_predefined_value = array_search($telephone_title, $telephone_predefined);
+  }
+
   $element['telephone_predefined'] = [
     '#type' => 'select',
     '#weight' => '-50',
     '#title' => t('Title'),
-    '#options' => [
-      'telephone' => 'Telephone',
-      'fax' => 'Fax',
-      'mobile' => 'Mobile',
-      'other' => 'Other (please specify)'
-    ],
+    '#options' => $telephone_predefined,
+    '#default_value' => $telephone_predefined_value,
   ];
 
   $element['telephone_title']['#title'] = t('Other title');
@@ -415,5 +427,4 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
       ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'other'],
     ],
   ];
-
 }

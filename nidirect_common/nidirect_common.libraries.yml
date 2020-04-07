@@ -7,3 +7,9 @@ media_entity_browser:
   dependencies:
     - core/jquery
     - core/drupal
+telephone_plus_predefined_titles:
+  js:
+    js/telephone-plus-predefined-titles.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupalSettings

@@ -467,7 +467,7 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
   if (empty($telephone_title)) {
     $telephone_predefined_value = '';
   }
-  elseif (array_search($telephone_title, Arrays::flatten($telephone_predefined))) {
+  elseif (in_array($telephone_title, Arrays::flatten($telephone_predefined))) {
     $telephone_predefined_value = $telephone_title;
   }
   else {

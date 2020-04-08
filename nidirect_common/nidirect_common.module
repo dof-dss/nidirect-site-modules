@@ -396,6 +396,13 @@ function validate_date_field(&$form_state, $date_field) {
   }
 }
 
+/**
+ * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ *
+ * Overrides the default Telephone Plus widget to provide a
+ * default list of title options.
+ *
+ */
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
 
   $telephone_predefined = [
@@ -453,16 +460,20 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
     'Other' => 'Other (please specify)',
   ];
 
+  // Fetch the stored Title field value.
   $telephone_title = $context['items']->get($context['delta'])->get('telephone_title')->getValue();
 
+  // Determine if we have a title matching the predefined options
+  // and assign a default value for the select list.
   if (empty($telephone_title)) {
     $telephone_predefined_value = '';
   } elseif (array_search($telephone_title, Arrays::flatten($telephone_predefined))) {
     $telephone_predefined_value = $telephone_title;
-  } else {*
+  } else {
     $telephone_predefined_value = 'Other';
   }
 
+  // Select element containing predefined title options.
   $element['telephone_predefined'] = [
     '#type' => 'select',
     '#weight' => '-50',
@@ -481,9 +492,11 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
     '#empty_value' => '',
   ];
 
+  // Update the default Telephone Plus title field.
   $element['telephone_title']['#title'] = t('Other title');
   $element['telephone_title']['#attributes']['class'][] = 'telephone-title';
 
+  // Display the title textfield if the user selects 'Other'.
   $element['telephone_title']['#states'] = [
     'visible' => [
       ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'Other'],

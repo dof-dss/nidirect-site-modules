@@ -427,6 +427,7 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
       'class' => ['telephone-predefined']
     ],
     '#chosen' => FALSE,
+    '#empty_value' => '',
   ];
 
   $element['telephone_title']['#title'] = t('Other title');

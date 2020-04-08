@@ -14,6 +14,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
+use Nette\Utils\Arrays;
 
 /**
  * Implements hook_help().
@@ -398,68 +399,68 @@ function validate_date_field(&$form_state, $date_field) {
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
 
   $telephone_predefined = [
-    'Phone',
-    'Fax',
-    'Textphone',
-    'Freephone',
-    'Helpline',
-    'General enquiries',
-    'If calling from outside the UK',
-    'Headquarters',
-    'Main office',
-    'Main switchboard',
+    'Phone' => 'Phone',
+    'Fax' => 'Fax',
+    'Textphone' => 'Textphone',
+    'Freephone' => 'Freephone',
+    'Helpline' => 'Helpline',
+    'General enquiries' => 'General enquiries',
+    'If calling from outside the UK' => 'If calling from outside the UK',
+    'Headquarters' => 'Headquarters',
+    'Main office' => 'Main office',
+    'Main switchboard' => 'Main switchboard',
     'Billing and payments' => [
-      'Billing and payments',
-      'Billing enquiries',
-      'Payments',
-      'Payment enquiries',
-      'Payments using a credit or debit card'
+      'Billing and payments' => 'Billing and payments',
+      'Billing enquiries' => 'Billing enquiries',
+      'Payments' => 'Payments',
+      'Payment enquiries' => 'Payment enquiries',
+      'Payments using a credit or debit card' => 'Payments using a credit or debit card'
     ],
     'Complaints' => [
-      'Complaints',
-      'Complaints helpline',
-      'Customer complaints',
+      'Complaints' => 'Complaints',
+      'Complaints helpline' => 'Complaints helpline',
+      'Customer complaints' => 'Customer complaints',
     ],
     'Enquiries' => [
-      'General enquiries',
-      'Billing enquiries',
-      'Payment enquiries',
-      'Course enquiries',
+      'General enquiries' => 'General enquiries',
+      'Billing enquiries' => 'Billing enquiries',
+      'Payment enquiries' => 'Payment enquiries',
+      'Course enquiries' => 'Course enquiries',
     ],
     'Emergency' => [
-      'Emergency out-of-hours',
-      'Non-emergency',
-      'Non-emergency and general enquiries',
-      '24 hour emergency helpline',
+      'Emergency out-of-hours' => 'Emergency out-of-hours',
+      'Non-emergency' => 'Non-emergency',
+      'Non-emergency and general enquiries' => 'Non-emergency and general enquiries',
+      '24 hour emergency helpline' => '24 hour emergency helpline',
     ],
-    'Freephone' => [
-      'Freephone advice line',
-      'Freephone helpline',
+    'Freephone numbers' => [
+      'Freephone advice line' => 'Freephone advice line',
+      'Freephone helpline' => 'Freephone helpline',
     ],
-    'Helpline' => [
-      'Helpline',
-      'Freephone helpline',
-      'Helpline for adults (18+)',
-      'Helpline for young people (under 18)',
-      'National helpline',
-      'Northern Ireland helpline',
-      '24 hour helpline',
+    'Helpline numbers' => [
+      'Helpline' => 'Helpline',
+      'Freephone helpline' => 'Freephone helpline',
+      'Helpline for adults (18+)' => 'Helpline for adults (18+)',
+      'Helpline for young people (under 18)' => 'Helpline for young people (under 18)',
+      'National helpline' => 'National helpline',
+      'Northern Ireland helpline' => 'Northern Ireland helpline',
+      '24 hour helpline' => '24 hour helpline',
     ],
     'Out-of-hours' => [
-      'Out-of-hours phone',
-      'Out of office hours phone',
+      'Out-of-hours phone' => 'Out-of-hours phone',
+      'Out of office hours phone' => 'Out of office hours phone',
     ],
-    'Other (please specify)',
+    'Other' => 'Other (please specify)',
   ];
 
   $telephone_title = $context['items']->get($context['delta'])->get('telephone_title')->getValue();
 
   if (empty($telephone_title)) {
     $telephone_predefined_value = '';
-  } elseif (!in_array($telephone_title, $telephone_predefined)) {
-    $telephone_predefined_value = 'other';
-  } else {
-    $telephone_predefined_value = array_search($telephone_title, $telephone_predefined);
+  } elseif (array_search($telephone_title, Arrays::flatten($telephone_predefined))) {
+    $telephone_predefined_value = $telephone_title;
+  } else {*
+    $telephone_predefined_value = 'Other';
   }
 
   $element['telephone_predefined'] = [
@@ -485,7 +486,7 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
 
   $element['telephone_title']['#states'] = [
     'visible' => [
-      ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'other'],
+      ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'Other'],
     ],
   ];
 }

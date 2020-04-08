@@ -15,7 +15,7 @@
         .once('telephone-predefined-select')
         .change(function() {
           var title_field = $(this).parent().next().find('.telephone-title');
-          if ($(this).val() === '' || $(this).val() === 'other') {
+          if ($(this).val() === '' || $(this).val() === 'Other') {
             title_field.val('');
           } else {
             title_field.val($(this).find(':selected').text());

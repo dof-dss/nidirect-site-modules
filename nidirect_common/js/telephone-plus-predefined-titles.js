@@ -14,8 +14,11 @@
       $('.telephone-predefined', context)
         .once('telephone-predefined-select')
         .change(function() {
-          if ($(this).val() == 'other') {
-            $(this).parent().next().find('.telephone-title').val('');
+          var title_field = $(this).parent().next().find('.telephone-title');
+          if ($(this).val() === 'other') {
+            title_field.val('');
+          } else {
+            title_field.val($(this).find(':selected').text());
           }
         });
     },

@@ -398,10 +398,58 @@ function validate_date_field(&$form_state, $date_field) {
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
 
   $telephone_predefined = [
-    'telephone' => 'Telephone',
-    'fax' => 'Fax',
-    'mobile' => 'Mobile',
-    'other' => 'Other (please specify)',
+    'Phone',
+    'Fax',
+    'Textphone',
+    'Freephone',
+    'Helpline',
+    'General enquiries',
+    'If calling from outside the UK',
+    'Headquarters',
+    'Main office',
+    'Main switchboard',
+    'Billing and payments' => [
+      'Billing and payments',
+      'Billing enquiries',
+      'Payments',
+      'Payment enquiries',
+      'Payments using a credit or debit card'
+    ],
+    'Complaints' => [
+      'Complaints',
+      'Complaints helpline',
+      'Customer complaints',
+    ],
+    'Enquiries' => [
+      'General enquiries',
+      'Billing enquiries',
+      'Payment enquiries',
+      'Course enquiries',
+    ],
+    'Emergency' => [
+      'Emergency out-of-hours',
+      'Non-emergency',
+      'Non-emergency and general enquiries',
+      '24 hour emergency helpline',
+    ],
+    'Freephone' => [
+      'Freephone advice line',
+      'Freephone helpline',
+    ],
+    'Helpline' => [
+      'Helpline',
+      'Freephone helpline',
+      'Helpline for adults (18+)',
+      'Helpline for young people (under 18)',
+      'National helpline',
+      'Northern Ireland helpline',
+      '24 hour helpline',
+    ],
+    'Out-of-hours' => [
+      'Out-of-hours phone',
+      'Out of office hours phone',
+    ],
+    'Other (please specify)',
   ];
 
   $telephone_title = $context['items']->get($context['delta'])->get('telephone_title')->getValue();

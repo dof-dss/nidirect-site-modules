@@ -401,7 +401,6 @@ function validate_date_field(&$form_state, $date_field) {
  *
  * Overrides the default Telephone Plus widget to provide a
  * default list of title options.
- *
  */
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
 
@@ -421,7 +420,7 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
       'Billing enquiries' => 'Billing enquiries',
       'Payments' => 'Payments',
       'Payment enquiries' => 'Payment enquiries',
-      'Payments using a credit or debit card' => 'Payments using a credit or debit card'
+      'Payments using a credit or debit card' => 'Payments using a credit or debit card',
     ],
     'Complaints' => [
       'Complaints' => 'Complaints',
@@ -467,9 +466,11 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
   // and assign a default value for the select list.
   if (empty($telephone_title)) {
     $telephone_predefined_value = '';
-  } elseif (array_search($telephone_title, Arrays::flatten($telephone_predefined))) {
+  }
+  elseif (array_search($telephone_title, Arrays::flatten($telephone_predefined))) {
     $telephone_predefined_value = $telephone_title;
-  } else {
+  }
+  else {
     $telephone_predefined_value = 'Other';
   }
 
@@ -482,11 +483,11 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
     '#default_value' => $telephone_predefined_value,
     '#attached' => [
       'library' => [
-        'nidirect_common/telephone_plus_predefined_titles'
+        'nidirect_common/telephone_plus_predefined_titles',
       ],
     ],
     '#attributes' => [
-      'class' => ['telephone-predefined']
+      'class' => ['telephone-predefined'],
     ],
     '#chosen' => FALSE,
     '#empty_value' => '',

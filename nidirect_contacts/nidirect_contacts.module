@@ -22,7 +22,7 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
     // Add an extra class if this is a search results page.
     $user_input = $form_state->getUserInput();
     if (!empty($user_input) && !empty($user_input['query_contacts_az'])) {
-      $form['#attributes']['class'][] = 'contact_search_results';
+      $form['#attributes']['class'][] = 'search-form--contacts';
     }
   }
 

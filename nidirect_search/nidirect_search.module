@@ -52,7 +52,5 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
  * This hook can be removed if/when non-local dev Solr config is more cooperative.
  */
 function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_query, SearchApiQueryInterface $query) {
-  if (\Drupal::config('config_split.config_split.local')->get('status') == TRUE) {
-    $solarium_query->getSpellcheck()->setDictionary(Language::LANGCODE_NOT_SPECIFIED);
-  }
+  $solarium_query->getSpellcheck()->setDictionary(Language::LANGCODE_NOT_SPECIFIED);
 }

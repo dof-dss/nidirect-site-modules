@@ -26,25 +26,31 @@ class GMapsLazyLoadFormatter extends FormatterBase {
    */
   public static function defaultSettings() {
     return [
-      // Implement default settings.
-    ] + parent::defaultSettings();
+        'zoom' => '10',
+      ] + parent::defaultSettings();
   }
 
   /**
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
-    return [
-      // Implement settings form.
-    ] + parent::settingsForm($form, $form_state);
+
+      $form['zoom'] = [
+        '#title' => $this->t('Zoom'),
+        '#type' => 'number',
+        '#min' => 1,
+        '#max' => 22,
+        '#default_value' => $this->getSetting('zoom'),
+      ];
+
+    return $form + parent::settingsForm($form, $form_state);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function settingsSummary() {
-    $summary = [];
-    // Implement settings summary.
+  public function settingsSummary() {$summary = [];
+    $summary[] = $this->t('Zoom: @zoom', ['@zoom' => $this->getSetting('zoom')]);
 
     return $summary;
   }
@@ -56,7 +62,6 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
-
       $elements[$delta] = [
         '#type' => 'container',
         '#attributes' => [
@@ -64,7 +69,6 @@ class GMapsLazyLoadFormatter extends FormatterBase {
           'id' => Html::getUniqueId('gmap-lazy-load'),
           'data-lat' =>  $item->get('lat')->getString(),
           'data-lng' =>  $item->get('lng')->getString(),
-          'data-set-marker' => "true",
         ],
       ];
     }

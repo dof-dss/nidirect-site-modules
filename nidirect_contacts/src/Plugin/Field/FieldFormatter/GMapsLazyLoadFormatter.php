@@ -56,6 +56,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
+
       $elements[$delta] = [
         '#type' => 'container',
         '#attributes' => [
@@ -69,6 +70,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     }
 
     $elements['#attached']['library'][] = 'nidirect_contacts/gmaps_lazy_load';
+    $elements['#attached']['library'][] = 'geolocation_google_maps/google';
 
     return $elements;
   }

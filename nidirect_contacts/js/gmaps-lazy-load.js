@@ -29,6 +29,11 @@
                 zoom: 12
               });
 
+              var marker = new google.maps.Marker({
+                position: mapLatLng,
+                map: map,
+              });
+
               observer.unobserve(entry.target);
             }
           });

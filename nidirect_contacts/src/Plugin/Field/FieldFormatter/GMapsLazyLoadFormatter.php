@@ -56,9 +56,20 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     $elements = [];
 
     foreach ($items as $delta => $item) {
-
+      $elements[$delta] = [
+        '#type' => 'container',
+        '#attributes' => [
+          'class' => ['gmap', 'gmap-lazy-load'],
+          'id' => Html::getUniqueId('gmap-lazy-load'),
+          'data-lat' =>  $item->get('lat')->getString(),
+          'data-lng' =>  $item->get('lng')->getString(),
+          'data-set-marker' => "true",
+        ],
+      ];
     }
-    
+
+    $elements['#attached']['library'][] = 'nidirect_contacts/gmaps_lazy_load';
+
     return $elements;
   }
 

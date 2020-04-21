@@ -61,7 +61,10 @@ class GMapsLazyLoadFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 
+    $settings = $this->getSettings();
+
     foreach ($items as $delta => $item) {
+
       $elements[$delta] = [
         '#type' => 'container',
         '#attributes' => [
@@ -69,6 +72,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
           'id' => Html::getUniqueId('gmap-lazy-load'),
           'data-lat' =>  $item->get('lat')->getString(),
           'data-lng' =>  $item->get('lng')->getString(),
+          'data-zoom' => $settings['zoom'],
         ],
       ];
     }

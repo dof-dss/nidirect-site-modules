@@ -26,7 +26,7 @@
 
               var map = new google.maps.Map(document.getElementById(entry.target.id), {
                 center: mapLatLng,
-                zoom: 12
+                zoom: parseInt(entry.target.dataset.zoom),
               });
 
               var marker = new google.maps.Marker({

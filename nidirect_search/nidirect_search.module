@@ -36,7 +36,7 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
     $link_url = $variables['link']->getUrl();
     $link_url_query = $link_url->getRouteParameters()[$query_parameter];
 
-    $link_url->setRouteParameter('query', str_replace(',', '', $link_url_query));
+    $link_url->setRouteParameter($query_parameter, str_replace(',', '', $link_url_query));
   }
 
   // Fix the cache contexts to be the same based on path and query parameter.

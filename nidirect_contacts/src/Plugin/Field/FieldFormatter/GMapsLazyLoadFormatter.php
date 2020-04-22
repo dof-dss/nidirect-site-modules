@@ -93,19 +93,28 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     $elements = [];
 
     $formatter_settings = $this->getSettings();
-    $gmap_settings = \Drupal::config('geolocation_google_maps.settings');
+    $google_provider = \Drupal::service('plugin.manager.geolocation.mapprovider')->getMapProvider('google_maps');
+    $google_settings = \Drupal::config('geolocation_google_maps.settings');
 
     foreach ($items as $delta => $item) {
+
+      $map_settings = [
+        'lat' => $item->get('lat')->getString(),
+        'lng' => $item->get('lng')->getString(),
+        'map_type' => $formatter_settings['map_type'],
+        'zoom' => $formatter_settings['zoom'],
+        'api_key' => $google_settings->get('google_map_api_key'),
+      ];
 
       $elements[$delta] = [
         '#type' => 'container',
         '#attributes' => [
           'class' => ['gmap', 'gmap-lazy-load'],
           'id' => Html::getUniqueId('gmap-lazy-load'),
-          'data-lat' =>  $item->get('lat')->getString(),
-          'data-lng' =>  $item->get('lng')->getString(),
-          'data-maptype' => $formatter_settings['map_type'],
-          'data-zoom' => $formatter_settings['zoom'],
+          'data-lat' =>  $map_settings['lat'],
+          'data-lng' =>  $map_settings['lng'],
+          'data-maptype' => $map_settings['map_type'],
+          'data-zoom' => $map_settings['zoom'],
         ],
       ];
 

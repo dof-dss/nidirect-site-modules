@@ -122,7 +122,6 @@ class GMapsLazyLoadFormatter extends FormatterBase {
 
       switch ($formatter_settings['placeholder']) {
         case 'static_map':
-
           $static_url = Url::fromUri($google_provider::$googleMapsApiUrlBase . '/maps/api/staticmap',[
             'query' => [
               'center' => $map_settings['center'],
@@ -142,8 +141,17 @@ class GMapsLazyLoadFormatter extends FormatterBase {
           ];
           break;
         case 'link':
+          $link_url = Url::fromUri( 'https://www.google.com/maps/search/',[
+            'query' => [
+              'api' => 1,
+              'query' => $map_settings['center'],
+            ],
+          ]);
+
           $elements[$delta]['link'] = [
-            '#markup' => 'link'
+            '#title' => $this->t('View location on Google maps'),
+            '#type' => 'link',
+            '#url' => $link_url,
           ];
           break;
         default:
@@ -168,8 +176,6 @@ class GMapsLazyLoadFormatter extends FormatterBase {
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-    // The text value has no text format assigned to it, so the user input
-    // should equal the output, including newlines.
     return nl2br(Html::escape($item->value));
   }
 

@@ -30,6 +30,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       'zoom' => '10',
       'map_type' => 'roadmap',
       'placeholder' => 'empty',
+      'link_text' => '',
     ] + parent::defaultSettings();
   }
 
@@ -51,7 +52,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('map_type'),
     ];
 
-    // Specify the zoom level for the Google map
+    // Specify the zoom level for the Google map.
     $form['zoom'] = [
       '#title' => $this->t('Zoom'),
       '#type' => 'number',
@@ -60,7 +61,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('zoom'),
     ];
 
-    // Options to render various placeholders until the container is visible and the JS has loaded the map.
+    // Options to render various placeholders until the container is visible
+    // and the JS has loaded the map.
     $form['placeholder'] = [
       '#title' => $this->t('Placeholder'),
       '#type' => 'select',
@@ -70,6 +72,17 @@ class GMapsLazyLoadFormatter extends FormatterBase {
         'static_map' => t('Static map'),
       ],
       '#default_value' => $this->getSetting('placeholder'),
+    ];
+
+    $form['link_text'] = [
+      '#title' => $this->t('Link text'),
+      '#type' => 'textfield',
+      '#default_value' => $this->getSetting('link_text'),
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[field_location][settings_edit_form][settings][placeholder]"]' => ['value' => 'link'],
+        ],
+      ],
     ];
 
     return $form + parent::settingsForm($form, $form_state);
@@ -102,7 +115,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     $google_settings = \Drupal::config('geolocation_google_maps.settings');
 
     foreach ($items as $delta => $item) {
-      // Map settings for use with container data attributes and placeholder rendering.
+      // Map settings for use with container data attributes and
+      // placeholder rendering.
       $map_settings = [
         'lat' => $item->get('lat')->getString(),
         'lng' => $item->get('lng')->getString(),
@@ -112,7 +126,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
         'api_key' => $google_settings->get('google_map_api_key'),
       ];
 
-      // Container element from which the JS will extract the data to build the map.
+      // Container element from which the JS will extract the data
+      // to build the map.
       $elements[$delta] = [
         '#type' => 'container',
         '#attributes' => [
@@ -156,7 +171,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
           ]);
 
           $elements[$delta]['link'] = [
-            '#title' => $this->t('View location on Google maps'),
+            '#title' => $formatter_settings['link_text'],
             '#type' => 'link',
             '#url' => $link_url,
           ];

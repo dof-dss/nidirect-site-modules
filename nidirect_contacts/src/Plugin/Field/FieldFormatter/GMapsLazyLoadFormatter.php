@@ -7,6 +7,7 @@ use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 
 /**
  * Plugin implementation of the 'gmaps_lazy_load_formatter' formatter.
@@ -101,6 +102,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       $map_settings = [
         'lat' => $item->get('lat')->getString(),
         'lng' => $item->get('lng')->getString(),
+        'center' => $item->get('lat')->getString() . ',' . $item->get('lng')->getString(),
         'map_type' => $formatter_settings['map_type'],
         'zoom' => $formatter_settings['zoom'],
         'api_key' => $google_settings->get('google_map_api_key'),
@@ -121,13 +123,22 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       switch ($formatter_settings['placeholder']) {
         case 'static_map':
 
-          $center = $item->get('lat')->getString() . ',' . $item->get('lng')->getString();
-          $map_type = $formatter_settings['map_type'];
-          $zoom = $formatter_settings['zoom'];
-          $api_key = $gmap_settings->get('google_map_api_key');
+          $static_url = Url::fromUri($google_provider::$googleMapsApiUrlBase . '/maps/api/staticmap',[
+            'query' => [
+              'center' => $map_settings['center'],
+              'zoom' => $map_settings['zoom'],
+              'maptype' => $map_settings['map_type'],
+              'size' => '800x300',
+              'key' => $map_settings['api_key'],
+            ],
+          ]);
 
-          $elements[$delta]['staticMap'] = [
-            '#markup' => '<img src="https://maps.googleapis.com/maps/api/staticmap?center=' . $center . '&zoom=' . $zoom . '&maptype=' . $map_type . '&size=800x300&key=' . $api_key .'" />'
+          $elements[$delta]['static_map'] = [
+            '#type' => 'html_tag',
+            '#tag' => 'img',
+            '#attributes' => [
+              'src' => $static_url->toString(),
+            ],
           ];
           break;
         case 'link':

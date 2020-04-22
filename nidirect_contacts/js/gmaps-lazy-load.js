@@ -19,17 +19,20 @@
               // Call google map creation.
               entry.target.classList.add('gmap-loaded');
 
-              var mapLatLng = {
+              let mapLatLng = {
                 lat: parseFloat(entry.target.dataset.lat),
                 lng: parseFloat(entry.target.dataset.lng)
               };
 
-              var map = new google.maps.Map(document.getElementById(entry.target.id), {
-                center: mapLatLng,
+              let mapSettings = {
+                mapTypeId: entry.target.dataset.maptype,
                 zoom: parseInt(entry.target.dataset.zoom),
-              });
+                center: mapLatLng,
+              };
 
-              var marker = new google.maps.Marker({
+              let map = new google.maps.Map(document.getElementById(entry.target.id), mapSettings);
+
+              let marker = new google.maps.Marker({
                 position: mapLatLng,
                 map: map,
               });

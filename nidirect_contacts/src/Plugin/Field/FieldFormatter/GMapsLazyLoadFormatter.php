@@ -31,6 +31,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       'map_type' => 'roadmap',
       'placeholder' => 'empty',
       'link_text' => '',
+      'map_width' => '300',
+      'map_height' => '300',
     ] + parent::defaultSettings();
   }
 
@@ -85,6 +87,32 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       ],
     ];
 
+    $form['map_width'] = [
+      '#title' => $this->t('Map width (px)'),
+      '#type' => 'number',
+      '#min' => 60,
+      '#max' => 2000,
+      '#default_value' => $this->getSetting('map_width'),
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[field_location][settings_edit_form][settings][placeholder]"]' => ['value' => 'static_map'],
+        ],
+      ],
+    ];
+
+    $form['map_height'] = [
+      '#title' => $this->t('Map height (px)'),
+      '#type' => 'number',
+      '#min' => 60,
+      '#max' => 2000,
+      '#default_value' => $this->getSetting('map_height'),
+      '#states' => [
+        'visible' => [
+          ':input[name="fields[field_location][settings_edit_form][settings][placeholder]"]' => ['value' => 'static_map'],
+        ],
+      ],
+    ];
+
     return $form + parent::settingsForm($form, $form_state);
   }
 
@@ -100,6 +128,15 @@ class GMapsLazyLoadFormatter extends FormatterBase {
         '@placeholder' => $this->getSetting('placeholder'),
       ]
     );
+
+    if ($this->getSetting('placeholder') == 'static_map') {
+      $summary[] .= $this->t(
+        'Width: @widthpx Height: @heightpx', [
+          '@width' => $this->getSetting('map_width'),
+          '@height' => $this->getSetting('map_height'),
+        ]
+      );
+    }
 
     return $summary;
   }
@@ -148,7 +185,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
               'center' => $map_settings['center'],
               'zoom' => $map_settings['zoom'],
               'maptype' => $map_settings['map_type'],
-              'size' => '800x300',
+              'size' => $formatter_settings['map_width'] . 'x' . $formatter_settings['map_height'],
               'key' => $map_settings['api_key'],
             ],
           ]);

@@ -28,6 +28,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
     return [
         'zoom' => '10',
         'map_type' => 'roadmap',
+        'placeholder' => 'empty',
       ] + parent::defaultSettings();
   }
 
@@ -48,13 +49,24 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('map_type'),
     ];
 
-      $form['zoom'] = [
-        '#title' => $this->t('Zoom'),
-        '#type' => 'number',
-        '#min' => 1,
-        '#max' => 22,
-        '#default_value' => $this->getSetting('zoom'),
-      ];
+    $form['zoom'] = [
+      '#title' => $this->t('Zoom'),
+      '#type' => 'number',
+      '#min' => 1,
+      '#max' => 22,
+      '#default_value' => $this->getSetting('zoom'),
+    ];
+
+    $form['placeholder'] = [
+      '#title' => $this->t('Placeholder'),
+      '#type' => 'select',
+      '#options' => [
+        'empty' => t('Empty'),
+        'link' => t('Link to Google map'),
+        'static_map' => t('Static map'),
+      ],
+      '#default_value' => $this->getSetting('placeholder'),
+    ];
 
     return $form + parent::settingsForm($form, $form_state);
   }
@@ -64,9 +76,10 @@ class GMapsLazyLoadFormatter extends FormatterBase {
    */
   public function settingsSummary() {$summary = [];
     $summary[] = $this->t(
-      'Map type: @maptype <br> Zoom: @zoom', [
+      'Map type: @maptype <br> Zoom: @zoom <br> Placeholder: @placeholder', [
         '@maptype' => $this->getSetting('map_type'),
-        '@zoom' => $this->getSetting('zoom')
+        '@zoom' => $this->getSetting('zoom'),
+        '@placeholder' => $this->getSetting('placeholder'),
       ]
     );
 

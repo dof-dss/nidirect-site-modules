@@ -27,6 +27,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
   public static function defaultSettings() {
     return [
         'zoom' => '10',
+        'map_type' => 'roadmap',
       ] + parent::defaultSettings();
   }
 
@@ -34,6 +35,18 @@ class GMapsLazyLoadFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
+
+    $form['map_type'] = [
+      '#title' => $this->t('Map type'),
+      '#type' => 'select',
+      '#options' => [
+        'roadmap' => t('Road map'),
+        'satellite' => t('Satellite'),
+        'hybrid' => t('Hybrid'),
+        'terrain' => t('Terrain'),
+      ],
+      '#default_value' => $this->getSetting('map_type'),
+    ];
 
       $form['zoom'] = [
         '#title' => $this->t('Zoom'),
@@ -50,7 +63,12 @@ class GMapsLazyLoadFormatter extends FormatterBase {
    * {@inheritdoc}
    */
   public function settingsSummary() {$summary = [];
-    $summary[] = $this->t('Zoom: @zoom', ['@zoom' => $this->getSetting('zoom')]);
+    $summary[] = $this->t(
+      'Map type: @maptype <br> Zoom: @zoom', [
+        '@maptype' => $this->getSetting('map_type'),
+        '@zoom' => $this->getSetting('zoom')
+      ]
+    );
 
     return $summary;
   }

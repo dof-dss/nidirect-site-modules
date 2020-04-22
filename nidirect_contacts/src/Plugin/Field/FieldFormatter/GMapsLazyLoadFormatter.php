@@ -92,7 +92,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
 
-    $settings = $this->getSettings();
+    $formatter_settings = $this->getSettings();
+    $gmap_settings = \Drupal::config('geolocation_google_maps.settings');
 
     foreach ($items as $delta => $item) {
 
@@ -103,9 +104,32 @@ class GMapsLazyLoadFormatter extends FormatterBase {
           'id' => Html::getUniqueId('gmap-lazy-load'),
           'data-lat' =>  $item->get('lat')->getString(),
           'data-lng' =>  $item->get('lng')->getString(),
-          'data-zoom' => $settings['zoom'],
+          'data-maptype' => $formatter_settings['map_type'],
+          'data-zoom' => $formatter_settings['zoom'],
         ],
       ];
+
+      switch ($formatter_settings['placeholder']) {
+        case 'static_map':
+
+          $center = $item->get('lat')->getString() . ',' . $item->get('lng')->getString();
+          $map_type = $formatter_settings['map_type'];
+          $zoom = $formatter_settings['zoom'];
+          $api_key = $gmap_settings->get('google_map_api_key');
+
+          $elements[$delta]['staticMap'] = [
+            '#markup' => '<img src="https://maps.googleapis.com/maps/api/staticmap?center=' . $center . '&zoom=' . $zoom . '&maptype=' . $map_type . '&size=800x300&key=' . $api_key .'" />'
+          ];
+          break;
+        case 'link':
+          $elements[$delta]['link'] = [
+            '#markup' => 'link'
+          ];
+          break;
+        default:
+          break;
+      }
+
     }
 
     $elements['#attached']['library'][] = 'nidirect_contacts/gmaps_lazy_load';

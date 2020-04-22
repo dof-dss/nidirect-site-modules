@@ -76,6 +76,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       '#default_value' => $this->getSetting('placeholder'),
     ];
 
+    // Specify the text for the link placeholder.
     $form['link_text'] = [
       '#title' => $this->t('Link text'),
       '#type' => 'textfield',
@@ -87,6 +88,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       ],
     ];
 
+    // Static map width in pixels.
     $form['map_width'] = [
       '#title' => $this->t('Map width (px)'),
       '#type' => 'number',
@@ -100,6 +102,7 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       ],
     ];
 
+    // Static map height in pixels.
     $form['map_height'] = [
       '#title' => $this->t('Map height (px)'),
       '#type' => 'number',
@@ -129,7 +132,8 @@ class GMapsLazyLoadFormatter extends FormatterBase {
       ]
     );
 
-    if ($this->getSetting('placeholder') == 'static_map') {
+    // Additional summary information for the static map.
+    if ($this->getSetting('placeholder') === 'static_map') {
       $summary[] .= $this->t(
         'Width: @widthpx Height: @heightpx', [
           '@width' => $this->getSetting('map_width'),

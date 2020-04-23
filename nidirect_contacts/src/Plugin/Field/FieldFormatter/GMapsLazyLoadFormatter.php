@@ -3,11 +3,16 @@
 namespace Drupal\nidirect_contacts\Plugin\Field\FieldFormatter;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Field\FieldDefinitionInterface;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Url;
+use Drupal\geolocation\MapProviderInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Config\ConfigFactoryInterface;
 
 /**
  * Plugin implementation of the 'gmaps_lazy_load_formatter' formatter.
@@ -20,7 +25,67 @@ use Drupal\Core\Url;
  *   }
  * )
  */
-class GMapsLazyLoadFormatter extends FormatterBase {
+class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPluginInterface {
+
+  /**
+   * The Google Maps provider.
+   *
+   * @var \Drupal\geolocation\MapProviderInterface
+   */
+  protected $gmapsProvider;
+
+  /**
+   * The Google Maps configuration.
+   *
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   */
+  protected $gmapsConfiguration;
+
+  /**
+   * Constructs a TimestampAgoFormatter object.
+   *
+   * @param string $plugin_id
+   *   The plugin_id for the formatter.
+   * @param mixed $plugin_definition
+   *   The plugin implementation definition.
+   * @param \Drupal\Core\Field\FieldDefinitionInterface $field_definition
+   *   The definition of the field to which the formatter is associated.
+   * @param array $settings
+   *   The formatter settings.
+   * @param string $label
+   *   The formatter label display setting.
+   * @param string $view_mode
+   *   The view mode.
+   * @param array $third_party_settings
+   *   Any third party settings.
+   * @param Drupal\geolocation\MapProviderInterface $map_provider
+   *   The Geolocation map provider.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config
+   *   The Drupal configuration factory.
+   */
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, MapProviderInterface $map_provider, ConfigFactoryInterface $config) {
+    parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
+
+    $this->gmapsProvider = $map_provider;
+    $this->gmapsConfiguration = $config->get('geolocation_google_maps.settings');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    return new static(
+      $plugin_id,
+      $plugin_definition,
+      $configuration['field_definition'],
+      $configuration['settings'],
+      $configuration['label'],
+      $configuration['view_mode'],
+      $configuration['third_party_settings'],
+      $container->get('plugin.manager.geolocation.mapprovider')->getMapProvider('google_maps'),
+      $container->get('config.factory')
+    );
+  }
 
   /**
    * {@inheritdoc}

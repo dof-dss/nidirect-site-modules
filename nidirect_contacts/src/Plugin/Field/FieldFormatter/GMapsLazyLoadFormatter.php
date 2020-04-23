@@ -218,7 +218,6 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
 
     $formatter_settings = $this->getSettings();
     $google_provider = \Drupal::service('plugin.manager.geolocation.mapprovider')->getMapProvider('google_maps');
-    $google_settings = \Drupal::config('geolocation_google_maps.settings');
 
     foreach ($items as $delta => $item) {
       // Map settings for use with container data attributes and
@@ -229,7 +228,7 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
         'center' => $item->get('lat')->getString() . ',' . $item->get('lng')->getString(),
         'map_type' => $formatter_settings['map_type'],
         'zoom' => $formatter_settings['zoom'],
-        'api_key' => $google_settings->get('google_map_api_key'),
+        'api_key' => $this->gmapsConfiguration->get('google_map_api_key'),
       ];
 
       // Container element from which the JS will extract the data
@@ -249,7 +248,7 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
       // Render placeholder type.
       switch ($formatter_settings['placeholder']) {
         case 'static_map':
-          $static_url = Url::fromUri($google_provider::$googleMapsApiUrlBase . '/maps/api/staticmap', [
+          $static_url = Url::fromUri($this->gmapsProvider::$googleMapsApiUrlBase . '/maps/api/staticmap', [
             'query' => [
               'center' => $map_settings['center'],
               'zoom' => $map_settings['zoom'],

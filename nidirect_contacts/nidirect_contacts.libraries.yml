@@ -2,5 +2,5 @@ gmaps_lazy_load:
   js:
     js/gmaps-lazy-load.js: {}
   dependencies:
+    - core/drupal
     - core/jquery
-    - core/drupalSettings

@@ -215,9 +215,7 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
-
     $formatter_settings = $this->getSettings();
-    $google_provider = \Drupal::service('plugin.manager.geolocation.mapprovider')->getMapProvider('google_maps');
 
     foreach ($items as $delta => $item) {
       // Map settings for use with container data attributes and

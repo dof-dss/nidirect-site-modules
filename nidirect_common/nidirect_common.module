@@ -8,6 +8,7 @@
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -514,4 +515,22 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
       ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'Other'],
     ],
   ];
+}
+
+/**
+ * Implements hooks_moderation_sidebar_alter().
+ */
+function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
+  $revisions_link = Link::createFromRoute(
+    $build['actions']['version_history']['#title']->__toString(),
+    'entity.node.version_history',
+    $build['actions']['version_history']['#url']->getRouteParameters(),
+    $build['actions']['version_history']['#url']->getOptions()
+  );
+
+  // Replace the URL of revisions link with the updated Link Url object.
+  $build['actions']['version_history']['#url'] = $revisions_link->getUrl();
+
+  // Strip AJAX class to link direct to page.
+  $build['actions']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
 }

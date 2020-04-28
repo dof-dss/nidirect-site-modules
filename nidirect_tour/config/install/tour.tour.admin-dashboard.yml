@@ -26,7 +26,7 @@ tips:
     id: moderation-tab
     plugin: text
     label: 'Moderation navigation'
-    body: 'You can navigate between a content Overview which displays all the content you have access to and the Needs Audit view which displays content that requires moderation.'
+    body: 'You can navigate between a content Overview which displays all the content you have access to and the various moderation displays.'
     weight: 3
     location: top
     attributes:

@@ -28,7 +28,7 @@ tips:
     label: 'Moderation navigation'
     body: 'You can navigate between a content Overview which displays all the content you have access to and the various moderation displays.'
     weight: 3
-    location: top
+    location: bottom
     attributes:
       data-id: block-adminimal-theme-secondary-local-tasks
   search-filter:
@@ -44,7 +44,7 @@ tips:
     id: filter-sort
     plugin: text
     label: 'Sort order'
-    body: 'Clicking a column title link will sort the results ascending, click again to sort descending '
+    body: 'Clicking a column title link will sort the results in ascending order, click again to sort descending order.'
     weight: 5
     location: top
     attributes:
@@ -53,9 +53,9 @@ tips:
     id: node-operations
     plugin: text
     label: 'Content operations'
-    body: 'Using the select dropdown you can Edit or Delete an individual item.'
+    body: 'If you have permission select from the dropdown to Edit or Delete an individual item.'
     weight: 6
-    location: bottom
+    location: left
     attributes:
       data-class: view-content table.views-table tbody tr td.views-field-operations
   table-paging:

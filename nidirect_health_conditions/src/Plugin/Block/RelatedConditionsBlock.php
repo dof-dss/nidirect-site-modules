@@ -128,7 +128,13 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
 
       // Prevent the block title from displaying if we don't have any links.
       if (empty($links)) {
-        return [];
+        return [
+          '#cache' => [
+            'contexts' => [
+              'url.path',
+            ]
+          ],
+        ];
       }
 
       $content['related_conditions'] = [

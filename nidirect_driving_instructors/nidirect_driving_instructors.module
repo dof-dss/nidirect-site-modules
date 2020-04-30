@@ -67,6 +67,10 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
   // Adjustments to the driving instructor node add/edit form.
   if (($form_id == "node_driving_instructor_form")
     || ($form_id == "node_driving_instructor_edit_form")) {
+
+    // Display postcode checkboxes inline.
+    $form['field_di_areas']['#attributes']['class'][] = 'container-inline';
+
     // Make title field readonly and set a placeholder.
     if (empty($form['title']['widget'][0]['value']['#default_value'])) {
       $form['title']['widget'][0]['value']['#default_value'] = ' ';

@@ -534,3 +534,15 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
   // Strip AJAX class to link direct to page.
   $build['actions']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
 }
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function nidirect_common_preprocess_page(&$variables) {
+  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    return;
+  }
+
+  // Apply link manager library to all non-admin pages.
+  $variables['#attached']['library'][] = 'nidirect_common/link_manager';
+}

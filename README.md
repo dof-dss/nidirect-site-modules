@@ -26,6 +26,21 @@ This repository houses the custom modules required for the NI Direct website.
 - Description added to theme/subtheme field for landing pages.
 - Switch between entity embed view modes for edit and view conditions.
 - Site search block.
+- D8NID-347 : Various tweaks to publication search page.
+- D8NID-373 : Add entries for site footer links.
+- D8NID-426 : Redirect theme taxonomy term urls to landing pages.
+- D8NID-460 : Warn user if landing page for subtheme already exists.
+- D8NID-471 : Hide top level theme field from node form.
+- D8NID-478 : Entity browser - hide authored by, authored on, URL alias, and revision log fields.
+- D8NID-480 : Adjusted the View and CSS to tweak the Entity browser display to prevent overflows.
+- D8NID-479 : Entity browser - disable select button until entity is selected.
+- D8NID-490 : CKEditor: Improve UX for adding a map (location).
+- D8NID-571 : Add headless JS tests to CircleCI to guard against known config import issues.
+- D8NID-617 : Flags, checkboxes, help text changes.
+- D8NID-601 : Linkit: remove option to open link in a new window.
+- D8NID-220 : Featured content blocks for homepage.
+- D8NID-556 : Allow editors to select from a list of predefined title values for telephone plus entries.
+- D8NID-635 : JS to rewrite links as spans if current url matches link href.
 
 ## Contacts
 - AtoZ block.

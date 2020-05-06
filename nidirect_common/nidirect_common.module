@@ -6,6 +6,7 @@
  */
 
 use Drupal\Component\Utility\NestedArray;
+use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
@@ -14,6 +15,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\views\ViewExecutable;
 use Nette\Utils\Arrays;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -221,8 +223,23 @@ function nidirect_common_entity_view_mode_alter(&$view_mode, EntityInterface $en
 
   // Set Feature entities to use the Teaser display mode to give editors an
   // accurate preview of the node.
-  if ($entity->bundle() == 'feature') {
+  if ($entity->bundle() == 'feature' && $view_mode == 'full') {
     $view_mode = 'teaser';
+  }
+}
+
+/**
+ * Implements hook_block_build_alter().
+ */
+function nidirect_common_block_build_alter(array &$build, BlockPluginInterface $block) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+
+  // Wrap the main content in a div to mimic the Homepage Featured View.
+  if ($node instanceof NodeInterface) {
+    if ($node->getType() == 'feature') {
+      $build['#prefix'] = '<div class="grid layout--triptych">';
+      $build['#suffix'] = '</div>';
+    }
   }
 }
 

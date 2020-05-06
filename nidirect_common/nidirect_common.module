@@ -215,6 +215,18 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
 }
 
 /**
+ * Implements hook_entity_view_mode_alter().
+ */
+function nidirect_common_entity_view_mode_alter(&$view_mode, EntityInterface $entity, $context) {
+
+  // Set Feature entities to use the Teaser display mode to give editors an
+  // accurate preview of the node.
+  if ($entity->bundle() == 'feature') {
+    $view_mode = 'teaser';
+  }
+}
+
+/**
  * Implements hook_ENTITY_TYPE_presave().
  *
  * Invalidate taxonomy cache tags after node save.

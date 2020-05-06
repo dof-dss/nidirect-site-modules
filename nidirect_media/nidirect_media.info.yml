@@ -8,3 +8,4 @@ dependencies:
   - media
   - geolocation
   - entity_browser
+  - whatlinkshere

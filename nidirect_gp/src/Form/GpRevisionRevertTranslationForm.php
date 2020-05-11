@@ -51,7 +51,7 @@ class GpRevisionRevertTranslationForm extends GpRevisionRevertForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('gp'),
+      $container->get('entity_type.manager')->getStorage('gp'),
       $container->get('date.formatter'),
       $container->get('language_manager')
     );

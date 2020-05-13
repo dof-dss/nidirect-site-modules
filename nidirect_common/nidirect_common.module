@@ -415,12 +415,14 @@ function validate_date_field(&$form_state, $date_field) {
     else {
       // Process a single date.
       $date = $dt[0]['value'];
-      if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
-        // Generate error to override the erroneous core error.
-        if (preg_match('/publish_on$/', $date_field)) {
-          $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy hh:mm:ss'));
-        } else {
-          $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+      if (!empty($date)) {
+        if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
+          // Generate error to override the erroneous core error.
+          if (preg_match('/publish_on$/', $date_field)) {
+            $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy hh:mm:ss'));
+          } else {
+            $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+          }
         }
       }
     }

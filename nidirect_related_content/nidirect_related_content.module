@@ -15,7 +15,13 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
   $display = $view->current_display;
 
   if ($id == 'related_content' && $display == 'content_by_theme') {
+
     $node = \Drupal::routeMatch()->getParameter('node');
+
+    // Node preview display.
+    if (empty($node)) {
+      $node = \Drupal::routeMatch()->getParameter('node_preview');
+    }
 
     if (empty($node->field_subtheme)) {
       return;
@@ -39,6 +45,12 @@ function nidirect_related_content_views_pre_render(ViewExecutable $view) {
   // Set the title of the view to be the parent term of the
   // present active subtheme term.
   $node = \Drupal::routeMatch()->getParameter('node');
+
+  // Node preview display.
+  if (empty($node)) {
+    $node = \Drupal::routeMatch()->getParameter('node_preview');
+  }
+
   if (empty($node->field_subtheme)) {
     return;
   }
@@ -60,6 +72,11 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
   }
 
   $node = \Drupal::routeMatch()->getParameter('node');
+
+  // Node preview display.
+  if (empty($node)) {
+    $node = \Drupal::routeMatch()->getParameter('node_preview');
+  }
 
   if ($node->id() == $variables['row']->nid) {
     $variables['output'] = $node->getTitle();

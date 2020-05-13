@@ -344,7 +344,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   // https://www.drupal.org/project/drupal/issues/3093267
   $add_date_validation = FALSE;
   foreach ($form as $key => $field) {
-    if (preg_match('/_date$/', $key) || preg_match('/_period$/', $key)) {
+    if (preg_match('/_date$/', $key) || preg_match('/_period$/', $key) || preg_match('/publish_on$/', $key)) {
       $add_date_validation = TRUE;
     }
   }
@@ -367,6 +367,8 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
     'field_last_review_date',
     'field_next_review_date',
     'field_cwp_payments_period',
+    'publish_on',
+    'unpublish_on',
   ];
 
   // Now loop through and re-apply all form error messages that
@@ -415,7 +417,11 @@ function validate_date_field(&$form_state, $date_field) {
       $date = $dt[0]['value'];
       if (!($date instanceof DrupalDateTime) || $date->hasErrors()) {
         // Generate error to override the erroneous core error.
-        $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+        if (preg_match('/publish_on$/', $date_field)) {
+          $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy hh:mm:ss'));
+        } else {
+          $form_state->setErrorByName($date_field, t('Date is invalid. Please enter a date in the format dd/mm/yyyy'));
+        }
       }
     }
   }

@@ -94,7 +94,18 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
     // Load the node entity from the current page/block config. This block will be configured to only show
     // in contexts where this is available.
     if ($this->node instanceof NodeInterface == FALSE) {
-      $this->node = $this->routeMatch->getParameter('node');
+      $route_name = $this->routeMatch->getRouteName();
+
+      // Fetch node from Full (canonical) or preview display.
+      if ($route_name == 'entity.node.canonical') {
+        $this->node = $this->routeMatch->getParameter('node');
+      }
+      else if ($route_name == 'entity.node.preview')
+        $this->node = $this->routeMatch->getParameter('node_preview');
+      else {
+        return [];
+      }
+
     }
 
     // But check it's what we're expecting anyway.

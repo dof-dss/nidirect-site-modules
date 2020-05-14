@@ -46,6 +46,7 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
  * Implements hook_views_pre_render().
  */
 function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
+
   // Inject custom formatted views header for search API based view.
   $single_message = '';
   $plural_message = '';
@@ -105,12 +106,29 @@ function nidirect_health_conditions_views_query_alter(ViewExecutable $view, Quer
  * Implements hook_preprocess_block().
  */
 function nidirect_health_conditions_preprocess_block(&$variables) {
+
   // If we're on a health condition node, render the block title.
   if ($variables['plugin_id'] != 'views_exposed_filter_block:health_conditions-search_page') {
     return;
   }
 
-  $node = \Drupal::routeMatch()->getParameter('node');
+  $route_name = \Drupal::routeMatch()->getRouteName();
+
+  // Fetch node from Full (canonical) or preview display.
+  if ($route_name == 'entity.node.canonical') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+  }
+  else if ($route_name == 'entity.node.preview')
+    $node = \Drupal::routeMatch()->getParameter('node_preview');
+  else {
+    return [];
+  }
+
+  // Allow for block display on Preview view.
+  if (empty($node)) {
+    $node = \Drupal::routeMatch()->getParameter('node_preview');
+  }
+
   if (!empty($node) && $node->bundle() == 'health_condition') {
     $variables['label'] = t('Health conditions A to Z');
   }

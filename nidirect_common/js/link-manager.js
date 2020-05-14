@@ -18,7 +18,10 @@
    */
   Drupal.behaviors.rewriteSelfReferencingLinks = {
     attach: function (context, settings) {
-      const pathname = $(location).attr('pathname');
+      let pathname = $(location).attr('pathname');
+      // Trim query parameters, if any, from pathname.
+      pathname = pathname.substr(0, (pathname.indexOf('?') < 0) ? pathname.length : pathname.indexOf('?'));
+
       const elements = ['header.header', '#block-mainnavigation', '#main-content', '#footer'];
 
       $.each(elements, function(index, elementRef) {
@@ -29,7 +32,14 @@
         }
 
         $(elementRef + ' a[href*="' + pathname + '"]').each(function() {
-          if ($(this).attr('href') === pathname) {
+          let href = $(this).attr('href');
+          // Prune away any query parameters, if they exist.
+          href = href.substr(0, (href.indexOf('?') < 0) ? href.length : href.indexOf('?'));
+
+          // Need a regex object to inject the pathname variable as a matching value.
+          let regex = new RegExp('^' + pathname + '$'.replace(/\//g, '\\/'), 'g');
+
+          if (href.match(regex)) {
             $(this).replaceWith('<span class="' + classes.join(' ') + '">' + $(this).text() + '</span>');
           }
         });

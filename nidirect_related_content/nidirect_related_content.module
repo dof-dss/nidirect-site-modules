@@ -83,12 +83,19 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
     return;
   }
 
-  $node = \Drupal::routeMatch()->getParameter('node');
+  $route_name = \Drupal::routeMatch()->getRouteName();
 
-  // Node preview display.
-  if (empty($node)) {
+  // Fetch node from Full (canonical) or preview display.
+  if ($route_name == 'entity.node.canonical') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+  }
+  elseif ($route_name == 'entity.node.preview') {
     $node = \Drupal::routeMatch()->getParameter('node_preview');
   }
+  else {
+    return [];
+  }
+
 
   if ($node->id() == $variables['row']->nid) {
     $variables['output'] = $node->getTitle();

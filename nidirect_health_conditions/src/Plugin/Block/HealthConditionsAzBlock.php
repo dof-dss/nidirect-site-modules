@@ -11,9 +11,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Provides a 'HealthConditionsAzBlock' block.
  *
- * This block is used instead of a views exposed filter, because we use an embed display type
- * to allow us a non-AJAX based block form. Views would provide this but requires AJAX for it
- * to operate, losing us the behaviour we want.
+ * This block is used instead of a views exposed filter, because we use an
+ * embed display type to allow us a non-AJAX based block form. Views would
+ * provide this but requires AJAX for it to operate, losing us the
+ * behaviour we want.
  *
  * @Block(
  *  id = "healthconditions_az_block",
@@ -30,6 +31,8 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
   protected $routeMatch;
 
   /**
+   * Constructor to inject services.
+   *
    * @param array $configuration
    *   Site configuration.
    * @param string $plugin_id
@@ -80,7 +83,7 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
         $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_health_conditions.letter', ['letter' => $item], [
           'attributes' => [
             'title' => $this->t('View entries under :item', [':item' => strtoupper($item)]),
-          ]
+          ],
         ])->toRenderable();
       }
     }
@@ -88,7 +91,7 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
     $build['healthconditions_az_block_intro'] = [
       '#type' => 'html_tag',
       '#tag' => 'p',
-      '#value' => $this->t('Or find conditions beginning with ...')
+      '#value' => $this->t('Or find conditions beginning with ...'),
     ];
 
     $build['healthconditions_az_block'] = [
@@ -101,7 +104,7 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
       '#cache' => [
         'contexts' => [
           'url.path',
-        ]
+        ],
       ],
     ];
 

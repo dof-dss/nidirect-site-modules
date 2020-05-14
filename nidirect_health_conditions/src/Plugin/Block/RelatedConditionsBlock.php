@@ -7,18 +7,19 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Provides a Related Conditions block showing a list of links comprising of:
+ * Provides a Related Conditions block.
  *
+ * Displays a list of links comprising of:
  * - Parent condition (field_parent_condition)
  * - One or more related conditions (field_related_condition)
  *
- * This block is used over a views Block display as the cardinality and structure of the
- * data model makes it easier to extra/combine using custom code over extensive views + preprocess hooks.
+ * This block is used over a views Block display as the cardinality and
+ * structure of the data model makes it easier to extra/combine using
+ * custom code over extensive views + preprocess hooks.
  *
  * @Block(
  *  id = "healthconditions_related_conditions",
@@ -49,6 +50,8 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
   protected $node;
 
   /**
+   * Constructor to inject services.
+   *
    * @param array $configuration
    *   Site configuration.
    * @param string $plugin_id
@@ -91,8 +94,8 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
     $links = [];
     $storage = $this->entityTypeManager->getStorage('node');
 
-    // Load the node entity from the current page/block config. This block will be configured to only show
-    // in contexts where this is available.
+    // Load the node entity from the current page/block config. This block will
+    // be configured to only show in contexts where this is available.
     if ($this->node instanceof NodeInterface == FALSE) {
       $route_name = $this->routeMatch->getRouteName();
 
@@ -100,8 +103,9 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
       if ($route_name == 'entity.node.canonical') {
         $this->node = $this->routeMatch->getParameter('node');
       }
-      else if ($route_name == 'entity.node.preview')
+      elseif ($route_name == 'entity.node.preview') {
         $this->node = $this->routeMatch->getParameter('node_preview');
+      }
       else {
         return [];
       }
@@ -143,7 +147,7 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
           '#cache' => [
             'contexts' => [
               'url.path',
-            ]
+            ],
           ],
         ];
       }
@@ -157,7 +161,7 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
         '#cache' => [
           'contexts' => [
             'url.path',
-          ]
+          ],
         ],
       ];
     }

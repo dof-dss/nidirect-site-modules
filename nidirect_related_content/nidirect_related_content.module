@@ -16,11 +16,17 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
 
   if ($id == 'related_content' && $display == 'content_by_theme') {
 
-    $node = \Drupal::routeMatch()->getParameter('node');
+    $route_name = \Drupal::routeMatch()->getRouteName();
 
-    // Node preview display.
-    if (empty($node)) {
+    // Fetch node from Full (canonical) or preview display.
+    if ($route_name == 'entity.node.canonical') {
+      $node = \Drupal::routeMatch()->getParameter('node');
+    }
+    elseif ($route_name == 'entity.node.preview') {
       $node = \Drupal::routeMatch()->getParameter('node_preview');
+    }
+    else {
+      return [];
     }
 
     if (empty($node->field_subtheme)) {
@@ -42,13 +48,17 @@ function nidirect_related_content_views_pre_render(ViewExecutable $view) {
     return;
   }
 
-  // Set the title of the view to be the parent term of the
-  // present active subtheme term.
-  $node = \Drupal::routeMatch()->getParameter('node');
+  $route_name = \Drupal::routeMatch()->getRouteName();
 
-  // Node preview display.
-  if (empty($node)) {
+  // Fetch node from Full (canonical) or preview display.
+  if ($route_name == 'entity.node.canonical') {
+    $node = \Drupal::routeMatch()->getParameter('node');
+  }
+  elseif ($route_name == 'entity.node.preview') {
     $node = \Drupal::routeMatch()->getParameter('node_preview');
+  }
+  else {
+    return [];
   }
 
   if (empty($node->field_subtheme)) {
@@ -57,6 +67,8 @@ function nidirect_related_content_views_pre_render(ViewExecutable $view) {
 
   $sub_theme = $node->field_subtheme->target_id;
 
+  // Set the title of the view to be the parent term of the
+  // present active subtheme term.
   if (!empty($sub_theme)) {
     $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($sub_theme);
     $view->setTitle($term->label());

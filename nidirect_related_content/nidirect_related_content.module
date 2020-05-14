@@ -96,7 +96,6 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
     return [];
   }
 
-
   if ($node->id() == $variables['row']->nid) {
     $variables['output'] = $node->getTitle();
   }

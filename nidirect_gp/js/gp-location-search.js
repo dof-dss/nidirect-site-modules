@@ -8,8 +8,12 @@
     attach: (context) => {
 
       // Callback function to initiate the GP location search.
-      function performLocationSearch(lat, lng) {
-        console.log(lat, lng);
+      function performLocationSearch(location) {
+        let lat = location.coords.latitude;
+        let lng = location.coords.longitude;
+
+        let url = '/services/gp-practices-location?lat=' + lat +'&lng=' + lng + '&field_location_proximity=10';
+        window.location.href = url;
       }
 
       // Callback function for geolocation errors.

@@ -567,6 +567,42 @@ function nidirect_common_preprocess_page(&$variables) {
     return;
   }
 
+  $node = $variables['node'];
+
   // Apply link manager library to all non-admin pages.
   $variables['#attached']['library'][] = 'nidirect_common/link_manager';
+
+  // Fetch and display the node or theme banner image.
+  if (!empty($node)) {
+    if ($node->hasField('field_banner_image') && !$node->get('field_banner_image')->isEmpty()) {
+      $banner_image = $node->get('field_banner_image')->first();
+    }
+
+    // Try fetching image from subtheme term.
+    if (empty($banner_image) && $node->hasField('field_subtheme')) {
+
+      $term = $node->get('field_subtheme')->entity;
+
+      if (empty($term)) {
+        return;
+      }
+
+      $banner_image = $term->get('field_banner_image')->first();
+
+      // Try fetching image from the parent term.
+      if (empty($banner_image)) {
+        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+        $parents = $storage->loadParents($term->id());
+
+        if (!empty($parents)) {
+          $parent = array_shift($parents);
+          $banner_image = $parent->get('field_banner_image')->first();
+        }
+      }
+    }
+
+    if (!empty($banner_image)) {
+      $variables['banner_display'] = $banner_image->view('default');
+    }
+  }
 }

@@ -142,25 +142,6 @@ function nidirect_common_preprocess_views_view(&$variables) {
 }
 
 /**
- * Implements hook_entity_extra_field_info().
- */
-function nidirect_common_entity_extra_field_info() {
-  $extra = [];
-  $content_types = ['application', 'article', 'publication', 'health_condition'];
-
-  foreach ($content_types as $type) {
-    $extra['node'][$type]['display']['banner_display'] = [
-      'label' => t('Banner display'),
-      'description' => t('Display content or theme image banner.'),
-      'weight' => 0,
-      'visible' => TRUE,
-    ];
-  }
-
-  return $extra;
-}
-
-/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {

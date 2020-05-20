@@ -104,6 +104,7 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
   // Process GP Practices View form.
   if ($form['#id'] == 'views-exposed-form-gp-practices-find-a-gp') {
     $form['categories']['#attributes']['class'][] = 'container-inline';
+    $form['#attached']['library'][] = 'nidirect_gp/gp_location_search';
   }
 
   // Special processing for GP Practice title on node edit/add forms.
@@ -218,3 +219,4 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
 
   return $title;
 }
+

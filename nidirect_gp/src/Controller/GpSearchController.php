@@ -52,6 +52,20 @@ class GpSearchController extends ControllerBase {
   protected $geocodingServiceId;
 
   /**
+   * Latitude coordinate.
+   *
+   * @var float
+   */
+  protected $latitude;
+
+  /**
+   * Longitude coordinate.
+   *
+   * @var float
+   */
+  protected $longitude;
+
+  /**
    * GpSearchController constructor.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack object.
@@ -104,12 +118,23 @@ class GpSearchController extends ControllerBase {
   public function handleSearchRequest() {
     // Query term is validated/handled by the routing definition, see nidirect_gp.routing.yml.
     $query_term = $this->requestStack->getCurrentRequest()->get('search_api_views_fulltext');
+    $lat = $this->requestStack->getCurrentRequest()->get('lat');
+    $lng = $this->requestStack->getCurrentRequest()->get('lng');
 
     $is_proximity_search = FALSE;
+    $is_geolocation_search = FALSE;
 
+    // Postcode search
     if (!empty($query_term)) {
       $postcode = $this->postcodeExtractor->getPostCode($query_term);
       $is_proximity_search = !empty($postcode);
+    }
+
+    // Geolocation search
+    if (!empty($lat) && !empty($lng)) {
+      $this->latitude = $lat;
+      $this->longitude = $lng;
+      $is_proximity_search = TRUE;
     }
 
     $view_id = $is_proximity_search ? 'gp_practices_proximity' : 'gp_practices';
@@ -124,21 +149,26 @@ class GpSearchController extends ControllerBase {
 
     // If it's a proximity search (detected postcode) then add arguments to the view.
     if ($view_id == 'gp_practices_proximity' && $is_proximity_search) {
-      // Geocode the first postcode (only accepting single values in our search).
-      $geocode_task_results = $this->geocoder->geocode($postcode[0], [$this->geocodingServiceId]);
+      if (!empty($postcode)) {
+        // Geocode the first postcode (only accepting single values in our search).
+        $geocode_task_results = $this->geocoder->geocode($postcode[0], [$this->geocodingServiceId]);
 
-      if (!empty(($geocode_task_results))) {
-        $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
-
-        // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
-        // Ie: LAT,LON[OPERATOR]MAX_DISTANCE[mi|km].
-        // Units of distance are pre-set on the views argument handler config.
-        $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%dmi',
-          $geocode_coordinates->getLatitude(),
-          $geocode_coordinates->getLongitude(),
-          $this->proximityMaxDistance)
-        ];
+        if (!empty(($geocode_task_results))) {
+          $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
+          $this->latitude = $geocode_coordinates->getLatitude();
+          $this->longitude = $geocode_coordinates->getLongitude();
+        }
       }
+
+      // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
+      // Ie: LAT,LON[OPERATOR]MAX_DISTANCE[mi|km].
+      // Units of distance are pre-set on the views argument handler config.
+      $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%dmi',
+        $this->latitude,
+        $this->longitude,
+        $this->proximityMaxDistance)
+      ];
+
     }
 
     return $build;

@@ -12,7 +12,7 @@
         let lat = location.coords.latitude;
         let lng = location.coords.longitude;
 
-        let url = '/services/gp-practices-location?lat=' + lat +'&lng=' + lng + '&field_location_proximity=10';
+        let url = '/services/gp-practices?lat=' + lat +'&lng=' + lng + '&proximity=10';
         window.location.href = url;
       }
 

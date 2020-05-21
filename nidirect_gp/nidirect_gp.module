@@ -128,20 +128,6 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     // Add a validator.
     array_unshift($form['#validate'], 'nidirect_gp_gp_practice_form_validate');
   }
-
-  // Process GP Practice Location View form.
-  if ($form['#id'] == 'views-exposed-form-gp-practices-proximity-gp-location-search') {
-
-    $form['#attributes']['class'][] = 'container-inline';
-
-    // Change default proximity to from 'number' field to 'select'.
-    $form['proximity']['#type'] = 'select';
-    $form['proximity']['#options'] = ['5' => '5 miles', '10' => '10 miles', '15' => '15 miles', '20' => '20 miles'];
-    unset($form['proximity']['#size']);
-    unset($form['proximity']['#min']);
-    unset($form['proximity']['#step']);
-    unset($form['proximity']['#description']);
-  }
 }
 
 /**

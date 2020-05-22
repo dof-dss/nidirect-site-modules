@@ -107,6 +107,16 @@ class GpSearchController extends ControllerBase {
   }
 
   /**
+   * Route title callback.
+   *
+   * @return string
+   *   The title for the search page edit form.
+   */
+  public function getTitle() {
+    return $this->t('Find a GP practice');
+  }
+
+  /**
    * Handles the request for GP practice content.
    *
    * We could include the form render array from GpSearchForm.php for conciseness but by

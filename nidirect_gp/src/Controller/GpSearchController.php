@@ -138,28 +138,16 @@ class GpSearchController extends ControllerBase {
    *   Render array of items for Drupal to convert to a HTML response.
    */
   public function handleSearchRequest() {
-    // Query term is validated/handled by the routing definition, see nidirect_gp.routing.yml.
-    $query_term = $this->requestStack->getCurrentRequest()->get('search_api_views_fulltext');
-    $lat = $this->requestStack->getCurrentRequest()->get('lat');
-    $lng = $this->requestStack->getCurrentRequest()->get('lng');
+    $search_type = $this->_searchType();
 
-    $is_proximity_search = FALSE;
-
-    // Postcode search
-    if (!empty($query_term)) {
-      $postcode = $this->postcodeExtractor->getPostCode($query_term);
-      $is_proximity_search = !empty($postcode);
+    // Determine the View and View Display to use.
+    if ($search_type['type'] === 'POSTCODE' || $search_type['type'] === 'LOCATION') {
+      $view_id = 'gp_practices_proximity';
+      $display_id = 'gps_by_proximity';
+    } else {
+      $view_id = 'gp_practices';
+      $display_id = 'find_a_gp';
     }
-
-    // Geolocation search
-    if (!empty($lat) && !empty($lng)) {
-      $this->latitude = $lat;
-      $this->longitude = $lng;
-      $is_proximity_search = TRUE;
-    }
-
-    $view_id = $is_proximity_search ? 'gp_practices_proximity' : 'gp_practices';
-    $display_id = $is_proximity_search ? 'gps_by_proximity' : 'find_a_gp';
 
     // Default to GP search by text.
     $build['gp_search'] = [
@@ -168,17 +156,25 @@ class GpSearchController extends ControllerBase {
       '#display_id' => $display_id,
     ];
 
-    // If it's a proximity search (detected postcode) then add arguments to the view.
-    if ($view_id == 'gp_practices_proximity' && $is_proximity_search) {
-      if (!empty($postcode)) {
+    // If proximity search, add arguments to the View.
+    if ($view_id == 'gp_practices_proximity') {
+
+      // Set Postcode search arguments.
+      if ($search_type['type'] === 'POSTCODE') {
         // Geocode the first postcode (only accepting single values in our search).
-        $geocode_task_results = $this->geocoder->geocode($postcode[0], [$this->geocodingServiceId]);
+        $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], [$this->geocodingServiceId]);
 
         if (!empty(($geocode_task_results))) {
           $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
           $this->latitude = $geocode_coordinates->getLatitude();
           $this->longitude = $geocode_coordinates->getLongitude();
         }
+      }
+
+      // Set Location search arguments.
+      if ($search_type['type'] === 'LOCATION') {
+        $this->latitude = $search_type['lat'];
+        $this->longitude = $search_type['lng'];
       }
 
       // Pass the values into a single, pre-formatted string as per the argument handlers requirements:

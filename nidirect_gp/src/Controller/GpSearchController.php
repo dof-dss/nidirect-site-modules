@@ -168,7 +168,6 @@ class GpSearchController extends ControllerBase {
 
     $view = $this->entityTypeManager()->getStorage('view')->load($view_id)->getExecutable();
     $view->setDisplay($display_id);
-
     $args = [];
 
     // If proximity search, add arguments to the View.
@@ -210,8 +209,11 @@ class GpSearchController extends ControllerBase {
     $view->execute();
     $view->buildRenderable($display_id, $args);
 
+    // Set exposed form and cache contexts.
     $build['form'] = $this->viewForm($view);
     $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
+    $build['form']['#cache']['contexts'][] = 'url.query_args:lat';
+    $build['form']['#cache']['contexts'][] = 'url.query_args:lng';
 
     $build['view'] = $view->render();
 
@@ -229,7 +231,6 @@ class GpSearchController extends ControllerBase {
    *   Form render array.
    */
   private function viewForm(ViewExecutable $view) {
-
     // To give a consistent UI across GP Search, for location based search the
     // View doesn't have an exposed form (it can't as it isn't fulltext search)
     // To work around this, we need to load the fulltext search based view and

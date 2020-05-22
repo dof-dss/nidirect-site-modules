@@ -103,7 +103,6 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
 
   // Process GP Practices View form.
   if ($form['#id'] == 'views-exposed-form-gp-practices-find-a-gp') {
-//    $form['#attributes']['class'][] = 'container-inline';
     $form['categories']['#attributes']['class'][] = 'container-inline';
     $form['#attached']['library'][] = 'nidirect_gp/gp_location_search';
   }

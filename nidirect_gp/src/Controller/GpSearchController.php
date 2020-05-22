@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -45,7 +46,7 @@ class GpSearchController extends ControllerBase {
   protected $proximityMaxDistance;
 
   /**
-   * Machine key of the geocoding service we want to use (sourced from container).
+   * Machine key of the geocoding service.
    *
    * @var string
    */
@@ -67,6 +68,7 @@ class GpSearchController extends ControllerBase {
 
   /**
    * GpSearchController constructor.
+   *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
    *   Request stack object.
    * @param \Drupal\nidirect_gp\PostcodeExtractor $postcode_extractor
@@ -114,7 +116,7 @@ class GpSearchController extends ControllerBase {
    */
   public function getTitle() {
 
-    $search_type = $this->_searchType();
+    $search_type = $this->searchType();
 
     switch ($search_type['type']) {
       case 'POSTCODE':
@@ -131,37 +133,36 @@ class GpSearchController extends ControllerBase {
   /**
    * Handles the request for GP practice content.
    *
-   * We could include the form render array from GpSearchForm.php for conciseness but by
-   * doing this we can't place the form in a block in the sidebar region as per the present design.
+   * We could include the form render array from GpSearchForm.php for
+   * conciseness but by doing this we can't place the form in a block
+   * in the sidebar region as per the present design.
    *
    * @return array
    *   Render array of items for Drupal to convert to a HTML response.
    */
   public function handleSearchRequest() {
-    $search_type = $this->_searchType();
+    $search_type = $this->searchType();
 
     // Determine the View and View Display to use.
     if ($search_type['type'] === 'POSTCODE' || $search_type['type'] === 'LOCATION') {
       $view_id = 'gp_practices_proximity';
       $display_id = 'gps_by_proximity';
-    } else {
+    }
+    else {
       $view_id = 'gp_practices';
       $display_id = 'find_a_gp';
     }
 
-    // Default to GP search by text.
-    $build['gp_search'] = [
-      '#type' => 'view',
-      '#name' => $view_id,
-      '#display_id' => $display_id,
-    ];
+    $view = \Drupal\views\Views::getView($view_id);
+    $view->setDisplay($display_id);
+    $args = [];
 
     // If proximity search, add arguments to the View.
     if ($view_id == 'gp_practices_proximity') {
 
       // Set Postcode search arguments.
       if ($search_type['type'] === 'POSTCODE') {
-        // Geocode the first postcode (only accepting single values in our search).
+        // Geocode the first postcode (only accept single values for search).
         $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], [$this->geocodingServiceId]);
 
         if (!empty(($geocode_task_results))) {
@@ -177,16 +178,26 @@ class GpSearchController extends ControllerBase {
         $this->longitude = $search_type['lng'];
       }
 
-      // Pass the values into a single, pre-formatted string as per the argument handlers requirements:
+      // Pass the values into a single, pre-formatted string as per the
+      // argument handlers requirements:
       // Ie: LAT,LON[OPERATOR]MAX_DISTANCE[mi|km].
       // Units of distance are pre-set on the views argument handler config.
-      $build['gp_search']['#arguments'] = [sprintf('%s,%s<=%dmi',
+      $args = [sprintf('%s,%s<=%dmi',
         $this->latitude,
         $this->longitude,
-        $this->proximityMaxDistance)
+        $this->proximityMaxDistance),
       ];
 
     }
+
+    $view->setArguments($args);
+    $view->initHandlers();
+    $view->preExecute();
+    $view->execute();
+    $view->buildRenderable($display_id, $args);
+
+    $build['gp_view'] = $view->render();
+
     return $build;
 
   }
@@ -197,12 +208,12 @@ class GpSearchController extends ControllerBase {
    * @return array
    *   Array with search type and additional data.
    */
-  private function _searchType() {
+  private function searchType() {
 
     $request = $this->requestStack->getCurrentRequest();
 
     $output = [
-      'type' => 'FULLTEXT'
+      'type' => 'FULLTEXT',
     ];
 
     // Postcode search.
@@ -214,7 +225,7 @@ class GpSearchController extends ControllerBase {
       if (!empty($postcode)) {
         $output = [
           'type' => 'POSTCODE',
-          'postcode' => $postcode
+          'postcode' => $postcode,
         ];
       }
     }
@@ -232,5 +243,7 @@ class GpSearchController extends ControllerBase {
     }
 
     return $output;
+
   }
+
 }

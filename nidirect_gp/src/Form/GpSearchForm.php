@@ -31,6 +31,8 @@ class GpSearchForm extends FormBase {
       '#button_type' => 'primary',
     ];
 
+    ksm($form);
+
     return $form;
   }
 

@@ -188,20 +188,37 @@ class GpSearchController extends ControllerBase {
         $this->longitude,
         $this->proximityMaxDistance),
       ];
+    }
 
-      // To give a consistent UI across GP Search, for location based search the
-      // View doesn't have an exposed form (it can't as it isn't fulltext search)
-      // To work around this, we need to load the fulltext search based view and
-      // render the exposed form before attaching to our render array.
+    // Generate the results View.
+    $view->setArguments($args);
+    $view->initHandlers();
+    $view->preExecute();
+    $view->execute();
+    $view->buildRenderable($display_id, $args);
+
+    $build['form'] = $this->viewForm($view);
+    $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
+
+    $build['view'] = $view->render();
+
+    return $build;
+
+  }
+
+  private function viewForm(\Drupal\views\ViewExecutable $view) {
+
+    // To give a consistent UI across GP Search, for location based search the
+    // View doesn't have an exposed form (it can't as it isn't fulltext search)
+    // To work around this, we need to load the fulltext search based view and
+    // render the exposed form before attaching to our render array.
+    if ($view->id() === 'gp_practices' && $view->getDisplay() === 'find_a_gp') {
+      $form_view = $view;
+    } else {
       $form_view = $this->entityTypeManager()->getStorage('view')->load('gp_practices')->getExecutable();
       $form_view->setDisplay('find_a_gp');
     }
-    else {
-      $form_view = $view;
-    }
 
-    // Generate the exposed form View.
-    $form_view->setArguments($args);
     $form_view->initHandlers();
 
     // Build the form state for the exposed View filters.
@@ -218,20 +235,7 @@ class GpSearchController extends ControllerBase {
     $form_state->setMethod('get');
     $form = \Drupal::formBuilder()->buildForm('Drupal\views\Form\ViewsExposedForm', $form_state);
 
-    // Generate the results View.
-    $view->setArguments($args);
-    $view->initHandlers();
-    $view->preExecute();
-    $view->execute();
-    $view->buildRenderable($display_id, $args);
-
-    $build['form'] = $form;
-    $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
-
-    $build['view'] = $view->render();
-
-    return $build;
-
+    return $form;
   }
 
   /**

@@ -7,14 +7,14 @@ use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
+use Drupal\views\ViewExecutable;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class GpSearchController.
  *
- * GpSearchForm block class used to place exposed views filter into
- * sidebar region without requiring the use of AJAX for exposed filters.
+ * Generates View results for fulltext and location based GP searches.
  */
 class GpSearchController extends ControllerBase {
 
@@ -70,7 +70,7 @@ class GpSearchController extends ControllerBase {
   /**
    * Drupal Form Builder.
    *
-   * @var FormBuilder
+   * @var \Drupal\core\Form\FormBuilder
    */
   protected $formBuilder;
 
@@ -88,7 +88,7 @@ class GpSearchController extends ControllerBase {
    * @param string $geocoding_service_id
    *   Geocoding service ID.
    * @param \Drupal\core\Form\FormBuilder $form_builder
-   *   Form builder
+   *   Form builder.
    */
   public function __construct(
     RequestStack $request_stack,
@@ -219,7 +219,16 @@ class GpSearchController extends ControllerBase {
 
   }
 
-  private function viewForm(\Drupal\views\ViewExecutable $view) {
+  /**
+   * Create the exposed filter form for GP searches.
+   *
+   * @param \Drupal\views\ViewExecutable $view
+   *   Current search View executable.
+   *
+   * @return array
+   *   Form render array.
+   */
+  private function viewForm(ViewExecutable $view) {
 
     // To give a consistent UI across GP Search, for location based search the
     // View doesn't have an exposed form (it can't as it isn't fulltext search)
@@ -227,7 +236,8 @@ class GpSearchController extends ControllerBase {
     // render the exposed form before attaching to our render array.
     if ($view->id() === 'gp_practices' && $view->getDisplay() === 'find_a_gp') {
       $form_view = $view;
-    } else {
+    }
+    else {
       $form_view = $this->entityTypeManager()->getStorage('view')->load('gp_practices')->getExecutable();
       $form_view->setDisplay('find_a_gp');
     }

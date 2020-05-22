@@ -122,7 +122,6 @@ class GpSearchController extends ControllerBase {
     $lng = $this->requestStack->getCurrentRequest()->get('lng');
 
     $is_proximity_search = FALSE;
-    $is_geolocation_search = FALSE;
 
     // Postcode search
     if (!empty($query_term)) {
@@ -170,8 +169,50 @@ class GpSearchController extends ControllerBase {
       ];
 
     }
-
     return $build;
+
   }
 
+  /**
+   * Determines the type of GP search performed.
+   *
+   * @return array
+   *   Array with search type and additional data.
+   */
+  private function _searchType() {
+
+    $request = $this->requestStack->getCurrentRequest();
+
+    $output = [
+      'type' => 'FULLTEXT'
+    ];
+
+    // Postcode search.
+    $query_term = $request->get('search_api_views_fulltext');
+
+    if (!empty($query_term)) {
+      $postcode = $this->postcodeExtractor->getPostCode($query_term);
+
+      if (!empty($postcode)) {
+        $output = [
+          'type' => 'POSTCODE',
+          'postcode' => $postcode
+        ];
+      }
+    }
+
+    // Geolocation search.
+    $lat = $request->get('lat');
+    $lng = $request->get('lng');
+
+    if (!empty($lat) && !empty($lng)) {
+      $output = [
+        'type' => 'LOCATION',
+        'lat' => $lat,
+        'lng' => $lng,
+      ];
+    }
+
+    return $output;
+  }
 }

@@ -4,9 +4,4 @@ gp_location_search:
   dependencies:
     - core/drupal
     - core/jquery
-gp_location_search_view:
-  js:
-    js/gp-location-search-view.js: {}
-  dependencies:
-    - core/drupal
-    - core/jquery
+    - core/drupal.dialog.ajax

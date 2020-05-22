@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
@@ -67,6 +68,13 @@ class GpSearchController extends ControllerBase {
   protected $longitude;
 
   /**
+   * Drupal Form Builder.
+   *
+   * @var FormBuilder
+   */
+  protected $formBuilder;
+
+  /**
    * GpSearchController constructor.
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
@@ -79,13 +87,16 @@ class GpSearchController extends ControllerBase {
    *   Max distance in miles for geocoding radius.
    * @param string $geocoding_service_id
    *   Geocoding service ID.
+   * @param \Drupal\core\Form\FormBuilder $form_builder
+   *   Form builder
    */
   public function __construct(
     RequestStack $request_stack,
     PostcodeExtractor $postcode_extractor,
     GeocoderInterface $geocoder,
     int $proximity_max_distance,
-    string $geocoding_service_id
+    string $geocoding_service_id,
+    FormBuilder $form_builder
   ) {
 
     $this->requestStack = $request_stack;
@@ -93,6 +104,7 @@ class GpSearchController extends ControllerBase {
     $this->geocoder = $geocoder;
     $this->proximityMaxDistance = $proximity_max_distance;
     $this->geocodingServiceId = $geocoding_service_id;
+    $this->formBuilder = $form_builder;
   }
 
   /**
@@ -104,7 +116,8 @@ class GpSearchController extends ControllerBase {
       $container->get('nidirect.postcode_extractor'),
       $container->get('geocoder'),
       $container->getParameter('nidirect_gp.proximity_max_distance'),
-      $container->getParameter('nidirect_gp.geocoding_service')
+      $container->getParameter('nidirect_gp.geocoding_service'),
+      $container->get('form_builder')
     );
   }
 
@@ -233,9 +246,8 @@ class GpSearchController extends ControllerBase {
       'always_process' => TRUE,
     ]);
     $form_state->setMethod('get');
-    $form = \Drupal::formBuilder()->buildForm('Drupal\views\Form\ViewsExposedForm', $form_state);
 
-    return $form;
+    return $this->formBuilder()->buildForm('Drupal\views\Form\ViewsExposedForm', $form_state);
   }
 
   /**

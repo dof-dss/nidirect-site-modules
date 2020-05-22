@@ -153,8 +153,9 @@ class GpSearchController extends ControllerBase {
       $display_id = 'find_a_gp';
     }
 
-    $view = \Drupal\views\Views::getView($view_id);
+    $view = $this->entityTypeManager()->getStorage('view')->load($view_id)->getExecutable();
     $view->setDisplay($display_id);
+
     $args = [];
 
     // If proximity search, add arguments to the View.
@@ -192,7 +193,7 @@ class GpSearchController extends ControllerBase {
       // View doesn't have an exposed form (it can't as it isn't fulltext search)
       // To work around this, we need to load the fulltext search based view and
       // render the exposed form before attaching to our render array.
-      $form_view = \Drupal\views\Views::getView('gp_practices');
+      $form_view = $this->entityTypeManager()->getStorage('view')->load('gp_practices')->getExecutable();
       $form_view->setDisplay('find_a_gp');
     }
     else {
@@ -202,8 +203,6 @@ class GpSearchController extends ControllerBase {
     // Generate the exposed form View.
     $form_view->setArguments($args);
     $form_view->initHandlers();
-    $form_view->preExecute();
-    $form_view->execute();
 
     // Build the form state for the exposed View filters.
     $form_state = new FormState();
@@ -226,8 +225,10 @@ class GpSearchController extends ControllerBase {
     $view->execute();
     $view->buildRenderable($display_id, $args);
 
-    $build['gp_form'] = $form;
-    $build['gp_view'] = $view->render();
+    $build['form'] = $form;
+    $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
+
+    $build['view'] = $view->render();
 
     return $build;
 

@@ -188,14 +188,45 @@ class GpSearchController extends ControllerBase {
         $this->proximityMaxDistance),
       ];
 
+      // To give a consistent UI across GP Search, for location based search the
+      // View doesn't have an exposed form (it can't as it isn't fulltext search)
+      // To work around this, we need to load the fulltext search based view and
+      // render the exposed form before attaching to our render array.
+      $form_view = \Drupal\views\Views::getView('gp_practices');
+      $form_view->setDisplay('find_a_gp');
+    }
+    else {
+      $form_view = $view;
     }
 
+    // Generate the exposed form View.
+    $form_view->setArguments($args);
+    $form_view->initHandlers();
+    $form_view->preExecute();
+    $form_view->execute();
+
+    // Build the form state for the exposed View filters.
+    $form_state = new FormState();
+    $form_state->setFormState([
+      'view' => $form_view,
+      'display' => $form_view->display_handler->display,
+      'exposed_form_plugin' => $form_view->display_handler->getPlugin('exposed_form'),
+      'method' => 'get',
+      'rerender' => TRUE,
+      'no_redirect' => TRUE,
+      'always_process' => TRUE,
+    ]);
+    $form_state->setMethod('get');
+    $form = \Drupal::formBuilder()->buildForm('Drupal\views\Form\ViewsExposedForm', $form_state);
+
+    // Generate the results View.
     $view->setArguments($args);
     $view->initHandlers();
     $view->preExecute();
     $view->execute();
     $view->buildRenderable($display_id, $args);
 
+    $build['gp_form'] = $form;
     $build['gp_view'] = $view->render();
 
     return $build;

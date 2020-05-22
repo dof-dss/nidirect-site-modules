@@ -110,10 +110,22 @@ class GpSearchController extends ControllerBase {
    * Route title callback.
    *
    * @return string
-   *   The title for the search page edit form.
+   *   GP search page title.
    */
   public function getTitle() {
-    return $this->t('Find a GP practice');
+
+    $search_type = $this->_searchType();
+
+    switch ($search_type['type']) {
+      case 'POSTCODE':
+        return $this->t('GP practices near %postcode', ['%postcode' => $search_type['postcode'][0]]);
+
+      case 'LOCATION':
+        return $this->t('GP practices near your location');
+
+      default:
+        return $this->t('GP practices');
+    }
   }
 
   /**

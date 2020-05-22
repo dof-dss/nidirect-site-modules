@@ -220,4 +220,3 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
 
   return $title;
 }
-

@@ -18,7 +18,21 @@
 
       // Callback function for geolocation errors.
       function locationError() {
-        console.log('unable to fetch your current location');
+        const confirmationDialog = Drupal.dialog('<div>Unable to determine your location.</div>', {
+          title: Drupal.t('Sorry'),
+          dialogClass: 'editor-change-text-format-modal',
+          resizable: false,
+          closeOnEscape: true,
+          buttons: [{
+            text: Drupal.t('OK'),
+            class: 'button button--primary',
+            click() {
+              confirmationDialog.close();
+            },
+          }]
+        });
+
+        confirmationDialog.showModal();
       }
 
       $(context).find('#views-exposed-form-gp-practices-find-a-gp').once('gp-location-search').each(function () {

@@ -3,7 +3,6 @@
 namespace Drupal\nidirect_gp;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Class PostcodeExtractor.
@@ -44,6 +43,7 @@ class PostcodeExtractor {
    *
    * @param string $text_to_match
    *   Text to check for postcode matches.
+   *
    * @return string
    *   Matching text values.
    */

@@ -11,8 +11,9 @@
       function performLocationSearch(location) {
         let lat = location.coords.latitude;
         let lng = location.coords.longitude;
+        const distance = drupalSettings.nidirect.gpSearch.maxDistance ?? 10;
 
-        let url = '/services/gp-practices?lat=' + lat +'&lng=' + lng + '&proximity=10';
+        let url = '/services/gp-practices?lat=' + lat +'&lng=' + lng + '&proximity=' + distance;
         window.location.href = url;
       }
 

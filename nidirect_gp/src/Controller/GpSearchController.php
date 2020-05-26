@@ -216,6 +216,7 @@ class GpSearchController extends ControllerBase {
     $build['form']['#cache']['contexts'][] = 'url.query_args:lng';
 
     $build['view'] = $view->render();
+    $build['#attached']['drupalSettings']['nidirect']['gpSearch']['maxDistance'] = $this->proximityMaxDistance;
 
     return $build;
 

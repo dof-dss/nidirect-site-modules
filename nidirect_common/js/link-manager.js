@@ -32,6 +32,11 @@
         }
 
         $(elementRef + ' a[href*="' + pathname + '"]').each(function() {
+          // Move to next item if we have a data attribute to indicate we should ignore this element.
+          if ($(this).attr('data-self-ref')) {
+            return false;
+          }
+
           let href = $(this).attr('href');
           // Prune away any query parameters, if they exist.
           href = href.substr(0, (href.indexOf('?') < 0) ? href.length : href.indexOf('?'));

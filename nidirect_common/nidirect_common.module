@@ -142,63 +142,9 @@ function nidirect_common_preprocess_views_view(&$variables) {
 }
 
 /**
- * Implements hook_entity_extra_field_info().
- */
-function nidirect_common_entity_extra_field_info() {
-  $extra = [];
-  $content_types = ['application', 'article', 'publication', 'health_condition'];
-
-  foreach ($content_types as $type) {
-    $extra['node'][$type]['display']['banner_display'] = [
-      'label' => t('Banner display'),
-      'description' => t('Display content or theme image banner.'),
-      'weight' => 0,
-      'visible' => TRUE,
-    ];
-  }
-
-  return $extra;
-}
-
-/**
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  if (array_key_exists('banner_display', $display->getComponents())) {
-
-    // Check if the node has a banner image field and if an image is present.
-    if ($entity->hasField('field_banner_image') && !$entity->get('field_banner_image')->isEmpty()) {
-      $banner_image = $entity->get('field_banner_image')->first();
-    }
-
-    // Try fetching image from subtheme term.
-    if (empty($banner_image) && $entity->hasField('field_subtheme')) {
-
-      $term = $entity->get('field_subtheme')->entity;
-
-      if (empty($term)) {
-        return;
-      }
-
-      $banner_image = $term->get('field_banner_image')->first();
-
-      // Try fetching image from the parent term.
-      if (empty($banner_image)) {
-        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
-        $parents = $storage->loadParents($term->id());
-
-        if (!empty($parents)) {
-          $parent = array_shift($parents);
-          $banner_image = $parent->get('field_banner_image')->first();
-        }
-      }
-    }
-
-    if (!empty($banner_image)) {
-      $build['banner_display'] = $banner_image->view();
-    }
-  }
-
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
   }
@@ -313,8 +259,8 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['flag']['hide_content']['#access'] = FALSE;
   }
 
-  // Hide Promotion Options.
-  $form['options']['#access'] = FALSE;
+  // Hide promote to front-page option.
+  $form['promote']['#access'] = FALSE;
 
   // Update description for Table of Contents option.
   if (array_key_exists('field_toc_enable', $form)) {
@@ -567,6 +513,42 @@ function nidirect_common_preprocess_page(&$variables) {
     return;
   }
 
+  $node = $variables['node'];
+
   // Apply link manager library to all non-admin pages.
   $variables['#attached']['library'][] = 'nidirect_common/link_manager';
+
+  // Fetch and display the node or theme banner image.
+  if (!empty($node)) {
+    if ($node->hasField('field_banner_image') && !$node->get('field_banner_image')->isEmpty()) {
+      $banner_image = $node->get('field_banner_image')->first();
+    }
+
+    // Try fetching image from subtheme term.
+    if (empty($banner_image) && $node->hasField('field_subtheme')) {
+
+      $term = $node->get('field_subtheme')->entity;
+
+      if (empty($term)) {
+        return;
+      }
+
+      $banner_image = $term->get('field_banner_image')->first();
+
+      // Try fetching image from the parent term.
+      if (empty($banner_image)) {
+        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
+        $parents = $storage->loadParents($term->id());
+
+        if (!empty($parents)) {
+          $parent = array_shift($parents);
+          $banner_image = $parent->get('field_banner_image')->first();
+        }
+      }
+    }
+
+    if (!empty($banner_image)) {
+      $variables['banner_display'] = $banner_image->view('default');
+    }
+  }
 }

@@ -247,6 +247,18 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
+  // Add a description to the title field.  This cannot be done in the UI.
+  if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'], $result)) {
+    $title_description =& $form['title']['widget'][0]['value']['#description'];
+    if (empty($title_description)) {
+      $title_description = t('
+          Title should be descriptive and concise (60 characters or less if possible).  The title appears in 
+          Google search results and a good title is key to helping users decide if the content will be relevant to them.
+        ');
+    }
+  }
+
   // Update description for Hide Content flag.
   if (NestedArray::keyExists($form, ['flag', 'hide_content'])) {
     $form['flag']['hide_content']['#description'] = t('
@@ -256,7 +268,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 
   // Hide Featured Content flag.
   if (NestedArray::keyExists($form, ['flag', 'featured_content'])) {
-    $form['flag']['hide_content']['#access'] = FALSE;
+    $form['flag']['featured_content']['#access'] = FALSE;
   }
 
   // Hide promote to front-page option.

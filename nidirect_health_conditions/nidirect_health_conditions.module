@@ -82,14 +82,17 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
     return;
   }
 
-  $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
-    $view->total_rows,
-    $single_message,
-    $plural_message, [
-      '@count' => $view->total_rows,
-      '@search_term' => $search_term,
-    ]
-  );
+  // Don't attempt to add anything if the view doesn't have a header area defined for some reason.
+  if (!empty($view->header['area'])) {
+    $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
+      $view->total_rows,
+      $single_message,
+      $plural_message, [
+        '@count' => $view->total_rows,
+        '@search_term' => $search_term,
+      ]
+    );
+  }
 }
 
 /**

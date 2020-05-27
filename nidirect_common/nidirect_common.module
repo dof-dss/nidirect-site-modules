@@ -248,13 +248,17 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-  // Add a description to the title field.  This cannot be done in the UI.
+  // Add a placeholder and description to the title field.  This cannot be done in the UI.
+  $title_placeholder =& $form['title']['widget'][0]['value']['#placeholder'];
+  if (empty($title_placeholder)) {
+    $title_placeholder = t('Enter a descriptive and concise title (60 characters or less is best)');
+  }
   if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'], $result)) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
       $title_description = t('
-          Title should be descriptive and concise (60 characters or less if possible).  The title appears in 
-          Google search results and a good title is key to helping users decide if the content will be relevant to them.
+          The title appears in Google search results. A good title is essential to helping users decide if the 
+          content will be relevant to them. Google truncates titles more than 60 to 70 characters in length.
         ');
     }
   }

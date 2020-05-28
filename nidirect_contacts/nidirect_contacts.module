@@ -60,10 +60,16 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $route_name = \Drupal::routeMatch()->getRouteName();
 
   // Convenience links.
-  $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default');
-  $show_search = Link::createFromRoute('show search', 'nidirect_contacts.default');
-  $reset_az = Link::createFromRoute('reset a-z', 'nidirect_contacts.default');
-  $reset_search = Link::createFromRoute('reset a-z', 'nidirect_contacts.default');
+  // (Add 'data-self-ref' so that these self referencing links are not removed)
+  $options = [
+    'attributes' => [
+      'data-self-ref' => ['false']
+    ]
+  ];
+  $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
+  $show_search = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
+  $reset_az = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
+  $reset_search = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
 
   // Add to render array by default; toggle visibility after.
   $variables['links']['reset_az'] = $reset_az->toRenderable();

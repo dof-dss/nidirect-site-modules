@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
 use Drupal\views\ViewExecutable;
-use PHP_CodeSniffer\Generators\HTML;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 

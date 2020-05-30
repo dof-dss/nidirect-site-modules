@@ -282,7 +282,7 @@ class GpSearchController extends ControllerBase {
 
       $output = [
         'type' => 'FULLTEXT',
-        'querytext' =>  $query_term,
+        'querytext' => $query_term,
       ];
 
       // Postcode search (if a postcode can be extracted).

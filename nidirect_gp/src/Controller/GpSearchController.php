@@ -132,14 +132,17 @@ class GpSearchController extends ControllerBase {
     $search_type = $this->searchType();
 
     switch ($search_type['type']) {
+      case 'FULLTEXT':
+        return $this->t('Find a GP practice results for %querytext', ['%querytext' => $search_type['querytext']]);
+
       case 'POSTCODE':
-        return $this->t('GP practices near %postcode', ['%postcode' => $search_type['postcode'][0]]);
+        return $this->t('Find a GP practice near %postcode', ['%postcode' => $search_type['postcode'][0]]);
 
       case 'LOCATION':
-        return $this->t('GP practices near your location');
+        return $this->t('Find a GP practice near your location');
 
       default:
-        return $this->t('GP practices');
+        return $this->t('Find a GP practice');
     }
   }
 
@@ -272,14 +275,17 @@ class GpSearchController extends ControllerBase {
 
     $request = $this->requestStack->getCurrentRequest();
 
-    $output = [
-      'type' => 'FULLTEXT',
-    ];
-
-    // Postcode search.
+    // Text search.
     $query_term = $request->get('search_api_views_fulltext');
 
     if (!empty($query_term)) {
+
+      $output = [
+        'type' => 'FULLTEXT',
+        'querytext' => $query_term,
+      ];
+
+      // Postcode search (if a postcode can be extracted).
       $postcode = $this->postcodeExtractor->getPostCode($query_term);
 
       if (!empty($postcode)) {

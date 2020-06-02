@@ -133,10 +133,10 @@ class GpSearchController extends ControllerBase {
 
     switch ($search_type['type']) {
       case 'FULLTEXT':
-        return $this->t('GP practice results for %querytext', ['%querytext' => $search_type['querytext']]);
+        return $this->t('GP practice results for %querytext', ['%querytext' => '"' . $search_type['querytext'] . '"']);
 
       case 'POSTCODE':
-        return $this->t('GP practices near %postcode', ['%postcode' => $search_type['postcode'][0]]);
+        return $this->t('GP practices near %postcode', ['%postcode' => '"' . $search_type['postcode'][0] . '"']);
 
       case 'LOCATION':
         return $this->t('GP practices near your location');

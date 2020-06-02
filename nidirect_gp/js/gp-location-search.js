@@ -52,9 +52,6 @@
       }
 
       $(context).find('#views-exposed-form-gp-practices-find-a-gp').once('gp-location-search').each(function () {
-        // Add accessible container for showing status messages during a location search
-        //$(this).after('<div id="find-by-location-status" role="alert" aria-live="assertive"></div>');
-
         // Detect if the the browser supports the Geolocation API
         if('geolocation' in navigator) {
           $(this).prepend('<div class="find-by-location">' +

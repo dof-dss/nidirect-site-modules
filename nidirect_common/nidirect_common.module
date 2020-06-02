@@ -230,6 +230,25 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
 }
 
 /**
+ * Implements hook_page_attachments_alter().
+ */
+function nidirect_common_page_attachments_alter(array &$attachments) {
+  // Turn off clientside_validation on selected routes. Usually due to
+  // interference with other AJAX related features, eg: Media Library.
+  $routes = [
+    'entity.node.edit_form',
+    'entity.media.edit_form',
+    'node.add',
+    'media.add',
+  ];
+
+  if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
+    // 1 == Yes, 2 == No. See ClientsideValidationjQuerySettingsForm::buildForm().
+    $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
+  }
+}
+
+/**
  * Implements hook_form_media_alter().
  */
 function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -257,7 +276,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
       $title_description = t('
-          The title appears in Google search results. A good title is essential to helping users decide if the 
+          The title appears in Google search results. A good title is essential to helping users decide if the
           content will be relevant to them. Google truncates titles more than 60 to 70 characters in length.
         ');
     }

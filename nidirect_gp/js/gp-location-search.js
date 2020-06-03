@@ -30,8 +30,8 @@
         $('#find-by-location-status').html('');
 
         let errmsg = '' +
-          '<p>There was a problem finding your location.</p>' +
-          '<p>Try searching by entering a GP name, practice, town or postcode</p>';
+          '<p>' + Drupal.t('There was a problem finding your location.') + '</p>' +
+          '<p>' + Drupal.t('Try searching by entering a GP name, practice, town or postcode') + '</p>';
 
         const confirmationDialog = Drupal.dialog('<div>' + errmsg + '.</div>', {
           title: Drupal.t('Sorry'),
@@ -55,8 +55,8 @@
         // Detect if the the browser supports the Geolocation API
         if('geolocation' in navigator) {
           $(this).prepend('<div class="find-by-location">' +
-            '<label for="use_location">Search for a GP practice near you</label>' +
-            '<input type="button" id="use_location" name="use_location" value="Use my location" />' +
+            '<label for="use_location">' + Drupal.t('Search for a GP practice near you') + '</label>' +
+            '<input type="button" id="use_location" name="use_location" value="' + Drupal.t('Use my location') + '" />' +
             '<div id="find-by-location-status" role="alert" aria-live="assertive"></div>' +
             '</div>');
 
@@ -69,7 +69,7 @@
               navigator.geolocation.getCurrentPosition(performLocationSearch, locationError, locationOptions);
             })
             .find('label[for="edit-search-api-views-fulltext"]')
-            .text('Or enter a GP name, practice, town or postcode');
+            .text(Drupal.t('Or enter a GP name, practice, town or postcode'));
         }
       });
     }

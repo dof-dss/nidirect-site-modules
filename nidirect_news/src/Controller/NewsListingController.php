@@ -68,12 +68,28 @@ class NewsListingController extends ControllerBase {
     $content = [];
 
     if (empty($this->requestStack->getCurrentRequest()->query->get('page'))) {
+      // Load/execute the view to extract the node ids; we add these as exclusions
+      // to the 'older news items' contextual args to avoid duplication between
+      // the two blocks and retain the 'sticky' flag ability to pin important
+      // items to the list of top four items.
+      $latest_news_view = $this->entityTypeManager()->getStorage('view')->load('news')->getExecutable();
+      $latest_news_view->setDisplay('latest_news');
+
+      $latest_news_view->initHandlers();
+      $latest_news_view->preExecute();
+      $latest_news_view->execute();
+      $latest_news_view->buildRenderable('latest_news');
+
+      $latest_news_nids = [];
+
+      if (!empty($latest_news_view->result)) {
+        foreach ($latest_news_view->result as $row) {
+          $latest_news_nids[] = $row->nid;
+        }
+      }
+
       // Latest news embed display.
-      $content['latest_news'] = [
-        '#type' => 'view',
-        '#name' => 'news',
-        '#display_id' => 'latest_news',
-      ];
+      $content['latest_news'] = $latest_news_view->render();
 
       // View title: see views_embed_view() which the render array relies on for details of why this is missing.
       $content['older_news_title'] = [
@@ -91,6 +107,7 @@ class NewsListingController extends ControllerBase {
       '#type' => 'view',
       '#name' => 'news',
       '#display_id' => 'older_news',
+      '#arguments' => [implode(',', $latest_news_nids ?? [])],
     ];
 
     return $content;

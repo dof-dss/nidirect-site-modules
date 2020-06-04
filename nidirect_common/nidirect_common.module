@@ -583,7 +583,7 @@ function nidirect_common_preprocess_page(&$variables) {
     }
 
     if (!empty($banner_image)) {
-      $variables['banner_display'] = $banner_image->view('default');
+      $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
     }
   }
 }

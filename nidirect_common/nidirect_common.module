@@ -526,18 +526,20 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
  * Implements hooks_moderation_sidebar_alter().
  */
 function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
-  $revisions_link = Link::createFromRoute(
-    $build['actions']['secondary']['version_history']['#title']->__toString(),
-    'entity.node.version_history',
-    $build['actions']['secondary']['version_history']['#url']->getRouteParameters(),
-    $build['actions']['secondary']['version_history']['#url']->getOptions()
-  );
+  if (!empty($build['actions']['secondary']['version_history'])) {
+    $revisions_link = Link::createFromRoute(
+      $build['actions']['secondary']['version_history']['#title']->__toString(),
+      'entity.node.version_history',
+      $build['actions']['secondary']['version_history']['#url']->getRouteParameters(),
+      $build['actions']['secondary']['version_history']['#url']->getOptions()
+    );
 
-  // Replace the URL of revisions link with the updated Link Url object.
-  $build['actions']['secondary']['version_history']['#url'] = $revisions_link->getUrl();
+    // Replace the URL of revisions link with the updated Link Url object.
+    $build['actions']['secondary']['version_history']['#url'] = $revisions_link->getUrl();
 
-  // Strip AJAX class to link direct to page.
-  $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
+    // Strip AJAX class to link direct to page.
+    $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
+  }
 }
 
 /**

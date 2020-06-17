@@ -13,6 +13,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\views\ViewExecutable;
 use Nette\Utils\Arrays;
@@ -539,6 +540,15 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
 
     // Strip AJAX class to link direct to page.
     $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
+  }
+
+  if ($context->getType() == 'webform') {
+    // Fix obscure off-canvas JS bug by repointing the URL to the underlying canonical test route name.
+    if (!empty($build['actions']['secondary']['entity.node.webform.test_form'])) {
+      $build['actions']['secondary']['entity.node.webform.test_form']['#url'] = Url::fromRoute(
+        'entity.webform.test_form', ['webform' => $context->get('webform')->target_id]
+      );
+    }
   }
 }
 

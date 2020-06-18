@@ -70,6 +70,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
           'article',
           'application',
           'publication',
+          'webform',
         ];
 
         $match = in_array($this->node->bundle(), $applies_to_types);
@@ -84,13 +85,14 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
 
+    $links = [];
     $cache_tags = [];
-
-    $links[] = Link::createFromRoute(t('Home'), '<front>');
 
     $node = $route_match->getParameter('node');
 
-    if ($node->hasField('field_subtheme')) {
+    if ($node->hasField('field_subtheme') && !empty($node->field_subtheme->target_id)) {
+      $links[] = Link::createFromRoute(t('Home'), '<front>');
+
       $theme_tid = $node->field_subtheme->target_id;
 
       // Find parent terms, if any and begin to build up link chain.
@@ -102,6 +104,11 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
         $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
         $cache_tags[] = 'taxonomy_term:' . $term->id();
       }
+    }
+
+    // If it's a webform node, we need to add a cache tag for the node currently being viewed.
+    if ($node->getType() == 'webform') {
+      $cache_tags[] = 'node:' . $node->id();
     }
 
     // Assemble a new breadcrumb object, add the links and set

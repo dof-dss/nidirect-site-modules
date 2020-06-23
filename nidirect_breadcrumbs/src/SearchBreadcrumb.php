@@ -2,16 +2,16 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for search page(s)
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for search page(s).
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class SearchBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**

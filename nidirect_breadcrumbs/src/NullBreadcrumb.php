@@ -2,17 +2,17 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Returns a null breadcrumb trail for any matched paths.
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
+/**
+ * Returns a null breadcrumb trail for any matched paths.
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class NullBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
@@ -31,6 +31,7 @@ class NullBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
    * Class constructor.
+   *
    * @param array $route_matches
    *   Matching route/URL paths.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack

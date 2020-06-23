@@ -2,19 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - News
- *
- * In the format:
- * > Home
- * > News
- *
- * > <front>
- * > /news
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -24,9 +11,23 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for News entities.
+ *
+ * In the format:
+ * > Home
+ * > News
+ * as URL
+ * > <front>
+ * > /news.
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -62,8 +63,17 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if ($route_name == 'entity.node.canonical' && !empty($route_match->getParameter('node'))) {
+    // Full node view.
+    if ($route_name == 'entity.node.canonical') {
       $this->node = $route_match->getParameter('node');
+    }
+
+    // Editorial preview.
+    if ($route_name == 'entity.node.preview') {
+      $this->node = $route_match->getParameter('node_preview');
+    }
+
+    if (!empty($this->node)) {
 
       if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);

@@ -2,23 +2,24 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for Taxonomy term pages.
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\taxonomy\TermInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for Taxonomy term pages.
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class TaxonomyTermThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;

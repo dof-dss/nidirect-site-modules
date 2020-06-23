@@ -2,14 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - Article
- * - Application
- * - Publications
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -19,9 +11,24 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for content types with subtheme fields.
+ *
+ * Applies to the following:
+ * - Article
+ * - Application
+ * - Landing page
+ * - Publications
+ * - Webforms
+ * content types.
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -57,8 +64,17 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
+    // Full node view.
     if ($route_name == 'entity.node.canonical') {
       $this->node = $route_match->getParameter('node');
+    }
+
+    // Editorial preview.
+    if ($route_name == 'entity.node.preview') {
+      $this->node = $route_match->getParameter('node_preview');
+    }
+
+    if (!empty($this->node)) {
 
       if ($this->node instanceof NodeInterface == FALSE) {
         // Node route but needs loaded entity to check bundle.
@@ -68,6 +84,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       if (!empty($this->node)) {
         $applies_to_types = [
           'article',
+          'landing_page',
           'application',
           'publication',
           'webform',
@@ -88,7 +105,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     $links = [];
     $cache_tags = [];
 
-    $node = $route_match->getParameter('node');
+    // Fetch the node or preview node object.
+    $node = $route_match->getParameter('node') ?? $route_match->getParameter('node_preview');
 
     if ($node->hasField('field_subtheme') && !empty($node->field_subtheme->target_id)) {
       $links[] = Link::createFromRoute(t('Home'), '<front>');
@@ -106,7 +124,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    // If it's a webform node, we need to add a cache tag for the node currently being viewed.
+    // If it's a webform node, we need to add a cache tag for the
+    // node currently being viewed.
     if ($node->getType() == 'webform') {
       $cache_tags[] = 'node:' . $node->id();
     }

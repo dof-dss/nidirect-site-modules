@@ -2,23 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - Health condition
- *
- * In the format:
- * > Home
- * > Health and well-being
- * > Illnesses and conditions
- * > A to Z
- *
- * > <front>
- * > information-and-services/health-and-wellbeing
- * > information-and-services/health-and-wellbeing/illnesses-and-conditions
- * > services/health-conditions-a-z
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -28,6 +11,22 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for Health condition entities.
+ *
+ * In the format:
+ * > Home
+ * > Health and well-being
+ * > Illnesses and conditions
+ * > A to Z
+ * as URL
+ * > <front>
+ * > information-and-services/health-and-wellbeing
+ * > information-and-services/health-and-wellbeing/illnesses-and-conditions
+ * > services/health-conditions-a-z.
+ *
+ * @package Drupal\nidirect_breadcrumbs
+ */
 class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
@@ -68,8 +67,17 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if ($route_name == 'entity.node.canonical' && !empty($route_match->getParameter('node'))) {
+    // Full node view.
+    if ($route_name == 'entity.node.canonical') {
       $this->node = $route_match->getParameter('node');
+    }
+
+    // Editorial preview.
+    if ($route_name == 'entity.node.preview') {
+      $this->node = $route_match->getParameter('node_preview');
+    }
+
+    if (!empty($this->node)) {
 
       if ($this->node instanceof NodeInterface == FALSE) {
         $this->node = $this->entityTypeManager->getStorage('node')->load($this->node);
@@ -105,7 +113,8 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 
-    // Add cache tags so that if any entities above change, we can regenerate the breadcrumb too.
+    // Add cache tags so that if any entities above change, we can
+    // regenerate the breadcrumb too.
     $breadcrumb->addCacheTags([
       'taxonomy_term:22',
       'node:7387',

@@ -57,8 +57,17 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
+    // Full node view.
     if ($route_name == 'entity.node.canonical') {
       $this->node = $route_match->getParameter('node');
+    }
+
+    // Editorial preview.
+    if ($route_name == 'entity.node.preview') {
+      $this->node = $route_match->getParameter('node_preview');
+    }
+
+    if (!empty($this->node)) {
 
       if ($this->node instanceof NodeInterface == FALSE) {
         // Node route but needs loaded entity to check bundle.

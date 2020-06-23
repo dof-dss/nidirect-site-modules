@@ -18,6 +18,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Article
  * - Application
  * - Publications
+ * - Webforms
  * content types.
  */
 class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {

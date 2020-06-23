@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * Applies to the following:
  * - Article
  * - Application
+ * - Landing page
  * - Publications
  * - Webforms
  * content types.
@@ -81,6 +82,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       if (!empty($this->node)) {
         $applies_to_types = [
           'article',
+          'landing_page',
           'application',
           'publication',
           'webform',

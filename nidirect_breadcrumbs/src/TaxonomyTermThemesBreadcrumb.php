@@ -72,12 +72,17 @@ class TaxonomyTermThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
     $this->term = $route_match->getParameter('taxonomy_term');
 
-    $ancestors = $this->entityTypeManager->getStorage("taxonomy_term")->loadParents($this->term->id());
+    // This issue https://www.drupal.org/node/2019905
+    // prevents us from using ->loadParents() as we won't
+    // retrieve the root term.
+    $ancestors = array_values($this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($this->term->id()));
 
-    // Show the trail if has at least one ancestor term.
+    // Remove the current term from the list.
+    array_shift($ancestors);
+
+    $links[] = Link::createFromRoute(t('Home'), '<front>');
+
     if (!empty($ancestors)) {
-      $links[] = Link::createFromRoute(t('Home'), '<front>');
-
       $terms = (count($ancestors) > 1) ? array_reverse($ancestors, TRUE) : $ancestors;
 
       foreach ($terms as $term) {

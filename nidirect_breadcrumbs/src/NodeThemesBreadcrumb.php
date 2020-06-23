@@ -2,14 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - Article
- * - Application
- * - Publications
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -19,9 +11,20 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for content types with subtheme fields.
+ *
+ * Applies to the following:
+ * - Article
+ * - Application
+ * - Publications
+ * content types.
+ */
 class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -116,7 +119,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    // If it's a webform node, we need to add a cache tag for the node currently being viewed.
+    // If it's a webform node, we need to add a cache tag for the
+    // node currently being viewed.
     if ($node->getType() == 'webform') {
       $cache_tags[] = 'node:' . $node->id();
     }

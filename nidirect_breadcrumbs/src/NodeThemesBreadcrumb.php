@@ -97,7 +97,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     $links = [];
     $cache_tags = [];
 
-    $node = $route_match->getParameter('node');
+    // Fetch the node or preview node object.
+    $node = $route_match->getParameter('node') ?? $route_match->getParameter('node_preview');
 
     if ($node->hasField('field_subtheme') && !empty($node->field_subtheme->target_id)) {
       $links[] = Link::createFromRoute(t('Home'), '<front>');

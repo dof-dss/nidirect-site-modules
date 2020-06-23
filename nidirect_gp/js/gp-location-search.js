@@ -52,8 +52,12 @@
       }
 
       $(context).find('#views-exposed-form-gp-practices-find-a-gp').once('gp-location-search').each(function () {
-        // Detect if the the browser supports the Geolocation API
-        if('geolocation' in navigator) {
+
+        let querystring = new URLSearchParams(window.location.search);
+
+        // Display 'Use my location' if the browser supports the Geolocation API and
+        // we are not on a a fulltext search results page.
+        if('geolocation' in navigator && !querystring.has('search_api_views_fulltext')) {
           $(this).prepend('<div class="find-by-location">' +
             '<label for="use_location">' + Drupal.t('Search for a GP practice near you') + '</label>' +
             '<input type="button" id="use_location" name="use_location" value="' + Drupal.t('Use my location') + '" />' +

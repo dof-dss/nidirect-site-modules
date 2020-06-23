@@ -2,28 +2,20 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - Contact
- *
- * In the format:
- * > Home
- * > Contacts
- *
- * > <front>
- * > contacts
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for Contact entities.
+ *
+ * Breadcrumb format:
+ * Home > Contacts as URL <front> > contacts.
+ */
 class ContactBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**

@@ -2,11 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for school closure page(s)
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Link;
@@ -16,8 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Breadcrumb builder class to assemble breadcrumb trail
- * for paths relating to school closures.
+ * Generates the breadcrumb trail for School closures.
  *
  * @package Drupal\nidirect_breadcrumbs
  */
@@ -39,6 +33,7 @@ class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
    * Class constructor.
+   *
    * @param array $route_matches
    *   Matching route/URL paths.
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
@@ -79,7 +74,8 @@ class SchoolClosuresBreadcrumb implements BreadcrumbBuilderInterface {
 
     $breadcrumb = new Breadcrumb();
     $links[] = Link::createFromRoute(t('Home'), '<front>');
-    // TODO: replace fixed text/paths with routes to actual nodes or taxonomy term pages.
+    // TODO: replace fixed text/paths with routes to actual nodes or
+    // taxonomy term pages.
     $links[] = Link::fromTextAndUrl('Education', Url::fromUserInput('/information-and-services/education'));
     $links[] = Link::fromTextAndUrl('Schools, learning and development', Url::fromUserInput('/information-and-services/education/schools-learning-and-development'));
     $links[] = Link::fromTextAndUrl('School life', Url::fromUserInput('/information-and-services/schools-learning-and-development/school-life'));

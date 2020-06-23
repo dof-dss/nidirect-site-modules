@@ -2,11 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for driving instructors related pages.
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -30,6 +25,8 @@ class DrivingInstructorsBreadcrumb implements BreadcrumbBuilderInterface {
   protected $routeMatches;
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;

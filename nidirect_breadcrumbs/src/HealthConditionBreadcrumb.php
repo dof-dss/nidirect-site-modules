@@ -24,6 +24,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * > information-and-services/health-and-wellbeing
  * > information-and-services/health-and-wellbeing/illnesses-and-conditions
  * > services/health-conditions-a-z.
+ *
+ * @package Drupal\nidirect_breadcrumbs
  */
 class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
 

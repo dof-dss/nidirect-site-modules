@@ -21,6 +21,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * - Publications
  * - Webforms
  * content types.
+ *
+ * @package Drupal\nidirect_breadcrumbs
  */
 class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 

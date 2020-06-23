@@ -20,6 +20,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * as URL
  * > <front>
  * > /news.
+ *
+ * @package Drupal\nidirect_breadcrumbs
  */
 class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 

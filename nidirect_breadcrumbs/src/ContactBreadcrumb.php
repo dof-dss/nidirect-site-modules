@@ -15,6 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * Breadcrumb format:
  * Home > Contacts as URL <front> > contacts.
+ *
+ * @package Drupal\nidirect_breadcrumbs
  */
 class ContactBreadcrumb implements BreadcrumbBuilderInterface {
 

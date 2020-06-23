@@ -26,6 +26,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  * > information-and-services/health-and-well-being/health-services
  * > information-and-services/health-services/doctors-dentists-and-other-health-services
  * > services/gp-practices.
+ *
+ * @package Drupal\nidirect_breadcrumbs
  */
 class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
 

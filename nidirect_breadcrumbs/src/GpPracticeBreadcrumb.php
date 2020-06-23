@@ -2,25 +2,6 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
-/**
- * @file
- * Generates the breadcrumb trail for content including:
- * - GP Practice
- *
- * In the format:
- * > Home
- * > Health and well-being
- * > Health services
- * > Doctors, dentists and other health services
- * > Find a GP practice
- *
- * > <front>
- * > information-and-services/health-and-well-being
- * > information-and-services/health-and-well-being/health-services
- * > information-and-services/health-services/doctors-dentists-and-other-health-services
- * > services/gp-practices
- */
-
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -30,9 +11,27 @@ use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
+/**
+ * Generates the breadcrumb trail for GP Practice entities.
+ *
+ * In the format:
+ * > Home
+ * > Health and well-being
+ * > Health services
+ * > Doctors, dentists and other health services
+ * > Find a GP practice
+ * as URL:
+ * > <front>
+ * > information-and-services/health-and-well-being
+ * > information-and-services/health-and-well-being/health-services
+ * > information-and-services/health-services/doctors-dentists-and-other-health-services
+ * > services/gp-practices.
+ */
 class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Core EntityTypeManager instance.
+   *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
@@ -114,7 +113,8 @@ class GpPracticeBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 
-    // Add cache tags so that if any entities above change, we can regenerate the breadcrumb too.
+    // Add cache tags so that if any entities above change, we can regenerate
+    // the breadcrumb too.
     $breadcrumb->addCacheTags([
       'taxonomy_term:22',
       'taxonomy_term:262',

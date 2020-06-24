@@ -560,6 +560,14 @@ function nidirect_common_preprocess_page(&$variables) {
     return;
   }
 
+
+  // Similar to how core adds the node object to $variables, we will add
+  // the term if we are on a taxonomy page.
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.taxonomy_term.canonical') {
+    $tid = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+    $variables['term'] = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+  }
+
   $node = $variables['node'];
 
   // Apply link manager library to all non-admin pages.

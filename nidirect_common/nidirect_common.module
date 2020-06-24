@@ -583,8 +583,8 @@ function nidirect_common_preprocess_page(&$variables) {
       $banner_image = $entity->get('field_banner_image')->first();
     }
 
-    // If banner is empty and we are dealing with a node, load the theme term for that node.
-    // Otherwise if we're dealing with a term, assign directly.
+    // If banner is empty and we are dealing with a node, load the theme term
+    // for that node. Otherwise if we're dealing with a term, assign directly.
     // Finally try to extract a banner image from the term.
     if (empty($banner_image)) {
       if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
@@ -597,6 +597,28 @@ function nidirect_common_preprocess_page(&$variables) {
       }
 
       $banner_image = $term->get('field_banner_image')->first();
+    }
+
+    // If we still don't have a banner image, try the parent and grandparent
+    // terms for images.
+    if (empty($banner_image) && !empty($term)) {
+      // This issue https://www.drupal.org/node/2019905
+      // prevents us from using ->loadParents() as we won't
+      // retrieve the root term.
+      $ancestors = array_values(\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($term->id()));
+
+      if (!empty($ancestors)) {
+        // Remove the current term from the list of ancestors.
+        array_shift($ancestors);
+
+        foreach ($ancestors as $term) {
+          $banner_image = $term->get('field_banner_image')->first();
+
+          if ($banner_image) {
+            break;
+          }
+        }
+      }
     }
 
     if (!empty($banner_image)) {

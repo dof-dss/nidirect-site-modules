@@ -15,6 +15,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
 use Nette\Utils\Arrays;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -580,6 +581,22 @@ function nidirect_common_preprocess_page(&$variables) {
     // Fetch the image banner if the current entity has one.
     if ($entity->hasField('field_banner_image') && !$entity->get('field_banner_image')->isEmpty()) {
       $banner_image = $entity->get('field_banner_image')->first();
+    }
+
+    // If banner is empty and we are dealing with a node, load the theme term for that node.
+    // Otherwise if we're dealing with a term, assign directly.
+    // Finally try to extract a banner image from the term.
+    if (empty($banner_image)) {
+      if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
+        $term = $entity->get('field_subtheme')->entity;
+
+        if (empty($term)) { return; }
+      }
+      elseif ($entity instanceof Term) {
+        $term = $entity;
+      }
+
+      $banner_image = $term->get('field_banner_image')->first();
     }
 
     if (!empty($banner_image)) {

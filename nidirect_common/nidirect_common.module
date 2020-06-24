@@ -611,11 +611,14 @@ function nidirect_common_preprocess_page(&$variables) {
         // Remove the current term from the list of ancestors.
         array_shift($ancestors);
 
-        foreach ($ancestors as $term) {
-          $banner_image = $term->get('field_banner_image')->first();
+        // Navigate up only to 2 ancestor terms.
+        for ($i=0; $i<2; $i++) {
+          if (array_key_exists($i, $ancestors)) {
+            $banner_image = $ancestors[$i]->get('field_banner_image')->first();
 
-          if ($banner_image) {
-            break;
+            if ($banner_image) {
+              break;
+            }
           }
         }
       }

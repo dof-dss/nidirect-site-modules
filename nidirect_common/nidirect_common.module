@@ -568,38 +568,18 @@ function nidirect_common_preprocess_page(&$variables) {
     $variables['term'] = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
   }
 
-  $node = $variables['node'];
-
   // Apply link manager library to all non-admin pages.
   $variables['#attached']['library'][] = 'nidirect_common/link_manager';
 
+  // Assign oour banner image entity, either a node or a taxonomy term.
+  $entity = $variables['node'] ?? $variables['term'];
+
   // Fetch and display the node or theme banner image.
-  if (!empty($node)) {
-    if ($node->hasField('field_banner_image') && !$node->get('field_banner_image')->isEmpty()) {
-      $banner_image = $node->get('field_banner_image')->first();
-    }
+  if (!empty($entity)) {
 
-    // Try fetching image from subtheme term.
-    if (empty($banner_image) && $node->hasField('field_subtheme')) {
-
-      $term = $node->get('field_subtheme')->entity;
-
-      if (empty($term)) {
-        return;
-      }
-
-      $banner_image = $term->get('field_banner_image')->first();
-
-      // Try fetching image from the parent term.
-      if (empty($banner_image)) {
-        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
-        $parents = $storage->loadParents($term->id());
-
-        if (!empty($parents)) {
-          $parent = array_shift($parents);
-          $banner_image = $parent->get('field_banner_image')->first();
-        }
-      }
+    // Fetch the image banner if the current entity has one.
+    if ($entity->hasField('field_banner_image') && !$entity->get('field_banner_image')->isEmpty()) {
+      $banner_image = $entity->get('field_banner_image')->first();
     }
 
     if (!empty($banner_image)) {

@@ -245,7 +245,8 @@ function nidirect_common_page_attachments_alter(array &$attachments) {
   ];
 
   if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
-    // 1 == Yes, 2 == No. See ClientsideValidationjQuerySettingsForm::buildForm().
+    // 1 == Yes, 2 == No.
+    // See ClientsideValidationjQuerySettingsForm::buildForm().
     $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
   }
 }
@@ -269,7 +270,8 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-  // Add a placeholder and description to the title field.  This cannot be done in the UI.
+  // Add a placeholder and description to the title field.
+  // This cannot be done in the UI.
   $title_placeholder =& $form['title']['widget'][0]['value']['#placeholder'];
   if (empty($title_placeholder)) {
     $title_placeholder = t('Enter a descriptive and concise title (60 characters or less is best)');
@@ -544,7 +546,8 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
   }
 
   if ($context->getType() == 'webform') {
-    // Fix obscure off-canvas JS bug by repointing the URL to the underlying canonical test route name.
+    // Fix obscure off-canvas JS bug by repointing the URL to the underlying
+    // canonical test route name.
     if (!empty($build['actions']['secondary']['entity.node.webform.test_form'])) {
       $build['actions']['secondary']['entity.node.webform.test_form']['#url'] = Url::fromRoute(
         'entity.webform.test_form', ['webform' => $context->get('webform')->target_id]
@@ -560,7 +563,6 @@ function nidirect_common_preprocess_page(&$variables) {
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     return;
   }
-
 
   // Similar to how core adds the node object to $variables, we will add
   // the term if we are on a taxonomy page.
@@ -590,7 +592,9 @@ function nidirect_common_preprocess_page(&$variables) {
       if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
         $term = $entity->get('field_subtheme')->entity;
 
-        if (empty($term)) { return; }
+        if (empty($term)) {
+          return;
+        }
       }
       elseif ($entity instanceof Term) {
         $term = $entity;
@@ -611,8 +615,8 @@ function nidirect_common_preprocess_page(&$variables) {
         // Remove the current term from the list of ancestors.
         array_shift($ancestors);
 
-        // Navigate up only to 2 ancestor terms.
-        for ($i=0; $i<2; $i++) {
+        // Navigate to 2 ancestor terms.
+        for ($i = 0; $i < 2; $i++) {
           if (array_key_exists($i, $ancestors)) {
             $banner_image = $ancestors[$i]->get('field_banner_image')->first();
 

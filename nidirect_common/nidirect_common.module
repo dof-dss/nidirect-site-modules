@@ -147,6 +147,7 @@ function nidirect_common_preprocess_views_view(&$variables) {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
   }
@@ -581,27 +582,32 @@ function nidirect_common_preprocess_page(&$variables) {
   if (!empty($entity)) {
 
 
-    $banner_image = _retrieve_banner_image($entity);
+    $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
+    $footer_text = _retrieve_hierarchical_field($entity, 'field_additional_info');
 
     if (!empty($banner_image)) {
       $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
     }
+
+    if (!empty($footer_text)) {
+      $variables['page']['additional_info'] = $footer_text->view('default');
+    }
   }
 }
 
-function _retrieve_banner_image(EntityInterface $entity) {
+function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
 
-  $banner_image = null;
+  $field_value = null;
 
   // Fetch the image banner if the current entity has one.
-  if ($entity->hasField('field_banner_image') && !$entity->get('field_banner_image')->isEmpty()) {
-    $banner_image = $entity->get('field_banner_image')->first();
+  if ($entity->hasField($field) && !$entity->get($field)->isEmpty()) {
+    $field_value = $entity->get($field)->first();
   }
 
   // If banner is empty and we are dealing with a node, load the theme term
   // for that node. Otherwise if we're dealing with a term, assign directly.
   // Finally try to extract a banner image from the term.
-  if (empty($banner_image)) {
+  if (empty($field_value)) {
     if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
       $term = $entity->get('field_subtheme')->entity;
 
@@ -614,13 +620,13 @@ function _retrieve_banner_image(EntityInterface $entity) {
     }
 
     if (!empty($term)) {
-      $banner_image = $term->get('field_banner_image')->first();
+      $field_value = $term->get($field)->first();
     }
   }
 
   // If we still don't have a banner image, try the parent and grandparent
   // terms for images.
-  if (empty($banner_image) && !empty($term)) {
+  if (empty($field_value) && !empty($term)) {
     // This issue https://www.drupal.org/node/2019905
     // prevents us from using ->loadParents() as we won't
     // retrieve the root term.
@@ -633,9 +639,9 @@ function _retrieve_banner_image(EntityInterface $entity) {
       // Navigate to 2 ancestor terms.
       for ($i = 0; $i < 2; $i++) {
         if (array_key_exists($i, $ancestors)) {
-          $banner_image = $ancestors[$i]->get('field_banner_image')->first();
+          $field_value = $ancestors[$i]->get($field)->first();
 
-          if ($banner_image) {
+          if ($field_value) {
             break;
           }
         }
@@ -643,5 +649,5 @@ function _retrieve_banner_image(EntityInterface $entity) {
     }
   }
 
-  return $banner_image;
+  return $field_value;
 }

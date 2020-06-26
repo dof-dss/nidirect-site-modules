@@ -88,6 +88,7 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
    */
   public function settingsSummary() {
     $summary = [];
+    $summary[] = $this->t('Ancestor depth: @ancestor_depth', ['@ancestor_depth' => $this->getSetting('ancestor_depth')]);
     return $summary;
   }
 

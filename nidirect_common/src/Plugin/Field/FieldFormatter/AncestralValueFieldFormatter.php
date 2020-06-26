@@ -15,8 +15,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @FieldFormatter(
  *   id = "ancestral_value_field_formatter",
- *   label = @Translation("Ancestral value formatter"),
- *   description = @Translation("Fetch value from the current field, parent or grandparent."),
+ *   label = @Translation("Ancestral value"),
+ *   description = @Translation("Fetch value from the current field or a configured number of ancestor terms"),
  *   field_types = {
  *     "text",
  *     "text_long",
@@ -61,8 +61,8 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
    */
   public static function defaultSettings() {
     return [
-        'ancestor_depth' => '2',
-      ] + parent::defaultSettings();
+      'ancestor_depth' => '2',
+    ] + parent::defaultSettings();
   }
 
   /**

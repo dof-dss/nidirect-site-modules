@@ -59,7 +59,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity.manager')->getStorage('linkit_profile'),
+      $container->get('entity_type.manager')->getStorage('linkit_profile'),
       $container->get('linkit.result_manager')
     );
   }
@@ -79,7 +79,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    */
   public function autocomplete(Request $request, string $linkit_profile_id) {
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
-    $string = Unicode::strtolower($request->query->get('q'));
+    $string = mb_strtolower($request->query->get('q'));
 
     $matches = $this->resultManager->getResults($this->linkitProfile, $string);
 

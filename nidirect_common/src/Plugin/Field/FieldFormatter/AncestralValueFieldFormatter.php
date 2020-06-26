@@ -50,14 +50,25 @@ class AncestralValueFieldFormatter extends FormatterBase {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
+    // If this entity doesn't have a value for the field, try the
+    // parent and grandparent entities which are identified from
+    // the sub_theme field.
+    if (!$items->count()) {
+      $entity = $items->getEntity();
 
-    foreach ($items as $delta => $item) {
-      $elements[$delta] = [
-        '#type' => 'processed_text',
-        '#text' => $item->value,
-        '#format' => $item->format,
-        '#langcode' => $item->getLangcode(),
-      ];
+      if ($entity->hasField('field_subtheme') && !$entity->get('field_subtheme')->isEmpty()) {
+        $term = $entity->get('field_subtheme')->entity;
+        // todo: try and load the field value from the term ancestors.
+      }
+    } else {
+      foreach ($items as $delta => $item) {
+        $elements[$delta] = [
+          '#type' => 'processed_text',
+          '#text' => $item->value,
+          '#format' => $item->format,
+          '#langcode' => $item->getLangcode(),
+        ];
+      }
     }
 
     return $elements;

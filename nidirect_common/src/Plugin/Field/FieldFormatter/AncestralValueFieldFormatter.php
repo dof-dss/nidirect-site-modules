@@ -60,7 +60,9 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
    * {@inheritdoc}
    */
   public static function defaultSettings() {
-    return parent::defaultSettings();
+    return [
+        'ancestor_depth' => '2',
+      ] + parent::defaultSettings();
   }
 
   /**
@@ -68,6 +70,15 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
    */
   public function settingsForm(array $form, FormStateInterface $form_state) {
     $elements = parent::settingsForm($form, $form_state);
+
+    $elements['ancestor_depth'] = [
+      '#title' => $this->t('Ancestor depth'),
+      '#description' => $this->t('The number of ancestors to try for a value.'),
+      '#type' => 'number',
+      '#min' => 1,
+      '#max' => 10,
+      '#default_value' => $this->getSetting('ancestor_depth'),
+    ];
 
     return $elements;
   }
@@ -85,6 +96,8 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = [];
+    $settings = $this->getSettings();
+
     // If this entity doesn't have a value for the field, try the
     // parent and grandparent entities which are identified from
     // the sub_theme field.
@@ -102,8 +115,8 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
         // Remove the current term from the list of ancestors.
         array_shift($ancestors);
 
-        // Navigate to 2 ancestor terms.
-        for ($i = 0; $i < 2; $i++) {
+        // Navigate the configured depth of ancestor terms.
+        for ($i = 0; $i < $settings['ancestor_depth']; $i++) {
           if (array_key_exists($i, $ancestors)) {
             $field = $ancestors[$i]->get('field_additional_info');
             $items = $field->getIterator();

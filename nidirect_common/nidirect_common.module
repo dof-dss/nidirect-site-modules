@@ -581,16 +581,10 @@ function nidirect_common_preprocess_page(&$variables) {
   // Fetch and display the node or theme banner image and footer text.
   if (!empty($entity)) {
 
-
     $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
-    $footer_text = _retrieve_hierarchical_field($entity, 'field_additional_info');
 
     if (!empty($banner_image)) {
       $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
-    }
-
-    if (!empty($footer_text)) {
-      $variables['page']['additional_info'] = $footer_text->view('default');
     }
   }
 }

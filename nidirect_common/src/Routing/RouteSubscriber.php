@@ -13,8 +13,7 @@ class RouteSubscriber extends RouteSubscriberBase {
 
   /**
    * Override from base class to set lighter
-   * event priority; execute after taxonomy_access_fix
-   * RouteSubscriber callbacks.
+   * event priority than linkit module.
    *
    * See https://www.drupal.org/docs/8/creating-custom-modules/subscribe-to-and-dispatch-events#s-event-subscriber-priorities.
    *

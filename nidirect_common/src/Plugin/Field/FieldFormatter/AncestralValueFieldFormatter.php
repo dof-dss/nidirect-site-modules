@@ -102,12 +102,15 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
         // Remove the current term from the list of ancestors.
         array_shift($ancestors);
 
-        foreach ($ancestors as $ancestor) {
-          $field = $ancestor->get('field_additional_info');
-          $items = $field->getIterator();
+        // Navigate to 2 ancestor terms.
+        for ($i = 0; $i < 2; $i++) {
+          if (array_key_exists($i, $ancestors)) {
+            $field = $ancestors[$i]->get('field_additional_info');
+            $items = $field->getIterator();
 
-          if ($items->count()) {
-            break;
+            if ($items->count()) {
+              break;
+            }
           }
         }
       }

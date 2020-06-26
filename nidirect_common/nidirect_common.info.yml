@@ -6,3 +6,5 @@ package: 'NIDirect'
 dependencies:
   - drupal:help
   - drupal:block
+  - linkit
+  - media

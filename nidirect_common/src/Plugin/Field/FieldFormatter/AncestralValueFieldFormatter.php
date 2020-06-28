@@ -62,6 +62,7 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
   public static function defaultSettings() {
     return [
       'ancestor_depth' => '2',
+      'ancestors_only' => FALSE,
     ] + parent::defaultSettings();
   }
 
@@ -80,6 +81,13 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
       '#default_value' => $this->getSetting('ancestor_depth'),
     ];
 
+    $elements['ancestors_only'] = [
+      '#title' => $this->t('Only display ancestors values'),
+      '#description' => $this->t('Do not display value for current entity, only the ancestors.'),
+      '#type' => 'checkbox',
+      '#default_value' => $this->getSetting('ancestors_only'),
+    ];
+
     return $elements;
   }
 
@@ -89,6 +97,7 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
   public function settingsSummary() {
     $summary = [];
     $summary[] = $this->t('Ancestor depth: @ancestor_depth', ['@ancestor_depth' => $this->getSetting('ancestor_depth')]);
+    $summary[] = $this->t('Ancestors only: @ancestors_only', ['@ancestors_only' => $this->getSetting('ancestors_only') ? $this->t('True') : $this->t('False')]);
     return $summary;
   }
 

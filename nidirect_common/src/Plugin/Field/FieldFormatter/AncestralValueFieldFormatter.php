@@ -8,6 +8,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -108,15 +109,28 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
     $elements = [];
     $settings = $this->getSettings();
 
+    // Remove the items from the current entity if dealing with
+    // only ancestral values.
+    if ($items->count() && $settings['ancestors_only']) {
+      foreach ($items as $key => $item) {
+        $items->removeItem($key);
+      }
+    }
+
     // If this entity doesn't have a value for the field, try the
     // parent and grandparent entities which are identified from
     // the sub_theme field.
-    if (!$items->count()) {
+    if (!$items->count() || $settings['ancestors_only'] == '1') {
       $entity = $items->getEntity();
+      $term = null;
 
       if ($entity->hasField('field_subtheme') && !$entity->get('field_subtheme')->isEmpty()) {
         $term = $entity->get('field_subtheme')->entity;
+      } elseif ($entity instanceof Term) {
+        $term = $entity;
+      }
 
+      if ($term) {
         // This issue https://www.drupal.org/node/2019905
         // prevents us from using ->loadParents() as we won't
         // retrieve the root term.

@@ -122,11 +122,12 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
     // the sub_theme field.
     if (!$items->count() || $settings['ancestors_only'] == '1') {
       $entity = $items->getEntity();
-      $term = null;
+      $term = NULL;
 
       if ($entity->hasField('field_subtheme') && !$entity->get('field_subtheme')->isEmpty()) {
         $term = $entity->get('field_subtheme')->entity;
-      } elseif ($entity instanceof Term) {
+      }
+      elseif ($entity instanceof Term) {
         $term = $entity;
       }
 

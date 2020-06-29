@@ -281,9 +281,16 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
 
             // User response must match all correct answers or a set number.
             if ($answer['match_all_answers']) {
-              // Compare the users responses to the correct answers for this question.
-              $incorrect = array_diff_assoc(array_values($user_responses[$id]), array_values($answer['correct_answer']));
-              $passed = (count($incorrect) == 0) ? TRUE : FALSE;
+
+              // If the total number of responses doesn't match total of
+              // correct answers then fail this question.
+              if (count($user_responses[$id]) != count($answer['correct_answer'])) {
+                $passed = FALSE;
+              } else {
+                // Compare the users responses to the correct answers for this question.
+                $incorrect = array_diff_assoc(array_values($user_responses[$id]), array_values($answer['correct_answer']));
+                $passed = (count($incorrect) == 0) ? TRUE : FALSE;
+              }
             }
             else {
               // Preliminary check that we meet the minimum number of answers.

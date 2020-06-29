@@ -590,13 +590,15 @@ function nidirect_common_preprocess_page(&$variables) {
 }
 
 /**
- *  Returns a value for a field using ancestorial lookup.
+ * Returns a value for a field using ancestorial lookup.
  *
- * @param EntityInterface $entity
+ * @param Drupal\Core\Entity\EntityInterface $entity
+ *   Node or Term entity.
  * @param string $field
+ *   Machine name of the field to lookup.
  *
- * @return \Drupal\Core\TypedData\TypedDataInterface|void|null
-
+ * @return string|null
+ *   Value for the field, it there is one.
  */
 function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
 

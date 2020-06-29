@@ -104,7 +104,8 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
  * Form alter hook for the LinkIt dialogue box
  * presented in the WYSIWYG editor.
  */
-function nidirect_common_form_editor_link_dialog_alter(&$form, FormStateInterface $form_state, $form_id) {
+function nidirect_common_form_linkit_editor_dialog_form_alter(array &$form, FormStateInterface $form_state) {
+
   // Hide option to open link in new window.
   $form['linkit_attributes']['target']['#access'] = FALSE;
 
@@ -267,26 +268,25 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
-  // Add a placeholder and description to the title field.  This cannot be done in the UI.
-  $title_placeholder =& $form['title']['widget'][0]['value']['#placeholder'];
-  if (empty($title_placeholder)) {
-    $title_placeholder = t('Enter a descriptive and concise title (60 characters or less is best)');
-  }
+  // Add a description to the title field.  This cannot be done in the UI.
   if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'], $result)) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
       $title_description = t('
-          The title appears in Google search results. A good title is essential to helping users decide if the
-          content will be relevant to them. Google truncates titles more than 60 to 70 characters in length.
+          Title should be descriptive and concise (60 characters or less). A good title is essential to helping users decide if the
+          content will be relevant to them. Google truncates titles longer than 60 to 70 characters.
         ');
     }
   }
 
   // Update description for Hide Content flag.
   if (NestedArray::keyExists($form, ['flag', 'hide_content'])) {
-    $form['flag']['hide_content']['#description'] = t('
-      Check this box to prevent links to this page appearing in navigation menus and landing pages.
-    ');
+    $hide_content_description =& $form['flag']['hide_content']['#description'];
+    if (empty($hide_content_description)) {
+      $hide_content_description = t('
+          Check this box to prevent links to this page appearing in navigation menus and landing pages.
+        ');
+    }
   }
 
   // Hide Featured Content flag.
@@ -299,9 +299,12 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 
   // Update description for Table of Contents option.
   if (array_key_exists('field_toc_enable', $form)) {
-    $form['field_toc_enable']['widget']['value']['#description'] = t(
-      'Check this box to display a list of quick links to Heading 2s on this page'
-    );
+    $field_toc_enable_description =& $form['field_toc_enable']['widget']['value']['#description'];
+    if (empty($field_toc_enable_description)) {
+      $field_toc_enable_description = t(
+        'Enable to display a list of quick links to Heading 2s on the page.'
+      );
+    }
   }
 
   // Turn off client-side validation on node base forms;

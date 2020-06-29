@@ -589,9 +589,18 @@ function nidirect_common_preprocess_page(&$variables) {
   }
 }
 
+/**
+ *  Returns a value for a field using ancestorial lookup.
+ *
+ * @param EntityInterface $entity
+ * @param string $field
+ *
+ * @return \Drupal\Core\TypedData\TypedDataInterface|void|null
+
+ */
 function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
 
-  $field_value = null;
+  $field_value = NULL;
 
   // Fetch the image banner if the current entity has one.
   if ($entity->hasField($field) && !$entity->get($field)->isEmpty()) {

@@ -286,8 +286,10 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
               // correct answers then fail this question.
               if (count($user_responses[$id]) != count($answer['correct_answer'])) {
                 $passed = FALSE;
-              } else {
-                // Compare the users responses to the correct answers for this question.
+              }
+              else {
+                // Compare the users responses to the correct answers for
+                // this question.
                 $incorrect = array_diff_assoc(array_values($user_responses[$id]), array_values($answer['correct_answer']));
                 $passed = (count($incorrect) == 0) ? TRUE : FALSE;
               }

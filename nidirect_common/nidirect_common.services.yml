@@ -2,3 +2,8 @@ services:
   nidirect_common.invalidate_taxonomy_list_cache_tags:
     class: Drupal\nidirect_common\InvalidateTaxonomyListCacheTags
     arguments: ['@cache_tags.invalidator', '@entity_type.manager']
+
+  nidirect_common.route_subscriber:
+    class: Drupal\nidirect_common\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

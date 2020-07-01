@@ -576,12 +576,17 @@ function nidirect_common_preprocess_page(&$variables) {
   // Apply link manager library to all non-admin pages.
   $variables['#attached']['library'][] = 'nidirect_common/link_manager';
 
+  // Sometimes $variables['node'] is not a node object, but just contains the nid as a string,
+  // so we'll avoid errors and allow for that here.
+  if (isset($variables['node']) && is_string($variables['node'])) {
+    $variables['node'] = Node::load($variables['node']);
+  }
+
   // Assign oour banner image entity, either a node or a taxonomy term.
   $entity = $variables['node'] ?? $variables['term'];
 
   // Fetch and display the node or theme banner image and footer text.
   if (!empty($entity)) {
-
     $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {

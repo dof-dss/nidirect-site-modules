@@ -3,12 +3,16 @@
 ]
 %}
 <div >
+  {% if introduction %}
   <div class="quiz-introduction">
     {{ introduction }}
   </div>
+  {% endif %}
+  {% if result %}
   <div {{ attributes.addClass(result_classes) }}>
     {{ result }}
   </div>
+  {%  endif %}
   {% if display_score %}
     <h3>{% trans %}You scored {{ score }} out of {{ max_score }}{% endtrans %}</h3>
     {% if pass_score > 0 %}

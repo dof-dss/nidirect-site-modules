@@ -582,7 +582,7 @@ function nidirect_common_preprocess_page(&$variables) {
     $variables['node'] = Node::load($variables['node']);
   }
 
-  // Assign oour banner image entity, either a node or a taxonomy term.
+  // Assign our banner image entity, either a node or a taxonomy term.
   $entity = $variables['node'] ?? $variables['term'];
 
   // Fetch and display the node or theme banner image and footer text.

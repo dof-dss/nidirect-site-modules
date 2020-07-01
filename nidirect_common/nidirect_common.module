@@ -15,6 +15,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
 use Nette\Utils\Arrays;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -146,6 +147,7 @@ function nidirect_common_preprocess_views_view(&$variables) {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
   }
@@ -244,7 +246,8 @@ function nidirect_common_page_attachments_alter(array &$attachments) {
   ];
 
   if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
-    // 1 == Yes, 2 == No. See ClientsideValidationjQuerySettingsForm::buildForm().
+    // 1 == Yes, 2 == No.
+    // See ClientsideValidationjQuerySettingsForm::buildForm().
     $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
   }
 }
@@ -545,7 +548,8 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
   }
 
   if ($context->getType() == 'webform') {
-    // Fix obscure off-canvas JS bug by repointing the URL to the underlying canonical test route name.
+    // Fix obscure off-canvas JS bug by repointing the URL to the underlying
+    // canonical test route name.
     if (!empty($build['actions']['secondary']['entity.node.webform.test_form'])) {
       $build['actions']['secondary']['entity.node.webform.test_form']['#url'] = Url::fromRoute(
         'entity.webform.test_form', ['webform' => $context->get('webform')->target_id]
@@ -562,42 +566,94 @@ function nidirect_common_preprocess_page(&$variables) {
     return;
   }
 
-  $node = $variables['node'];
+  // Similar to how core adds the node object to $variables, we will add
+  // the term if we are on a taxonomy page.
+  if (\Drupal::routeMatch()->getRouteName() == 'entity.taxonomy_term.canonical') {
+    $tid = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+    $variables['term'] = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
+  }
 
   // Apply link manager library to all non-admin pages.
   $variables['#attached']['library'][] = 'nidirect_common/link_manager';
 
-  // Fetch and display the node or theme banner image.
-  if (!empty($node)) {
-    if ($node->hasField('field_banner_image') && !$node->get('field_banner_image')->isEmpty()) {
-      $banner_image = $node->get('field_banner_image')->first();
-    }
+  // Assign oour banner image entity, either a node or a taxonomy term.
+  $entity = $variables['node'] ?? $variables['term'];
 
-    // Try fetching image from subtheme term.
-    if (empty($banner_image) && $node->hasField('field_subtheme')) {
+  // Fetch and display the node or theme banner image and footer text.
+  if (!empty($entity)) {
 
-      $term = $node->get('field_subtheme')->entity;
-
-      if (empty($term)) {
-        return;
-      }
-
-      $banner_image = $term->get('field_banner_image')->first();
-
-      // Try fetching image from the parent term.
-      if (empty($banner_image)) {
-        $storage = \Drupal::service('entity_type.manager')->getStorage('taxonomy_term');
-        $parents = $storage->loadParents($term->id());
-
-        if (!empty($parents)) {
-          $parent = array_shift($parents);
-          $banner_image = $parent->get('field_banner_image')->first();
-        }
-      }
-    }
+    $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {
       $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
     }
   }
+}
+
+/**
+ * Returns a value for a field using ancestorial lookup.
+ *
+ * @param Drupal\Core\Entity\EntityInterface $entity
+ *   Node or Term entity.
+ * @param string $field
+ *   Machine name of the field to lookup.
+ *
+ * @return string|null
+ *   Value for the field, it there is one.
+ */
+function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
+
+  $field_value = NULL;
+
+  // Fetch the image banner if the current entity has one.
+  if ($entity->hasField($field) && !$entity->get($field)->isEmpty()) {
+    $field_value = $entity->get($field)->first();
+  }
+
+  // If banner is empty and we are dealing with a node, load the theme term
+  // for that node. Otherwise if we're dealing with a term, assign directly.
+  // Finally try to extract a banner image from the term.
+  if (empty($field_value)) {
+    if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
+      $term = $entity->get('field_subtheme')->entity;
+
+      if (empty($term)) {
+        return;
+      }
+    }
+    elseif ($entity instanceof Term) {
+      $term = $entity;
+    }
+
+    if (!empty($term)) {
+      $field_value = $term->get($field)->first();
+    }
+  }
+
+  // If we still don't have a banner image, try the parent and grandparent
+  // terms for images.
+  if (empty($field_value) && !empty($term)) {
+    // This issue https://www.drupal.org/node/2019905
+    // prevents us from using ->loadParents() as we won't
+    // retrieve the root term.
+    $ancestors = array_values(\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($term->id()));
+
+    if (!empty($ancestors)) {
+      // Remove the current term from the list of ancestors.
+      array_shift($ancestors);
+
+      // Navigate to 2 ancestor terms.
+      for ($i = 0; $i < 2; $i++) {
+        if (array_key_exists($i, $ancestors)) {
+          $field_value = $ancestors[$i]->get($field)->first();
+
+          if ($field_value) {
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  return $field_value;
 }

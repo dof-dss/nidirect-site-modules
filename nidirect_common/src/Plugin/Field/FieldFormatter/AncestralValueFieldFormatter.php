@@ -137,8 +137,11 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
         // retrieve the root term.
         $ancestors = array_values($this->entityTypeManager->getStorage('taxonomy_term')->loadAllParents($term->id()));
 
-        // Remove the current term from the list of ancestors.
-        array_shift($ancestors);
+        // Remove the current term from the list of ancestors if the current
+        // entity is a taxonomy term.
+        if (\Drupal::routeMatch()->getParameter('taxonomy_term')) {
+          array_shift($ancestors);
+        }
 
         // Navigate the configured depth of ancestor terms.
         for ($i = 0; $i < $settings['ancestor_depth']; $i++) {

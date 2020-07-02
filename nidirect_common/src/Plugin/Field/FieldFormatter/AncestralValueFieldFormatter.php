@@ -8,6 +8,7 @@ use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -34,11 +35,19 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
   protected $entityTypeManager;
 
   /**
+   * Core Route match service.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $routeMatch;
+
+  /**
    * Create an instance of ContentModerationStateFormatter.
    */
-  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct($plugin_id, $plugin_definition, FieldDefinitionInterface $field_definition, array $settings, $label, $view_mode, array $third_party_settings, EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match) {
     parent::__construct($plugin_id, $plugin_definition, $field_definition, $settings, $label, $view_mode, $third_party_settings);
     $this->entityTypeManager = $entity_type_manager;
+    $this->routeMatch = $route_match;
   }
 
   /**
@@ -53,7 +62,8 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
       $configuration['label'],
       $configuration['view_mode'],
       $configuration['third_party_settings'],
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('current_route_match')
     );
   }
 
@@ -137,8 +147,11 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
         // retrieve the root term.
         $ancestors = array_values($this->entityTypeManager->getStorage('taxonomy_term')->loadAllParents($term->id()));
 
-        // Remove the current term from the list of ancestors.
-        array_shift($ancestors);
+        // Remove the current term from the list of ancestors if the current
+        // entity is a taxonomy term.
+        if ($this->routeMatch->getParameter('taxonomy_term')) {
+          array_shift($ancestors);
+        }
 
         // Navigate the configured depth of ancestor terms.
         for ($i = 0; $i < $settings['ancestor_depth']; $i++) {

@@ -37,7 +37,7 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
   /**
    * Core Route match service.
    *
-   * @var \Drupal\Core\Routing\CurrentRouteMatch;
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
   protected $routeMatch;
 

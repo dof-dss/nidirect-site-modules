@@ -45,6 +45,11 @@ jobs:
             composer create-project drupal-composer/drupal-project:8.x-dev ${CIRCLE_WORKING_DIRECTORY} --no-interaction
             mkdir -p ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom
       - run:
+          name: Download dependent contrib modules.
+          command: |
+            cd ${CIRCLE_WORKING_DIRECTORY}
+            composer require drupal/webform --no-interaction --optimize-autoloader
+      - run:
           name: Move custom code into position
           command: mv /home/circleci/nidirect-site-modules ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom
       - run:

@@ -644,8 +644,12 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
     $ancestors = array_values(\Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadAllParents($term->id()));
 
     if (!empty($ancestors)) {
-      // Remove the current term from the list of ancestors.
-      array_shift($ancestors);
+
+      // Remove the current term from the list of ancestors if the current
+      // entity is a taxonomy term.
+      if (\Drupal::routeMatch()->getParameter('taxonomy_term')) {
+        array_shift($ancestors);
+      }
 
       // Navigate to 2 ancestor terms.
       for ($i = 0; $i < 2; $i++) {

@@ -162,7 +162,7 @@ function nidirect_gp_gp_practice_form_submit(&$form, FormStateInterface $form_st
     // If we have a URI value then we want to use fixed labels for the link
     // text on these fields.
     if ($field_id == 'field_gp_prescriptions') {
-      $field[0]['title'] = t('Online appointments');
+      $field[0]['title'] = t('Repeat prescriptions');
     }
 
     if ($field_id == 'field_gp_appointments') {

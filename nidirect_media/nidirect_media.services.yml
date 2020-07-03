@@ -1,5 +1,0 @@
-services:
-  nidirect_media.route_subscriber:
-    class: Drupal\nidirect_media\Routing\RouteSubscriber
-    tags:
-      - { name: event_subscriber }

@@ -583,7 +583,11 @@ function nidirect_common_preprocess_page(&$variables) {
   }
 
   // Assign our banner image entity, either a node or a taxonomy term.
-  $entity = $variables['node'] ?? $variables['term'];
+  if (isset($variables['node'])) {
+    $entity = $variables['node'];
+  } elseif (isset($variables['term'])) {
+    $entity = $variables['term'];
+  }
 
   // Fetch and display the node or theme banner image and footer text.
   if (!empty($entity)) {

@@ -547,7 +547,7 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
     $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
   }
 
-  if ($context->getType() == 'webform') {
+  if ($context instanceof Node && $context->getType() == 'webform') {
     // Fix obscure off-canvas JS bug by repointing the URL to the underlying
     // canonical test route name.
     if (!empty($build['actions']['secondary']['entity.node.webform.test_form'])) {

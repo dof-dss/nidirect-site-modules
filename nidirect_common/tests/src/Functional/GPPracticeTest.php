@@ -32,8 +32,6 @@ class GPPracticeTest extends BrowserTestBase {
    * config/schema that does not match the actual settings exported
    * (eu_cookie_compliance and google_analytics_counter, I'm looking at you).
    *
-   * @see \Drupal\Core\Config\Development\ConfigSchemaChecker
-   *
    * @var bool
    */
   protected $strictConfigSchema = FALSE;

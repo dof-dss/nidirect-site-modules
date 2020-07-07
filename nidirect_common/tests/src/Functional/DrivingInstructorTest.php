@@ -35,7 +35,7 @@ class DrivingInstructorTest extends BrowserTestBase {
    *
    * @var bool
    */
-  protected $strictConfigSchema = FALSE;
+  /*protected $strictConfigSchema = FALSE;*/
 
   /**
    * Tests the behavior when creating the node.

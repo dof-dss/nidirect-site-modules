@@ -27,6 +27,16 @@ class GPPracticeTest extends BrowserTestBase {
   protected $profile = 'test_profile';
 
   /**
+   * Set to TRUE to strict check all configuration saved.
+   * Need to set to FALSE here because some contrib modules have a schema in
+   * config/schema that does not match the actual settings exported
+   * (eu_cookie_compliance and google_analytics_counter, I'm looking at you).
+   *
+   * @var bool
+   */
+  protected $strictConfigSchema = FALSE;
+
+  /**
    * Tests the behavior when creating the node with two fields.
    */
   public function testVanillaNodeCreate() {

@@ -1,12 +1,3 @@
-media_entity_browser:
-  css:
-    theme:
-      css/view-media-entity-browser.css: {}
-  js:
-    js/view-media-entity-browser.js: {}
-  dependencies:
-    - core/jquery
-    - core/drupal
 telephone_plus_predefined_titles:
   js:
     js/telephone-plus-predefined-titles.js: {}

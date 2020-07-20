@@ -125,7 +125,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     }
 
     // Invalidate the breadcrumb cache if the node is updated.
-      $cache_tags[] = 'node:' . $node->id();
+    $cache_tags[] = 'node:' . $node->id();
 
     // Assemble a new breadcrumb object, add the links and set
     // a URL path cache context so it varies as you move from one

@@ -124,11 +124,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    // If it's a webform node, we need to add a cache tag for the
-    // node currently being viewed.
-    if ($node->getType() == 'webform') {
-      $cache_tags[] = 'node:' . $node->id();
-    }
+    // Invalidate the breadcrumb cache if the node is updated.
+    $cache_tags[] = 'node:' . $node->id();
 
     // Assemble a new breadcrumb object, add the links and set
     // a URL path cache context so it varies as you move from one

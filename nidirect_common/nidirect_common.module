@@ -601,6 +601,23 @@ function nidirect_common_preprocess_page(&$variables) {
 }
 
 /**
+ * Implements hook_preprocess_status_messages().
+ */
+function nidirect_common_preprocess_status_messages(&$variables) {
+  // Add additional explanation to to the oEmbed resource not found message.
+  if (isset($variables['message_list']['error'])) {
+    $error_messages = $variables['message_list']['error'];
+
+    foreach ($error_messages as $index => $message) {
+      if ($message == 'Could not retrieve the oEmbed resource.') {
+        $message .= t("This may be due to media being inaccessible or set to private.");
+        $variables['message_list']['error'][$index] = $message;
+      }
+    }
+  }
+}
+
+/**
  * Returns a value for a field using ancestorial lookup.
  *
  * @param Drupal\Core\Entity\EntityInterface $entity

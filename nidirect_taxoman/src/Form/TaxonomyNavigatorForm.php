@@ -4,6 +4,7 @@ namespace Drupal\nidirect_taxoman\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -47,6 +48,7 @@ class TaxonomyNavigatorForm extends FormBase {
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),
+        $this->t('Operations'),
       ],
       '#empty' => $this->t('No terms found.'),
       '#tableselect' => FALSE,
@@ -75,6 +77,22 @@ class TaxonomyNavigatorForm extends FormBase {
         '#default_value' => $value->weight,
         '#attributes' => ['class' => [$group_class]],
       ];
+
+      $form['items'][$key]['operations'] = [
+        '#type' => 'operations',
+        '#links' => [],
+      ];
+
+      $form['items'][$key]['operations']['#links']['edit'] = [
+        'title' => t('Edit'),
+        'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $value->tid], ['query' => \Drupal::destination()->getAsArray()]),
+      ];
+
+      $form['items'][$key]['operations']['#links']['delete'] = [
+        'title' => t('Delete'),
+        'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $value->tid], ['query' => \Drupal::destination()->getAsArray()]),
+      ];
+
     }
 
     $form['actions'] = ['#type' => 'actions'];

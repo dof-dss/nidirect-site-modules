@@ -18,7 +18,7 @@ class TaxonomyNavigatorForm extends FormBase {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-  
+
   /**
    * {@inheritdoc}
    */
@@ -93,6 +93,11 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['items'][$key]['operations'] = [
         '#type' => 'operations',
         '#links' => [],
+      ];
+
+      $form['items'][$key]['operations']['#links']['view'] = [
+        'title' => t('View'),
+        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $value->tid]),
       ];
 
       $form['items'][$key]['operations']['#links']['edit'] = [

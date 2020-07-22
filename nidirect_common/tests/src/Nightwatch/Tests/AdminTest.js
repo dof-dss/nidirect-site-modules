@@ -1,5 +1,5 @@
 module.exports = {
-  '@tags': ['nidirect', 'nidirect_workflow'],
+  '@tags': ['nidirect'],
 
   'Test login': browser => {
     browser

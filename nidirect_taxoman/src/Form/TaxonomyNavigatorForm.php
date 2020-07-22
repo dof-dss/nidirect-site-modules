@@ -58,6 +58,12 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $vocabulary = $this->entityTypeManager->getStorage("taxonomy_vocabulary")->load($vocabulary_id);
 
+    $form['vocabulary_title'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h1',
+      '#value' => t('%vocabulary taxonomy', ['%vocabulary' => $vocabulary->label()]),
+    ];
+
     $breadcrumb = new Breadcrumb();
 
     $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $vocabulary->id()]);

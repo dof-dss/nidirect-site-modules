@@ -61,7 +61,7 @@ class TaxonomyNavigatorForm extends FormBase {
     $form['vocabulary_title'] = [
       '#type' => 'html_tag',
       '#tag' => 'h1',
-      '#value' => t('%vocabulary taxonomy', ['%vocabulary' => $vocabulary->label()]),
+      '#value' => t('@vocabulary taxonomy', ['@vocabulary' => $vocabulary->label()]),
     ];
 
     $breadcrumb = new Breadcrumb();

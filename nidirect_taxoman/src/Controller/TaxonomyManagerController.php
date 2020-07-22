@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_taxoman\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -30,9 +31,24 @@ class TaxonomyManagerController extends ControllerBase {
    * Index.
    */
   public function index() {
-    return [
-      '#markup' => 'Display taxonomy manager options',
+
+    $vocabularies = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->loadMultiple();
+
+    foreach ($vocabularies as $vocabulary) {
+      $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxoman.taxonomy_navigator_form', [
+        'vocabulary' => $vocabulary->id(),
+      ]);
+    }
+
+    $build = [
+      '#theme' => 'item_list',
+      '#list_type' => 'ul',
+      '#title' => $this->t('Taxonomy navigator'),
+      '#items' => $links,
     ];
+
+    return $build;
   }
+
 
 }

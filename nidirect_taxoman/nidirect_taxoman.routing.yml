@@ -7,9 +7,11 @@ nidirect_taxoman.taxonomy_manager_controller_Index:
   requirements:
     _permission: 'access content'
 nidirect_taxoman.taxonomy_navigator_form:
-  path: '/admin/nidirect/taxonomymanager/navigator'
+  path: '/admin/nidirect/taxonomymanager/navigator/{vocabulary}/{term}'
   defaults:
     _form: '\Drupal\nidirect_taxoman\Form\TaxonomyNavigatorForm'
     _title: 'Taxonomy Navigator'
+    vocabulary: 'site_themes'
+    term: '0'
   requirements:
     _access: 'TRUE'

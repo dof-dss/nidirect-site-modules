@@ -18,7 +18,7 @@ class TaxonomyNavigatorForm extends FormBase {
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
-
+  
   /**
    * {@inheritdoc}
    */
@@ -39,12 +39,19 @@ class TaxonomyNavigatorForm extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    $entities = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree('site_themes', 0, 1, FALSE);
+
+    $route_params = $this->getRouteMatch()->getParameters();
+
+    $vocabulary = $route_params->get('vocabulary');
+    // TODO: Lookup parent tid for given vocabulary.
+    $tid = $route_params->get('term') ?? 0;
+
+    $entities = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary, $tid, 1, FALSE);
     $group_class = 'group-order-weight';
 
     $form['items'] = [
       '#type' => 'table',
-      '#caption' => $this->t('Items'),
+      '#caption' => $this->t(''),
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),
@@ -67,7 +74,12 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['items'][$key]['#weight'] = $value->weight;
 
       $form['items'][$key]['name'] = [
-        '#plain_text' => $value->name,
+        '#title' => $value->name,
+        '#type' => 'link',
+        '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
+          'vocabulary' => $vocabulary,
+          'term' => $value->tid],
+          ['query' => \Drupal::destination()->getAsArray()]),
       ];
 
       $form['items'][$key]['weight'] = [

@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_taxoman\Form;
 
+use Drupal\Core\Database\Database;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
@@ -20,11 +21,19 @@ class TaxonomyNavigatorForm extends FormBase {
   protected $entityTypeManager;
 
   /**
+   * Database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
+  protected $dbConnection;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->dbConnection = Database::getConnection('default', 'default');
     return $instance;
   }
 
@@ -50,13 +59,14 @@ class TaxonomyNavigatorForm extends FormBase {
     $terms = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary, $tid, 1, FALSE);
     $group_class = 'group-order-weight';
 
-    $form['items'] = [
+    $form['terms'] = [
       '#type' => 'table',
       // Todo: Display current tree as a breadcrumb trail in caption.
       '#caption' => $vocabulary,
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),
+        '',
         $this->t('Operations'),
       ],
       '#empty' => $this->t('No terms found.'),
@@ -72,10 +82,10 @@ class TaxonomyNavigatorForm extends FormBase {
 
     // Build rows.
     foreach ($terms as $key => $term) {
-      $form['items'][$key]['#attributes']['class'][] = 'draggable';
-      $form['items'][$key]['#weight'] = $term->weight;
+      $form['terms'][$key]['#attributes']['class'][] = 'draggable';
+      $form['terms'][$key]['#weight'] = $term->weight;
 
-      $form['items'][$key]['name'] = [
+      $form['terms'][$key]['name'] = [
         '#title' => $term->name,
         '#type' => 'link',
         '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
@@ -87,7 +97,7 @@ class TaxonomyNavigatorForm extends FormBase {
         ]),
       ];
 
-      $form['items'][$key]['weight'] = [
+      $form['terms'][$key]['weight'] = [
         '#type' => 'weight',
         '#title' => $this->t('Weight for @title', ['@title' => $term->name]),
         '#title_display' => 'invisible',
@@ -95,22 +105,27 @@ class TaxonomyNavigatorForm extends FormBase {
         '#attributes' => ['class' => [$group_class]],
       ];
 
-      $form['items'][$key]['operations'] = [
+      $form['terms'][$key]['tid'] = [
+        '#type' => 'hidden',
+        '#value' => $term->tid,
+      ];
+
+      $form['terms'][$key]['operations'] = [
         '#type' => 'operations',
         '#links' => [],
       ];
 
-      $form['items'][$key]['operations']['#links']['view'] = [
+      $form['terms'][$key]['operations']['#links']['view'] = [
         'title' => t('View'),
         'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->tid]),
       ];
 
-      $form['items'][$key]['operations']['#links']['edit'] = [
+      $form['terms'][$key]['operations']['#links']['edit'] = [
         'title' => t('Edit'),
         'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
       ];
 
-      $form['items'][$key]['operations']['#links']['delete'] = [
+      $form['terms'][$key]['operations']['#links']['delete'] = [
         'title' => t('Delete'),
         'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
       ];
@@ -140,9 +155,14 @@ class TaxonomyNavigatorForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Display result.
-    foreach ($form_state->getValues() as $key => $value) {
-      ksm($form_state->getValues());
+    $form_values = $form_state->getValues();
+    $terms = $form_values['terms'];
+    foreach ($terms as $term) {
+      // Todo: Improve the performance of updating weight.
+      $this->dbConnection->update('taxonomy_term_field_data')
+        ->fields(['weight' => $term['weight']])
+        ->condition('tid', $term['tid'], '=')
+        ->execute();
     }
   }
 

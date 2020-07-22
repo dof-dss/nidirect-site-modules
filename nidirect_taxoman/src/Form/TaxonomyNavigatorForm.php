@@ -5,8 +5,10 @@ namespace Drupal\nidirect_taxoman\Form;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Breadcrumb\Breadcrumb;
 
 /**
  * Class TaxonomyNavigatorForm.
@@ -51,18 +53,39 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $route_params = $this->getRouteMatch()->getParameters();
 
-    $vocabulary = $route_params->get('vocabulary');
-    // TODO: Lookup parent tid for given vocabulary.
+    $vocabulary_id = $route_params->get('vocabulary');
     $tid = $route_params->get('term') ?? 0;
 
+    $vocabulary = $this->entityTypeManager->getStorage("taxonomy_vocabulary")->load($vocabulary_id);
+
+    $breadcrumb = new Breadcrumb();
+
+    $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $vocabulary->id()]);
+
+    if ($tid > 0) {
+      // This issue https://www.drupal.org/node/2019905
+      // prevents us from using ->loadParents() as we won't
+      // retrieve the root term.
+      $ancestors = array_reverse(array_values($this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($tid)));
+
+      foreach ($ancestors as $ancestor) {
+        $links[] = Link::createFromRoute($ancestor->label(), 'nidirect_taxoman.taxonomy_navigator_form', [
+          'vocabulary' => $vocabulary->id(),
+          'term' => $ancestor->id(),
+          ]);
+      }
+    }
+
+    $breadcrumb->setLinks($links);
+
+    $form['breadcrumb'] = $breadcrumb->toRenderable();
+
     // For performance reasons we won't load the term entities.
-    $terms = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary, $tid, 1, FALSE);
+    $terms = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary->id(), $tid, 1, FALSE);
     $group_class = 'group-order-weight';
 
     $form['terms'] = [
       '#type' => 'table',
-      // Todo: Display current tree as a breadcrumb trail in caption.
-      '#caption' => $vocabulary,
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),
@@ -89,11 +112,8 @@ class TaxonomyNavigatorForm extends FormBase {
         '#title' => $term->name,
         '#type' => 'link',
         '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
-          'vocabulary' => $vocabulary,
+          'vocabulary' => $vocabulary->id(),
           'term' => $term->tid,
-        ],
-        [
-          'query' => \Drupal::destination()->getAsArray(),
         ]),
       ];
 

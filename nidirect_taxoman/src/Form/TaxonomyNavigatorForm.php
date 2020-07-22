@@ -46,12 +46,14 @@ class TaxonomyNavigatorForm extends FormBase {
     // TODO: Lookup parent tid for given vocabulary.
     $tid = $route_params->get('term') ?? 0;
 
-    $entities = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary, $tid, 1, FALSE);
+    // For performance reasons we won't load the term entities.
+    $terms = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary, $tid, 1, FALSE);
     $group_class = 'group-order-weight';
 
     $form['items'] = [
       '#type' => 'table',
-      '#caption' => $this->t(''),
+      // Todo: Display current tree as a breadcrumb trail in caption.
+      '#caption' => $vocabulary,
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),
@@ -64,29 +66,32 @@ class TaxonomyNavigatorForm extends FormBase {
           'action' => 'order',
           'relationship' => 'sibling',
           'group' => $group_class,
-        ]
-      ]
+        ],
+      ],
     ];
 
     // Build rows.
-    foreach ($entities as $key => $value) {
+    foreach ($terms as $key => $term) {
       $form['items'][$key]['#attributes']['class'][] = 'draggable';
-      $form['items'][$key]['#weight'] = $value->weight;
+      $form['items'][$key]['#weight'] = $term->weight;
 
       $form['items'][$key]['name'] = [
-        '#title' => $value->name,
+        '#title' => $term->name,
         '#type' => 'link',
         '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
           'vocabulary' => $vocabulary,
-          'term' => $value->tid],
-          ['query' => \Drupal::destination()->getAsArray()]),
+          'term' => $term->tid,
+        ],
+        [
+          'query' => \Drupal::destination()->getAsArray(),
+        ]),
       ];
 
       $form['items'][$key]['weight'] = [
         '#type' => 'weight',
-        '#title' => $this->t('Weight for @title', ['@title' => $value->name]),
+        '#title' => $this->t('Weight for @title', ['@title' => $term->name]),
         '#title_display' => 'invisible',
-        '#default_value' => $value->weight,
+        '#default_value' => $term->weight,
         '#attributes' => ['class' => [$group_class]],
       ];
 
@@ -97,17 +102,17 @@ class TaxonomyNavigatorForm extends FormBase {
 
       $form['items'][$key]['operations']['#links']['view'] = [
         'title' => t('View'),
-        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $value->tid]),
+        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->tid]),
       ];
 
       $form['items'][$key]['operations']['#links']['edit'] = [
         'title' => t('Edit'),
-        'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $value->tid], ['query' => \Drupal::destination()->getAsArray()]),
+        'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
       ];
 
       $form['items'][$key]['operations']['#links']['delete'] = [
         'title' => t('Delete'),
-        'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $value->tid], ['query' => \Drupal::destination()->getAsArray()]),
+        'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
       ];
 
     }
@@ -137,7 +142,7 @@ class TaxonomyNavigatorForm extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     // Display result.
     foreach ($form_state->getValues() as $key => $value) {
-      \Drupal::messenger()->addMessage($key . ': ' . ($key === 'text_format'?$value['value']:$value));
+      ksm($form_state->getValues());
     }
   }
 

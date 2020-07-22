@@ -3,7 +3,6 @@
 namespace Drupal\nidirect_taxoman\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -27,14 +26,12 @@ class TaxonomyManagerController extends ControllerBase {
     return $instance;
   }
 
-
-
   /**
    * Index.
    */
-  public function Index() {
+  public function index() {
     return [
-      '#markup' => 'Display taxonomy manager options'
+      '#markup' => 'Display taxonomy manager options',
     ];
   }
 

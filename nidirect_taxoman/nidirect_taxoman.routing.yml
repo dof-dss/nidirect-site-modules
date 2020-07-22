@@ -2,7 +2,7 @@
 nidirect_taxoman.taxonomy_manager_controller_Index:
   path: '/admin/nidirect/taxonomymanager'
   defaults:
-    _controller: '\Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::Index'
+    _controller: '\Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::index'
     _title: 'Taxonomy Manager'
   requirements:
     _permission: 'access content'

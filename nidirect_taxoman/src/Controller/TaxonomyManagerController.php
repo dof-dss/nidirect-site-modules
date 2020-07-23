@@ -57,11 +57,12 @@ class TaxonomyManagerController extends ControllerBase {
   public function searchAutocomplete(Request $request) {
 
     $input = Xss::filter($request->query->get('q'));
+    $vocabulary = Xss::filter($request->query->get('vocabulary'));
 
     $termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
 
     $query = $termStorage->getQuery()
-      ->condition('vid', 'site_themes')
+      ->condition('vid', $vocabulary)
       ->condition('name', $input, 'CONTAINS')
       ->sort('name', 'DESC')
       ->range(0, 25);

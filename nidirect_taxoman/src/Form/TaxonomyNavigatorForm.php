@@ -71,6 +71,7 @@ class TaxonomyNavigatorForm extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Search for term'),
       '#autocomplete_route_name' => 'nidirect_taxoman.taxonomy_search_form.autocomplete',
+      '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary_id],
       '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.')
     ];
 

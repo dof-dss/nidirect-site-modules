@@ -120,6 +120,7 @@ class TaxonomyNavigatorForm extends FormBase {
     // Build rows.
     foreach ($terms as $key => $term) {
       $form['terms'][$key]['#attributes']['class'][] = 'draggable';
+      $form['terms'][$key]['#attributes']['id'][] = $term->tid;
       $form['terms'][$key]['#weight'] = $term->weight;
 
       $form['terms'][$key]['name'] = [
@@ -142,6 +143,7 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['terms'][$key]['tid'] = [
         '#type' => 'hidden',
         '#value' => $term->tid,
+        '#attributes' => ['class' => [$group_class]],
       ];
 
       $form['terms'][$key]['operations'] = [
@@ -211,10 +213,10 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()]);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()], ['fragment' => $tid]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form');
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', [], ['fragment' => $tid]);
       }
 
     }

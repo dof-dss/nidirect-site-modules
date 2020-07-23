@@ -66,6 +66,11 @@ class SetParentTermForm extends FormBase {
       'defaultValue' => NULL,
     ];
 
+    $form['vocabulary'] = [
+      '#type' => 'hidden',
+      '#value' => $term->bundle(),
+    ];
+
     $form[$field_name] = [
       '#type' => 'container',
     ];
@@ -93,7 +98,7 @@ class SetParentTermForm extends FormBase {
         'afterBuild',
       ]],
     ];
-    
+
     $form['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Update'),
@@ -116,8 +121,16 @@ class SetParentTermForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Display result.
-    ksm($form_state->getValues());
+    $tid = $this->getRouteMatch()->getParameter('term');
+    $form_values = $form_state->getValues();
+
+    $parent_tid = $form_values['widget'][0]['tid'];
+
+    $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+    $term->set('parent', $parent_tid);
+    $term->save();
+
+    $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'term' => $parent_tid], ['query' => ['highlight' => $tid],'fragment' => $tid]);
   }
 
 }

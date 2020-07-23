@@ -67,6 +67,11 @@ class TaxonomyNavigatorForm extends FormBase {
       '#value' => t('@vocabulary taxonomy', ['@vocabulary' => $vocabulary->label()]),
     ];
 
+    $form['vocabulary'] = [
+      '#type' => 'hidden',
+      '#value' => $vocabulary_id,
+    ];
+
     $form['term'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Search for term'),
@@ -218,10 +223,10 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', [], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
 
     }

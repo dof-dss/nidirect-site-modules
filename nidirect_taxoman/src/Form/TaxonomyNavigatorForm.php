@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_taxoman\Form;
 
+use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Form\FormBase;
@@ -53,6 +54,7 @@ class TaxonomyNavigatorForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $route_params = $this->getRouteMatch()->getParameters();
+    $highlight_tid = $this->getRequest()->query->get('highlight');
 
     $vocabulary_id = $route_params->get('vocabulary');
     $tid = $route_params->get('term') ?? 0;
@@ -122,6 +124,9 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['terms'][$key]['#attributes']['class'][] = 'draggable';
       $form['terms'][$key]['#attributes']['id'][] = $term->tid;
       $form['terms'][$key]['#weight'] = $term->weight;
+      if ($highlight_tid == $term->tid) {
+        $form['terms'][$key]['#attributes']['style'][] = "background-color: lemonChiffon";
+      }
 
       $form['terms'][$key]['name'] = [
         '#title' => $term->name,
@@ -213,10 +218,10 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()], ['fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', [], ['fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', [], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
 
     }

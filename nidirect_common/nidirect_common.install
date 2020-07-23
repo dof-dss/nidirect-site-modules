@@ -1,0 +1,78 @@
+<?php
+
+/**
+ * @file
+ * Install, update and uninstall functions for the NIDirect common module.
+ */
+
+use Drupal\user\Entity\User;
+
+/**
+ * Implements hook_install().
+ *
+ * Perform actions to set up the site for this module.
+ */
+function origins_workflow_install() {
+  // Create some test users for the Nightwatch tests that will come along later.
+  $name_list = [
+    '_author' => 'author_user',
+    '_authenticated' => '',
+    '_super' => 'supervisor_user',
+    '_editor' => 'editor_user',
+    '_admin' => 'admin_user'
+  ];
+  foreach ($name_list as $name => $role) {
+    // Add prefix from environment var.
+    $prefix = getenv('NW_TEST_USER_PREFIX');
+    $password = getenv('TEST_PASS');
+    // If prefix not set, do not create users.
+    if (empty($prefix) || empty($password)) {
+      \Drupal::logger('origins_workflow')->notice(
+        'No test users created, prefix and password environment vars must be set.');
+      return;
+    }
+    $name = $prefix . $name;
+    $user = user_load_by_name($name);
+    if (empty($user)) {
+      \Drupal::logger('origins_workflow')->notice(t('Creating user @name', ['@name' => $name]));
+      $user = User::create([
+        'name' => $name,
+        'mail' => $name . '@localhost',
+        'status' => 1,
+        'pass' => $password,
+        'roles' => [$role, 'authenticated'],
+      ]);
+      $user->save();
+    }
+    else {
+      \Drupal::logger('origins_workflow')->notice(
+        'Did not create user @name as already exists.', ['@name' => $name]);
+    }
+  }
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Perform actions to set up the site for this module.
+ */
+function origins_workflow_uninstall() {
+  // Delete any users created in hook_install.
+  $name_list = [
+    '_author' => 'author_user',
+    '_authenticated' => '',
+    '_super' => 'supervisor_user',
+    '_editor' => 'editor_user',
+    '_admin' => 'admin_user'
+  ];
+  foreach ($name_list as $name => $role) {
+    // Add prefix from environment var.
+    $prefix = getenv('NW_TEST_USER_PREFIX');
+    $name = $prefix . $name;
+    $user = user_load_by_name($name);
+    if (!empty($user)) {
+      \Drupal::logger('origins_workflow')->notice(t('Deleting user @name', ['@name' => $name]));
+      $user->delete();
+    }
+  }
+}

@@ -2,7 +2,9 @@
 
 namespace Drupal\nidirect_taxoman\Controller;
 
+use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Link;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -60,10 +62,26 @@ class TaxonomyManagerController extends ControllerBase {
 
   public function searchAutocomplete(Request $request) {
 
-    $results[] = [
-      'value' => '320:Road safety',
-      'label' => 'Road safety',
-    ];
+    $input = Xss::filter($request->query->get('q'));
+
+    $termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
+
+    $query = $termStorage->getQuery()
+      ->condition('vid', 'site_themes')
+      ->condition('name', $input, 'CONTAINS')
+      ->sort('name', 'DESC')
+      ->range(0, 25);
+
+    $ids = $query->execute();
+    $terms = $ids ? $termStorage->loadMultiple($ids) : [];
+
+    foreach ($terms as $term) {
+
+      $results[] = [
+        'value' => EntityAutocomplete::getEntityLabels([$term]),
+        'label' => $term->label(),
+      ];
+    }
 
     return new JsonResponse($results);
   }

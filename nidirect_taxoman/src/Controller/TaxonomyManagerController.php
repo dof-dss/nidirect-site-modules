@@ -36,12 +36,6 @@ class TaxonomyManagerController extends ControllerBase {
    */
   public function index() {
 
-    $build['article'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('My Autocomplete'),
-      '#autocomplete_route_name' => 'my_module.autocomplete.articles',
-    ];
-
     $vocabularies = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->loadMultiple();
 
     foreach ($vocabularies as $vocabulary) {

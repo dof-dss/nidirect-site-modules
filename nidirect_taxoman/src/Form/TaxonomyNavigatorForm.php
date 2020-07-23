@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_taxoman\Form;
 
 use Drupal\Core\Database\Database;
+use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
@@ -62,6 +63,13 @@ class TaxonomyNavigatorForm extends FormBase {
       '#type' => 'html_tag',
       '#tag' => 'h1',
       '#value' => t('@vocabulary taxonomy', ['@vocabulary' => $vocabulary->label()]),
+    ];
+
+    $form['term'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Search for term'),
+      '#autocomplete_route_name' => 'nidirect_taxoman.taxonomy_search_form.autocomplete',
+      '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.')
     ];
 
     $breadcrumb = new Breadcrumb();
@@ -181,15 +189,34 @@ class TaxonomyNavigatorForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
     $form_values = $form_state->getValues();
-    $terms = $form_values['terms'];
-    foreach ($terms as $term) {
-      // Todo: Improve the performance of updating weight.
-      $this->dbConnection->update('taxonomy_term_field_data')
-        ->fields(['weight' => $term['weight']])
-        ->condition('tid', $term['tid'], '=')
-        ->execute();
+
+    if (empty($form_values['term'])) {
+      $form_values = $form_state->getValues();
+      $terms = $form_values['terms'];
+      foreach ($terms as $term) {
+        // Todo: Improve the performance of updating weight.
+        $this->dbConnection->update('taxonomy_term_field_data')
+          ->fields(['weight' => $term['weight']])
+          ->condition('tid', $term['tid'], '=')
+          ->execute();
+      }
+    }
+    else {
+      $tid = EntityAutocomplete::extractEntityIdFromAutocompleteInput($form_values['term']);
+
+      $ancestors = array_values($this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($tid));
+
+      if (count($ancestors) > 1) {
+        array_shift($ancestors);
+        $parent = current($ancestors);
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['term' => $parent->id()]);
+      }
+      else {
+        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form');
+      }
+
     }
   }
-
 }

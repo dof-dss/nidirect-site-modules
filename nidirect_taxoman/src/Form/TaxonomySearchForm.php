@@ -81,6 +81,5 @@ class TaxonomySearchForm extends FormBase {
     else {
       $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form');
     }
-
   }
 }

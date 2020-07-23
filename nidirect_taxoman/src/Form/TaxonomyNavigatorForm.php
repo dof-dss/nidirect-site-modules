@@ -148,7 +148,6 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['terms'][$key]['tid'] = [
         '#type' => 'hidden',
         '#value' => $term->tid,
-        '#attributes' => ['class' => [$group_class]],
       ];
 
       $form['terms'][$key]['operations'] = [

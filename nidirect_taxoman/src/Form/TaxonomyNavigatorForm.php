@@ -171,6 +171,11 @@ class TaxonomyNavigatorForm extends FormBase {
         'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
       ];
 
+      $form['terms'][$key]['operations']['#links']['set_parent'] = [
+        'title' => t('Set parent'),
+        'url' => Url::fromRoute('nidirect_taxoman.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+      ];
+
       $form['terms'][$key]['operations']['#links']['delete'] = [
         'title' => t('Delete'),
         'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),

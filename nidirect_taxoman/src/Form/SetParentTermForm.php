@@ -1,0 +1,123 @@
+<?php
+
+namespace Drupal\nidirect_taxoman\Form;
+
+use Drupal\Core\Form\FormBase;
+use Drupal\Core\Form\FormStateInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
+/**
+ * Class SetParentTermForm.
+ */
+class SetParentTermForm extends FormBase {
+
+  /**
+   * Drupal\Core\Entity\EntityTypeManagerInterface definition.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    $instance = parent::create($container);
+    $instance->entityTypeManager = $container->get('entity_type.manager');
+    return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getFormId() {
+    return 'set_parent_term_form';
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function buildForm(array $form, FormStateInterface $form_state) {
+
+    $field_name = 'term_field';
+    $vid = 'site_themes';
+
+    $tid = $this->getRouteMatch()->getParameter('term');
+    $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+
+    $terms = $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()->condition('vid', $term->bundle())->execute();
+
+    $shs = [
+      'settings' => [
+        'required' => TRUE,
+        'multiple' => FALSE,
+        'anyLabel' => t('- Any -'),
+        'anyValue' => 'All',
+        'addNewLabel' => '',
+        'force_deepest' => FALSE,
+        'create_new_items' => FALSE,
+        'create_new_levels' => FALSE,
+        'display_node_count' => FALSE,
+      ],
+      'bundle' => $term->bundle(),
+      'baseUrl' => 'shs-term-data',
+      'cardinality' => 1,
+      'parents' => [[['parent' => 0, 'defaultValue' => 'All']]],
+      'defaultValue' => NULL,
+    ];
+
+    $form[$field_name] = [
+      '#type' => 'container',
+    ];
+
+    $form[$field_name]['widget'] = [
+      '#type' => 'select',
+      '#title' => t('Select a parent term'),
+      '#key_column' => 'tid',
+      '#field_parents' => [],
+      '#field_name' => $field_name,
+      '#shs' => $shs,
+      '#options' => $terms,
+      '#attributes' => [
+        'class' => ['shs-enabled'],
+      ],
+      '#attached' => [
+        'library' => ['shs/shs.form'],
+      ],
+      '#element_validate' => [[
+        '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
+        'validateElement',
+      ]],
+      '#after_build' => [[
+        '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
+        'afterBuild',
+      ]],
+    ];
+    
+    $form['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Update'),
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    foreach ($form_state->getValues() as $key => $value) {
+      // @TODO: Validate fields.
+    }
+    parent::validateForm($form, $form_state);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Display result.
+    ksm($form_state->getValues());
+  }
+
+}

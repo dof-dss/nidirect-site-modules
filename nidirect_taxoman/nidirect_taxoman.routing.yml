@@ -1,5 +1,5 @@
 
-nidirect_taxoman.taxonomy_manager_controller_Index:
+nidirect_taxoman.taxonomy_manager_controller:
   path: '/admin/nidirect/taxonomymanager'
   defaults:
     _controller: '\Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::index'
@@ -29,3 +29,10 @@ nidirect_taxoman.taxonomy_search_form.autocomplete:
     _format: json
   requirements:
     _permission: 'access content'
+nidirect_taxoman.set_parent_term_form:
+  path: '/admin/nidirect/taxonomymanager/setparent/{term}'
+  defaults:
+    _form: '\Drupal\nidirect_taxoman\Form\SetParentTermForm'
+    _title: 'Set parent term'
+  requirements:
+    _access: 'TRUE'

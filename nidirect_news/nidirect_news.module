@@ -65,13 +65,15 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
           $featured_news_list = reset($featured_news_list);
         }
 
-        // Generate a link to edit the featured content list node.
-        $edit_link = Link::createFromRoute(t('Edit this list'), 'entity.node.edit_form', [
-          'node' => $featured_news_list->id(),
-          'destination' => \Drupal::routeMatch()->getRouteObject()->getPath(),
-        ]);
+        if (\Drupal::currentUser()->hasPermission('edit any featured content list content')) {
+          // Generate a link to edit the featured content list node.
+          $edit_link = Link::createFromRoute(t('Edit this list'), 'entity.node.edit_form', [
+            'node' => $featured_news_list->id(),
+            'destination' => \Drupal::routeMatch()->getRouteObject()->getPath(),
+          ]);
 
-        $view->header['area_text_custom']->options['content'] = $edit_link->toString();
+          $view->header['area_text_custom']->options['content'] = $edit_link->toString();
+        }
       }
     }
   }

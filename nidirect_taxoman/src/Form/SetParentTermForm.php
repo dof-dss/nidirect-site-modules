@@ -44,7 +44,11 @@ class SetParentTermForm extends FormBase {
     $tid = $this->getRouteMatch()->getParameter('term');
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
 
-    $terms = $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()->condition('vid', $term->bundle())->execute();
+    $term_tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($term->bundle());
+    $terms = [];
+    foreach ($term_tree as $tree_term) {
+      $terms[$tree_term->tid] = $tree_term->name;
+    }
 
     // Todo: Provide option to set parent as root term.
 

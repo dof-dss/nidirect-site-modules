@@ -2,7 +2,6 @@
 
 namespace Drupal\nidirect_taxoman\Form;
 
-use Drupal\Component\Utility\UrlHelper;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Form\FormBase;

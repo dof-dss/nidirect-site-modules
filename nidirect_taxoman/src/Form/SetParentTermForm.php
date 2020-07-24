@@ -40,12 +40,13 @@ class SetParentTermForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $field_name = 'term_field';
-    $vid = 'site_themes';
 
     $tid = $this->getRouteMatch()->getParameter('term');
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
 
     $terms = $this->entityTypeManager->getStorage('taxonomy_term')->getQuery()->condition('vid', $term->bundle())->execute();
+
+    // Todo: Provide option to set parent as root term.
 
     $shs = [
       'settings' => [
@@ -130,6 +131,7 @@ class SetParentTermForm extends FormBase {
     $term->set('parent', $parent_tid);
     $term->save();
 
+    $this->getRequest()->query->remove('destination');
     $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'term' => $parent_tid], ['query' => ['highlight' => $tid],'fragment' => $tid]);
   }
 

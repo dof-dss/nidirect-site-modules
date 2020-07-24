@@ -10,7 +10,7 @@ use Drupal\Core\Routing\RouteMatchInterface;
 /**
  * Implements hook_preprocess_field().
  */
-function nidirect_news_preprocess_field(&$variables) {
+function nidirect_news_preprocess_field(array &$variables) {
   $entity_type = $variables['entity_type'];
   $bundle = $variables['element']['#bundle'];
   $field_name = $variables['field_name'];
@@ -26,4 +26,15 @@ function nidirect_news_preprocess_field(&$variables) {
 
   // Adjust the title in full display mode to match present site value.
   $variables['label'] = t('Date published');
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_news_preprocess_node(array &$variables) {
+  if ($variables['node']->getType() == 'featured_content_list' && $variables['view_mode'] == 'full') {
+    // Replace the node view with a rendered view display, using the node items as arguments.
+    // This mirrors the display you would see on the embedded views display.
+    $variables['content'] = \Drupal::service('nidirect_news.news')->getFeaturedNews();
+  }
 }

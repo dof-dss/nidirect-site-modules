@@ -5,7 +5,10 @@
  * Contains nidirect_news.module.
  */
 
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\taxonomy\TermInterface;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_preprocess_field().
@@ -36,5 +39,40 @@ function nidirect_news_preprocess_node(array &$variables) {
     // Replace the node view with a rendered view display, using the node items as arguments.
     // This mirrors the display you would see on the embedded views display.
     $variables['content'] = \Drupal::service('nidirect_news.news')->getFeaturedNews();
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_news_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'news' && $view->current_display == 'latest_news') {
+    if (!empty($view->header['area_text_custom'])) {
+      $news_tag = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties(['name' => 'News']);
+      $news_tag = reset($news_tag);
+
+      if ($news_tag instanceof TermInterface && $news_tag->bundle() == 'tags') {
+        $featured_news_list = \Drupal::entityTypeManager()
+          ->getStorage('node')
+          ->loadByProperties([
+            'type' => 'featured_content_list',
+            'field_tags' => $news_tag->id(),
+          ]);
+
+        if (!empty($featured_news_list)) {
+          $featured_news_list = reset($featured_news_list);
+        }
+
+        // Generate a link to edit the featured content list node.
+        $edit_link = Link::createFromRoute(t('Edit this list'), 'entity.node.edit_form', [
+          'node' => $featured_news_list->id(),
+          'destination' => \Drupal::routeMatch()->getRouteObject()->getPath(),
+        ]);
+
+        $view->header['area_text_custom']->options['content'] = $edit_link->toString();
+      }
+    }
   }
 }

@@ -28,14 +28,14 @@ function nidirect_common_install() {
     $password = getenv('TEST_PASS');
     // If prefix not set, do not create users.
     if (empty($prefix) || empty($password)) {
-      \Drupal::logger('origins_workflow')->notice(
+      \Drupal::logger('nidirect_common')->notice(
         'No test users created, prefix and password environment vars must be set.');
       return;
     }
     $name = $prefix . $name;
     $user = user_load_by_name($name);
     if (empty($user)) {
-      \Drupal::logger('origins_workflow')->notice(t('Creating user @name', ['@name' => $name]));
+      \Drupal::logger('nidirect_common')->notice(t('Creating user @name', ['@name' => $name]));
       $user = User::create([
         'name' => $name,
         'mail' => $name . '@localhost',
@@ -46,7 +46,7 @@ function nidirect_common_install() {
       $user->save();
     }
     else {
-      \Drupal::logger('origins_workflow')->notice(
+      \Drupal::logger('nidirect_common')->notice(
         'Did not create user @name as already exists.', ['@name' => $name]);
     }
   }
@@ -71,7 +71,7 @@ function nidirect_common_uninstall() {
     $name = $prefix . $name;
     $user = user_load_by_name($name);
     if (!empty($user)) {
-      \Drupal::logger('origins_workflow')->notice(t('Deleting user @name', ['@name' => $name]));
+      \Drupal::logger('nidirect_common')->notice(t('Deleting user @name', ['@name' => $name]));
       $user->delete();
     }
   }

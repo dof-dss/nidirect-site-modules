@@ -4,6 +4,7 @@ namespace Drupal\nidirect_taxoman\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -40,9 +41,15 @@ class SetParentTermForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $field_name = 'term_field';
+    $request = $this->getRequest();
 
     $tid = $this->getRouteMatch()->getParameter('term');
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
+
+    if ($route = $request->attributes->get(RouteObjectInterface::ROUTE_OBJECT)) {
+      $page_title = $route->getDefault('_title');
+      $route->setDefault('_title', $page_title . ' for ' . $term->label());
+    }
 
     $term_tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($term->bundle());
     $terms = [];

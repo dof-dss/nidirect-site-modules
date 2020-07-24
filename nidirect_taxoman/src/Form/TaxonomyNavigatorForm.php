@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 
@@ -54,18 +55,19 @@ class TaxonomyNavigatorForm extends FormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
 
     $route_params = $this->getRouteMatch()->getParameters();
-    $highlight_tid = $this->getRequest()->query->get('highlight');
+    $request = $this->getRequest();
+
+    $highlight_tid = $request->query->get('highlight');
 
     $vocabulary_id = $route_params->get('vocabulary');
     $tid = $route_params->get('term') ?? 0;
 
     $vocabulary = $this->entityTypeManager->getStorage("taxonomy_vocabulary")->load($vocabulary_id);
 
-    $form['vocabulary_title'] = [
-      '#type' => 'html_tag',
-      '#tag' => 'h1',
-      '#value' => t('@vocabulary taxonomy', ['@vocabulary' => $vocabulary->label()]),
-    ];
+    if ($route = $request->attributes->get(RouteObjectInterface::ROUTE_OBJECT)) {
+      $page_title = $route->getDefault('_title');
+      $route->setDefault('_title', $page_title . ' : ' . $vocabulary->label());
+    }
 
     $form['vocabulary'] = [
       '#type' => 'hidden',

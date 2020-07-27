@@ -5,27 +5,37 @@ nidirect_taxoman.taxonomy_manager_controller:
     _controller: '\Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::index'
     _title: 'Taxonomy Manager'
   requirements:
-    _permission: 'access content'
+    _permission: 'administer taxonomy'
+  options:
+    _admin_route: TRUE
 nidirect_taxoman.taxonomy_navigator_form:
-  path: '/admin/nidirect/taxonomymanager/navigator/{vocabulary}/{term}'
+  path: '/admin/nidirect/taxonomymanager/navigator/{vocabulary}/{taxonomy_term}'
   defaults:
     _form: '\Drupal\nidirect_taxoman\Form\TaxonomyNavigatorForm'
     _title: 'Taxonomy Navigator'
+    _title_callback: 'Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::navigatorVocabularyTitle'
     vocabulary: 'site_themes'
-    term: '0'
+    taxonomy_term: '0'
   requirements:
-    _access: 'TRUE'
+    _permission: 'administer taxonomy'
+  options:
+    parameters:
+      vocabulary:
+        type: entity:taxonomy_vocabulary
+    _admin_route: TRUE
 nidirect_taxoman.taxonomy_search_form.autocomplete:
   path: '/admin/nidirect/taxonomymanager/search/autocomplete'
   defaults:
     _controller: '\Drupal\nidirect_taxoman\Controller\TaxonomyManagerController::searchAutocomplete'
     _format: json
   requirements:
-    _permission: 'access content'
+    _permission: 'administer taxonomy'
 nidirect_taxoman.set_parent_term_form:
   path: '/admin/nidirect/taxonomymanager/setparent/{term}'
   defaults:
     _form: '\Drupal\nidirect_taxoman\Form\SetParentTermForm'
     _title: 'Set parent term'
   requirements:
-    _access: 'TRUE'
+    _permission: 'administer taxonomy'
+  options:
+    _admin_route: TRUE

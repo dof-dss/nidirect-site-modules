@@ -56,7 +56,6 @@ class SetParentTermForm extends FormBase {
     foreach ($term_tree as $tree_term) {
       $terms[$tree_term->tid] = $tree_term->name;
     }
-    // Todo: Provide option to set parent as root term.
 
     $shs = [
       'settings' => [

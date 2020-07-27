@@ -58,26 +58,20 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $highlight_tid = $request->query->get('highlight');
 
-    $vocabulary_id = $route_params->get('vocabulary');
-    $tid = $route_params->get('term') ?? 0;
+    $vocabulary = $route_params->get('vocabulary');
 
-    $vocabulary = $this->entityTypeManager->getStorage("taxonomy_vocabulary")->load($vocabulary_id);
-
-    if ($route = $request->attributes->get(RouteObjectInterface::ROUTE_OBJECT)) {
-      $page_title = $route->getDefault('_title');
-      $route->setDefault('_title', $page_title . ' : ' . $vocabulary->label());
-    }
+    $tid = $route_params->get('taxonomy_term') ?? 0;
 
     $form['vocabulary'] = [
       '#type' => 'hidden',
-      '#value' => $vocabulary_id,
+      '#value' => $vocabulary->id(),
     ];
 
     $form['term'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Search for term'),
       '#autocomplete_route_name' => 'nidirect_taxoman.taxonomy_search_form.autocomplete',
-      '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary_id],
+      '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary->id()],
       '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.')
     ];
 
@@ -140,7 +134,7 @@ class TaxonomyNavigatorForm extends FormBase {
         '#type' => 'link',
         '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
           'vocabulary' => $vocabulary->id(),
-          'term' => $term->tid,
+          'taxonomy_term' => $term->tid,
         ]),
       ];
 

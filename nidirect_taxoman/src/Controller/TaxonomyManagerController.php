@@ -5,7 +5,12 @@ namespace Drupal\nidirect_taxoman\Controller;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
+use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\Entity\Vocabulary;
+use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -52,6 +57,18 @@ class TaxonomyManagerController extends ControllerBase {
     ];
 
     return $build;
+  }
+
+  /**
+   * Provides title callback for vocabulary navigator .
+   *
+   * @param Vocabulary $vocabulary
+   *   The Vocabulary entity.
+   * @return string|null
+   *   The title for the entity view page, if an entity was found.
+   */
+  public function navigatorVocabularyTitle(Vocabulary $vocabulary) {
+    return  $this->t('Taxonomy manager: @vocabulary ', ['@vocabulary' => $vocabulary->label()]);
   }
 
   public function searchAutocomplete(Request $request) {

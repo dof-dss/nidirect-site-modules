@@ -15,13 +15,6 @@ nidirect_taxoman.taxonomy_navigator_form:
     term: '0'
   requirements:
     _access: 'TRUE'
-nidirect_taxoman.taxonomy_search_form:
-  path: '/admin/nidirect/taxonomymanager/search'
-  defaults:
-    _form: '\Drupal\nidirect_taxoman\Form\TaxonomySearchForm'
-    _title: 'TaxonomySearchForm'
-  requirements:
-    _access: 'TRUE'
 nidirect_taxoman.taxonomy_search_form.autocomplete:
   path: '/admin/nidirect/taxonomymanager/search/autocomplete'
   defaults:

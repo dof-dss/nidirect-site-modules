@@ -52,11 +52,10 @@ class SetParentTermForm extends FormBase {
     }
 
     $term_tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($term->bundle());
-    $terms = [];
+
     foreach ($term_tree as $tree_term) {
       $terms[$tree_term->tid] = $tree_term->name;
     }
-
     // Todo: Provide option to set parent as root term.
 
     $shs = [
@@ -83,6 +82,15 @@ class SetParentTermForm extends FormBase {
       '#value' => $term->bundle(),
     ];
 
+    $form['set_as_top_level_term'] = [
+      '#type' => 'radios',
+      '#title' => $this->t('Set as top level term (no parents)?'),
+      '#options' => [
+        0 => $this->t('No'),
+        1 => $this->t('Yes'),
+      ],
+    ];
+
     $form[$field_name] = [
       '#type' => 'container',
     ];
@@ -97,6 +105,11 @@ class SetParentTermForm extends FormBase {
       '#options' => $terms,
       '#attributes' => [
         'class' => ['shs-enabled'],
+      ],
+      '#states' => [
+        'visible' => [
+          ':input[name="set_as_top_level_term"]' => ['value' => 0],
+        ],
       ],
       '#attached' => [
         'library' => ['shs/shs.form'],
@@ -136,7 +149,12 @@ class SetParentTermForm extends FormBase {
     $tid = $this->getRouteMatch()->getParameter('term');
     $form_values = $form_state->getValues();
 
-    $parent_tid = $form_values['widget'][0]['tid'];
+    if ($form_values['set_as_top_level_term']) {
+      $parent_tid = 0;
+    }
+    else {
+      $parent_tid = $form_values['widget'][0]['tid'];
+    }
 
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
     $term->set('parent', $parent_tid);

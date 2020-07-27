@@ -124,9 +124,17 @@ class SetParentTermForm extends FormBase {
       ]],
     ];
 
-    $form['submit'] = [
+    $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Update'),
+      '#attributes' => ['class' => ['button--primary']]
+    ];
+
+    $form['actions']['cancel'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Cancel'),
+      '#submit' => ['cancel_submit'],
+      '#limit_validation_errors' => [],
     ];
 
     return $form;

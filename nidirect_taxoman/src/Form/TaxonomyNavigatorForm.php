@@ -8,7 +8,6 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 
@@ -32,12 +31,18 @@ class TaxonomyNavigatorForm extends FormBase {
   protected $dbConnection;
 
   /**
+   * @var \Drupal\Core\Extension\ModuleHandler
+   */
+  protected $moduleHandler;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->dbConnection = Database::getConnection('default', 'default');
+    $instance->moduleHandler = $container->get('module_handler');
     return $instance;
   }
 
@@ -61,6 +66,8 @@ class TaxonomyNavigatorForm extends FormBase {
     $vocabulary = $route_params->get('vocabulary');
 
     $tid = $route_params->get('taxonomy_term') ?? 0;
+
+    $can_reorder = TRUE;
 
     $form['vocabulary'] = [
       '#type' => 'hidden',
@@ -120,6 +127,14 @@ class TaxonomyNavigatorForm extends FormBase {
       ],
     ];
 
+    if ($this->moduleHandler->moduleExists('taxonomy_access_fix')) {
+      $can_reorder = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('reorder terms', $vocabulary->id());
+
+      if (!$can_reorder) {
+        unset($form['terms']['#tabledrag']);
+      }
+    }
+
     // Build rows.
     foreach ($terms as $key => $term) {
       $form['terms'][$key]['#attributes']['class'][] = 'draggable';
@@ -144,6 +159,7 @@ class TaxonomyNavigatorForm extends FormBase {
         '#title_display' => 'invisible',
         '#default_value' => $term->weight,
         '#attributes' => ['class' => [$group_class]],
+        '#disabled' => !$can_reorder,
       ];
 
       $form['terms'][$key]['tid'] = [

@@ -5,12 +5,15 @@
  * Contains nidirect_news.module.
  */
 
+use Drupal\Core\Link;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\taxonomy\TermInterface;
+use Drupal\views\ViewExecutable;
 
 /**
  * Implements hook_preprocess_field().
  */
-function nidirect_news_preprocess_field(&$variables) {
+function nidirect_news_preprocess_field(array &$variables) {
   $entity_type = $variables['entity_type'];
   $bundle = $variables['element']['#bundle'];
   $field_name = $variables['field_name'];
@@ -26,4 +29,52 @@ function nidirect_news_preprocess_field(&$variables) {
 
   // Adjust the title in full display mode to match present site value.
   $variables['label'] = t('Date published');
+}
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_news_preprocess_node(array &$variables) {
+  if ($variables['node']->getType() == 'featured_content_list' && $variables['view_mode'] == 'full') {
+    // Replace the node view with a rendered view display, using the node items as arguments.
+    // This mirrors the display you would see on the embedded views display.
+    $variables['content'] = \Drupal::service('nidirect_news.news')->getFeaturedNews();
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_news_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'news' && $view->current_display == 'latest_news') {
+    if (!empty($view->header['area_text_custom'])) {
+      $news_tag = \Drupal::entityTypeManager()
+        ->getStorage('taxonomy_term')
+        ->loadByProperties(['name' => 'News']);
+      $news_tag = reset($news_tag);
+
+      if ($news_tag instanceof TermInterface && $news_tag->bundle() == 'tags') {
+        $featured_news_list = \Drupal::entityTypeManager()
+          ->getStorage('node')
+          ->loadByProperties([
+            'type' => 'featured_content_list',
+            'field_tags' => $news_tag->id(),
+          ]);
+
+        if (!empty($featured_news_list)) {
+          $featured_news_list = reset($featured_news_list);
+        }
+
+        if (\Drupal::currentUser()->hasPermission('edit any featured content list content')) {
+          // Generate a link to edit the featured content list node.
+          $edit_link = Link::createFromRoute(t('Edit this list'), 'entity.node.edit_form', [
+            'node' => $featured_news_list->id(),
+            'destination' => \Drupal::routeMatch()->getRouteObject()->getPath(),
+          ]);
+
+          $view->header['area_text_custom']->options['content'] = $edit_link->toString();
+        }
+      }
+    }
+  }
 }

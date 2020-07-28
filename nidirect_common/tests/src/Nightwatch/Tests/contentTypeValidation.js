@@ -6,6 +6,7 @@ module.exports = {
   '@tags': [
     'nidirect',
     'nidirect_common',
+    'content-type-validation'
   ],
 
   'Test whether content types found in config folder are present in the UI': browser => {

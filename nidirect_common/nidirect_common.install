@@ -28,7 +28,7 @@ function nidirect_common_install() {
     $password = getenv('TEST_PASS');
     // If prefix not set, do not create users.
     if (empty($prefix) || empty($password)) {
-      \Drupal::logger('nidirect_common')->notice(
+      \Drupal::logger('nidirect_common')->error(
         'No test users created, prefix and password environment vars must be set.');
       return;
     }

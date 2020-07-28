@@ -36,6 +36,11 @@ class TaxonomyNavigatorForm extends FormBase {
   protected $moduleHandler;
 
   /**
+   * @var \Drupal\Core\Session\AccountProxy
+   */
+  protected $currentUser;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
@@ -43,6 +48,7 @@ class TaxonomyNavigatorForm extends FormBase {
     $instance->entityTypeManager = $container->get('entity_type.manager');
     $instance->dbConnection = Database::getConnection('default', 'default');
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->currentUser = $container->get('current_user');
     return $instance;
   }
 
@@ -67,7 +73,16 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $tid = $route_params->get('taxonomy_term') ?? 0;
 
-    $can_reorder = TRUE;
+    if ($this->moduleHandler->moduleExists('taxonomy_access_fix')) {
+      $can_edit = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('edit terms', $vocabulary->id());
+      $can_delete = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('delete terms', $vocabulary->id());
+      $can_reorder = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('reorder terms', $vocabulary->id());
+    }
+    else {
+      $can_edit = $this->currentUser()->hasPermission('edit terms in ' . $vocabulary->id());
+      $can_delete = $this->currentUser()->hasPermission('delete terms in ' . $vocabulary->id());
+      $can_reorder = $can_edit;
+    }
 
     $form['vocabulary'] = [
       '#type' => 'hidden',
@@ -127,12 +142,8 @@ class TaxonomyNavigatorForm extends FormBase {
       ],
     ];
 
-    if ($this->moduleHandler->moduleExists('taxonomy_access_fix')) {
-      $can_reorder = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('reorder terms', $vocabulary->id());
-
-      if (!$can_reorder) {
-        unset($form['terms']['#tabledrag']);
-      }
+    if (!$can_reorder) {
+      unset($form['terms']['#tabledrag']);
     }
 
     // Build rows.
@@ -177,21 +188,24 @@ class TaxonomyNavigatorForm extends FormBase {
         'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->tid]),
       ];
 
-      $form['terms'][$key]['operations']['#links']['edit'] = [
-        'title' => t('Edit'),
-        'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
-      ];
+      if ($can_edit) {
+        $form['terms'][$key]['operations']['#links']['edit'] = [
+          'title' => t('Edit'),
+          'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
 
-      $form['terms'][$key]['operations']['#links']['set_parent'] = [
-        'title' => t('Set parent'),
-        'url' => Url::fromRoute('nidirect_taxoman.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
-      ];
+        $form['terms'][$key]['operations']['#links']['set_parent'] = [
+          'title' => t('Set parent'),
+          'url' => Url::fromRoute('nidirect_taxoman.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
+      }
 
-      $form['terms'][$key]['operations']['#links']['delete'] = [
-        'title' => t('Delete'),
-        'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
-      ];
-
+      if ($can_delete) {
+        $form['terms'][$key]['operations']['#links']['delete'] = [
+          'title' => t('Delete'),
+          'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
+      }
     }
 
     $form['actions'] = ['#type' => 'actions'];

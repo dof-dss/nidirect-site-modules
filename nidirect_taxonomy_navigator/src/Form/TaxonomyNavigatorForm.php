@@ -112,14 +112,13 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $breadcrumb->setLinks($links);
 
-    $form['breadcrumb'] = $breadcrumb->toRenderable();
-
     // For performance reasons we won't load the term entities.
     $terms = $this->entityTypeManager->getStorage("taxonomy_term")->loadTree($vocabulary->id(), $tid, 1, FALSE);
     $group_class = 'group-order-weight';
 
     $form['terms'] = [
       '#type' => 'table',
+      '#caption' => $breadcrumb->toRenderable(),
       '#header' => [
         $this->t('Name'),
         $this->t('Weight'),

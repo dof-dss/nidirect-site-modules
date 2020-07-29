@@ -30,11 +30,14 @@ nidirect_taxonomy_navigator.nidirect_taxonomy_navigator_search.autocomplete:
   requirements:
     _permission: 'administer taxonomy'
 nidirect_taxonomy_navigator.set_parent_term_form:
-  path: '/admin/structure/taxonomy_navigator/setparent/{term}'
+  path: '/admin/structure/taxonomy_navigator/setparent/{vocabulary}/{taxonomy_term}'
   defaults:
     _form: '\Drupal\nidirect_taxonomy_navigator\Form\SetParentTermForm'
     _title: 'Set parent term'
   requirements:
-    _permission: 'administer taxonomy'
+    _custom_access: 'Drupal\nidirect_taxonomy_navigator\TaxonomyNavigatorAccess::canEditTerms'
   options:
+    parameters:
+      vocabulary:
+        type: entity:taxonomy_vocabulary
     _admin_route: TRUE

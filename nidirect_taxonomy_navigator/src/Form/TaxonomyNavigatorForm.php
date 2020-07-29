@@ -190,7 +190,7 @@ class TaxonomyNavigatorForm extends FormBase {
 
         $form['terms'][$key]['operations']['#links']['set_parent'] = [
           'title' => t('Set parent'),
-          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['vocabulary' => $vocabulary->id(), 'taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
         ];
       }
 

@@ -43,7 +43,7 @@ class SetParentTermForm extends FormBase {
     $field_name = 'term_field';
     $request = $this->getRequest();
 
-    $tid = $this->getRouteMatch()->getParameter('term');
+    $tid = $this->getRouteMatch()->getParameter('taxonomy_term');
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
 
     if ($route = $request->attributes->get(RouteObjectInterface::ROUTE_OBJECT)) {
@@ -153,7 +153,7 @@ class SetParentTermForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $tid = $this->getRouteMatch()->getParameter('term');
+    $tid = $this->getRouteMatch()->getParameter('taxonomy_term');
     $form_values = $form_state->getValues();
 
     if ($form_values['set_as_top_level_term']) {

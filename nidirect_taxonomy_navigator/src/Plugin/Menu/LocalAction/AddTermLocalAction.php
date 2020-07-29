@@ -58,7 +58,7 @@ class AddTermLocalAction extends LocalActionDefault
   public function getRouteParameters(RouteMatchInterface $route_match) {
     $vocabulary = $this->routeMatch->getParameter('vocabulary');
     $route_parameters = parent::getRouteParameters($route_match);
-    $route_parameters['taxonomy_vocabulary'] = $vocabulary;
+    $route_parameters['taxonomy_vocabulary'] = $vocabulary->id();
 
     return $route_parameters;
   }

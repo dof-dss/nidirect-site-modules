@@ -40,7 +40,6 @@ class SetParentTermForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $field_name = 'term_field';
     $request = $this->getRequest();
 
     $tid = $this->getRouteMatch()->getParameter('taxonomy_term');
@@ -53,6 +52,7 @@ class SetParentTermForm extends FormBase {
 
     $term_tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($term->bundle());
 
+    // Build our select options array vid => name.
     foreach ($term_tree as $tree_term) {
       $terms[$tree_term->tid] = $tree_term->name;
     }
@@ -88,18 +88,19 @@ class SetParentTermForm extends FormBase {
         0 => $this->t('No'),
         1 => $this->t('Yes'),
       ],
+      '#required' => TRUE,
     ];
 
-    $form[$field_name] = [
+    $form['term_field'] = [
       '#type' => 'container',
     ];
 
-    $form[$field_name]['widget'] = [
+    $form['term_field']['widget'] = [
       '#type' => 'select',
       '#title' => t('Select a parent term'),
       '#key_column' => 'tid',
       '#field_parents' => [],
-      '#field_name' => $field_name,
+      '#field_name' => 'term_field',
       '#shs' => $shs,
       '#options' => $terms,
       '#attributes' => [
@@ -147,9 +148,6 @@ class SetParentTermForm extends FormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    foreach ($form_state->getValues() as $key => $value) {
-      // @TODO: Validate fields.
-    }
     parent::validateForm($form, $form_state);
   }
 

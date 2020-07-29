@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_taxoman\Form;
+namespace Drupal\nidirect_taxonomy_navigator\Form;
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
@@ -10,7 +10,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
-use Drupal\nidirect_taxoman\TaxonomyNavigatorAccess;
+use Drupal\nidirect_taxonomy_navigator\TaxonomyNavigatorAccess;
 
 /**
  * Class TaxonomyNavigatorForm.
@@ -87,14 +87,14 @@ class TaxonomyNavigatorForm extends FormBase {
     $form['term'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Search for term'),
-      '#autocomplete_route_name' => 'nidirect_taxoman.taxonomy_search_form.autocomplete',
+      '#autocomplete_route_name' => 'nidirect_taxonomy_navigator.nidirect_taxonomy_navigator_search.autocomplete',
       '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary->id()],
       '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.')
     ];
 
     $breadcrumb = new Breadcrumb();
 
-    $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $vocabulary->id()]);
+    $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $vocabulary->id()]);
 
     if ($tid > 0) {
       // This issue https://www.drupal.org/node/2019905
@@ -103,9 +103,9 @@ class TaxonomyNavigatorForm extends FormBase {
       $ancestors = array_reverse(array_values($this->entityTypeManager->getStorage("taxonomy_term")->loadAllParents($tid)));
 
       foreach ($ancestors as $ancestor) {
-        $links[] = Link::createFromRoute($ancestor->label(), 'nidirect_taxoman.taxonomy_navigator_form', [
+        $links[] = Link::createFromRoute($ancestor->label(), 'nidirect_taxonomy_navigator.taxonomy_navigator_form', [
           'vocabulary' => $vocabulary->id(),
-          'term' => $ancestor->id(),
+          'taxonomy_term' => $ancestor->id(),
           ]);
       }
     }
@@ -153,7 +153,7 @@ class TaxonomyNavigatorForm extends FormBase {
       $form['terms'][$key]['name'] = [
         '#title' => $term->name,
         '#type' => 'link',
-        '#url' => Url::fromRoute('nidirect_taxoman.taxonomy_navigator_form', [
+        '#url' => Url::fromRoute('nidirect_taxonomy_navigator.taxonomy_navigator_form', [
           'vocabulary' => $vocabulary->id(),
           'taxonomy_term' => $term->tid,
         ]),
@@ -191,7 +191,7 @@ class TaxonomyNavigatorForm extends FormBase {
 
         $form['terms'][$key]['operations']['#links']['set_parent'] = [
           'title' => t('Set parent'),
-          'url' => Url::fromRoute('nidirect_taxoman.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
         ];
       }
 
@@ -203,11 +203,13 @@ class TaxonomyNavigatorForm extends FormBase {
       }
     }
 
-    $form['actions'] = ['#type' => 'actions'];
-    $form['actions']['submit'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Save'),
-    ];
+    if ($can_reorder) {
+      $form['actions'] = ['#type' => 'actions'];
+      $form['actions']['submit'] = [
+        '#type' => 'submit',
+        '#value' => $this->t('Save'),
+      ];
+    }
 
     return $form;
   }
@@ -248,10 +250,10 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid],'fragment' => $tid]);
       }
 
     }

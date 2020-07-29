@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_taxoman\Form;
+namespace Drupal\nidirect_taxonomy_navigator\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -168,7 +168,7 @@ class SetParentTermForm extends FormBase {
     $term->save();
 
     $this->getRequest()->query->remove('destination');
-    $form_state->setRedirect('nidirect_taxoman.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'term' => $parent_tid], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+    $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent_tid], ['query' => ['highlight' => $tid],'fragment' => $tid]);
   }
 
 }

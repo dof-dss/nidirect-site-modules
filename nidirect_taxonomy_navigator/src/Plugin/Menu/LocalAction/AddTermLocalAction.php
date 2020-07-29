@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_taxoman\Plugin\Menu\LocalAction;
+namespace Drupal\nidirect_taxonomy_navigator\Plugin\Menu\LocalAction;
 
 use Drupal\Core\Menu\LocalActionDefault;
 use Drupal\Core\Routing\CurrentRouteMatch;

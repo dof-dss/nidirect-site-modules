@@ -1,24 +1,20 @@
 <?php
 
-namespace Drupal\nidirect_taxoman\Controller;
+namespace Drupal\nidirect_taxonomy_navigator\Controller;
 
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
-use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Link;
-use Drupal\Core\Routing\RouteMatchInterface;
-use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\Entity\Vocabulary;
-use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class TaxonomyManagerController.
+ * Class TaxonomyNavigatorController.
  */
-class TaxonomyManagerController extends ControllerBase {
+class TaxonomyNavigatorController extends ControllerBase {
 
   /**
    * Drupal\Core\Entity\EntityTypeManagerInterface definition.
@@ -44,7 +40,7 @@ class TaxonomyManagerController extends ControllerBase {
     $vocabularies = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->loadMultiple();
 
     foreach ($vocabularies as $vocabulary) {
-      $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxoman.taxonomy_navigator_form', [
+      $links[] = Link::createFromRoute($vocabulary->label(), 'nidirect_taxonomy_navigator.taxonomy_navigator_form', [
         'vocabulary' => $vocabulary->id(),
       ]);
     }
@@ -97,5 +93,4 @@ class TaxonomyManagerController extends ControllerBase {
 
     return new JsonResponse($results);
   }
-
 }

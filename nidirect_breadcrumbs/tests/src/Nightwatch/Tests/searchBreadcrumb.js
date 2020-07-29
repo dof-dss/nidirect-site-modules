@@ -1,5 +1,5 @@
 module.exports = {
-  '@tags': ['nidirect-breadcrumbs'],
+  '@tags': ['breadcrumbs'],
 
   'Test that the Search page does not show a breadcrumb': browser => {
     browser

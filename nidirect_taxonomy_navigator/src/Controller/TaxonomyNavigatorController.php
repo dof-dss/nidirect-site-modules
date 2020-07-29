@@ -78,6 +78,21 @@ class TaxonomyNavigatorController extends ControllerBase {
           'url' => Url::fromRoute('entity.taxonomy_vocabulary.edit_form', ['taxonomy_vocabulary' => $vocabulary->id()], ['query' => \Drupal::destination()->getAsArray()]),
         ];
 
+        $build['vocabularies'][$vocabulary->id()]['operations']['#links']['fields'] = [
+          'title' => t('Manage fields'),
+          'url' => Url::fromRoute('entity.taxonomy_term.field_ui_fields', ['taxonomy_vocabulary' => $vocabulary->id()], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
+
+        $build['vocabularies'][$vocabulary->id()]['operations']['#links']['form'] = [
+          'title' => t('Manage form display'),
+          'url' => Url::fromRoute('entity.entity_form_display.taxonomy_term.default', ['taxonomy_vocabulary' => $vocabulary->id()], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
+
+        $build['vocabularies'][$vocabulary->id()]['operations']['#links']['display'] = [
+          'title' => t('Manage display'),
+          'url' => Url::fromRoute('entity.entity_view_display.taxonomy_term.default', ['taxonomy_vocabulary' => $vocabulary->id()], ['query' => \Drupal::destination()->getAsArray()]),
+        ];
+
         $build['vocabularies'][$vocabulary->id()]['operations']['#links']['delete'] = [
           'title' => t('Delete'),
           'url' => Url::fromRoute('entity.taxonomy_vocabulary.delete_form', ['taxonomy_vocabulary' => $vocabulary->id()], ['query' => \Drupal::destination()->getAsArray()]),

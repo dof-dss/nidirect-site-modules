@@ -10,6 +10,10 @@ use Drupal\Core\Routing\Access\AccessInterface;
  */
 class TaxonomyNavigatorAccess implements AccessInterface {
 
+  public static function canAdministerVocabularies() {
+    return self::taxonomyAccess('administer');
+  }
+
   public static function canViewTerms($vocabulary) {
     return self::taxonomyAccess('view', $vocabulary);
   }
@@ -26,13 +30,16 @@ class TaxonomyNavigatorAccess implements AccessInterface {
     return self::taxonomyAccess('reorder', $vocabulary);
   }
 
-  public static function taxonomyAccess($type, $vocabulary) {
+  public static function taxonomyAccess($type, $vocabulary = NULL) {
     $moduleHandler = \Drupal::service('module_handler');
     $taf_enabled = $moduleHandler->moduleExists('taxonomy_access_fix');
 
     switch ($type) {
+      case 'administer':
+        $permission_query = 'administer taxonomy';
+        break;
       case 'view':
-        $permission_query = ($taf_enabled) ? 'view terms in ' . $vocabulary : 'Access the taxonomy vocabulary overview page';
+        $permission_query = ($taf_enabled) ? 'view terms in ' . $vocabulary : 'access taxonomy overview';
         break;
       case 'edit':
         $permission_query = ($taf_enabled) ? 'edit terms in ' . $vocabulary : $vocabulary . ': Edit terms';

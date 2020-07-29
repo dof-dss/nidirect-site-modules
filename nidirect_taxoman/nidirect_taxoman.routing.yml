@@ -17,7 +17,7 @@ nidirect_taxoman.taxonomy_navigator_form:
     vocabulary: 'site_themes'
     taxonomy_term: '0'
   requirements:
-    _custom_access: 'Drupal\nidirect_taxoman\TaxonomyNavigatorAccess::canViewVocabularyTerms'
+    _custom_access: 'Drupal\nidirect_taxoman\TaxonomyNavigatorAccess::canViewTerms'
   options:
     parameters:
       vocabulary:

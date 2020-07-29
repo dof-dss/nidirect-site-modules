@@ -34,7 +34,7 @@ module.exports = {
         });
 
         browser
-          .drupalLogin({name: process.env.TEST_USER, password: process.env.TEST_PASS})
+          .drupalLogin({name: process.env.NW_TEST_USER_PREFIX + '_admin', password: process.env.TEST_PASS})
           .drupalRelativeURL('/admin/structure/types')
           .waitForElementVisible('body', 9000)
 

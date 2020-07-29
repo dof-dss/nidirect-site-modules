@@ -35,11 +35,13 @@ class TaxonomyNavigatorAccess implements AccessInterface {
         $permission_query = ($taf_enabled) ? 'view terms in ' . $vocabulary : 'Access the taxonomy vocabulary overview page';
         break;
       case 'edit':
-      case 'reorder':
         $permission_query = ($taf_enabled) ? 'edit terms in ' . $vocabulary : $vocabulary . ': Edit terms';
         break;
       case 'delete':
         $permission_query = ($taf_enabled) ? 'delete terms in ' . $vocabulary : $vocabulary . ': Delete terms';
+        break;
+      case 'reorder':
+        $permission_query = ($taf_enabled) ? 'reorder terms in ' . $vocabulary : $vocabulary . ': Edit terms';
         break;
     }
 

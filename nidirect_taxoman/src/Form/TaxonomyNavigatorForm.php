@@ -10,6 +10,7 @@ use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
+use Drupal\nidirect_taxoman\TaxonomyNavigatorAccess;
 
 /**
  * Class TaxonomyNavigatorForm.
@@ -73,16 +74,10 @@ class TaxonomyNavigatorForm extends FormBase {
 
     $tid = $route_params->get('taxonomy_term') ?? 0;
 
-    if ($this->moduleHandler->moduleExists('taxonomy_access_fix')) {
-      $can_edit = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('edit terms', $vocabulary->id());
-      $can_delete = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('delete terms', $vocabulary->id());
-      $can_reorder = \Drupal\taxonomy_access_fix\TaxonomyAccessFixPermissions::fixAccess('reorder terms', $vocabulary->id());
-    }
-    else {
-      $can_edit = $this->currentUser()->hasPermission('edit terms in ' . $vocabulary->id());
-      $can_delete = $this->currentUser()->hasPermission('delete terms in ' . $vocabulary->id());
-      $can_reorder = $can_edit;
-    }
+    // User taxonomy permissions.
+    $can_edit = TaxonomyNavigatorAccess::canEditTerms($vocabulary->id())->isAllowed();
+    $can_delete = TaxonomyNavigatorAccess::canDeleteTerms($vocabulary->id())->isAllowed();
+    $can_reorder = TaxonomyNavigatorAccess::canReorderTerms($vocabulary->id())->isAllowed();
 
     $form['vocabulary'] = [
       '#type' => 'hidden',

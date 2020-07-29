@@ -113,20 +113,24 @@ class SetParentTermForm extends FormBase {
       '#attached' => [
         'library' => ['shs/shs.form'],
       ],
-      '#element_validate' => [[
-        '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
-        'validateElement',
-      ]],
-      '#after_build' => [[
-        '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
-        'afterBuild',
-      ]],
+      '#element_validate' => [
+        [
+          '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
+          'validateElement',
+        ],
+      ],
+      '#after_build' => [
+        [
+          '\Drupal\shs\Plugin\Field\FieldWidget\OptionsShsWidget',
+          'afterBuild',
+        ],
+      ],
     ];
 
     $form['actions']['submit'] = [
       '#type' => 'submit',
       '#value' => $this->t('Update'),
-      '#attributes' => ['class' => ['button--primary']]
+      '#attributes' => ['class' => ['button--primary']],
     ];
 
     $form['actions']['cancel'] = [
@@ -168,7 +172,7 @@ class SetParentTermForm extends FormBase {
     $term->save();
 
     $this->getRequest()->query->remove('destination');
-    $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent_tid], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+    $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent_tid], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
   }
 
 }

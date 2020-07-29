@@ -32,11 +32,15 @@ class TaxonomyNavigatorForm extends FormBase {
   protected $dbConnection;
 
   /**
+   * Drupal\Core\Extension\ModuleHandler definition.
+   *
    * @var \Drupal\Core\Extension\ModuleHandler
    */
   protected $moduleHandler;
 
   /**
+   * Drupal\Core\Session\AccountProxy definition.
+   *
    * @var \Drupal\Core\Session\AccountProxy
    */
   protected $currentUser;
@@ -89,7 +93,7 @@ class TaxonomyNavigatorForm extends FormBase {
       '#title' => $this->t('Search for term'),
       '#autocomplete_route_name' => 'nidirect_taxonomy_navigator.nidirect_taxonomy_navigator_search.autocomplete',
       '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary->id()],
-      '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.')
+      '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.'),
     ];
 
     $breadcrumb = new Breadcrumb();
@@ -106,7 +110,7 @@ class TaxonomyNavigatorForm extends FormBase {
         $links[] = Link::createFromRoute($ancestor->label(), 'nidirect_taxonomy_navigator.taxonomy_navigator_form', [
           'vocabulary' => $vocabulary->id(),
           'taxonomy_term' => $ancestor->id(),
-          ]);
+        ]);
       }
     }
 
@@ -249,12 +253,13 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent->id()], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent->id()], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid],'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
       }
 
     }
   }
+
 }

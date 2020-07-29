@@ -11,8 +11,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Creates a local action linking to the current taxonomy add term form.
  */
-class AddTermLocalAction extends LocalActionDefault
-{
+class AddTermLocalAction extends LocalActionDefault {
 
   /**
    * Current route match.
@@ -32,6 +31,8 @@ class AddTermLocalAction extends LocalActionDefault
    *   The plugin implementation definition.
    * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
    *   The route provider to load routes by name.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
+   *   The current route match object.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, RouteProviderInterface $route_provider, CurrentRouteMatch $route_match) {
     parent::__construct($configuration, $plugin_id, $plugin_definition, $route_provider);

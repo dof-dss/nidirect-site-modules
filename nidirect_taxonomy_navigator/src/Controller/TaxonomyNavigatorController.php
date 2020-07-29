@@ -110,15 +110,28 @@ class TaxonomyNavigatorController extends ControllerBase {
   /**
    * Provides title callback for vocabulary navigator .
    *
-   * @param Vocabulary $vocabulary
+   * @param \Drupal\taxonomy\Entity\Vocabulary $vocabulary
    *   The Vocabulary entity.
+   *
    * @return string|null
    *   The title for the entity view page, if an entity was found.
    */
   public function navigatorVocabularyTitle(Vocabulary $vocabulary) {
-    return  $this->t('@vocabulary ', ['@vocabulary' => $vocabulary->label()]);
+    return $this->t('@vocabulary', ['@vocabulary' => $vocabulary->label()]);
   }
 
+  /**
+   * Taxonomy term search autocomplete callback.
+   *
+   * @param \Symfony\Component\HttpFoundation\Request $request
+   *   A HTTP Request object.
+   *
+   * @return \Symfony\Component\HttpFoundation\JsonResponse
+   *   A JSON object of matching terms.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
   public function searchAutocomplete(Request $request) {
 
     $input = Xss::filter($request->query->get('q'));
@@ -145,4 +158,5 @@ class TaxonomyNavigatorController extends ControllerBase {
 
     return new JsonResponse($results);
   }
+
 }

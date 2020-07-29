@@ -64,7 +64,7 @@ class TaxonomyNavigatorController extends ControllerBase {
    *   The title for the entity view page, if an entity was found.
    */
   public function navigatorVocabularyTitle(Vocabulary $vocabulary) {
-    return  $this->t('Taxonomy manager: @vocabulary ', ['@vocabulary' => $vocabulary->label()]);
+    return  $this->t('@vocabulary ', ['@vocabulary' => $vocabulary->label()]);
   }
 
   public function searchAutocomplete(Request $request) {

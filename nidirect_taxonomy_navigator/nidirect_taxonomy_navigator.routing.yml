@@ -5,7 +5,7 @@ nidirect_taxonomy_navigator.taxonomy_navigator_controller:
     _controller: '\Drupal\nidirect_taxonomy_navigator\Controller\TaxonomyNavigatorController::index'
     _title: 'Taxonomy Navigator'
   requirements:
-    _permission: 'administer taxonomy'
+    _permission: 'access taxonomy overview'
   options:
     _admin_route: TRUE
 nidirect_taxonomy_navigator.taxonomy_navigator_form:

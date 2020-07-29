@@ -5,7 +5,6 @@ namespace Drupal\nidirect_taxonomy_navigator\Controller;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
-use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\nidirect_taxonomy_navigator\TaxonomyNavigatorAccess;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -40,20 +39,25 @@ class TaxonomyNavigatorController extends ControllerBase {
   public function index() {
 
     $vocabularies = $this->entityTypeManager->getStorage('taxonomy_vocabulary')->loadMultiple();
-    $administer_taxonomies = TaxonomyNavigatorAccess::canAdministerVocabularies();
+    $administer_taxonomies = TaxonomyNavigatorAccess::canAdministerVocabularies()->isAllowed();
 
     $build['vocabularies'] = [
       '#type' => 'table',
-      '#header' => [
-        $this->t('Name'),
-        $this->t('Operations'),
-      ],
+      '#header' => [$this->t('Name')],
       '#empty' => $this->t('No vocabularies found.'),
       '#tableselect' => FALSE,
     ];
 
+    if ($administer_taxonomies) {
+      $build['vocabularies']['#header'][] = $this->t('Operations');
+    }
 
     foreach ($vocabularies as $vocabulary) {
+
+      if (TaxonomyNavigatorAccess::canViewTerms($vocabulary->id())->isForbidden()) {
+        continue;
+      }
+
       $build['vocabularies'][$vocabulary->id()]['name'] = [
         '#title' => $vocabulary->label(),
         '#type' => 'link',

@@ -1,0 +1,8 @@
+name: 'Taxonomy Navigator'
+description: 'Navigate and manage large taxonomy vocabularies.'
+type: module
+core: 8.x
+package: 'NIDirect'
+dependencies:
+  - drupal:taxonomy
+  - shs

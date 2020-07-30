@@ -272,7 +272,7 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   // Add a description to the title field.  This cannot be done in the UI.
-  if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'], $result)) {
+  if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'])) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
       $title_description = t('

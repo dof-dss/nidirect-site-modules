@@ -45,6 +45,11 @@ class SetParentTermForm extends FormBase {
     $tid = $this->getRouteMatch()->getParameter('taxonomy_term');
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
 
+    if ($term === NULL) {
+      $this->messenger()->addError('Unable to set parent as the term was not found.');
+      $this->redirect('nidirect_taxonomy_navigator.taxonomy_navigator_controller')->send();
+    }
+
     if ($route = $request->attributes->get(RouteObjectInterface::ROUTE_OBJECT)) {
       $page_title = $route->getDefault('_title');
       $route->setDefault('_title', $page_title . ' for ' . $term->label());
@@ -159,8 +164,11 @@ class SetParentTermForm extends FormBase {
     }
 
     $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
-    $term->set('parent', $parent_tid);
-    $term->save();
+
+    if ($term) {
+      $term->set('parent', $parent_tid);
+      $term->save();
+    }
 
     $this->getRequest()->query->remove('destination');
     $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent_tid], ['query' => ['highlight' => $tid], 'fragment' => $tid]);

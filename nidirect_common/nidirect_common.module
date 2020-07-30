@@ -272,7 +272,7 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   // Add a description to the title field.  This cannot be done in the UI.
-  if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'], $result)) {
+  if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'])) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
       $title_description = t('
@@ -596,6 +596,23 @@ function nidirect_common_preprocess_page(&$variables) {
 
     if (!empty($banner_image)) {
       $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
+    }
+  }
+}
+
+/**
+ * Implements hook_preprocess_status_messages().
+ */
+function nidirect_common_preprocess_status_messages(&$variables) {
+  // Add additional explanation to to the oEmbed resource not found message.
+  if (isset($variables['message_list']['error'])) {
+    $error_messages = $variables['message_list']['error'];
+
+    foreach ($error_messages as $index => $message) {
+      if ($message == 'Could not retrieve the oEmbed resource.') {
+        $message .= t("This may be due to media being inaccessible or set to private.");
+        $variables['message_list']['error'][$index] = $message;
+      }
     }
   }
 }

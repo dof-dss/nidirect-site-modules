@@ -189,19 +189,19 @@ class TaxonomyNavigatorForm extends FormBase {
       if ($can_edit) {
         $form['terms'][$key]['operations']['#links']['edit'] = [
           'title' => t('Edit'),
-          'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+          'url' => Url::fromRoute('entity.taxonomy_term.edit_form', ['taxonomy_term' => $term->tid], ['query' => $this->getDestinationArray()]),
         ];
 
         $form['terms'][$key]['operations']['#links']['set_parent'] = [
           'title' => t('Set parent'),
-          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['vocabulary' => $vocabulary->id(), 'taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['vocabulary' => $vocabulary->id(), 'taxonomy_term' => $term->tid], ['query' => $this->getDestinationArray()]),
         ];
       }
 
       if ($can_delete) {
         $form['terms'][$key]['operations']['#links']['delete'] = [
           'title' => t('Delete'),
-          'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => \Drupal::destination()->getAsArray()]),
+          'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => $this->getDestinationArray()]),
         ];
       }
     }

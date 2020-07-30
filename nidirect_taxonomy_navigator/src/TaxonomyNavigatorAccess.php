@@ -7,6 +7,10 @@ use Drupal\Core\Routing\Access\AccessInterface;
 
 /**
  * Provides user access/permission checks for taxonomies.
+ *
+ * Returns an AccessResult object. To check user access against this
+ * you should use the isAllowed() and isDisallowed() methods provided
+ * by the class.
  */
 class TaxonomyNavigatorAccess implements AccessInterface {
 
@@ -87,6 +91,8 @@ class TaxonomyNavigatorAccess implements AccessInterface {
     $moduleHandler = \Drupal::service('module_handler');
     $taf_enabled = $moduleHandler->moduleExists('taxonomy_access_fix');
 
+    // Generate a permission query using taxonomy_access_fix permissions or
+    // fallback to permissions provided by the core taxonomy module.
     switch ($type) {
       case 'administer':
         $permission_query = 'administer taxonomy';

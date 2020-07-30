@@ -50,7 +50,7 @@ class SetParentTermForm extends FormBase {
       $route->setDefault('_title', $page_title . ' for ' . $term->label());
     }
 
-    $term_tree = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree($term->bundle());
+    $term_tree = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree($term->bundle());
 
     // Build our select options array vid => name.
     foreach ($term_tree as $tree_term) {

@@ -1,0 +1,44 @@
+<?php
+
+/**
+ * @file
+ * Contains nidirect_breadcrumbs.module.
+ */
+
+use Drupal\Core\Cache\Cache;
+use Drupal\Core\Entity\EntityFormInterface;
+use Drupal\Core\Form\FormStateInterface;
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function nidirect_breadcrumbs_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  foreach (array_keys($form['actions']) as $action) {
+    if ($action === 'preview') {
+      $form['actions'][$action]['#submit'][] = 'nidirect_breadcrumbs_preview_cache_handler';
+    }
+  }
+}
+
+/**
+ * Invalidates the node:id cache to ensure we get accurate previews.
+ *
+ * If the Theme/subtheme field has changed and the user requests a preview
+ * the breadcrumb builder will not be called after the initial preview, we
+ * need to force a rebuild by invalidating the node:id cache.
+ *
+ * @param array $form
+ *   Form array.
+ * @param \Drupal\Core\Form\FormStateInterface $form_state
+ *   Form state object.
+ */
+function nidirect_breadcrumbs_preview_cache_handler(array &$form, FormStateInterface $form_state) {
+  if ($form_state->getFormObject() instanceof EntityFormInterface) {
+    $nid = $form_state->getformObject()->getEntity()->id();
+
+    if (!empty($nid)) {
+      Cache::invalidateTags(['node:' . $nid]);
+    }
+  }
+
+}

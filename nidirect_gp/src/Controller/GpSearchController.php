@@ -338,7 +338,7 @@ class GpSearchController extends ControllerBase {
    */
   private function lookupLocation(float $latitude, float $longitude) {
     $locality = NULL;
-    $url = "http://nominatim.openstreetmap.org/";
+    $url = "https://nominatim.openstreetmap.org/";
 
     try {
       $nominatim = new Nominatim($url);

@@ -96,7 +96,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, strin
 /**
  * Utility function to get teasers.
  */
-function nidirect_landing_pages_article_teasers(string $tid, $nid_to_exclude) {
+function nidirect_landing_pages_article_teasers($tid, $nid_to_exclude) {
   $results = [];
   // Get a list of article teasers by term.
   $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
@@ -110,7 +110,7 @@ function nidirect_landing_pages_article_teasers(string $tid, $nid_to_exclude) {
 /**
  * Utility function to get teasers by term.
  */
-function nidirect_landing_pages_get_article_teasers_by_term(int $tid, $nid_to_exclude) {
+function nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -131,7 +131,7 @@ function nidirect_landing_pages_get_article_teasers_by_term(int $tid, $nid_to_ex
 /**
  * Utility function to get teasers by topic.
  */
-function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
+function nidirect_landing_pages_get_article_teasers_by_topic($tid) {
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
   \Drupal::service('renderer')->renderRoot($articles_view);
@@ -273,7 +273,9 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
     ]);
 
     $form_state->setErrorByName('field_subtheme', $message);
+
   }
+
 }
 
 /**

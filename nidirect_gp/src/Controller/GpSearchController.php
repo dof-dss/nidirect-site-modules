@@ -8,6 +8,8 @@ use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
 use Drupal\views\ViewExecutable;
+use maxh\Nominatim\Exceptions\NominatimException;
+use maxh\Nominatim\Nominatim;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -133,13 +135,19 @@ class GpSearchController extends ControllerBase {
 
     switch ($search_type['type']) {
       case 'FULLTEXT':
-        return $this->t('GP practice results for %querytext', ['%querytext' => '"' . $search_type['querytext'] . '"']);
+        return $this->t('GP practice results for @querytext', ['@querytext' => '"' . $search_type['querytext'] . '"']);
 
       case 'POSTCODE':
-        return $this->t('GP practices near %postcode', ['%postcode' => '"' . $search_type['postcode'][0] . '"']);
+        return $this->t('GP practices near @postcode', ['@postcode' => '"' . $search_type['postcode'][0] . '"']);
 
       case 'LOCATION':
-        return $this->t('GP practices near your location');
+        $location = $this->lookupLocation($search_type['lat'], $search_type['lng']);
+        if (!empty($location)) {
+          return $this->t('GP practices near @location', ['@location' => $location]);
+        }
+        else {
+          return $this->t('GP practices near your location');
+        }
 
       default:
         return $this->t('Find a GP practice');
@@ -313,6 +321,40 @@ class GpSearchController extends ControllerBase {
 
     return $output;
 
+  }
+
+  /**
+   * Returns the city or village for a geolocation coordinate.
+   *
+   * @param float $latitude
+   *   Latitude coordinate.
+   * @param float $longitude
+   *   Longitude coordinate.
+   *
+   * @return mixed|null
+   *   Village/city or null for no result.
+   *
+   * @throws \GuzzleHttp\Exception\GuzzleException
+   */
+  private function lookupLocation(float $latitude, float $longitude) {
+    $locality = NULL;
+    $url = "https://nominatim.openstreetmap.org/";
+
+    try {
+      $nominatim = new Nominatim($url);
+      $reverse = $nominatim->newReverse()->latlon($latitude, $longitude);
+      $result = $nominatim->find($reverse);
+    }
+    catch (NominatimException $e) {
+      $this->getLogger()->error($e);
+      return $locality;
+    }
+
+    if ($result) {
+      $locality = $result['address']['village'] ?? $result['address']['city'];
+    }
+
+    return $locality;
   }
 
 }

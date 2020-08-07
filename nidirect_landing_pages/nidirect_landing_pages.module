@@ -61,6 +61,9 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, strin
       && ($user_input['field_manually_control_listing'] == 0)) {
       return;
     }
+    if (!isset($user_input['field_manually_control_listing'])) {
+      return;
+    }
   }
   else {
     // Not ajax, do nothing.
@@ -209,7 +212,7 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
   if (!$form_state->getValue('field_manually_control_listing')['value']) {
     // If 'manual control' checkbox is unchecked, make sure
     // that listing field is not shown.
-    $form['field_listing']['#access'] = FALSE;
+    return ['#markup' => ''];
   }
   return $form['field_listing'];
 }

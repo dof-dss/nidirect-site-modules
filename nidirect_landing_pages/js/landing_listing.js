@@ -45,12 +45,6 @@
             alert('Please complete the title and teaser fields');
             $(this).prop('checked', false);
           }
-        } else {
-          // User has un-checked manual control, so hide the listing.
-          $(context).find('#edit-field-listing-wrapper')
-            .hide();
-          $(context).find('#edit-field-manually-control-listing-wrapper')
-            .hide();
         }
       });
     }

@@ -27,6 +27,6 @@ class LandingPagesRouteSubscriber extends RouteSubscriberBase {
         '_controller' => '\Drupal\nidirect_landing_pages\Controller\LandingPagesChooseBlockController::inlineBlockList',
       ]);
     }
-
   }
+
 }

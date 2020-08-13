@@ -182,7 +182,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
       $msg = "Note that the theme/subtheme that you choose here will be overridden by this landing page. <br/>";
       $msg .= "As an example, if you select 'Motoring / Road Safety' here then when you visit the page at ";
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
-      $form['field_subtheme']['widget']['#description'] = t($msg);
+      $form['field_subtheme']['widget']['#description'] = $msg;
     }
     // Only show 'Listing' field if 'manually control listing'
     // checkbox has been checked.
@@ -321,9 +321,10 @@ function nidirect_landing_pages_get_redirect_url(string $source_path) {
 }
 
 /**
- * Function to check:
- * - Whether there is already a landing page node associated with the theme selected.
- * - Create a redirect or warn user if there is already a landing page for this theme.
+ * Landing page checks.
+ *
+ * - Whether there is already a landing page associated with the theme selected.
+ * - Create a redirect or warn user if there is a landing page for this theme.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The landing page node entity.

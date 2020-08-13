@@ -2,7 +2,6 @@
 
 namespace Drupal\nidirect_landing_pages\Controller;
 
-use Drupal\Component\Utility\Html;
 use Drupal\layout_builder\Controller\ChooseBlockController;
 use Drupal\layout_builder\SectionStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -10,8 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 /**
  * Class LandingPagesChooseBlockController.
  */
-class LandingPagesChooseBlockController extends ChooseBlockController
-{
+class LandingPagesChooseBlockController extends ChooseBlockController {
   /**
    * The module handler service.
    *
@@ -52,13 +50,12 @@ class LandingPagesChooseBlockController extends ChooseBlockController
    * @return array
    *   A render array.
    */
-  public function inlineBlockList(SectionStorageInterface $section_storage, $delta, $region)
-  {
+  public function inlineBlockList(SectionStorageInterface $section_storage, $delta, $region) {
     $build = parent::inlineBlockList($section_storage, $delta, $region);
     $module_path_rel = drupal_get_path('module', 'nidirect_landing_pages');
     $module_path_abs = $this->fileSystem->realpath($module_path_rel);
 
-    if ($this->moduleHandler->moduleExists('layout_builder_restrictions')){
+    if ($this->moduleHandler->moduleExists('layout_builder_restrictions')) {
       $layout_builder_restrictions_manager = \Drupal::service('plugin.manager.layout_builder_restriction');
       $restriction_plugins = $layout_builder_restrictions_manager->getSortedPlugins();
       foreach (array_keys($restriction_plugins) as $id) {
@@ -74,14 +71,15 @@ class LandingPagesChooseBlockController extends ChooseBlockController
       }
     }
 
-     foreach ($build['links']['#links'] as &$link) {
+    foreach ($build['links']['#links'] as &$link) {
       $id = $link['url']->getRouteParameters()['plugin_id'];
-      $img_name = substr($id, (strpos($id,':')+1));
+      $img_name = substr($id, (strpos($id, ':') + 1));
       $title = $link['title'];
 
       if (file_exists($module_path_abs . '/img/block-icons/' . $img_name . '.png')) {
         $img_path = $module_path_rel . '/img/block-icons/' . $img_name . '.png';
-      } else {
+      }
+      else {
         $img_path = $module_path_rel . '/img/block-icons/default.png';
       }
 
@@ -116,5 +114,3 @@ class LandingPagesChooseBlockController extends ChooseBlockController
   }
 
 }
-
-

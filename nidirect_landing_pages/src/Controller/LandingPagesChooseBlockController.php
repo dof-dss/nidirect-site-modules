@@ -102,7 +102,6 @@ class LandingPagesChooseBlockController extends ChooseBlockController
           ],
         ];
       $link['attributes']['class'][] = 'nidirect-landing-pages-add-block-icon';
-      $link['attributes']['class'][] = 'block-' . strtolower(HTML::cleanCssIdentifier($link['title']));
     }
 
     $build['links']['#attributes']['class'][] = 'nidirect-landing-page--add-custom-block-icons';

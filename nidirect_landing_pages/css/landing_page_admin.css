@@ -21,39 +21,22 @@
   text-decoration: none;
 }
 
-#drupal-off-canvas a.nidirect-landing-pages-add-block-icon {
-  background-repeat: no-repeat;
-  background-position: top;
-  padding: 50px 0 0 0;
+#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon {
+  padding: 20px 0;
   width: 100%;
   text-align: center;
   margin: 5px 0 15px 0;
-  background-color: transparent;
+  background-color: #555;
   color: white;
+}
+
+#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon img,
+#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon div {
+  background-color: transparent;
 }
 
 #drupal-off-canvas a.nidirect-landing-pages-add-block-icon:hover {
   text-decoration: none;
-  background-color: transparent;
+  background-color: #0a78cd;
 }
 
-#drupal-off-canvas a.block-accordion-menu {
-  background-image: url(..//img/block-accordion.png);
-}
-
-#drupal-off-canvas a.block-banner-deep {
-  background-image: url(..//img/block-banner-deep.png);
-}
-
-#drupal-off-canvas a.block-card---standard,
-#drupal-off-canvas a.block-card---wide {
-  background-image: url(..//img/block-card.png);
-}
-
-#drupal-off-canvas a.block-video-and-caption {
-  background-image: url(..//img/block-video.png);
-}
-
-#drupal-off-canvas a.block-plain-cards {
-  background-image: url(..//img/block-text.png);
-}

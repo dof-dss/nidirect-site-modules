@@ -5,3 +5,5 @@ core: 8.x
 package: 'NIDirect'
 dependencies:
   - drupal:shs
+  - drupal:layout_builder
+  - drupal:block

@@ -20,11 +20,19 @@ class LandingPagesChooseBlockController extends ChooseBlockController
   protected $moduleHandler;
 
   /**
+   * The file system service.
+   *
+   * @var \Drupal\Core\File\FileSystem
+   */
+  protected $fileSystem;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->moduleHandler = $container->get('module_handler');
+    $instance->fileSystem = $container->get('file_system');
     return $instance;
   }
 
@@ -47,7 +55,8 @@ class LandingPagesChooseBlockController extends ChooseBlockController
   public function inlineBlockList(SectionStorageInterface $section_storage, $delta, $region)
   {
     $build = parent::inlineBlockList($section_storage, $delta, $region);
-    $module_path = drupal_get_path('module', 'nidirect_landing_pages');
+    $module_path_rel = drupal_get_path('module', 'nidirect_landing_pages');
+    $module_path_abs = $this->fileSystem->realpath($module_path_rel);
 
     if ($this->moduleHandler->moduleExists('layout_builder_restrictions')){
       $layout_builder_restrictions_manager = \Drupal::service('plugin.manager.layout_builder_restriction');
@@ -65,15 +74,15 @@ class LandingPagesChooseBlockController extends ChooseBlockController
       }
     }
 
-    foreach ($build['links']['#links'] as &$link) {
+     foreach ($build['links']['#links'] as &$link) {
       $id = $link['url']->getRouteParameters()['plugin_id'];
       $img_name = substr($id, (strpos($id,':')+1));
       $title = $link['title'];
 
-      if (file_exists(__DIR__ . 'img/block-icons/' . $img_name . '.png')) {
-        $img_path = $module_path . '/img/block-icons/' . $img_name . '.png';
+      if (file_exists($module_path_abs . '/img/block-icons/' . $img_name . '.png')) {
+        $img_path = $module_path_rel . '/img/block-icons/' . $img_name . '.png';
       } else {
-        $img_path = $module_path . '/img/block-icons/block-icons-default.png';
+        $img_path = $module_path_rel . '/img/block-icons/default.png';
       }
 
       $icon = [
@@ -92,15 +101,15 @@ class LandingPagesChooseBlockController extends ChooseBlockController
             '#children' => $title,
           ],
         ];
-      $link['attributes']['class'][] = 'nidirect-landing-pages-add-block-icons-icon';
-      $link['attributes']['class'][] = 'block-icons-' . strtolower(HTML::cleanCssIdentifier($link['title']));
+      $link['attributes']['class'][] = 'nidirect-landing-pages-add-block-icon';
+      $link['attributes']['class'][] = 'block-' . strtolower(HTML::cleanCssIdentifier($link['title']));
     }
 
     $build['links']['#attributes']['class'][] = 'nidirect-landing-page--add-custom-block-icons';
 
     $build['back_button']['#attributes']['class'][] = 'nidirect-landing-page--button-back';
 
-    $build['#title'] = $this->t('Select a custom block-icons type');
+    $build['#title'] = $this->t('Select a custom block type');
 
     $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
 

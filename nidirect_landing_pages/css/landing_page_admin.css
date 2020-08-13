@@ -1,0 +1,59 @@
+
+#drupal-off-canvas a.nidirect-landing-page--button-back {
+  border: 1px solid #fff;
+  width: 100%;
+  height: auto;
+  display: block;
+  margin: 0 0 10px 0;
+  padding: 10px 16px;
+  color: white;
+}
+
+#drupal-off-canvas ul.nidirect-landing-page--add-custom-block li {
+  display: block;
+  padding: 10px 20px;
+  margin: 10px;
+  background-color: #0a78cd;
+}
+
+#drupal-off-canvas ul.nidirect-landing-page--add-custom-block li:hover {
+  background-color: #0c97ed;
+  text-decoration: none;
+}
+
+#drupal-off-canvas a.nidirect-landing-pages-add-block-icon {
+  background-repeat: no-repeat;
+  background-position: top;
+  padding: 50px 0 0 0;
+  width: 100%;
+  text-align: center;
+  margin: 5px 0 15px 0;
+  background-color: transparent;
+  color: white;
+}
+
+#drupal-off-canvas a.nidirect-landing-pages-add-block-icon:hover {
+  text-decoration: none;
+  background-color: transparent;
+}
+
+#drupal-off-canvas a.block-accordion-menu {
+  background-image: url(..//img/block-accordion.png);
+}
+
+#drupal-off-canvas a.block-banner-deep {
+  background-image: url(..//img/block-banner-deep.png);
+}
+
+#drupal-off-canvas a.block-card---standard,
+#drupal-off-canvas a.block-card---wide {
+  background-image: url(..//img/block-card.png);
+}
+
+#drupal-off-canvas a.block-video-and-caption {
+  background-image: url(..//img/block-video.png);
+}
+
+#drupal-off-canvas a.block-plain-cards {
+  background-image: url(..//img/block-text.png);
+}

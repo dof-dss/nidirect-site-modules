@@ -1,4 +1,7 @@
 landing_listing:
   js:
     js/landing_listing.js: {}
-
+landing_page_admin:
+  css:
+    theme:
+      css/landing_page_admin.css: {}

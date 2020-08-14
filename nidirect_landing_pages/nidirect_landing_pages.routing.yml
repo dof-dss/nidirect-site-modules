@@ -1,8 +1,0 @@
-
-nidirect_landing_pages.landing_pages_choose_block_controller_build:
-  path: '/nidirect_landing_pages/chooseblock'
-  defaults:
-    _controller: '\Drupal\nidirect_landing_pages\Controller\LandingPagesChooseBlockController::build'
-    _title: 'build'
-  requirements:
-    _permission: 'access content'

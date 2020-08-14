@@ -1,7 +1,8 @@
 <?php
 
-namespace Drupal\layout_builder\Controller;
+namespace Drupal\nidirect_landing_pages\Controller;
 
+use Drupal\layout_builder\Controller\ChooseSectionController;
 use Drupal\layout_builder\SectionStorageInterface;
 
 /**
@@ -25,6 +26,12 @@ class LandingPagesChooseSectionController extends ChooseSectionController {
    */
   public function build(SectionStorageInterface $section_storage, $delta) {
     $build = parent::build($section_storage, $delta);
+
+    foreach ($build['layouts']['#items'] as &$item) {
+      $item['#attributes']['class'][] = 'nidirect-landing-pages-add-section';
+    }
+
+    $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
 
     return $build;
   }

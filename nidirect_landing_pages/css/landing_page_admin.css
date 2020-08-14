@@ -9,32 +9,27 @@
   color: white;
 }
 
-#drupal-off-canvas ul.nidirect-landing-page--add-custom-block li {
-  display: block;
-  padding: 10px 20px;
-  margin: 10px;
-  background-color: #0a78cd;
-}
-
-#drupal-off-canvas ul.nidirect-landing-page--add-custom-block li:hover {
-  background-color: #0c97ed;
-  text-decoration: none;
-}
-
+#drupal-off-canvas li a.nidirect-landing-pages-add-section,
 #drupal-off-canvas li a.nidirect-landing-pages-add-block-icon {
   padding: 20px 0;
   width: 100%;
   text-align: center;
-  margin: 5px 0 15px 0;
+  margin: 20px 0 0 0;
   background-color: #555;
   color: white;
+  text-decoration: none;
 }
 
+#drupal-off-canvas li a.nidirect-landing-pages-add-section div,
+#drupal-off-canvas li a.nidirect-landing-pages-add-section svg,
+#drupal-off-canvas li a.nidirect-landing-pages-add-section rect,
 #drupal-off-canvas li a.nidirect-landing-pages-add-block-icon img,
 #drupal-off-canvas li a.nidirect-landing-pages-add-block-icon div {
+  text-decoration: none;
   background-color: transparent;
 }
 
+#drupal-off-canvas a.nidirect-landing-pages-add-section:hover,
 #drupal-off-canvas a.nidirect-landing-pages-add-block-icon:hover {
   text-decoration: none;
   background-color: #0a78cd;

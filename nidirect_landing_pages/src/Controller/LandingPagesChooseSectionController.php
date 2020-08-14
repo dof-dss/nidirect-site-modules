@@ -31,9 +31,12 @@ class LandingPagesChooseSectionController extends ChooseSectionController {
       $item['#attributes']['class'][] = 'nidirect-landing-pages--add-section';
     }
 
-    $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
+    // Add sidebar title.
+    $build['#title'] = $this->t('Select a layout');
 
     $build['layouts']['#attributes']['class'][] = 'nidirect-landing-pages';
+
+    $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
 
     return $build;
   }

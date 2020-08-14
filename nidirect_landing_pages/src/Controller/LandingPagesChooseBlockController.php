@@ -108,7 +108,7 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
     // Additional styling for the back link.
     $build['back_button']['#attributes']['class'][] = 'nidirect-landing-page--button-back';
 
-    // Update the title.
+    // Add sidebar title.
     $build['#title'] = $this->t('Select a custom block type');
 
     $build['links']['#attributes']['class'][] = 'nidirect-landing-pages';

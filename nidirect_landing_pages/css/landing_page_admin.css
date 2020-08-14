@@ -1,3 +1,6 @@
+#drupal-off-canvas ul.nidirect-landing-pages li {
+  padding-bottom: 0;
+}
 
 #drupal-off-canvas a.nidirect-landing-page--button-back {
   border: 1px solid #fff;
@@ -9,28 +12,25 @@
   color: white;
 }
 
-#drupal-off-canvas li a.nidirect-landing-pages-add-section,
-#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon {
+#drupal-off-canvas li a.nidirect-landing-pages--add-section,
+#drupal-off-canvas li a.nidirect-landing-pages--add-block {
   padding: 20px 0;
   width: 100%;
   text-align: center;
-  margin: 20px 0 0 0;
+  margin: 10px 0 0 0;
   background-color: #555;
   color: white;
   text-decoration: none;
 }
 
-#drupal-off-canvas li a.nidirect-landing-pages-add-section div,
-#drupal-off-canvas li a.nidirect-landing-pages-add-section svg,
-#drupal-off-canvas li a.nidirect-landing-pages-add-section rect,
-#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon img,
-#drupal-off-canvas li a.nidirect-landing-pages-add-block-icon div {
+#drupal-off-canvas li a.nidirect-landing-pages--add-section > *,
+#drupal-off-canvas li a.nidirect-landing-pages--add-block > * {
   text-decoration: none;
   background-color: transparent;
 }
 
-#drupal-off-canvas a.nidirect-landing-pages-add-section:hover,
-#drupal-off-canvas a.nidirect-landing-pages-add-block-icon:hover {
+#drupal-off-canvas a.nidirect-landing-pages--add-section:hover,
+#drupal-off-canvas a.nidirect-landing-pages--add-block:hover {
   text-decoration: none;
   background-color: #0a78cd;
 }

@@ -28,10 +28,12 @@ class LandingPagesChooseSectionController extends ChooseSectionController {
     $build = parent::build($section_storage, $delta);
 
     foreach ($build['layouts']['#items'] as &$item) {
-      $item['#attributes']['class'][] = 'nidirect-landing-pages-add-section';
+      $item['#attributes']['class'][] = 'nidirect-landing-pages--add-section';
     }
 
     $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
+
+    $build['layouts']['#attributes']['class'][] = 'nidirect-landing-pages';
 
     return $build;
   }

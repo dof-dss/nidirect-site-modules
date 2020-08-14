@@ -102,16 +102,16 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
             '#children' => $title,
           ],
         ];
-      $link['attributes']['class'][] = 'nidirect-landing-pages-add-block-icon';
+      $link['attributes']['class'][] = 'nidirect-landing-pages--add-block';
     }
-
-    $build['links']['#attributes']['class'][] = 'nidirect-landing-page--add-custom-block-icons';
 
     // Additional styling for the back link.
     $build['back_button']['#attributes']['class'][] = 'nidirect-landing-page--button-back';
 
     // Update the title.
     $build['#title'] = $this->t('Select a custom block type');
+
+    $build['links']['#attributes']['class'][] = 'nidirect-landing-pages';
 
     $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';
 

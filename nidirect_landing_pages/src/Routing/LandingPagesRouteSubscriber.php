@@ -16,12 +16,6 @@ class LandingPagesRouteSubscriber extends RouteSubscriberBase {
    * {@inheritdoc}
    */
   protected function alterRoutes(RouteCollection $collection) {
-    if ($route = $collection->get('layout_builder.choose_block')) {
-      $route->setDefaults([
-        '_controller' => '\Drupal\nidirect_landing_pages\Controller\LandingPagesChooseBlockController::build',
-      ]);
-    }
-
     if ($route = $collection->get('layout_builder.choose_inline_block')) {
       $route->setDefaults([
         '_controller' => '\Drupal\nidirect_landing_pages\Controller\LandingPagesChooseBlockController::inlineBlockList',

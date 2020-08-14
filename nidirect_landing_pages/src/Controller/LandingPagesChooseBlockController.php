@@ -55,6 +55,7 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
     $module_path_rel = drupal_get_path('module', 'nidirect_landing_pages');
     $module_path_abs = $this->fileSystem->realpath($module_path_rel);
 
+    // Support for Layout Builder Restrictions.
     if ($this->moduleHandler->moduleExists('layout_builder_restrictions')) {
       $layout_builder_restrictions_manager = \Drupal::service('plugin.manager.layout_builder_restriction');
       $restriction_plugins = $layout_builder_restrictions_manager->getSortedPlugins();
@@ -76,6 +77,7 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
       $img_name = substr($id, (strpos($id, ':') + 1));
       $title = $link['title'];
 
+      // Check for an image matching this block otherwise use the default.
       if (file_exists($module_path_abs . '/img/block-icons/' . $img_name . '.png')) {
         $img_path = $module_path_rel . '/img/block-icons/' . $img_name . '.png';
       }
@@ -91,6 +93,7 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
         '#alt' => $title,
       ];
 
+      // Convert the title to a nested set of HTML elements.
       $link['title'] =
         [
           $icon,
@@ -104,8 +107,10 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
 
     $build['links']['#attributes']['class'][] = 'nidirect-landing-page--add-custom-block-icons';
 
+    // Additional styling for the back link.
     $build['back_button']['#attributes']['class'][] = 'nidirect-landing-page--button-back';
 
+    // Update the title.
     $build['#title'] = $this->t('Select a custom block type');
 
     $build['#attached']['library'][] = 'nidirect_landing_pages/landing_page_admin';

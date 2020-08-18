@@ -25,11 +25,19 @@ class TaxonomyNavigatorController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
+   * Drupal\Core\Routing\RouteMatchInterface definition.
+   *
+   * @var \Drupal\Core\Routing\RouteMatchInterface
+   */
+  protected $currentRouteMatch;
+
+  /**
    * {@inheritdoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
     $instance->entityTypeManager = $container->get('entity_type.manager');
+    $instance->currentRouteMatch = $container->get('current_route_match');
     return $instance;
   }
 
@@ -135,12 +143,12 @@ class TaxonomyNavigatorController extends ControllerBase {
   public function searchAutocomplete(Request $request) {
 
     $input = Xss::filter($request->query->get('q'));
-    $vocabulary = Xss::filter($request->query->get('vocabulary'));
+    $vocabulary = $this->currentRouteMatch->getParameter('vocabulary');
 
     $termStorage = $this->entityTypeManager->getStorage('taxonomy_term');
 
     $query = $termStorage->getQuery()
-      ->condition('vid', $vocabulary)
+      ->condition('vid', $vocabulary->id())
       ->condition('name', $input, 'CONTAINS')
       ->sort('name', 'DESC')
       ->range(0, 25);

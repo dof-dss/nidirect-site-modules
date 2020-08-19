@@ -243,6 +243,7 @@ function nidirect_common_page_attachments_alter(array &$attachments) {
     'entity.media.edit_form',
     'node.add',
     'media.add',
+    'layout_builder.overrides.node.view',
   ];
 
   if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {

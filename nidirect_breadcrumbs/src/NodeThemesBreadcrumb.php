@@ -88,6 +88,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
           'application',
           'publication',
           'webform',
+          'feature',
+          'featured_content_list',
         ];
 
         $match = in_array($this->node->bundle(), $applies_to_types);
@@ -102,11 +104,17 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public function build(RouteMatchInterface $route_match) {
 
+    $breadcrumb = new Breadcrumb();
     $links = [];
     $cache_tags = [];
 
     // Fetch the node or preview node object.
     $node = $route_match->getParameter('node') ?? $route_match->getParameter('node_preview');
+
+    // Return early if it's a supporting/secondary node type: feature/featured_content_list.
+    if (preg_match('/^feature/', $node->getType())) {
+      return $breadcrumb;
+    }
 
     if ($node->hasField('field_subtheme') && !empty($node->field_subtheme->target_id)) {
       $links[] = Link::createFromRoute(t('Home'), '<front>');
@@ -130,7 +138,6 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     // Assemble a new breadcrumb object, add the links and set
     // a URL path cache context so it varies as you move from one
     // set of content to another.
-    $breadcrumb = new Breadcrumb();
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 

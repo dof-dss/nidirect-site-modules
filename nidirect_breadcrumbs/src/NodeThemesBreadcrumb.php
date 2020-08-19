@@ -88,6 +88,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
           'application',
           'publication',
           'webform',
+          'feature',
+          'featured_content_list',
         ];
 
         $match = in_array($this->node->bundle(), $applies_to_types);

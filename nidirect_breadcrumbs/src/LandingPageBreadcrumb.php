@@ -12,14 +12,7 @@ use Drupal\node\NodeInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Generates the breadcrumb trail for News entities.
- *
- * In the format:
- * > Home
- * > News
- * as URL
- * > <front>
- * > /news.
+ * Generates the breadcrumb trail for Landing pages.
  *
  * @package Drupal\nidirect_breadcrumbs
  */

@@ -63,8 +63,6 @@ class NewsBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    \Drupal::logger('breadcrumb')->notice(t('checking news breadcrumb'));
-
     // Full node view.
     if ($route_name == 'entity.node.canonical') {
       $this->node = $route_match->getParameter('node');

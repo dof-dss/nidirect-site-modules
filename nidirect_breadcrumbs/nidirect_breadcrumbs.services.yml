@@ -47,6 +47,12 @@ services:
     tags:
       - { name: breadcrumb_builder }
 
+  nidirect_breadcrumbs.breadcrumb.landingpages:
+    class: Drupal\nidirect_breadcrumbs\LandingPageBreadcrumb
+    arguments: ['@entity_type.manager']
+    tags:
+      - { name: breadcrumb_builder, priority: 6000 }
+
   nidirect_breadcrumbs.breadcrumb.search:
     class: Drupal\nidirect_breadcrumbs\SearchBreadcrumb
     arguments: ['%breadcrumb.search.matches%']

@@ -147,4 +147,5 @@ class LandingPageBreadcrumb implements BreadcrumbBuilderInterface {
 
     return $breadcrumb;
   }
+
 }

@@ -10,7 +10,7 @@ module.exports = {
 
     // Login as an editor.
     browser
-      .drupalLogin({ name: process.env.NW_TEST_USER_PREFIX + '_admin', password: process.env.TEST_PASS })
+      .drupalLogin({ name: process.env.NW_TEST_USER_PREFIX + '_editor', password: process.env.TEST_PASS })
       .drupalRelativeURL('/node/add/landing_page');
 
 

@@ -27,8 +27,6 @@ class NidirectCampaignListController extends ControllerBase {
    */
   public function build() {
 
-    $conn_drupal7 =
-
     $query = $this->dbConnD7->query("SELECT nid, title, status FROM {node} WHERE type = 'landing_page' ORDER BY title");
     $d7_landing_pages = $query->fetchAll();
 
@@ -46,6 +44,7 @@ class NidirectCampaignListController extends ControllerBase {
         'published' => $landing_page->status ? 'yes' : 'no',
         'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
         'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid) ),
+        'create' => Link::createFromRoute('Create', 'nidirect_campaign_utilities.creator', ['nid' => $landing_page->nid], ['query' => $this->getDestinationArray(), 'attributes' => ['class' => 'button']]),
       ];
     }
 
@@ -57,6 +56,7 @@ class NidirectCampaignListController extends ControllerBase {
         $this->t('Published'),
         $this->t('Drupal 7'),
         $this->t('Drupal 8'),
+        $this->t('Create'),
       ],
       '#empty' => $this->t('No campaign content found.'),
     ];

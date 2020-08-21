@@ -4,4 +4,15 @@ nidirect_campaign_utilities.example:
     _title: 'Drupal 7 Campaign pages'
     _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignListController::build'
   requirements:
-    _permission: 'access content'
+    _permission: 'create landing_page content'
+  options:
+    _admin_route: TRUE
+nidirect_campaign_utilities.creator:
+  path: '/nidirect-campaign-utilities/creator/{nid}'
+  defaults:
+    _title: 'Create campaign/landing page'
+    _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignCreatorController::build'
+  requirements:
+    _permission: 'create landing_page content'
+  options:
+    _admin_route: TRUE

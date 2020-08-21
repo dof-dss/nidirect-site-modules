@@ -1,7 +1,7 @@
 nidirect_campaign_utilities.example:
-  path: '/nidirect-campaign-utilities/example'
+  path: '/nidirect-campaign-utilities/list'
   defaults:
     _title: 'Example'
-    _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignUtilitiesController::build'
+    _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignListController::build'
   requirements:
     _permission: 'access content'

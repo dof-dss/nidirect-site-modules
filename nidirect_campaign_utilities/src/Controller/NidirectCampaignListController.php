@@ -4,6 +4,7 @@ namespace Drupal\nidirect_campaign_utilities\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Link;
 use Drupal\Core\Url;
 
 /**
@@ -11,20 +12,41 @@ use Drupal\Core\Url;
  */
 class NidirectCampaignListController extends ControllerBase {
 
+  protected $dbConnD7;
+
+  protected $dbConnD8;
+
+  public function __construct()
+  {
+    $this->dbConnD7 = Database::getConnection('default', 'migrate');
+    $this->dbConnD8 = Database::getConnection('default', 'default');
+  }
+
   /**
    * Builds the response.
    */
   public function build() {
 
-    $conn_drupal7 = Database::getConnection('default', 'migrate');
+    $conn_drupal7 =
 
-    $query = $conn_drupal7->query("SELECT nid, title, status FROM {node} WHERE type = 'landing_page' ORDER BY title");
+    $query = $this->dbConnD7->query("SELECT nid, title, status FROM {node} WHERE type = 'landing_page' ORDER BY title");
     $d7_landing_pages = $query->fetchAll();
 
     $items = [];
 
+    $host = \Drupal::request()->getSchemeAndHttpHost();
+
     foreach ($d7_landing_pages as $landing_page) {
-      $items[] = ['nid' => $landing_page->nid, 'title' => $landing_page->title, 'Published' => $landing_page->status ? 'yes' : 'no'];
+
+      $d8nid = $this->drupal8LandingPageURL($landing_page->title);
+
+      $items[] = [
+        'nid' => $landing_page->nid,
+        'title' => $landing_page->title,
+        'published' => $landing_page->status ? 'yes' : 'no',
+        'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
+        'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid) ),
+      ];
     }
 
     $build['content'] = [
@@ -33,6 +55,8 @@ class NidirectCampaignListController extends ControllerBase {
         $this->t('NID'),
         $this->t('Title'),
         $this->t('Published'),
+        $this->t('Drupal 7'),
+        $this->t('Drupal 8'),
       ],
       '#empty' => $this->t('No campaign content found.'),
     ];
@@ -40,6 +64,13 @@ class NidirectCampaignListController extends ControllerBase {
     $build['content']['#rows'] = $items;
 
     return $build;
+  }
+
+  protected function drupal8LandingPageURL(string $title) {
+    $query = $this->dbConnD8->query("SELECT n.nid FROM {node} n INNER JOIN {node_field_data} d ON d.nid = n.nid WHERE n.type = 'landing_page' AND d.title = '" . $title . "'");
+    $nid = $query->fetchCol(0);
+
+    return $nid[0];
   }
 
 }

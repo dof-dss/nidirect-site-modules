@@ -148,6 +148,21 @@ function nidirect_common_preprocess_views_view(&$variables) {
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
 
+  // Override misleading layout builder notice.
+  if ($entity->bundle() == 'landing_page') {
+    // (Layout builder is only used on landing pages for now, this
+    // may be expanded to other content types later.)
+    $messages = \Drupal::messenger()->messagesByType('status');
+    if (count($messages) == 1) {
+      $thismessage = $messages[0]->jsonSerialize();
+      if ($thismessage == 'The layout override has been saved.') {
+        \Drupal::messenger()->deleteByType('status');
+        $msg = t('Landing page @title has been updated.', ['@title' => $entity->getTitle()]);
+        \Drupal::messenger()->addMessage($msg);
+      }
+    }
+  }
+
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');
   }

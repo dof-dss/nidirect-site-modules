@@ -80,20 +80,17 @@ class NidirectCampaignCreatorController extends ControllerBase {
         switch ($section_class) {
           case 'three-cols';
             $section = new Section('teasers_x3');
+            $region = ['one', 'two', 'three'];
             foreach ($xpath->query('div[contains(@class,\'col\')]/div[contains(@class,\'col-content\')]', $domnode) as $child) {
-              $block_content['title'] = $xpath->query('h2', $child)->item(0)->nodeValue;
-              $block_content['link'] = $xpath->query('h2/a', $child)->item(0)->getAttribute('href');
-              $block_content['body'] = $xpath->query('h2/following-sibling::p', $child)->item(0)->nodeValue;
+              $block_content = $this->extractCKTemplateData($child, $xpath);
               $block = $this->createBlock('card_standard', $block_content);
             }
             break;
           case 'two-cols';
             $section = new Section('teasers_x2');
             foreach ($xpath->query('div[contains(@class,\'col\')]/div[contains(@class,\'col-content\')]', $domnode) as $child) {
-            $block_content['title'] = $xpath->query('h2', $child)->item(0)->nodeValue;
-            $block_content['link'] = $xpath->query('h2/a', $child)->getAttribute('href');
-            $block_content['body'] = $xpath->query('h2/following-sibling::p', $child)->item(0)->nodeValue;
-            $block = $this->createBlock('card_standard', $block_content);
+              $block_content = $this->extractCKTemplateData($child, $xpath);
+              $block = $this->createBlock('card_standard', $block_content);
           }
             break;
           default;
@@ -114,6 +111,15 @@ class NidirectCampaignCreatorController extends ControllerBase {
     ];
 
     return $build;
+  }
+
+  protected function extractCKTemplateData($node, $xpath) {
+    $content = [];
+    $content['title'] = $xpath->query('h2', $node)->item(0)->nodeValue;
+    $content['link'] = $xpath->query('h2/a', $node)->getAttribute('href');
+    $content['body'] = $xpath->query('h2/following-sibling::p', $node)->item(0)->nodeValue;
+
+    return $content;
   }
 
   protected function createBlock($type, $content) {

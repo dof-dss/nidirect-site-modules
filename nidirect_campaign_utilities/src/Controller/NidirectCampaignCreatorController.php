@@ -92,6 +92,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);
+                ksm($block_content);
                 $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
@@ -138,14 +139,39 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
   protected function extractCKTemplateData($node, $xpath) {
     $content = [];
+
+    // Title.
     $content['title'] = $xpath->query('h2', $node)->item(0)->nodeValue;
 
+    // Title link
     $link = $xpath->query('h2/a', $node);
 
-    if ($link instanceof DOMElement && $link->hasAttribute('href')) {
-      $content['link'] = $link->getAttribute('href');
+    if ($link->length == 0) {
+      $link = $xpath->query('div[contains(@class, \'img-placeholder\')]/a', $node->parentNode);
     }
 
+    if ($link->length > 0) {
+      $link = $link->item(0)->getAttribute('href');
+
+      $links[] = [
+        'uri' => (strpos($link, '/') === 0 ? 'internal:' . $link : $link),
+        'title' => '',
+        'options' => [
+          'attributes' => [],
+        ],
+      ];
+
+      $content['link'] = $links[0];
+    }
+
+    // Image
+    $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $node->parentNode);
+    $image_embed_value = $image->item(0)->nodeValue;
+
+    $image_data = json_decode($image_embed_value);
+    $content['image'] = ['target_id' => $image_data[0][0]->fid];
+
+    // Teaser
     $content['teaser'] = $xpath->query('h2/following-sibling::p', $node)->item(0)->nodeValue;
 
     return $content;
@@ -158,6 +184,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
       'type' => $type,
       'langcode' => 'en',
       'field_body' => $content['body'],
+      'field_image' => $content['image'],
       'field_teaser' => $content['teaser'],
       'field_link' => $content['link'],
       'title' => $content['title'],

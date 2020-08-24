@@ -59,20 +59,21 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
     // Retrieve all landing pages from D7.
     $query = $conn_drupal7->query(
-      "select body_value from {field_data_body} where entity_id = " . $nid);
-    $d7_landing_pages = $query->fetchCol(0);
+      "SELECT title, body_value FROM {node} INNER JOIN {field_data_body} ON node.nid = field_data_body.entity_id WHERE entity_id = " . $nid);
+    $d7_landing_pages = $query->fetchAssoc();
+
 
     // Create new landing page
     $this->node = Node::create([
       'type' => 'landing_page',
-      'title' => 'Landing page example',
+      'title' => $d7_landing_pages['title'],
     ]);
 
     // Parse the body content
     $dom = new DOMDocument();
     $dom->strictErrorChecking = FALSE;
     $dom->preserveWhiteSpace = FALSE;
-    $dom->loadHTML($d7_landing_pages[0]);
+    $dom->loadHTML($d7_landing_pages['body_value']);
     $xpath = new DOMXPath($dom);
 
     $sections = [];
@@ -131,7 +132,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
     $build['content'] = [
       '#type' => 'item',
-      '#markup' => $this->t('NID ') . $nid,
+      '#markup' => '<a href="/node/' . $this->node->id() .'">New landing page</a>',
     ];
 
     return $build;

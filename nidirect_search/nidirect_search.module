@@ -221,11 +221,6 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
 
   // Contacts search refinements.
   if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
-    $query->setParseMode(\Drupal::service('plugin.manager.search_api.parse_mode')->createInstance('direct'));
-    $solarium_query->addParam('defType', 'edismax');
-    // Minimum must Match: match at least 2 terms or 60% of multiple terms.
-    $solarium_query->addParam('mm', '2&lt;67% 5&lt;50%');
-
     // Contacts elevations.
     switch (strtolower($search_term)) {
       case 'access ni':

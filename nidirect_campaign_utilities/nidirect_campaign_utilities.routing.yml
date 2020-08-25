@@ -1,4 +1,4 @@
-nidirect_campaign_utilities.example:
+nidirect_campaign_utilities.list:
   path: '/nidirect-campaign-utilities/list'
   defaults:
     _title: 'Drupal 7 Campaign pages'

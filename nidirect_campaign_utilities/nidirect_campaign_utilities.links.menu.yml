@@ -1,0 +1,5 @@
+nidirect_campaign_utilities.overview:
+  title: Campaign page overview
+  description: 'View Campaign/landing pages and create new ones based on existing Drupal 7 content'
+  parent: system.admin_content
+  route_name: nidirect_campaign_utilities.list

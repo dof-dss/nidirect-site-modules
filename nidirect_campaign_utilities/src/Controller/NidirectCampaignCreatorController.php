@@ -50,10 +50,16 @@ class NidirectCampaignCreatorController extends ControllerBase {
    * Builds the response.
    */
   public function build($nid) {
-
-    // Load existing D7 content
     $conn_drupal7 = Database::getConnection('default', 'migrate');
+    $conn_drupal8 = Database::getConnection('default', 'default');
+    $drupal8_page_exists = FALSE;
 
+    $query = $conn_drupal8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
+    $d8_page = $query->fetchCol(0);
+
+    if (!empty($d8_page)) {
+      $drupal8_page_exists = TRUE;
+    }
 
     // Retrieve all landing pages from D7.
     $query = $conn_drupal7->query(
@@ -66,14 +72,17 @@ class NidirectCampaignCreatorController extends ControllerBase {
       ];
     }
 
+    if ($drupal8_page_exists) {
+      $this->node = $this->entityTypeManager->getStorage('node')->load($nid);
+    } else {
+      // Create new landing page
+      $node_config = [
+        'type' => 'landing_page',
+        'title' => $d7_landing_pages['title'],
+      ];
 
-    // Create new landing page
-    $node_config = [
-      'type' => 'landing_page',
-      'title' => $d7_landing_pages['title'],
-    ];
-
-    $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
+      $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
+    }
 
     // Parse the body content
     $dom = new DOMDocument();
@@ -153,8 +162,14 @@ class NidirectCampaignCreatorController extends ControllerBase {
     $this->node->layout_builder__layout->setValue($sections);
     $this->node->save();
 
+    if ($drupal8_page_exists) {
+      $output = 'Updated landing page <a href="/node/' . $this->node->id() .'">' . $d7_landing_pages['title'] . '</a>';
+    } else {
+      $output = 'New landing page created for <a href="/node/' . $this->node->id() .'">' . $d7_landing_pages['title'] . '</a>';
+    }
+
     $build['content'] = [
-      '#markup' => '<a href="/node/' . $this->node->id() .'">New landing page created for ' . $d7_landing_pages['title'] . '</a>',
+      '#markup' => $output,
     ];
 
     return $build;
@@ -191,12 +206,8 @@ class NidirectCampaignCreatorController extends ControllerBase {
     $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $node->parentNode);
     $image_embed_value = $image->item(0)->nodeValue;
 
-    try {
-      $image_data = json_decode($image_embed_value, $assoc = true, $depth = 512, JSON_THROW_ON_ERROR);
-      $content['image'] = ['target_id' => $image_data[0][0]->fid];
-    } catch (JsonException $e) {
-      $this->messenger()->addWarning($e->getMessage());
-    }
+    $image_data = json_decode($image_embed_value);
+    $content['image'] = ['target_id' => $image_data[0][0]->fid];
 
     // Teaser
     $content['teaser'] = $xpath->query('h2/following-sibling::*', $node)->item(0)->nodeValue;
@@ -217,7 +228,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
       'title' => $content['title'],
     ];
 
-    $block = $this->entityTypeManager->getStorage('block')->create($block_config);
+    $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
     $block->save();
 
     return $block;

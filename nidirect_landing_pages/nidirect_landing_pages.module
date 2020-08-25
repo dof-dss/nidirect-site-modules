@@ -156,10 +156,11 @@ function nidirect_landing_pages_get_article_teasers_by_topic($tid) {
 function nidirect_landing_pages_page_attachments(array &$attachments) {
   // Add landing page js if we are creating or editing
   // a landing page node.
-  $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
-  $add_js = FALSE;
+  $this_route = \Drupal::routeMatch()->getRouteName();
+  if ($this_route == 'layout_builder.overrides.node.view') {
+    $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
+  }
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-    $this_route = \Drupal::routeMatch()->getRouteName();
     if ($this_route == 'node.add') {
       $node_type = \Drupal::routeMatch()->getParameter('node_type');
       if ($node_type->get('type') == 'landing_page') {

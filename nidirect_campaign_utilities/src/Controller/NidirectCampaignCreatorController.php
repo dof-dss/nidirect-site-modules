@@ -3,15 +3,13 @@
 namespace Drupal\nidirect_campaign_utilities\Controller;
 
 use DOMDocument;
-use DOMElement;
 use DOMXPath;
-use Drupal\block_content\Entity\BlockContent;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
-use Drupal\node\Entity\Node;
+use JsonException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -193,8 +191,12 @@ class NidirectCampaignCreatorController extends ControllerBase {
     $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $node->parentNode);
     $image_embed_value = $image->item(0)->nodeValue;
 
-    $image_data = json_decode($image_embed_value);
-    $content['image'] = ['target_id' => $image_data[0][0]->fid];
+    try {
+      $image_data = json_decode($image_embed_value, $assoc = true, $depth = 512, JSON_THROW_ON_ERROR);
+      $content['image'] = ['target_id' => $image_data[0][0]->fid];
+    } catch (JsonException $e) {
+      $this->messenger()->addWarning($e->getMessage());
+    }
 
     // Teaser
     $content['teaser'] = $xpath->query('h2/following-sibling::*', $node)->item(0)->nodeValue;

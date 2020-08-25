@@ -235,23 +235,26 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   }
   if ($entity->getEntityTypeId() == 'block_content') {
     if ($entity->hasField('field_article_teasers')) {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      if (is_object($node) && !empty($node->field_subtheme->target_id)) {
-        // Get a list of article teasers by term.
-        if (!empty($node->id())) {
-          $results = _retrieveArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
+      if (count($entity->field_article_teasers) == 0) {
+        // There are no teasers yet, so set them up now.
+        $node = \Drupal::routeMatch()->getParameter('node');
+        if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+          // Get a list of article teasers by term.
+          if (!empty($node->id())) {
+            $results = _retrieveArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
+          }
+          if (!empty(!empty($node->field_subtheme->target_id))) {
+            $results += _retrieveArticleTeasersByTopic($node->field_subtheme->target_id);
+          }
         }
-        if (!empty(!empty($node->field_subtheme->target_id))) {
-          $results += _retrieveArticleTeasersByTopic($node->field_subtheme->target_id);
+        // Sort entries alphabetically (regardless of type).
+        ksort($results);
+        $paras = array();
+        foreach ($results as $result) {
+          $paras[] = $result;
         }
+        $entity->field_article_teasers = $paras;
       }
-      // Sort entries alphabetically (regardless of type).
-      ksort($results);
-      $paras = array();
-      foreach ($results as $result) {
-        $paras[] = $result;
-      }
-      $entity->field_article_teasers = $paras;
     }
   }
 }

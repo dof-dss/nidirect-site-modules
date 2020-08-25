@@ -62,6 +62,12 @@ class NidirectCampaignCreatorController extends ControllerBase {
       "SELECT title, body_value FROM {node} INNER JOIN {field_data_body} ON node.nid = field_data_body.entity_id WHERE entity_id = " . $nid);
     $d7_landing_pages = $query->fetchAssoc();
 
+    if (empty($d7_landing_pages)) {
+      $build['content'] = [
+        '#markup' => $this->t('Unable to fetch landing page details from Drupal 7 database.'),
+      ];
+    }
+
 
     // Create new landing page
     $node_config = [
@@ -150,8 +156,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
     $this->node->save();
 
     $build['content'] = [
-      '#type' => 'item',
-      '#markup' => '<a href="/node/' . $this->node->id() .'">New landing page</a>',
+      '#markup' => '<a href="/node/' . $this->node->id() .'">New landing page created for ' . $d7_landing_pages['title'] . '</a>',
     ];
 
     return $build;

@@ -93,7 +93,6 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);
-                ksm($block_content);
                 $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
@@ -107,6 +106,24 @@ class NidirectCampaignCreatorController extends ControllerBase {
             $section = new Section('teasers_x2');
             $region = ['one', 'two'];
             foreach ($xpath->query('div[contains(@class,\'col\')]/div[contains(@class,\'col-content\')]', $domnode) as $child) {
+              $current_region = array_pop($region);
+
+              if ($current_region) {
+                $block_content = $this->extractCKTemplateData($child, $xpath);
+                $block = $this->createBlock('card_standard', $block_content);
+                $this->createSectionContent($block, $current_region);
+                $component = $this->createSectionContent($block, $current_region);
+                $section->appendComponent($component);
+              }
+            }
+
+            $sections[] = $section;
+
+            break;
+          case 'article-topic-teaser-wrap';
+            $section = new Section('teasers_x2');
+            $region = ['one', 'two'];
+            foreach ($xpath->query('div[contains(@class,\'columnItem\')]', $domnode) as $child) {
               $current_region = array_pop($region);
 
               if ($current_region) {
@@ -173,7 +190,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
     $content['image'] = ['target_id' => $image_data[0][0]->fid];
 
     // Teaser
-    $content['teaser'] = $xpath->query('h2/following-sibling::p', $node)->item(0)->nodeValue;
+    $content['teaser'] = $xpath->query('h2/following-sibling::*', $node)->item(0)->nodeValue;
 
     return $content;
   }
@@ -198,17 +215,15 @@ class NidirectCampaignCreatorController extends ControllerBase {
   protected function createSectionContent($block, $region) {
 
     $pluginConfiguration = [
-      'id' => 'inline_block:card_standard',
+      'id' => 'inline_block:' . $block->bundle(),
       'provider' => 'layout_builder',
       'label' => $block->label(),
       'label_display' => 'visible',
-      'block_serialized' => null,
       'block_revision_id' => $block->id(),
-      'context_mapping' => []
     ];
 
     // Create a new section component using the node and plugin config.
-    $component = new SectionComponent(\Drupal::service('uuid')->generate(), $region, $pluginConfiguration);
+    $component = new SectionComponent($block->uuid(), $region, $pluginConfiguration);
 
     return $component;
   }

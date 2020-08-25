@@ -237,46 +237,27 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
     if ($entity->hasField('field_article_teasers')) {
       $node = \Drupal::routeMatch()->getParameter('node');
       if (is_object($node) && !empty($node->field_subtheme->target_id)) {
-        // Add custom cache tag for taxonomy term listing.
-        $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
         // Get a list of article teasers by term.
         if (!empty($node->id())) {
           $results = _retrieveArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
         }
+        if (!empty(!empty($node->field_subtheme->target_id))) {
+          $results += _retrieveArticleTeasersByTopic($node->field_subtheme->target_id);
+        }
       }
       // Sort entries alphabetically (regardless of type).
       ksort($results);
-
-      /*$paras = array();
-      $x = $entity->get('field_article_teasers');
-      $paragraph = Paragraph::create([
-        'type' => 'article_teaser',
-        'langcode' => 'en',
-        'field_article' => ['target_id' => '2645'],
-      ]);
-      $paragraph->save();
-      $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
-      $paragraph = Paragraph::create([
-        'type' => 'term_teaser',
-        'langcode' => 'en',
-        'field_term' => ['target_id' => '162'],
-      ]);
-      $paragraph->save();
-      $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
-      $entity->field_article_teasers = $paras;*/
-
       $paras = array();
       foreach ($results as $result) {
         $paras[] = $result;
       }
-
       $entity->field_article_teasers = $paras;
     }
   }
 }
 
 /**
- * Utility function to render 'articles by term' view.
+ * Utility function to retrieve 'articles by term' view.
  */
 function _retrieveArticleTeasersByTerm(int $tid, int $current_nid) {
   // Render the 'articles by term' view and process the results.
@@ -300,6 +281,35 @@ function _retrieveArticleTeasersByTerm(int $tid, int $current_nid) {
 
     // Place in an array keyed by lower case title (for sorting).
     $title = strtolower($row->_entity->getTitle());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $this_result;
+  }
+  return $results;
+}
+
+/**
+ * Utility function to retrieve 'site subtopics' view.
+ */
+function _retrieveArticleTeasersByTopic(int $tid) {
+  // Render the 'site subtopics' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $this_result = [];
+    // This will be a link to a taxonomy term.
+    $paragraph = Paragraph::create([
+      'type' => 'term_teaser',
+      'langcode' => 'en',
+      'field_term' => ['target_id' => $row->tid],
+    ]);
+    $paragraph->save();
+    $this_result = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getName());
     // Remove HTML.
     $title = strip_tags($title);
     // Now remove non-alpha chars.

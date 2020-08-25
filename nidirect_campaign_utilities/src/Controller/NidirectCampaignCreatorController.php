@@ -64,10 +64,12 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
 
     // Create new landing page
-    $this->node = Node::create([
+    $node_config = [
       'type' => 'landing_page',
       'title' => $d7_landing_pages['title'],
-    ]);
+    ];
+
+    $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
 
     // Parse the body content
     $dom = new DOMDocument();
@@ -197,7 +199,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
   protected function createBlock($type, $content) {
 
-    $block = BlockContent::create([
+    $block_config = [
       'info' => $content['title'],
       'type' => $type,
       'langcode' => 'en',
@@ -206,7 +208,9 @@ class NidirectCampaignCreatorController extends ControllerBase {
       'field_teaser' => $content['teaser'],
       'field_link' => $content['link'],
       'title' => $content['title'],
-    ]);
+    ];
+
+    $block = $this->entityTypeManager->getStorage('block')->create($block_config);
     $block->save();
 
     return $block;

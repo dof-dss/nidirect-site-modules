@@ -232,6 +232,27 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
       }
     }
   }
+  if ($entity->getEntityTypeId() == 'block_content') {
+    if ($entity->hasField('field_article_teasers')) {
+      $paras = array();
+      $x = $entity->get('field_article_teasers');
+      $paragraph = Paragraph::create([
+        'type' => 'article_teaser',
+        'langcode' => 'en',
+        'field_article' => ['target_id' => '2645'],
+      ]);
+      $paragraph->save();
+      $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+      $paragraph = Paragraph::create([
+        'type' => 'term_teaser',
+        'langcode' => 'en',
+        'field_term' => ['target_id' => '162'],
+      ]);
+      $paragraph->save();
+      $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+      $entity->field_article_teasers = $paras;
+    }
+  }
 }
 
 /**

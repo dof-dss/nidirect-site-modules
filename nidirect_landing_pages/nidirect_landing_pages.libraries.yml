@@ -1,6 +1,9 @@
 landing_listing:
   js:
     js/landing_listing.js: {}
+lb_config_teasers:
+  js:
+    js/lb_config_teasers.js: {}
 landing_page_admin:
   css:
     theme:

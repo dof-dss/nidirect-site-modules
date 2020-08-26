@@ -1,0 +1,28 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function nidirect_campaign_utilities_schema() {
+  $schema['nidirect_layout_builder_blocks'] = [
+    'description' => 'Stores uuid of custom blocks created by layout builder',
+    'fields' => [
+      'nid' => [
+        'description' => 'Node ID',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ],
+      'uuid' => [
+        'type' => 'varchar',
+        'length' => 128,
+        'not null' => TRUE,
+      ],
+    ],
+    'primary key' => ['nid'],
+  ];
+
+  return $schema;
+}
+
+

@@ -9,8 +9,8 @@ use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
-use JsonException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -24,7 +24,13 @@ class NidirectCampaignCreatorController extends ControllerBase {
    */
   protected $entityTypeManager;
 
+  protected $dbConnD7;
+
+  protected $dbConnD8;
+
   protected $node;
+
+  protected $request;
 
   /**
    * The controller constructor.
@@ -32,9 +38,11 @@ class NidirectCampaignCreatorController extends ControllerBase {
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request) {
     $this->entityTypeManager = $entity_type_manager;
-
+    $this->dbConnD7 = Database::getConnection('default', 'migrate');
+    $this->dbConnD8 = Database::getConnection('default', 'default');
+    $this->request = $request;
   }
 
   /**
@@ -42,7 +50,8 @@ class NidirectCampaignCreatorController extends ControllerBase {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('request_stack')
     );
   }
 
@@ -50,19 +59,13 @@ class NidirectCampaignCreatorController extends ControllerBase {
    * Builds the response.
    */
   public function build($nid) {
-    $conn_drupal7 = Database::getConnection('default', 'migrate');
-    $conn_drupal8 = Database::getConnection('default', 'default');
-    $drupal8_page_exists = FALSE;
 
-    $query = $conn_drupal8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
-    $d8_page = $query->fetchCol(0);
+    // Check if we have an existing landing page with that nid.
+    $query = $this->dbConnD8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
+    $drupal8_page_exists = empty($query->fetchCol(0)) ? FALSE : TRUE;
 
-    if (!empty($d8_page)) {
-      $drupal8_page_exists = TRUE;
-    }
-
-    // Retrieve all landing pages from D7.
-    $query = $conn_drupal7->query(
+    // Retrieve details of Drupal 7 landing page.
+    $query = $this->dbConnD7->query(
       "SELECT title, body_value FROM {node} INNER JOIN {field_data_body} ON node.nid = field_data_body.entity_id WHERE entity_id = " . $nid);
     $d7_landing_pages = $query->fetchAssoc();
 
@@ -121,7 +124,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
             $section = new Section('teasers_x2');
             $region = ['one', 'two'];
             foreach ($xpath->query('div[contains(@class,\'col\')]/div[contains(@class,\'col-content\')]', $domnode) as $child) {
-              $current_region = array_pop($region);
+              $current_region = array_shift($region);
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);

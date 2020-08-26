@@ -38,14 +38,29 @@ class NidirectCampaignListController extends ControllerBase {
 
       $d8nid = $this->drupal8LandingPageURL($landing_page->title);
 
-      $items[] = [
+      $item = [
         'nid' => $landing_page->nid,
         'title' => $landing_page->title,
         'published' => $landing_page->status ? 'yes' : 'no',
         'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
         'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid) ),
-        'create' => Link::createFromRoute('Create', 'nidirect_campaign_utilities.creator', ['nid' => $landing_page->nid], ['query' => $this->getDestinationArray(), 'attributes' => ['class' => 'button']]),
+        'update' => '',
       ];
+
+      if (!empty($d8nid)) {
+        $item['update'] = Link::createFromRoute('Update', 'nidirect_campaign_utilities.creator',
+          ['nid' => $landing_page->nid],
+          ['query' => [$this->getDestinationArray(), 'op' => 'update'],
+          'attributes' => ['class' => 'button']]);
+      }
+
+      $item['create'] = Link::createFromRoute('Create', 'nidirect_campaign_utilities.creator',
+        ['nid' => $landing_page->nid],
+        ['query' => $this->getDestinationArray(),
+        'attributes' => ['class' => 'button']]);
+
+      $items[] = $item;
+
     }
 
     $build['content'] = [
@@ -56,7 +71,10 @@ class NidirectCampaignListController extends ControllerBase {
         $this->t('Published'),
         $this->t('Drupal 7'),
         $this->t('Drupal 8'),
-        $this->t('Create'),
+        [
+          'data' => $this->t('Operations'),
+          'colspan' => 2,
+        ],
       ],
       '#empty' => $this->t('No campaign content found.'),
     ];

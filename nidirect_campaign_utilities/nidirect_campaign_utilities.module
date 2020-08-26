@@ -8,3 +8,17 @@
  * This file is no longer required in Drupal 8.
  * @see https://www.drupal.org/node/2217931
  */
+
+use Drupal\Core\Entity\EntityInterface;
+
+/**
+ * Implements hook_entity_delete().
+ */
+function nidirect_campaign_utilities_entity_delete(EntityInterface $entity) {
+
+  if ($entity->bundle() == 'landing_page') {
+    $block_manager = \Drupal::service('nidirect_campaign_utilities.layout_builder_block_manager');
+    $block_manager->purge($entity);
+  }
+
+}

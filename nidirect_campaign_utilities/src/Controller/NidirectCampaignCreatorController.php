@@ -227,7 +227,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
   protected function createBlock($type, $content, $node) {
 
     $block_config = [
-      'info' => $content['title'],
+      'info' => $node->id() . ' : ' . $content['title'],
       'type' => $type,
       'langcode' => 'en',
       'field_body' => $content['body'],

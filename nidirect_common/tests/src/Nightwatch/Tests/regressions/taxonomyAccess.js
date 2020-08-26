@@ -7,7 +7,7 @@ module.exports = {
     browser.drupalLogout();
   },
 
-  '[Regression] D8NID-845: Ensure that anonymous users can view taxonomy canonical page content': browser => {
+  '[Regression] D8NID-847: Ensure that anonymous users can view taxonomy canonical page content': browser => {
 
     // View the 'help' term page. It should show both a menu link item and not show 'Page not found'.
     browser.drupalRelativeURL('/taxonomy/term/402');

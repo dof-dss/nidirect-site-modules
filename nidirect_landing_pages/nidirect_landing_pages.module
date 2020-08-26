@@ -482,28 +482,59 @@ function _render_article_teasers_block(&$variables) {
   $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
   if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
     // Manual control has been taken, so just render the chosen teasers in the chosen order.
-    $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
-    $teasers = [];
-    foreach ($teaser_list as $teaser) {
-      $paragraph_id = $teaser->get('target_id')->getValue();
-      $paragraph = Paragraph::load($paragraph_id);
-      $this_teaser = [];
-      $paragraph_type = $paragraph->getType();
-      if ($paragraph_type == 'article_teaser') {
-        // Load up the article node and extract display details.
-        $this_teaser = _render_article_teaser($paragraph);
-      }
-      elseif ($paragraph_type == 'term_teaser') {
-        // Load up the taxonomy term and extract display details.
-        $this_teaser = _render_term_teaser($paragraph);
-      }
-      $teasers[] = $this_teaser;
-    }
-    $variables['teasers'] = $teasers;
+    $variables['teasers'] = _render_article_teasers_manual_control($variables);
   } else {
     // No manual control, so re-generate the list of teasers here.
-
+    $variables['teasers'] = _render_article_teasers_auto($variables);
   }
+}
+
+/*
+ * Utility function to render teasers automatically.
+ */
+function _render_article_teasers_auto($variables) {
+  $cache_tags = [];
+  $results = [];
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+    // Get a list of article teasers by term.
+    if (!empty($node->id())) {
+      $results = _renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+    }
+    // Add in a list of article teasers by topic.
+    $results += _renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
+    // Sort entries alphabetically (regardless of type).
+    ksort($results);
+    // Remove 'key' that was used internally.
+    foreach ($results as $key => $val) {
+      unset($results[$key]['key']);
+    }
+  }
+  return $results;
+}
+
+/*
+ * Utility function to render teasers under manual control.
+ */
+function _render_article_teasers_manual_control($variables) {
+  $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
+  $teasers = [];
+  foreach ($teaser_list as $teaser) {
+    $paragraph_id = $teaser->get('target_id')->getValue();
+    $paragraph = Paragraph::load($paragraph_id);
+    $this_teaser = [];
+    $paragraph_type = $paragraph->getType();
+    if ($paragraph_type == 'article_teaser') {
+      // Load up the article node and extract display details.
+      $this_teaser = _render_article_teaser($paragraph);
+    }
+    elseif ($paragraph_type == 'term_teaser') {
+      // Load up the taxonomy term and extract display details.
+      $this_teaser = _render_term_teaser($paragraph);
+    }
+    $teasers[] = $this_teaser;
+  }
+  return $teasers;
 }
 
 /*
@@ -555,4 +586,81 @@ function _render_term_teaser($paragraph) {
   }
   return $this_teaser;
 }
+
+/**
+ * Utility function to render 'articles by term' view.
+ */
+function _renderArticleTeasersByTerm(int $tid, int $current_nid, array &$cache_tags) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $this_result = [];
+    // Exclude the current page from the list.
+    if ($row->nid == $current_nid) {
+      continue;
+    }
+    // This will be a link to an article.
+    $this_result['title_link'] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getTitle(),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+    ];
+    $this_result['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+    ];
+    $this_result['summary_text'] = ['#markup' => $row->_entity->field_summary->value];
+    $this_result['key'] = 'a:' . $row->nid;
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getTitle());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $this_result;
+    // Add cache tag for each article.
+    $cache_tags[] = 'node:' . $row->nid;
+  }
+  return $results;
+}
+
+/**
+ * Utility function to render 'site subtopics' view.
+ */
+function _renderArticleTeasersByTopic(int $tid, array &$cache_tags) {
+  // Render the 'site subtopics' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $thisresult = [];
+    // This will be a link to a taxonomy term.
+    $thisresult['title_link'] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getName(),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+    ];
+    $thisresult['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+    ];
+    $thisresult['summary_text'] = ['#markup' => $row->_entity->field_teaser->value];
+    $thisresult['key'] = 't:' . $row->tid;
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getName());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $thisresult;
+    // Add cache tag for each listed term.
+    $cache_tags[] = 'taxonomy_term:' . $row->tid;
+  }
+  return $results;
+}
+
 

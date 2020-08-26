@@ -28,5 +28,21 @@ class LayoutBuilderBlockManager {
     return (boolean) $result;
   }
 
+  public function remove($block) {
+    $result = $this->connection->delete('nidirect_layout_builder_blocks')
+      ->condition('uuid', $block->uuid())
+      ->execute();
+
+    return (boolean) $result;
+  }
+
+  public function purge($node) {
+    $result = $this->connection->delete('nidirect_layout_builder_blocks')
+      ->condition('nid', $node->id())
+      ->execute();
+
+    return (boolean) $result;
+  }
+
 
 }

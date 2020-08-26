@@ -3,16 +3,21 @@
 namespace Drupal\nidirect_campaign_utilities;
 
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use mysql_xdevapi\Executable;
 
 class LayoutBuilderBlockManager {
 
   protected $connection;
 
+  protected $entityTypeManager;
+
   /**
    * {@inheritdoc}
    */
-  public function __construct(Connection $connection)
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, $connection)
   {
+    $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
   }
 
@@ -40,6 +45,16 @@ class LayoutBuilderBlockManager {
   }
 
   public function purge($node) {
+
+    $query = $this->connection->select('nidirect_layout_builder_blocks', 'b')
+              ->fields('b', ['bid'])->condition('nid', $node->id());
+    $bids = $query->execute()->fetchCol();
+
+    $blocks = $this->entityTypeManager->getStorage('block_content')->loadMultiple($bids);
+
+    foreach ($blocks as $block) {
+      $block->delete();
+    }
 
     $result = $this->connection->delete('nidirect_layout_builder_blocks')
       ->condition('nid', $node->id())

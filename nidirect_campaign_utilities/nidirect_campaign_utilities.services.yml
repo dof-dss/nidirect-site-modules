@@ -1,4 +1,4 @@
 services:
   nidirect_campaign_utilities.layout_builder_block_manager:
     class: Drupal\nidirect_campaign_utilities\LayoutBuilderBlockManager
-    arguments: ['@database']
+    arguments: ['@entity_type.manager', '@database']

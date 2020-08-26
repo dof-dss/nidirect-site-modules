@@ -19,7 +19,7 @@ function nidirect_campaign_utilities_schema() {
         'not null' => TRUE,
       ],
     ],
-    'primary key' => ['nid'],
+    'primary key' => ['uuid'],
   ];
 
   return $schema;

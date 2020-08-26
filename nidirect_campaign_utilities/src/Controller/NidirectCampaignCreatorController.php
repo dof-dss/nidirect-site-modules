@@ -11,6 +11,7 @@ use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\nidirect_campaign_utilities\LayoutBuilderBlockManager;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -32,17 +33,20 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
   protected $request;
 
+  protected $blockManager;
+
   /**
    * The controller constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->dbConnD8 = Database::getConnection('default', 'default');
     $this->request = $request;
+    $this->blockManager = $block_manager;
   }
 
   /**
@@ -51,7 +55,8 @@ class NidirectCampaignCreatorController extends ControllerBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('nidirect_campaign_utilities.layout_builder_block_manager')
     );
   }
 
@@ -85,6 +90,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
       ];
 
       $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
+      $this->node->save();
     }
 
     // Parse the body content
@@ -111,7 +117,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content);
+                $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -128,7 +134,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content);
+                $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
@@ -146,7 +152,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractCKTemplateData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content);
+                $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
@@ -218,7 +224,7 @@ class NidirectCampaignCreatorController extends ControllerBase {
     return $content;
   }
 
-  protected function createBlock($type, $content) {
+  protected function createBlock($type, $content, $node) {
 
     $block_config = [
       'info' => $content['title'],
@@ -233,6 +239,8 @@ class NidirectCampaignCreatorController extends ControllerBase {
 
     $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
     $block->save();
+
+    $this->blockManager->add($node, $block);
 
     return $block;
   }

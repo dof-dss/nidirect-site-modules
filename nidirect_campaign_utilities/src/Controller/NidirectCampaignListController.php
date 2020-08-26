@@ -41,7 +41,14 @@ class NidirectCampaignListController extends ControllerBase {
       $item = [
         'nid' => $landing_page->nid,
         'title' => $landing_page->title,
-        'published' => $landing_page->status ? 'yes' : 'no',
+        'published' => [
+          'data' => [
+            '#type' => 'html_tag',
+            '#tag' => 'span',
+            '#value' => $landing_page->status ? 'Yes' : 'No',
+            '#attributes' => ['style' => ['font-weight: bold;', $landing_page->status ? 'color: green' : 'color: red']]
+          ],
+        ],
         'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
         'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid) ),
         'update' => '',
@@ -50,14 +57,20 @@ class NidirectCampaignListController extends ControllerBase {
       if (!empty($d8nid)) {
         $item['update'] = Link::createFromRoute('Update', 'nidirect_campaign_utilities.creator',
           ['nid' => $landing_page->nid],
-          ['query' => [$this->getDestinationArray(), 'op' => 'update'],
-          'attributes' => ['class' => 'button']]);
+          [
+            'query' => [$this->getDestinationArray(), 'op' => 'update'],
+            'attributes' => ['class' => 'button', 'title' => 'This will overwrite any existing content']
+          ]
+        );
       }
 
       $item['create'] = Link::createFromRoute('Create', 'nidirect_campaign_utilities.creator',
         ['nid' => $landing_page->nid],
-        ['query' => $this->getDestinationArray(),
-        'attributes' => ['class' => 'button']]);
+        [
+          'query' => $this->getDestinationArray(),
+          'attributes' => ['class' => 'button']
+        ]
+      );
 
       $items[] = $item;
 
@@ -68,7 +81,7 @@ class NidirectCampaignListController extends ControllerBase {
       '#header' => [
         $this->t('NID'),
         $this->t('Title'),
-        $this->t('Published'),
+        $this->t('Published (D7)'),
         $this->t('Drupal 7'),
         $this->t('Drupal 8'),
         [

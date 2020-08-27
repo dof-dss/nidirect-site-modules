@@ -499,6 +499,19 @@ function _render_article_teasers_auto(array &$variables) {
   $cache_tags = [];
   $results = [];
   $node = \Drupal::routeMatch()->getParameter('node');
+  if (empty($node)) {
+    // If we are in layout builder, we may have to extract the nid from the url.
+    $page_url = \Drupal::request()->getRequestUri();
+    $matches = array();
+    if (preg_match('/node.([0-9]*)/', $page_url, $matches)) {
+      if (count($matches) > 1) {
+        $nid = $matches[1];
+        if (!empty($nid)) {
+          $node = Node::load($nid);
+        }
+      }
+    }
+  }
   if (is_object($node) && !empty($node->field_subtheme->target_id)) {
     // Get a list of article teasers by term.
     if (!empty($node->id())) {
@@ -608,7 +621,7 @@ function _renderArticleTeasersByTerm(int $tid, int $current_nid, array &$cache_t
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
+  \Drupal::service('renderer')->renderPlain($articles_view);
   foreach ($articles_view['view_build']['#view']->result as $row) {
     $this_result = [];
     // Exclude the current page from the list.
@@ -648,7 +661,7 @@ function _renderArticleTeasersByTopic(int $tid, array &$cache_tags) {
   // Render the 'site subtopics' view and process the results.
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
+  \Drupal::service('renderer')->renderPlain($articles_view);
   foreach ($articles_view['view_build']['#view']->result as $row) {
     $thisresult = [];
     // This will be a link to a taxonomy term.

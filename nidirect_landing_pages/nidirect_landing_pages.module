@@ -485,14 +485,14 @@ function _render_article_teasers_block(&$variables) {
     $variables['teasers'] = _render_article_teasers_manual_control($variables);
   } else {
     // No manual control, so re-generate the list of teasers here.
-    $variables['teasers'] = _render_article_teasers_auto($variables);
+    _render_article_teasers_auto($variables);
   }
 }
 
 /*
  * Utility function to render teasers automatically.
  */
-function _render_article_teasers_auto($variables) {
+function _render_article_teasers_auto(&$variables) {
   $cache_tags = [];
   $results = [];
   $node = \Drupal::routeMatch()->getParameter('node');
@@ -510,7 +510,10 @@ function _render_article_teasers_auto($variables) {
       unset($results[$key]['key']);
     }
   }
-  return $results;
+  $variables['teasers'] = $results;
+  $variables['teasers']['#cache'] = [
+    'tags' => $cache_tags,
+  ];
 }
 
 /*

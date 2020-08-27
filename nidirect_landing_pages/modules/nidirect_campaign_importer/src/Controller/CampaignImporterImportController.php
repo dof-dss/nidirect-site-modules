@@ -8,6 +8,7 @@ use DOMXPath;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Url;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -84,7 +85,7 @@ class CampaignImporterImportController extends ControllerBase {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->dbConnD8 = Database::getConnection('default', 'default');
-    $this->request = $request;
+    $this->request = $request->getCurrentRequest();
     $this->blockManager = $block_manager;
     $this->counters = ['sections' => 0, 'blocks' => 0];
   }
@@ -105,6 +106,9 @@ class CampaignImporterImportController extends ControllerBase {
    */
   public function build($nid) {
 
+    // Defines if a node was created or updated.
+    $update_existing = FALSE;
+
     // Check if we have an existing landing page with that nid.
     $query = $this->dbConnD8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
     $drupal8_page_exists = empty($query->fetchCol(0)) ? FALSE : TRUE;
@@ -120,7 +124,8 @@ class CampaignImporterImportController extends ControllerBase {
       ];
     }
 
-    if ($drupal8_page_exists) {
+    if ($drupal8_page_exists && $this->request->query->get('op') == 'update') {
+      $update_existing = TRUE;
       $this->node = $this->entityTypeManager->getStorage('node')->load($nid);
     }
     else {
@@ -219,15 +224,11 @@ class CampaignImporterImportController extends ControllerBase {
     $this->node->layout_builder__layout->setValue($sections);
     $this->node->save();
 
-    if ($drupal8_page_exists) {
-      $output = 'Updated landing page <a href="/node/' . $this->node->id() . '">' . $d7_landing_pages['title'] . '</a>';
-    }
-    else {
-      $output = 'New landing page created for <a href="/node/' . $this->node->id() . '">' . $d7_landing_pages['title'] . '</a>';
-    }
-
-    $build['link'] = [
-      '#markup' => $output,
+    $build['landing_page_link'] = [
+      '#title' => $this->node->getTitle(),
+      '#type' => 'link',
+      '#prefix' => $this->t('@action landing page:', ['@action' => ($update_existing) ? 'Updated' : 'Created new']),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $this->node->id()]),
     ];
 
     $build['import_stats'] = [
@@ -235,9 +236,15 @@ class CampaignImporterImportController extends ControllerBase {
       '#title' => $this->t('Import statistics'),
       '#list_type' => 'ul',
       '#items' => [
-        $this->counters['sections'] . ' sections.',
-        $this->counters['blocks'] . ' blocks.',
+        $this->t('@count section(s)', ['@count' => $this->counters['sections']]),
+        $this->t('@count blocks(s)', ['@count' => $this->counters['blocks']]),
       ],
+    ];
+
+    $build['dashboard_link'] = [
+      '#title' => $this->t('Return to the campaign dashboard'),
+      '#type' => 'link',
+      '#url' => Url::fromRoute('nidirect_campaign_importer.dashboard'),
     ];
 
     return $build;

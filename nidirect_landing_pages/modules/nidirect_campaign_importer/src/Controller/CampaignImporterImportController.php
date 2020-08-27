@@ -35,6 +35,8 @@ class CampaignImporterImportController extends ControllerBase {
 
   protected $blockManager;
 
+  protected $counters;
+
   /**
    * The controller constructor.
    *
@@ -47,6 +49,7 @@ class CampaignImporterImportController extends ControllerBase {
     $this->dbConnD8 = Database::getConnection('default', 'default');
     $this->request = $request;
     $this->blockManager = $block_manager;
+    $this->counters = ['sections' => 0, 'blocks' => 0];
   }
 
   /**
@@ -168,6 +171,8 @@ class CampaignImporterImportController extends ControllerBase {
       }
     }
 
+    $this->counters['sections'] = count($sections);
+    
     $this->node->layout_builder__layout->setValue($sections);
     $this->node->save();
 
@@ -177,8 +182,18 @@ class CampaignImporterImportController extends ControllerBase {
       $output = 'New landing page created for <a href="/node/' . $this->node->id() .'">' . $d7_landing_pages['title'] . '</a>';
     }
 
-    $build['content'] = [
+    $build['link'] = [
       '#markup' => $output,
+    ];
+
+    $build['import_stats'] = [
+      '#theme' => 'item_list',
+      '#title' => $this->t('Import statistics'),
+      '#list_type' => 'ul',
+      '#items' => [
+        $this->counters['sections'] . ' sections.',
+        $this->counters['blocks'] . ' blocks.',
+      ],
     ];
 
     return $build;
@@ -241,6 +256,8 @@ class CampaignImporterImportController extends ControllerBase {
     $block->save();
 
     $this->blockManager->add($node, $block);
+
+    $this->counters['blocks']++;
 
     return $block;
   }

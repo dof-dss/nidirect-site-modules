@@ -17,7 +17,7 @@ use Drupal\Core\Entity\EntityInterface;
 function nidirect_campaign_importer_entity_delete(EntityInterface $entity) {
 
   if ($entity->bundle() == 'landing_page') {
-    $block_manager = \Drupal::service('nidirect_campaign_importer.layout_builder_block_manager');
+    $block_manager = \Drupal::service('nidirect_landing_pages.layout_builder_block_manager');
     $block_manager->purge($entity);
   }
 

@@ -23,7 +23,7 @@ class LayoutBuilderBlockManager {
 
 
   public function add($node, $block) {
-    $result = $this->connection->insert('nidirect_layout_builder_blocks')
+    $result = $this->connection->insert('nidirect_layout_builder_block_manager')
       ->fields([
         'nid' => $node->id(),
         'bid' => $block->id(),
@@ -35,7 +35,7 @@ class LayoutBuilderBlockManager {
 
   public function remove($block) {
 
-    $result = $this->connection->delete('nidirect_layout_builder_blocks')
+    $result = $this->connection->delete('nidirect_layout_builder_block_manager')
       ->condition('id', $block->id())
       ->execute();
 
@@ -46,7 +46,7 @@ class LayoutBuilderBlockManager {
 
   public function purge($node) {
 
-    $query = $this->connection->select('nidirect_layout_builder_blocks', 'b')
+    $query = $this->connection->select('nidirect_layout_builder_block_manager', 'b')
               ->fields('b', ['bid'])->condition('nid', $node->id());
     $bids = $query->execute()->fetchCol();
 
@@ -56,7 +56,7 @@ class LayoutBuilderBlockManager {
       $block->delete();
     }
 
-    $result = $this->connection->delete('nidirect_layout_builder_blocks')
+    $result = $this->connection->delete('nidirect_layout_builder_block_manager')
       ->condition('nid', $node->id())
       ->execute();
 

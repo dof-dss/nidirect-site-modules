@@ -59,7 +59,7 @@ class CampaignImporterImportController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('nidirect_campaign_importer.layout_builder_block_manager')
+      $container->get('nidirect_landing_pages.layout_builder_block_manager')
     );
   }
 
@@ -172,7 +172,7 @@ class CampaignImporterImportController extends ControllerBase {
     }
 
     $this->counters['sections'] = count($sections);
-    
+
     $this->node->layout_builder__layout->setValue($sections);
     $this->node->save();
 

@@ -41,13 +41,11 @@ class CampaignImporterDashboardController extends ControllerBase {
 
     $query = $this->dbConnD7->query("SELECT nid, title, status FROM {node} WHERE type = 'landing_page' ORDER BY title");
     $d7_landing_pages = $query->fetchAll();
-
     $items = [];
-
     $host = \Drupal::request()->getSchemeAndHttpHost();
 
     foreach ($d7_landing_pages as $landing_page) {
-
+      // Fetch the Drupal 8 node ID matching the Drupal 7 node title.
       $d8nid = $this->drupal8LandingPageUrl($landing_page->title);
 
       $item = [

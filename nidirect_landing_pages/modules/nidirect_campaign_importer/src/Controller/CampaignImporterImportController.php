@@ -213,6 +213,7 @@ class CampaignImporterImportController extends ControllerBase {
       }
     }
 
+    // Update the stats counter.
     $this->counters['sections'] = count($sections);
 
     $this->node->layout_builder__layout->setValue($sections);
@@ -313,8 +314,10 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected function createBlock(string $type, array $content, NodeInterface $node) {
 
+    // Block plugin configuration.
+    // Prepend the title with the nid to make it easier to track node blocks.
     $block_config = [
-      'info' => $content['title'],
+      'info' => $node->id() . ' : ' . $content['title'],
       'type' => $type,
       'langcode' => 'en',
       'field_body' => $content['body'],
@@ -329,6 +332,7 @@ class CampaignImporterImportController extends ControllerBase {
 
     $this->blockManager->add($node, $block);
 
+    // Increment the stats counter.
     $this->counters['blocks']++;
 
     return $block;
@@ -347,10 +351,12 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected function createSectionContent(BlockContentInterface $block, string $region) {
 
+    // Section Block plugin configuration.
+    // For the plug label we remove the nid from the block label.
     $plugin_config = [
       'id' => 'inline_block:' . $block->bundle(),
       'provider' => 'layout_builder',
-      'label' => $block->label(),
+      'label' => substr($block->label(), (strpos($block->label(), ': ') + 2)),
       'label_display' => 'visible',
       'block_revision_id' => $block->id(),
     ];

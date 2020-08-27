@@ -3,7 +3,7 @@
 /**
  * Implements hook_schema().
  */
-function nidirect_campaign_utilities_schema() {
+function nidirect_campaign_importer_schema() {
   $schema['nidirect_layout_builder_blocks'] = [
     'description' => 'Stores references to custom blocks created within landing page nodes via the campaign utilities module.',
     'fields' => [

@@ -1,4 +1,0 @@
-administer nidirect_campaign_utilities configuration:
-  title: 'Administer nidirect_campaign_utilities configuration'
-  description: 'Optional description.'
-  restrict access: true

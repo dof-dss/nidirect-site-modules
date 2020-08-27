@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_campaign_utilities\Form;
+namespace Drupal\nidirect_campaign_importer\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -14,7 +14,7 @@ class CreatorConfirmationForm extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'nidirect_campaign_utilities_creator_confirmation';
+    return 'nidirect_campaign_importer_creator_confirmation';
   }
 
   /**
@@ -66,10 +66,10 @@ class CreatorConfirmationForm extends FormBase {
     $option = $form_state->getValue('options');
 
     if ($option == 'cancel') {
-      $form_state->setRedirect('nidirect_campaign_utilities.list');
+      $form_state->setRedirect('nidirect_campaign_importer.list');
     }
     else {
-      $form_state->setRedirect('nidirect_campaign_utilities.creator', ['nid' => $nid], ['option' => $option]);
+      $form_state->setRedirect('nidirect_campaign_importer.creator', ['nid' => $nid], ['option' => $option]);
     }
   }
 }

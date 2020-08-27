@@ -1,17 +1,17 @@
-nidirect_campaign_utilities.list:
+nidirect_campaign_importer.dashboard:
   path: '/nidirect-campaign-utilities/list'
   defaults:
-    _title: 'Drupal 7 Campaign pages'
-    _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignListController::build'
+    _title: 'Campaign importer dashboard'
+    _controller: '\Drupal\nidirect_campaign_importer\Controller\NidirectCampaignImporterController::build'
   requirements:
     _permission: 'create landing_page content'
   options:
     _admin_route: TRUE
-nidirect_campaign_utilities.creator:
+nidirect_campaign_importer.creator:
   path: '/nidirect-campaign-utilities/creator/{nid}'
   defaults:
     _title: 'Create campaign/landing page'
-    _controller: '\Drupal\nidirect_campaign_utilities\Controller\NidirectCampaignCreatorController::build'
+    _controller: '\Drupal\nidirect_campaign_importer\Controller\NidirectCampaignCreatorController::build'
   requirements:
     _permission: 'create landing_page content'
   options:

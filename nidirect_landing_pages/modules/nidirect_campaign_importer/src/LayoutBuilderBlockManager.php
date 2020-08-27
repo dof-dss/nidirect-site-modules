@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_campaign_utilities;
+namespace Drupal\nidirect_campaign_importer;
 
 use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;

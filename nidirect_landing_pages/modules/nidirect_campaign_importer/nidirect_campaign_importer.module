@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Primary module hooks for NIDirect Campaign Utilities module.
+ * Primary module hooks for NIDirect Campaign Importer module.
  *
  * @DCG
  * This file is no longer required in Drupal 8.
@@ -14,10 +14,10 @@ use Drupal\Core\Entity\EntityInterface;
 /**
  * Implements hook_entity_delete().
  */
-function nidirect_campaign_utilities_entity_delete(EntityInterface $entity) {
+function nidirect_campaign_importer_entity_delete(EntityInterface $entity) {
 
   if ($entity->bundle() == 'landing_page') {
-    $block_manager = \Drupal::service('nidirect_campaign_utilities.layout_builder_block_manager');
+    $block_manager = \Drupal::service('nidirect_campaign_importer.layout_builder_block_manager');
     $block_manager->purge($entity);
   }
 

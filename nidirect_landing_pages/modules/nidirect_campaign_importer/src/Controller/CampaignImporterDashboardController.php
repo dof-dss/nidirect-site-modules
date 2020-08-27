@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\nidirect_campaign_utilities\Controller;
+namespace Drupal\nidirect_campaign_importer\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
@@ -10,7 +10,7 @@ use Drupal\Core\Url;
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
  */
-class NidirectCampaignListController extends ControllerBase {
+class CampaignImporterDashboardController extends ControllerBase {
 
   protected $dbConnD7;
 
@@ -55,7 +55,7 @@ class NidirectCampaignListController extends ControllerBase {
       ];
 
       if (!empty($d8nid)) {
-        $item['update'] = Link::createFromRoute('Update', 'nidirect_campaign_utilities.creator',
+        $item['update'] = Link::createFromRoute('Update', 'nidirect_campaign_importer.creator',
           ['nid' => $landing_page->nid],
           [
             'query' => [$this->getDestinationArray(), 'op' => 'update'],
@@ -64,7 +64,7 @@ class NidirectCampaignListController extends ControllerBase {
         );
       }
 
-      $item['create'] = Link::createFromRoute('Create', 'nidirect_campaign_utilities.creator',
+      $item['create'] = Link::createFromRoute('Create', 'nidirect_campaign_importer.creator',
         ['nid' => $landing_page->nid],
         [
           'query' => $this->getDestinationArray(),

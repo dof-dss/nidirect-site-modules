@@ -247,15 +247,15 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
         if (is_object($node) && !empty($node->field_subtheme->target_id)) {
           // Get a list of article teasers by term.
           if (!empty($node->id())) {
-            $results = _retrieveArticleTeasersByTerm($node->field_subtheme->target_id, $node->id());
+            $results = _retrieve_article_teasers_by_term($node->field_subtheme->target_id, $node->id());
           }
           if (!empty(!empty($node->field_subtheme->target_id))) {
-            $results += _retrieveArticleTeasersByTopic($node->field_subtheme->target_id);
+            $results += _retrieve_article_teasers_by_topic($node->field_subtheme->target_id);
           }
         }
         // Sort entries alphabetically (regardless of type).
         ksort($results);
-        $paras = array();
+        $paras = [];
         foreach ($results as $result) {
           $paras[] = $result;
         }
@@ -268,7 +268,7 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
 /**
  * Utility function to retrieve 'articles by term' view.
  */
-function _retrieveArticleTeasersByTerm(int $tid, int $current_nid) {
+function _retrieve_article_teasers_by_term(int $tid, int $current_nid) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -302,7 +302,7 @@ function _retrieveArticleTeasersByTerm(int $tid, int $current_nid) {
 /**
  * Utility function to retrieve 'site subtopics' view.
  */
-function _retrieveArticleTeasersByTopic(int $tid) {
+function _retrieve_article_teasers_by_topic(int $tid) {
   // Render the 'site subtopics' view and process the results.
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
@@ -484,15 +484,17 @@ function nidirect_landing_pages_preprocess_block(array &$variables) {
 function _render_article_teasers_block(array &$variables) {
   $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
   if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
-    // Manual control has been taken, so just render the chosen teasers in the chosen order.
+    // Manual control has been taken, so just render the
+    // chosen teasers in the chosen order.
     _render_article_teasers_manual_control($variables);
-  } else {
+  }
+  else {
     // No manual control, so re-generate the list of teasers here.
     _render_article_teasers_auto($variables);
   }
 }
 
-/*
+/**
  * Utility function to render teasers automatically.
  */
 function _render_article_teasers_auto(array &$variables) {
@@ -502,7 +504,7 @@ function _render_article_teasers_auto(array &$variables) {
   if (empty($node)) {
     // If we are in layout builder, we may have to extract the nid from the url.
     $page_url = \Drupal::request()->getRequestUri();
-    $matches = array();
+    $matches = [];
     if (preg_match('/node.([0-9]*)/', $page_url, $matches)) {
       if (count($matches) > 1) {
         $nid = $matches[1];
@@ -515,10 +517,10 @@ function _render_article_teasers_auto(array &$variables) {
   if (is_object($node) && !empty($node->field_subtheme->target_id)) {
     // Get a list of article teasers by term.
     if (!empty($node->id())) {
-      $results = _renderArticleTeasersByTerm($node->field_subtheme->target_id, $node->id(), $cache_tags);
+      $results = _render_article_teasers_by_term($node->field_subtheme->target_id, $node->id(), $cache_tags);
     }
     // Add in a list of article teasers by topic.
-    $results += _renderArticleTeasersByTopic($node->field_subtheme->target_id, $cache_tags);
+    $results += _render_article_teasers_by_topic($node->field_subtheme->target_id, $cache_tags);
     // Sort entries alphabetically (regardless of type).
     ksort($results);
     // Remove 'key' that was used internally.
@@ -532,7 +534,7 @@ function _render_article_teasers_auto(array &$variables) {
   ];
 }
 
-/*
+/**
  * Utility function to render teasers under manual control.
  */
 function _render_article_teasers_manual_control(array &$variables) {
@@ -560,7 +562,7 @@ function _render_article_teasers_manual_control(array &$variables) {
   ];
 }
 
-/*
+/**
  * Utility function to render one article teaser.
  */
 function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
@@ -588,7 +590,7 @@ function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
   return $this_teaser;
 }
 
-/*
+/**
  * Utility function to render one term teaser.
  */
 function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
@@ -617,7 +619,7 @@ function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
 /**
  * Utility function to render 'articles by term' view.
  */
-function _renderArticleTeasersByTerm(int $tid, int $current_nid, array &$cache_tags) {
+function _render_article_teasers_by_term(int $tid, int $current_nid, array &$cache_tags) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -657,7 +659,7 @@ function _renderArticleTeasersByTerm(int $tid, int $current_nid, array &$cache_t
 /**
  * Utility function to render 'site subtopics' view.
  */
-function _renderArticleTeasersByTopic(int $tid, array &$cache_tags) {
+function _render_article_teasers_by_topic(int $tid, array &$cache_tags) {
   // Render the 'site subtopics' view and process the results.
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
@@ -689,5 +691,3 @@ function _renderArticleTeasersByTopic(int $tid, array &$cache_tags) {
   }
   return $results;
 }
-
-

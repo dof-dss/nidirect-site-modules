@@ -12,7 +12,7 @@ use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\nidirect_campaign_importer\LayoutBuilderBlockManager;
+use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\node\NodeInterface;
 
@@ -314,7 +314,7 @@ class CampaignImporterImportController extends ControllerBase {
   protected function createBlock(string $type, array $content, NodeInterface $node) {
 
     $block_config = [
-      'info' => $node->id() . ' : ' . $content['title'],
+      'info' => $content['title'],
       'type' => $type,
       'langcode' => 'en',
       'field_body' => $content['body'],

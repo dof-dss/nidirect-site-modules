@@ -1,4 +1,4 @@
 services:
   nidirect_landing_pages.layout_builder_block_manager:
-    class: Drupal\nidirect_campaign_importer\LayoutBuilderBlockManager
+    class: Drupal\nidirect_landing_pages\LayoutBuilderBlockManager
     arguments: ['@entity_type.manager', '@database']

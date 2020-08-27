@@ -45,113 +45,6 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_prepare_form().
- */
-function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
-  // Prepopulate the 'field_listing' paragraphs field on landing pages
-  // when the user checks 'manually control listing'.
-  // Only do this for landing pages.
-  if ($entity->getType() != 'landing_page') {
-    return;
-  }
-
-  // Has this hook been invoked by ajax ?
-  $user_input = $form_state->getUserInput();
-  if (count($user_input) > 0) {
-    // Don't bother unless user has checked 'manual control'.
-    if (isset($user_input['field_manually_control_listing'])
-      && ($user_input['field_manually_control_listing'] == 0)) {
-      return;
-    }
-    if (!isset($user_input['field_manually_control_listing'])) {
-      return;
-    }
-  }
-  else {
-    // Not ajax, do nothing.
-    return;
-  }
-
-  // Can't do anything unless a subtheme has been selected.
-  if (isset($user_input['field_subtheme']) && !empty($user_input['field_subtheme'])) {
-    $subtheme = $user_input['field_subtheme'];
-  }
-  else {
-    return;
-  }
-
-  // Get a list of terms and articles that match this subtheme.
-  $teasers = nidirect_landing_pages_article_teasers($subtheme, $entity->id());
-
-  // Populate field_listing with paragraphs.
-  $langcode = $form_state->get('langcode');
-  $paras = [];
-  foreach ($teasers as $title => $atts) {
-    $paragraph = Paragraph::create([
-      'type' => $atts['type'],
-      'langcode' => $langcode,
-      $atts['field'] => ['target_id' => $atts['target_id']],
-    ]);
-    $paragraph->save();
-    $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
-  }
-  $entity->field_listing = $paras;
-}
-
-/**
- * Utility function to get teasers.
- */
-function nidirect_landing_pages_article_teasers(int $tid, int $nid_to_exclude) {
-  $results = [];
-  // Get a list of article teasers by term.
-  $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
-  // Get a list of article teasers by topic.
-  $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
-  // Alpha sort.
-  ksort($results);
-  return $results;
-}
-
-/**
- * Utility function to get teasers by term.
- */
-function nidirect_landing_pages_get_article_teasers_by_term(int $tid, int $nid_to_exclude) {
-  // Render the 'articles by term' view and process the results.
-  $results = [];
-  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
-  foreach ($articles_view['view_build']['#view']->result as $row) {
-    // This will be a link to an article.
-    if ($nid_to_exclude != $row->nid) {
-      $results[strtolower($row->_entity->getTitle())] = [
-        'type' => 'article_teaser',
-        'field' => 'field_article',
-        'target_id' => $row->nid,
-      ];
-    }
-  }
-  return $results;
-}
-
-/**
- * Utility function to get teasers by topic.
- */
-function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
-  $results = [];
-  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
-  foreach ($articles_view['view_build']['#view']->result as $row) {
-    // This will be a link to a taxonomy term.
-    $results[strtolower($row->_entity->getName())] = [
-      'type' => 'term_teaser',
-      'field' => 'field_term',
-      'target_id' => $row->tid,
-    ];
-  }
-  return $results;
-}
-
-/**
  * Implements hook_page_attachments().
  */
 function nidirect_landing_pages_page_attachments(array &$attachments) {
@@ -161,22 +54,6 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   if ($this_route == 'layout_builder.overrides.node.view') {
     $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
     $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers_css';
-  }
-  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-    if ($this_route == 'node.add') {
-      $node_type = \Drupal::routeMatch()->getParameter('node_type');
-      if ($node_type->get('type') == 'landing_page') {
-        // We are adding a landing page, add js to handle special behaviour.
-        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
-      }
-    }
-    elseif ($this_route == 'entity.node.edit_form') {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      if (is_object($node) && ($node instanceof Node) && ($node->getType() == 'landing_page')) {
-        // We are editing a landing page, add js to handle special behaviour.
-        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
-      }
-    }
   }
 }
 
@@ -192,34 +69,9 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
       $form['field_subtheme']['widget']['#description'] = $msg;
     }
-    // Only show 'Listing' field if 'manually control listing'
-    // checkbox has been checked.
-    $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
-    // Add ajax to the 'manually control listing' checkbox.
-    if (isset($form['field_manually_control_listing'])) {
-      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
-        'callback' => 'nidirect_landing_pages_populate_listing',
-        'event' => 'change',
-        'wrapper' => 'edit-field-listing-wrapper',
-      ];
-    }
     // Add a validate handler to detect any duplicates.
     $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
-}
-
-/**
- * Utility Ajax function.
- */
-function nidirect_landing_pages_populate_listing(array &$form, FormStateInterface $form_state) {
-  // The main purpose of this is to make sure that
-  // nidirect_common_node_prepare_form is called.
-  if (!$form_state->getValue('field_manually_control_listing')['value']) {
-    // If 'manual control' checkbox is unchecked, make sure
-    // that listing field is not shown.
-    return ['#markup' => ''];
-  }
-  return $form['field_listing'];
 }
 
 /**
@@ -227,16 +79,6 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
  */
 function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'node') {
-    if ($entity->hasField('field_manually_control_listing')) {
-      $manual_field = $entity->get('field_manually_control_listing');
-      if ($manual_field->getValue()[0]['value'] == 0) {
-        // If 'manually control listing' is un-checked ensure
-        // that no listings are saved.
-        $entity->set('field_listing', NULL);
-      }
-    }
-  }
   if ($entity->getEntityTypeId() == 'block_content') {
     if ($entity->hasField('field_manually_control_listing')) {
       $manual_field = $entity->get('field_manually_control_listing');
@@ -368,11 +210,8 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
       '@landing_page' => \Drupal::service('renderer')->render($link),
       '@term_name' => $term->label(),
     ]);
-
     $form_state->setErrorByName('field_subtheme', $message);
-
   }
-
 }
 
 /**

@@ -1,4 +1,4 @@
-administer nidirect_campaign_importer configuration:
-  title: 'Administer nidirect_campaign_importer configuration'
+administer campaign importer:
+  title: 'Administer campaign importer'
   description: 'Optional description.'
   restrict access: true

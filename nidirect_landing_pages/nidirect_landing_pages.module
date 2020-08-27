@@ -101,7 +101,7 @@ function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, strin
 /**
  * Utility function to get teasers.
  */
-function nidirect_landing_pages_article_teasers($tid, $nid_to_exclude) {
+function nidirect_landing_pages_article_teasers(int $tid, int $nid_to_exclude) {
   $results = [];
   // Get a list of article teasers by term.
   $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
@@ -115,7 +115,7 @@ function nidirect_landing_pages_article_teasers($tid, $nid_to_exclude) {
 /**
  * Utility function to get teasers by term.
  */
-function nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude) {
+function nidirect_landing_pages_get_article_teasers_by_term(int $tid, int $nid_to_exclude) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -136,7 +136,7 @@ function nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclud
 /**
  * Utility function to get teasers by topic.
  */
-function nidirect_landing_pages_get_article_teasers_by_topic($tid) {
+function nidirect_landing_pages_get_article_teasers_by_topic(int $tid) {
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
   \Drupal::service('renderer')->renderRoot($articles_view);
@@ -480,7 +480,7 @@ function nidirect_landing_pages_preprocess_block(array &$variables) {
 /**
  * Utility function to render article teasers block.
  */
-function _render_article_teasers_block(&$variables) {
+function _render_article_teasers_block(array &$variables) {
   $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
   if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
     // Manual control has been taken, so just render the chosen teasers in the chosen order.
@@ -494,7 +494,7 @@ function _render_article_teasers_block(&$variables) {
 /*
  * Utility function to render teasers automatically.
  */
-function _render_article_teasers_auto(&$variables) {
+function _render_article_teasers_auto(array &$variables) {
   $cache_tags = [];
   $results = [];
   $node = \Drupal::routeMatch()->getParameter('node');
@@ -521,7 +521,7 @@ function _render_article_teasers_auto(&$variables) {
 /*
  * Utility function to render teasers under manual control.
  */
-function _render_article_teasers_manual_control(&$variables) {
+function _render_article_teasers_manual_control(array &$variables) {
   $cache_tags = [];
   $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
   $teasers = [];
@@ -549,7 +549,7 @@ function _render_article_teasers_manual_control(&$variables) {
 /*
  * Utility function to render one article teaser.
  */
-function _render_article_teaser($paragraph, &$cache_tags) {
+function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
   $this_teaser = [];
   $article = $paragraph->get('field_article');
   if (!empty($article)) {
@@ -577,7 +577,7 @@ function _render_article_teaser($paragraph, &$cache_tags) {
 /*
  * Utility function to render one term teaser.
  */
-function _render_term_teaser($paragraph, &$cache_tags) {
+function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
   $this_teaser = [];
   $term_field = $paragraph->get('field_term');
   $tid = $term_field->getValue()[0]['target_id'];

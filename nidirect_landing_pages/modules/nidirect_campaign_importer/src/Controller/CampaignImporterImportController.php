@@ -296,7 +296,8 @@ class CampaignImporterImportController extends ControllerBase {
 
     try {
       $image_data = json_decode($image_embed_value, FALSE, 512, JSON_THROW_ON_ERROR);
-    } catch (JsonException $e) {
+    }
+    catch (JsonException $e) {
       $this->messenger()->addWarning('Unable to decode image data.');
     }
 

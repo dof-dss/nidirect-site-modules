@@ -11,6 +11,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
+use JsonException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;
@@ -293,8 +294,15 @@ class CampaignImporterImportController extends ControllerBase {
     $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $dom_node->parentNode);
     $image_embed_value = $image->item(0)->nodeValue;
 
-    $image_data = json_decode($image_embed_value);
-    $content['image'] = ['target_id' => $image_data[0][0]->fid];
+    try {
+      $image_data = json_decode($image_embed_value, FALSE, 512, JSON_THROW_ON_ERROR);
+    } catch (JsonException $e) {
+      $this->messenger()->addWarning('Unable to decode image data.');
+    }
+
+    if (isset($image_data[0][0])) {
+      $content['image'] = ['target_id' => $image_data[0][0]->fid];
+    }
 
     // Extract teaser content.
     $content['teaser'] = $xpath->query('h2/following-sibling::*', $dom_node)->item(0)->nodeValue;

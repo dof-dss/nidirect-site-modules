@@ -12,12 +12,24 @@ use Drupal\Core\Url;
  */
 class CampaignImporterDashboardController extends ControllerBase {
 
+  /**
+   * The legacy database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $dbConnD7;
 
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $dbConnD8;
 
-  public function __construct()
-  {
+  /**
+   * Controller constructor.
+   */
+  public function __construct() {
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->dbConnD8 = Database::getConnection('default', 'default');
   }
@@ -36,7 +48,7 @@ class CampaignImporterDashboardController extends ControllerBase {
 
     foreach ($d7_landing_pages as $landing_page) {
 
-      $d8nid = $this->drupal8LandingPageURL($landing_page->title);
+      $d8nid = $this->drupal8LandingPageUrl($landing_page->title);
 
       $item = [
         'nid' => $landing_page->nid,
@@ -46,11 +58,11 @@ class CampaignImporterDashboardController extends ControllerBase {
             '#type' => 'html_tag',
             '#tag' => 'span',
             '#value' => $landing_page->status ? 'Yes' : 'No',
-            '#attributes' => ['style' => ['font-weight: bold;', $landing_page->status ? 'color: green' : 'color: red']]
+            '#attributes' => ['style' => ['font-weight: bold;', $landing_page->status ? 'color: green' : 'color: red']],
           ],
         ],
         'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
-        'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid) ),
+        'drupal8' => empty($d8nid) ? '' : Link::fromTextAndUrl('View', Url::fromUri($host . '/node/' . $d8nid)),
         'update' => '',
       ];
 
@@ -59,7 +71,7 @@ class CampaignImporterDashboardController extends ControllerBase {
           ['nid' => $landing_page->nid],
           [
             'query' => [$this->getDestinationArray(), 'op' => 'update'],
-            'attributes' => ['class' => 'button', 'title' => 'This will overwrite any existing content']
+            'attributes' => ['class' => 'button', 'title' => 'This will overwrite any existing content'],
           ]
         );
       }
@@ -68,7 +80,7 @@ class CampaignImporterDashboardController extends ControllerBase {
         ['nid' => $landing_page->nid],
         [
           'query' => $this->getDestinationArray(),
-          'attributes' => ['class' => 'button']
+          'attributes' => ['class' => 'button'],
         ]
       );
 
@@ -97,7 +109,16 @@ class CampaignImporterDashboardController extends ControllerBase {
     return $build;
   }
 
-  protected function drupal8LandingPageURL(string $title) {
+  /**
+   * Fetch the Drupal 8 node ID based on the node title.
+   *
+   * @param string $title
+   *   Title of the landing page node to search for.
+   *
+   * @return mixed
+   *   Node ID of the matching node or null for no matches.
+   */
+  protected function drupal8LandingPageUrl(string $title) {
     $query = $this->dbConnD8->query("SELECT n.nid FROM {node} n INNER JOIN {node_field_data} d ON d.nid = n.nid WHERE n.type = 'landing_page' AND d.title = '" . $title . "'");
     $nid = $query->fetchCol(0);
 

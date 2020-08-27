@@ -1,5 +1,10 @@
 <?php
 
+/**
+ * @file
+ * Schema and update hooks for the landing pages module.
+ */
+
 use Drupal\Core\Database\Database;
 
 /**
@@ -27,7 +32,6 @@ function nidirect_landing_pages_schema() {
 
   return $schema;
 }
-
 
 /**
  * Implementations of hook_update_N().
@@ -58,4 +62,3 @@ function nidirect_landing_pages_update_8001() {
   $schema = Database::getConnection()->schema();
   $schema->createTable('nidirect_layout_builder_block_manager', $table);
 }
-

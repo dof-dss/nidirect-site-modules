@@ -6,6 +6,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -29,9 +30,20 @@ class CampaignImporterDashboardController extends ControllerBase {
   /**
    * Controller constructor.
    */
-  public function __construct() {
+  public function __construct($d8_connection) {
+    $this->dbConnD8 = $d8_connection;
+
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
-    $this->dbConnD8 = Database::getConnection('default', 'default');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('database'),
+      Database::getConnection('default', 'drupal7db'),
+    );
   }
 
   /**

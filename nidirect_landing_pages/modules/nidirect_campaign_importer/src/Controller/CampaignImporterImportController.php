@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_campaign_importer\Controller;
 
 use DOMDocument;
+use DOMNode;
 use DOMXPath;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
@@ -12,6 +13,8 @@ use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\nidirect_campaign_importer\LayoutBuilderBlockManager;
+use Drupal\block_content\BlockContentInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -25,23 +28,57 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected $entityTypeManager;
 
+  /**
+   * The legacy database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $dbConnD7;
 
+  /**
+   * The database connection.
+   *
+   * @var \Drupal\Core\Database\Connection
+   */
   protected $dbConnD8;
 
+  /**
+   * The Layout Builder node.
+   *
+   * @var \Drupal\node\NodeInterface
+   */
   protected $node;
 
+  /**
+   * The current request stack.
+   *
+   * @var Symfony\Component\HttpFoundation\RequestStack
+   */
   protected $request;
 
+  /**
+   * The Layout Builder Block Manager.
+   *
+   * @var \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager
+   */
   protected $blockManager;
 
+  /**
+   * Array of counters.
+   *
+   * @var array
+   */
   protected $counters;
 
   /**
-   * The controller constructor.
+   * Controller constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param Symfony\Component\HttpFoundation\RequestStack $request
+   *   The current request stack.
+   * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
+   *   The Layout Builder Block Manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager) {
     $this->entityTypeManager = $entity_type_manager;
@@ -85,8 +122,9 @@ class CampaignImporterImportController extends ControllerBase {
 
     if ($drupal8_page_exists) {
       $this->node = $this->entityTypeManager->getStorage('node')->load($nid);
-    } else {
-      // Create new landing page
+    }
+    else {
+      // Create new landing page.
       $node_config = [
         'type' => 'landing_page',
         'title' => $d7_landing_pages['title'],
@@ -96,7 +134,7 @@ class CampaignImporterImportController extends ControllerBase {
       $this->node->save();
     }
 
-    // Parse the body content
+    // Parse the body content.
     $dom = new DOMDocument();
     $dom->strictErrorChecking = FALSE;
     $dom->preserveWhiteSpace = FALSE;
@@ -105,7 +143,7 @@ class CampaignImporterImportController extends ControllerBase {
 
     $sections = [];
 
-    // Iterate each section and create a layout builder section
+    // Iterate each section and create a layout builder section.
     foreach ($xpath->query('/html/body/div') as $domnode) {
 
       if ($domnode->hasAttribute('class')) {
@@ -119,7 +157,7 @@ class CampaignImporterImportController extends ControllerBase {
               $current_region = array_shift($region);
 
               if ($current_region) {
-                $block_content = $this->extractCKTemplateData($child, $xpath);
+                $block_content = $this->extractDomNodeData($child, $xpath);
                 $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
@@ -129,6 +167,7 @@ class CampaignImporterImportController extends ControllerBase {
             $sections[] = $section;
 
             break;
+
           case 'two-cols';
             $section = new Section('teasers_x2');
             $region = ['one', 'two'];
@@ -136,7 +175,7 @@ class CampaignImporterImportController extends ControllerBase {
               $current_region = array_shift($region);
 
               if ($current_region) {
-                $block_content = $this->extractCKTemplateData($child, $xpath);
+                $block_content = $this->extractDomNodeData($child, $xpath);
                 $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
@@ -147,6 +186,7 @@ class CampaignImporterImportController extends ControllerBase {
             $sections[] = $section;
 
             break;
+
           case 'article-topic-teaser-wrap';
             $section = new Section('teasers_x2');
             $region = ['one', 'two'];
@@ -154,7 +194,7 @@ class CampaignImporterImportController extends ControllerBase {
               $current_region = array_pop($region);
 
               if ($current_region) {
-                $block_content = $this->extractCKTemplateData($child, $xpath);
+                $block_content = $this->extractDomNodeData($child, $xpath);
                 $block = $this->createBlock('card_standard', $block_content, $this->node);
                 $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
@@ -165,8 +205,10 @@ class CampaignImporterImportController extends ControllerBase {
             $sections[] = $section;
 
             break;
+
           default;
             break;
+
         }
       }
     }
@@ -177,9 +219,10 @@ class CampaignImporterImportController extends ControllerBase {
     $this->node->save();
 
     if ($drupal8_page_exists) {
-      $output = 'Updated landing page <a href="/node/' . $this->node->id() .'">' . $d7_landing_pages['title'] . '</a>';
-    } else {
-      $output = 'New landing page created for <a href="/node/' . $this->node->id() .'">' . $d7_landing_pages['title'] . '</a>';
+      $output = 'Updated landing page <a href="/node/' . $this->node->id() . '">' . $d7_landing_pages['title'] . '</a>';
+    }
+    else {
+      $output = 'New landing page created for <a href="/node/' . $this->node->id() . '">' . $d7_landing_pages['title'] . '</a>';
     }
 
     $build['link'] = [
@@ -199,17 +242,29 @@ class CampaignImporterImportController extends ControllerBase {
     return $build;
   }
 
-  protected function extractCKTemplateData($node, $xpath) {
+  /**
+   * Extracts content data from DOM node.
+   *
+   * @param \DOMNode $dom_node
+   *   The DOM node to extract content from.
+   * @param \DOMXPath $xpath
+   *   XPath query object.
+   *
+   * @return array
+   *   An array of extract content from the DOM node.
+   */
+  protected function extractDomNodeData(DOMNode $dom_node, DOMXPath $xpath) {
     $content = [];
 
-    // Title.
-    $content['title'] = $xpath->query('h2', $node)->item(0)->nodeValue;
+    // Extract the title.
+    $content['title'] = $xpath->query('h2', $dom_node)->item(0)->nodeValue;
 
-    // Title link
-    $link = $xpath->query('h2/a', $node);
+    // Extract a link from the title, if present.
+    $link = $xpath->query('h2/a', $dom_node);
 
+    // Extract a link from the image link.
     if ($link->length == 0) {
-      $link = $xpath->query('div[contains(@class, \'img-placeholder\')]/a', $node->parentNode);
+      $link = $xpath->query('div[contains(@class, \'img-placeholder\')]/a', $dom_node->parentNode);
     }
 
     if ($link->length > 0) {
@@ -226,20 +281,37 @@ class CampaignImporterImportController extends ControllerBase {
       $content['link'] = $links[0];
     }
 
-    // Image
-    $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $node->parentNode);
+    // Extract image data.
+    $image = $xpath->query('div[contains(@class, \'img-placeholder\')]', $dom_node->parentNode);
     $image_embed_value = $image->item(0)->nodeValue;
 
     $image_data = json_decode($image_embed_value);
     $content['image'] = ['target_id' => $image_data[0][0]->fid];
 
-    // Teaser
-    $content['teaser'] = $xpath->query('h2/following-sibling::*', $node)->item(0)->nodeValue;
+    // Extract teaser content.
+    $content['teaser'] = $xpath->query('h2/following-sibling::*', $dom_node)->item(0)->nodeValue;
 
     return $content;
   }
 
-  protected function createBlock($type, $content, $node) {
+  /**
+   * Create a new content block.
+   *
+   * @param string $type
+   *   The machine name of the content block type.
+   * @param array $content
+   *   An array of content to populate the block.
+   * @param \Drupal\node\NodeInterface $node
+   *   The node this block will be added to.
+   *
+   * @return \Drupal\Core\Entity\EntityInterface
+   *   The new content block.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityStorageException
+   */
+  protected function createBlock(string $type, array $content, NodeInterface $node) {
 
     $block_config = [
       'info' => $node->id() . ' : ' . $content['title'],
@@ -262,9 +334,20 @@ class CampaignImporterImportController extends ControllerBase {
     return $block;
   }
 
-  protected function createSectionContent($block, $region) {
+  /**
+   * Create a new Layout Builder Section Component containing a content block.
+   *
+   * @param \Drupal\block_content\BlockContentInterface $block
+   *   The content block to add to the section.
+   * @param string $region
+   *   The region id of the section for the block to be inserted into.
+   *
+   * @return \Drupal\layout_builder\SectionComponent
+   *   The new layout builder section component.
+   */
+  protected function createSectionContent(BlockContentInterface $block, string $region) {
 
-    $pluginConfiguration = [
+    $plugin_config = [
       'id' => 'inline_block:' . $block->bundle(),
       'provider' => 'layout_builder',
       'label' => $block->label(),
@@ -272,10 +355,9 @@ class CampaignImporterImportController extends ControllerBase {
       'block_revision_id' => $block->id(),
     ];
 
-    // Create a new section component using the node and plugin config.
-    $component = new SectionComponent($block->uuid(), $region, $pluginConfiguration);
-
-    return $component;
+    // Create and return a new Layout Builder Section Component using the
+    // content block and plugin configuration.
+    return new SectionComponent($block->uuid(), $region, $plugin_config);
   }
 
 }

@@ -237,9 +237,11 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
     }
   }
   if ($entity->getEntityTypeId() == 'block_content') {
-    if ($entity->hasField('field_article_teasers')) {
-      if (count($entity->field_article_teasers) == 0) {
-        // There are no teasers yet, so set them up now.
+    if ($entity->hasField('field_manually_control_listing')) {
+      $manual_field = $entity->get('field_manually_control_listing');
+      if ($manual_field->getValue()[0]['value'] == 0) {
+        // Update the list of teasers on every save if manual
+        // control has not been selected.
         $node = \Drupal::routeMatch()->getParameter('node');
         if (is_object($node) && !empty($node->field_subtheme->target_id)) {
           // Get a list of article teasers by term.
@@ -482,7 +484,7 @@ function _render_article_teasers_block(&$variables) {
   $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
   if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
     // Manual control has been taken, so just render the chosen teasers in the chosen order.
-    $variables['teasers'] = _render_article_teasers_manual_control($variables);
+    _render_article_teasers_manual_control($variables);
   } else {
     // No manual control, so re-generate the list of teasers here.
     _render_article_teasers_auto($variables);
@@ -519,7 +521,8 @@ function _render_article_teasers_auto(&$variables) {
 /*
  * Utility function to render teasers under manual control.
  */
-function _render_article_teasers_manual_control($variables) {
+function _render_article_teasers_manual_control(&$variables) {
+  $cache_tags = [];
   $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
   $teasers = [];
   foreach ($teaser_list as $teaser) {
@@ -529,25 +532,30 @@ function _render_article_teasers_manual_control($variables) {
     $paragraph_type = $paragraph->getType();
     if ($paragraph_type == 'article_teaser') {
       // Load up the article node and extract display details.
-      $this_teaser = _render_article_teaser($paragraph);
+      $this_teaser = _render_article_teaser($paragraph, $cache_tags);
     }
     elseif ($paragraph_type == 'term_teaser') {
       // Load up the taxonomy term and extract display details.
-      $this_teaser = _render_term_teaser($paragraph);
+      $this_teaser = _render_term_teaser($paragraph, $cache_tags);
     }
     $teasers[] = $this_teaser;
   }
-  return $teasers;
+  $variables['teasers'] = $teasers;
+  $variables['teasers']['#cache'] = [
+    'tags' => $cache_tags,
+  ];
 }
 
 /*
  * Utility function to render one article teaser.
  */
-function _render_article_teaser($paragraph) {
+function _render_article_teaser($paragraph, &$cache_tags) {
   $this_teaser = [];
   $article = $paragraph->get('field_article');
   if (!empty($article)) {
     $nid = $article->getValue()[0]['target_id'];
+    // Add cache tag for this article.
+    $cache_tags[] = 'node:' . $nid;
     $node = Node::load($nid);
     if (!empty($node)) {
       $this_teaser['title_link'] = [
@@ -569,11 +577,13 @@ function _render_article_teaser($paragraph) {
 /*
  * Utility function to render one term teaser.
  */
-function _render_term_teaser($paragraph) {
+function _render_term_teaser($paragraph, &$cache_tags) {
   $this_teaser = [];
   $term_field = $paragraph->get('field_term');
   $tid = $term_field->getValue()[0]['target_id'];
   $term = Term::load($tid);
+  // Add cache tag for this term.
+  $cache_tags[] = 'taxonomy_term:' . $tid;
   if (!empty($term)) {
     $this_teaser['title_link'] = [
       '#type' => 'link',

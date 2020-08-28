@@ -5,6 +5,7 @@ namespace Drupal\nidirect_campaign_importer\Controller;
 use DOMDocument;
 use DOMNode;
 use DOMXPath;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -72,6 +73,8 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected $counters;
 
+  protected $uuidGenerator;
+
   /**
    * Controller constructor.
    *
@@ -82,12 +85,13 @@ class CampaignImporterImportController extends ControllerBase {
    * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
    *   The Layout Builder Block Manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, UuidInterface $uuid) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->dbConnD8 = Database::getConnection('default', 'default');
     $this->request = $request->getCurrentRequest();
     $this->blockManager = $block_manager;
+    $this->uuidGenerator = $uuid;
     $this->counters = ['sections' => 0, 'blocks' => 0];
   }
 
@@ -98,7 +102,8 @@ class CampaignImporterImportController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('nidirect_landing_pages.layout_builder_block_manager')
+      $container->get('nidirect_landing_pages.layout_builder_block_manager'),
+      $container->get('uuid'),
     );
   }
 
@@ -183,7 +188,6 @@ class CampaignImporterImportController extends ControllerBase {
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
                 $block = $this->createBlock('card_standard', $block_content, $this->node);
-                $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -202,7 +206,6 @@ class CampaignImporterImportController extends ControllerBase {
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
                 $block = $this->createBlock('card_standard', $block_content, $this->node);
-                $this->createSectionContent($block, $current_region);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -365,7 +368,7 @@ class CampaignImporterImportController extends ControllerBase {
    * @return \Drupal\layout_builder\SectionComponent
    *   The new layout builder section component.
    */
-  protected function createSectionContent(BlockContentInterface $block, string $region) {
+  protected function createSectionContent($block, string $region) {
 
     // Section Block plugin configuration.
     // For the plug label we remove the nid from the block label.
@@ -374,7 +377,7 @@ class CampaignImporterImportController extends ControllerBase {
       'provider' => 'layout_builder',
       'label' => substr($block->label(), (strpos($block->label(), ': ') + 2)),
       'label_display' => 'visible',
-      'block_revision_id' => $block->id(),
+      'block_revision_id' => $block->getRevisionId(),
     ];
 
     // Create and return a new Layout Builder Section Component using the

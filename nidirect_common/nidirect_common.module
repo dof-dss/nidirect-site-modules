@@ -420,12 +420,10 @@ function validate_date_field(&$form_state, $date_field) {
 }
 
 /**
- * Implements hook_field_widget_WIDGET_TYPE_form_alter().
+ * Implements hook_shs_js_settings_alter().
  */
-function nidirect_common_field_widget_options_shs_form_alter(&$element, FormStateInterface $form_state, $context) {
-  // Replace default of "- Select a value -" to be "- None -".
-  $element['#options']['_none'] = '- ' . t('None') . ' -';
-  $element['#shs']['settings']['anyLabel'] = '- ' . t('None') . ' -';
+function nidirect_common_shs_js_settings_alter(&$settings_shs, $bundle, $field_name) {
+  $settings_shs['settings']['anyLabel'] = '- ' . t('None') . ' -';
 }
 
 /**

@@ -9,6 +9,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -159,10 +160,15 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
       $message_text = $message->jsonSerialize();
       if ($message_text == 'The layout override has been saved.') {
         // Change text of this message.
-        $message_text = t('Landing page @title has been updated.', ['@title' => $entity->getTitle()]);
+        $link_object = Link::createFromRoute($entity->getTitle(),
+          'entity.node.canonical',
+          ['node' => $entity->id()],
+          ['attributes' => ['rel' => 'nofollow']]);
+        $message_text = t('Landing page <em class="placeholder">@link</em> has been updated.', ['@link' => $link_object->toString()]);
       }
       // Add the status message back in.
-      \Drupal::messenger()->addMessage($message_text);
+      $newmarkup = Markup::create($message_text);
+      \Drupal::messenger()->addMessage($newmarkup);
     }
   }
 

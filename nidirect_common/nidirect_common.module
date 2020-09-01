@@ -153,13 +153,16 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
     // (Layout builder is only used on landing pages for now, this
     // may be expanded to other content types later.)
     $messages = \Drupal::messenger()->messagesByType('status');
-    if (count($messages) == 1) {
-      $thismessage = $messages[0]->jsonSerialize();
-      if ($thismessage == 'The layout override has been saved.') {
-        \Drupal::messenger()->deleteByType('status');
-        $msg = t('Landing page @title has been updated.', ['@title' => $entity->getTitle()]);
-        \Drupal::messenger()->addMessage($msg);
+    // Retrieve all status messages and delete them.
+    \Drupal::messenger()->deleteByType('status');
+    foreach ($messages as $message) {
+      $message_text = $message->jsonSerialize();
+      if ($message_text == 'The layout override has been saved.') {
+        // Change text of this message.
+        $message_text = t('Landing page @title has been updated.', ['@title' => $entity->getTitle()]);
       }
+      // Add the status message back in.
+      \Drupal::messenger()->addMessage($message_text);
     }
   }
 

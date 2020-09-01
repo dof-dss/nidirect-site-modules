@@ -15,7 +15,7 @@ nidirect.main.contacts:
   weight: 6
 nidirect.main.help:
   title: 'Help'
-  url: internal:/information-and-services/help
+  url: internal:/taxonomy/term/402
   menu_name: main
   weight: 7
 nidirect.main.feedback:

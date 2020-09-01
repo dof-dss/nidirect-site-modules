@@ -24,32 +24,32 @@ module.exports = {
 
   'Contacts by letter confirms: "Showing entries for A"': browser => {
     browser
-      .expect.element('.view-contacts-a-z .view-header')
+      .expect.element('#contacts-az--title')
       .text.to.contain('Showing entries for A');
   },
 
   'Contacts by letter displays Reset search convenience link': browser => {
     browser
-      .expect.element('.view-contacts-a-z .view-links')
-      .text.to.contain('Reset search');
+      .expect.element('#contact-links')
+      .text.to.contain('reset a-z');
   },
 
   'Contacts by letter displays Show A-Z convenience link': browser => {
     browser
-      .expect.element('.view-contacts-a-z .view-links')
-      .text.to.contain('Show A-Z');
+      .expect.element('#contact-links')
+      .text.to.contain('show search');
   },
 
   'Contacts by letter does not show any sorting links': browser => {
     browser
-      .expect.element('.view-links')
-      .text.to.not.match(/Sort .+/);
+      .expect.element('#contact-links')
+      .text.to.not.match(/sort .+/);
   },
 
   'Contact landing page should not show any sorting or convenience links': browser => {
     browser
       .drupalRelativeURL('/contacts')
-      .expect.element('.view-links')
+      .expect.element('#contact-links')
       .to.not.be.present;
   },
 
@@ -77,6 +77,6 @@ module.exports = {
       .drupalRelativeURL('/contacts?query_contacts_az=test&sort_by=search_api_relevance')
       .expect.element('.view-contacts .view-links')
       .text.to.not.contain('Sort by relevancy');
-  }
+  },
 
 };

@@ -322,8 +322,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   }
 
   if (array_key_exists('field_top_level_theme', $form)) {
-
-    // Can't use a hidden input tqype on a container element or
+    // Can't use a hidden input type on a container element or
     // set #access to FALSE as we need the form_state values,
     // so using the .hidden class to hide from the user.
     $form['field_top_level_theme']['#attributes']['class'][] = 'hidden';
@@ -418,6 +417,13 @@ function validate_date_field(&$form_state, $date_field) {
       }
     }
   }
+}
+
+/**
+ * Implements hook_shs_js_settings_alter().
+ */
+function nidirect_common_shs_js_settings_alter(&$settings_shs, $bundle, $field_name) {
+  $settings_shs['settings']['anyLabel'] = '- ' . t('None') . ' -';
 }
 
 /**

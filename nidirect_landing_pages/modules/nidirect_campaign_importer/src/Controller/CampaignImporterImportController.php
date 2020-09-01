@@ -5,9 +5,9 @@ namespace Drupal\nidirect_campaign_importer\Controller;
 use DOMDocument;
 use DOMNode;
 use DOMXPath;
-use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\Section;
@@ -16,7 +16,6 @@ use JsonException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;
-use Drupal\block_content\BlockContentInterface;
 use Drupal\node\NodeInterface;
 
 /**
@@ -73,8 +72,6 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected $counters;
 
-  protected $uuidGenerator;
-
   /**
    * Controller constructor.
    *
@@ -85,13 +82,12 @@ class CampaignImporterImportController extends ControllerBase {
    * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
    *   The Layout Builder Block Manager.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, UuidInterface $uuid) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
-    $this->dbConnD8 = Database::getConnection('default', 'default');
     $this->request = $request->getCurrentRequest();
     $this->blockManager = $block_manager;
-    $this->uuidGenerator = $uuid;
+    $this->dbConnD8 = $connection;
     $this->counters = ['sections' => 0, 'blocks' => 0];
   }
 
@@ -103,7 +99,7 @@ class CampaignImporterImportController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
       $container->get('nidirect_landing_pages.layout_builder_block_manager'),
-      $container->get('uuid'),
+      $container->get('database')
     );
   }
 
@@ -145,6 +141,15 @@ class CampaignImporterImportController extends ControllerBase {
       // Force the node to use Layout Builder storage or duplicate blocks will be generated.
       $this->node->layout_builder__layout->setValue(new Section('layout_onecol'));
       $this->node->save();
+    }
+
+    // Apply the image banner if available.
+    $query = $this->dbConnD7->query(
+      "SELECT field_banner_image_fid FROM field_data_field_banner_image WHERE entity_id = " . $nid);
+    $d7_banner_fid = $query->fetchCol();
+
+    if (isset($d7_banner_fid[0])) {
+      $this->node->set('field_banner_image', $d7_banner_fid[0]);
     }
 
     // Parse the body content.

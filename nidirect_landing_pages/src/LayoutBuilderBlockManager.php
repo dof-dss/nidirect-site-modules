@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_landing_pages;
 
+use Drupal\Core\Database\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\node\NodeInterface;
 use Drupal\block_content\BlockContentInterface;
@@ -28,7 +29,7 @@ class LayoutBuilderBlockManager {
   /**
    * {@inheritdoc}
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, $connection) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, Connection $connection) {
     $this->entityTypeManager = $entity_type_manager;
     $this->connection = $connection;
   }

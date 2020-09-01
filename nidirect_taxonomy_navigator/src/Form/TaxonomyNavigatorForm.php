@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_taxonomy_navigator\Form;
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\Element\EntityAutocomplete;
 use Drupal\Core\Form\FormBase;
@@ -204,6 +205,9 @@ class TaxonomyNavigatorForm extends FormBase {
           'url' => Url::fromRoute('entity.taxonomy_term.delete_form', ['taxonomy_term' => $term->tid], ['query' => $this->getDestinationArray()]),
         ];
       }
+
+      // Add cache tag to assist with propagating changes across the site's themeable things.
+      $form['#cache']['tags'][] = 'taxonomy_term:' . $term->tid;
     }
 
     if ($can_reorder) {
@@ -221,6 +225,9 @@ class TaxonomyNavigatorForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    // Expire cache tags.
+    Cache::invalidateTags($form['#cache']['tags']);
 
     $form_values = $form_state->getValues();
 

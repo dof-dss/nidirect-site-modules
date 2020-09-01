@@ -8,6 +8,10 @@ lb_config_teasers_css:
   css:
     theme:
       css/lb_config_add_teasers.css: {}
+lb_config_update_teasers_css:
+  css:
+    theme:
+      css/lb_config_update_teasers.css: {}
 landing_page_admin:
   css:
     theme:

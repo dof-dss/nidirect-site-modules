@@ -142,6 +142,8 @@ class CampaignImporterImportController extends ControllerBase {
       ];
 
       $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
+      // Force the node to use Layout Builder storage or duplicate blocks will be generated.
+      $this->node->layout_builder__layout->setValue(new Section('layout_onecol'));
       $this->node->save();
     }
 

@@ -5,6 +5,7 @@ namespace Drupal\nidirect_campaign_importer\Controller;
 use DOMDocument;
 use DOMNode;
 use DOMXPath;
+use Drupal\block_content\BlockContentInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Connection;
@@ -81,6 +82,8 @@ class CampaignImporterImportController extends ControllerBase {
    *   The current request stack.
    * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
    *   The Layout Builder Block Manager.
+   * @param \Drupal\Core\Database\Connection $connection
+   *   The default database connection.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection) {
     $this->entityTypeManager = $entity_type_manager;
@@ -138,7 +141,8 @@ class CampaignImporterImportController extends ControllerBase {
       ];
 
       $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
-      // Force the node to use Layout Builder storage or duplicate blocks will be generated.
+      // Force the node to use Layout Builder storage or duplicate blocks
+      // will be generated.
       $this->node->layout_builder__layout->setValue(new Section('layout_onecol'));
       $this->node->save();
     }
@@ -375,7 +379,7 @@ class CampaignImporterImportController extends ControllerBase {
    * @return \Drupal\layout_builder\SectionComponent
    *   The new layout builder section component.
    */
-  protected function createSectionContent($block, string $region) {
+  protected function createSectionContent(BlockContentInterface $block, string $region) {
 
     // Section Block plugin configuration.
     // For the plug label we remove the nid from the block label.

@@ -54,15 +54,17 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   if ($this_route == 'layout_builder.overrides.node.view') {
     $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
   }
-  // Only show manual override checkbox if there is a teaser block and it has been populated.
+  // Only show manual override checkbox if there is a teaser block
+  // and it has been populated.
   $node = \Drupal::routeMatch()->getParameter('node');
   if (!empty($node)) {
     if (isset($node->layout_builder__layout)) {
       $layout = $node->layout_builder__layout;
-      foreach($layout->getSections() as $section) {
+      foreach ($layout->getSections() as $section) {
         foreach ($section->getComponents() as $component) {
           if ($component->getPluginId() == 'inline_block:article_teasers_by_topic') {
-            // The block is there and has been saved, so enable the manual override checkbox.
+            // The block is there and has been saved, so enable the
+            // manual override checkbox.
             $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_update_teasers_css';
           }
         }

@@ -1,5 +1,5 @@
 name: 'NIDirect News'
 type: module
 description: 'Custom code to present news content'
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 package: 'NIDirect'

@@ -1,7 +1,7 @@
 name: 'NI Direct Search'
 type: module
 description: 'Search customisations for NI Direct'
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 package: 'NIDirect'
 dependencies:
   - search_api_spellcheck

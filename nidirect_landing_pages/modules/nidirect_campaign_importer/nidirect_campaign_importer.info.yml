@@ -1,9 +1,8 @@
-name: 'NIDirect Landing Pages'
+name: 'NIDirect Campaign Importer'
 type: module
-description: 'NIDirect Landing page functions and overrides'
+description: 'Import Drupal 7 campaign pages as landing pages.'
 core_version_requirement: ^8.8 || ^9
 package: 'NIDirect'
 dependencies:
-  - drupal:shs
   - drupal:layout_builder
   - drupal:block

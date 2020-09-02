@@ -3,3 +3,6 @@ services:
     class: Drupal\nidirect_landing_pages\Routing\LandingPagesRouteSubscriber
     tags:
       - { name: event_subscriber }
+  nidirect_landing_pages.layout_builder_block_manager:
+    class: Drupal\nidirect_landing_pages\LayoutBuilderBlockManager
+    arguments: ['@entity_type.manager', '@database']

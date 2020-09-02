@@ -1,7 +1,7 @@
 name: 'NIDirect Contacts'
 type: module
 description: 'Custom code to provide NIDirect contact search enhancements and forms'
-core: 8.x
+core_version_requirement: ^8.8 || ^9
 package: 'NIDirect'
 dependencies:
   - drupal:block

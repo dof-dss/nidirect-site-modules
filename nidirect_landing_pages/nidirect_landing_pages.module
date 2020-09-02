@@ -10,9 +10,11 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\Language;
 use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
+use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\Entity\Redirect;
+use Drupal\taxonomy\Entity\Term;
 
 /**
  * Implements hook_entity_insert().
@@ -43,133 +45,29 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_ENTITY_TYPE_prepare_form().
- */
-function nidirect_landing_pages_node_prepare_form(EntityInterface $entity, string $operation, FormStateInterface $form_state) {
-  // Prepopulate the 'field_listing' paragraphs field on landing pages
-  // when the user checks 'manually control listing'.
-  // Only do this for landing pages.
-  if ($entity->getType() != 'landing_page') {
-    return;
-  }
-
-  // Has this hook been invoked by ajax ?
-  $user_input = $form_state->getUserInput();
-  if (count($user_input) > 0) {
-    // Don't bother unless user has checked 'manual control'.
-    if (isset($user_input['field_manually_control_listing'])
-      && ($user_input['field_manually_control_listing'] == 0)) {
-      return;
-    }
-    if (!isset($user_input['field_manually_control_listing'])) {
-      return;
-    }
-  }
-  else {
-    // Not ajax, do nothing.
-    return;
-  }
-
-  // Can't do anything unless a subtheme has been selected.
-  if (isset($user_input['field_subtheme']) && !empty($user_input['field_subtheme'])) {
-    $subtheme = $user_input['field_subtheme'];
-  }
-  else {
-    return;
-  }
-
-  // Get a list of terms and articles that match this subtheme.
-  $teasers = nidirect_landing_pages_article_teasers($subtheme, $entity->id());
-
-  // Populate field_listing with paragraphs.
-  $langcode = $form_state->get('langcode');
-  $paras = [];
-  foreach ($teasers as $title => $atts) {
-    $paragraph = Paragraph::create([
-      'type' => $atts['type'],
-      'langcode' => $langcode,
-      $atts['field'] => ['target_id' => $atts['target_id']],
-    ]);
-    $paragraph->save();
-    $paras[] = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
-  }
-  $entity->field_listing = $paras;
-}
-
-/**
- * Utility function to get teasers.
- */
-function nidirect_landing_pages_article_teasers($tid, $nid_to_exclude) {
-  $results = [];
-  // Get a list of article teasers by term.
-  $results = nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude);
-  // Get a list of article teasers by topic.
-  $results += nidirect_landing_pages_get_article_teasers_by_topic($tid);
-  // Alpha sort.
-  ksort($results);
-  return $results;
-}
-
-/**
- * Utility function to get teasers by term.
- */
-function nidirect_landing_pages_get_article_teasers_by_term($tid, $nid_to_exclude) {
-  // Render the 'articles by term' view and process the results.
-  $results = [];
-  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
-  foreach ($articles_view['view_build']['#view']->result as $row) {
-    // This will be a link to an article.
-    if ($nid_to_exclude != $row->nid) {
-      $results[strtolower($row->_entity->getTitle())] = [
-        'type' => 'article_teaser',
-        'field' => 'field_article',
-        'target_id' => $row->nid,
-      ];
-    }
-  }
-  return $results;
-}
-
-/**
- * Utility function to get teasers by topic.
- */
-function nidirect_landing_pages_get_article_teasers_by_topic($tid) {
-  $results = [];
-  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderRoot($articles_view);
-  foreach ($articles_view['view_build']['#view']->result as $row) {
-    // This will be a link to a taxonomy term.
-    $results[strtolower($row->_entity->getName())] = [
-      'type' => 'term_teaser',
-      'field' => 'field_term',
-      'target_id' => $row->tid,
-    ];
-  }
-  return $results;
-}
-
-/**
  * Implements hook_page_attachments().
  */
 function nidirect_landing_pages_page_attachments(array &$attachments) {
   // Add landing page js if we are creating or editing
   // a landing page node.
-  $add_js = FALSE;
-  if (\Drupal::service('router.admin_context')->isAdminRoute()) {
-    $this_route = \Drupal::routeMatch()->getRouteName();
-    if ($this_route == 'node.add') {
-      $node_type = \Drupal::routeMatch()->getParameter('node_type');
-      if ($node_type->get('type') == 'landing_page') {
-        // We are adding a landing page, add js to handle special behaviour.
-        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
-      }
-    }
-    elseif ($this_route == 'entity.node.edit_form') {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      if (is_object($node) && ($node instanceof Node) && ($node->getType() == 'landing_page')) {
-        // We are editing a landing page, add js to handle special behaviour.
-        $attachments['#attached']['library'][] = 'nidirect_landing_pages/landing_listing';
+  $this_route = \Drupal::routeMatch()->getRouteName();
+  if ($this_route == 'layout_builder.overrides.node.view') {
+    $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
+  }
+  // Only show manual override checkbox if there is a teaser block
+  // and it has been populated.
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (!empty($node)) {
+    if (isset($node->layout_builder__layout)) {
+      $layout = $node->layout_builder__layout;
+      foreach ($layout->getSections() as $section) {
+        foreach ($section->getComponents() as $component) {
+          if ($component->getPluginId() == 'inline_block:article_teasers_by_topic') {
+            // The block is there and has been saved, so enable the
+            // manual override checkbox.
+            $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_update_teasers_css';
+          }
+        }
       }
     }
   }
@@ -187,34 +85,9 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
       $msg .= "/information-and-services/motoring there will be a link to this page labelled 'Road Safety'.";
       $form['field_subtheme']['widget']['#description'] = $msg;
     }
-    // Only show 'Listing' field if 'manually control listing'
-    // checkbox has been checked.
-    $form['field_listing']['#states'] = ['visible' => [':input[name="field_manually_control_listing[value]"]' => ['checked' => TRUE]]];
-    // Add ajax to the 'manually control listing' checkbox.
-    if (isset($form['field_manually_control_listing'])) {
-      $form['field_manually_control_listing']['widget']['value']['#ajax'] = [
-        'callback' => 'nidirect_landing_pages_populate_listing',
-        'event' => 'change',
-        'wrapper' => 'edit-field-listing-wrapper',
-      ];
-    }
     // Add a validate handler to detect any duplicates.
     $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
-}
-
-/**
- * Utility Ajax function.
- */
-function nidirect_landing_pages_populate_listing(array &$form, FormStateInterface $form_state) {
-  // The main purpose of this is to make sure that
-  // nidirect_common_node_prepare_form is called.
-  if (!$form_state->getValue('field_manually_control_listing')['value']) {
-    // If 'manual control' checkbox is unchecked, make sure
-    // that listing field is not shown.
-    return ['#markup' => ''];
-  }
-  return $form['field_listing'];
 }
 
 /**
@@ -222,16 +95,95 @@ function nidirect_landing_pages_populate_listing(array &$form, FormStateInterfac
  */
 function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'node') {
+  if ($entity->getEntityTypeId() == 'block_content') {
     if ($entity->hasField('field_manually_control_listing')) {
       $manual_field = $entity->get('field_manually_control_listing');
       if ($manual_field->getValue()[0]['value'] == 0) {
-        // If 'manually control listing' is un-checked ensure
-        // that no listings are saved.
-        $entity->set('field_listing', NULL);
+        // Update the list of teasers on every save if manual
+        // control has not been selected.
+        $node = \Drupal::routeMatch()->getParameter('node');
+        if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+          // Get a list of article teasers by term.
+          if (!empty($node->id())) {
+            $results = _retrieve_article_teasers_by_term($node->field_subtheme->target_id, $node->id());
+          }
+          if (!empty(!empty($node->field_subtheme->target_id))) {
+            $results += _retrieve_article_teasers_by_topic($node->field_subtheme->target_id);
+          }
+        }
+        // Sort entries alphabetically (regardless of type).
+        ksort($results);
+        $paras = [];
+        foreach ($results as $result) {
+          $paras[] = $result;
+        }
+        $entity->field_article_teasers = $paras;
       }
     }
   }
+}
+
+/**
+ * Utility function to retrieve 'articles by term' view.
+ */
+function _retrieve_article_teasers_by_term(int $tid, int $current_nid) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $this_result = [];
+    // Exclude the current page from the list.
+    if ($row->nid == $current_nid) {
+      continue;
+    }
+    // This will be a link to an article.
+    $paragraph = Paragraph::create([
+      'type' => 'article_teaser',
+      'langcode' => 'en',
+      'field_article' => ['target_id' => $row->nid],
+    ]);
+    $paragraph->save();
+    $this_result = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getTitle());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $this_result;
+  }
+  return $results;
+}
+
+/**
+ * Utility function to retrieve 'site subtopics' view.
+ */
+function _retrieve_article_teasers_by_topic(int $tid) {
+  // Render the 'site subtopics' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $this_result = [];
+    // This will be a link to a taxonomy term.
+    $paragraph = Paragraph::create([
+      'type' => 'term_teaser',
+      'langcode' => 'en',
+      'field_term' => ['target_id' => $row->tid],
+    ]);
+    $paragraph->save();
+    $this_result = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getName());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $this_result;
+  }
+  return $results;
 }
 
 /**
@@ -274,11 +226,8 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
       '@landing_page' => \Drupal::service('renderer')->render($link),
       '@term_name' => $term->label(),
     ]);
-
     $form_state->setErrorByName('field_subtheme', $message);
-
   }
-
 }
 
 /**
@@ -371,4 +320,229 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
       );
     }
   }
+}
+
+/**
+ * Implements hook_preprocess_block().
+ */
+function nidirect_landing_pages_preprocess_block(array &$variables) {
+  // Preprocess the article teasers by topic block.
+  if ($variables['plugin_id'] == 'inline_block:article_teasers_by_topic') {
+    _render_article_teasers_block($variables);
+    $block_content = $variables['content']['#block_content'];
+  }
+}
+
+/**
+ * Utility function to render article teasers block.
+ */
+function _render_article_teasers_block(array &$variables) {
+  $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
+  if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
+    // Manual control has been taken, so just render the
+    // chosen teasers in the chosen order.
+    _render_article_teasers_manual_control($variables);
+  }
+  else {
+    // No manual control, so re-generate the list of teasers here.
+    _render_article_teasers_auto($variables);
+  }
+}
+
+/**
+ * Utility function to render teasers automatically.
+ */
+function _render_article_teasers_auto(array &$variables) {
+  $cache_tags = [];
+  $results = [];
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if (empty($node)) {
+    // If we are in layout builder, we may have to extract the nid from the url.
+    $page_url = \Drupal::request()->getRequestUri();
+    $matches = [];
+    if (preg_match('/node.([0-9]*)/', $page_url, $matches)) {
+      if (count($matches) > 1) {
+        $nid = $matches[1];
+        if (!empty($nid)) {
+          $node = Node::load($nid);
+        }
+      }
+    }
+  }
+  if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+    // Get a list of article teasers by term.
+    if (!empty($node->id())) {
+      $results = _render_article_teasers_by_term($node->field_subtheme->target_id, $node->id(), $cache_tags);
+    }
+    // Add in a list of article teasers by topic.
+    $results += _render_article_teasers_by_topic($node->field_subtheme->target_id, $cache_tags);
+    // Sort entries alphabetically (regardless of type).
+    ksort($results);
+    // Remove 'key' that was used internally.
+    foreach ($results as $key => $val) {
+      unset($results[$key]['key']);
+    }
+  }
+  $variables['teasers'] = $results;
+  $variables['teasers']['#cache'] = [
+    'tags' => $cache_tags,
+  ];
+}
+
+/**
+ * Utility function to render teasers under manual control.
+ */
+function _render_article_teasers_manual_control(array &$variables) {
+  $cache_tags = [];
+  $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
+  $teasers = [];
+  foreach ($teaser_list as $teaser) {
+    $paragraph_id = $teaser->get('target_id')->getValue();
+    $paragraph = Paragraph::load($paragraph_id);
+    $this_teaser = [];
+    $paragraph_type = $paragraph->getType();
+    if ($paragraph_type == 'article_teaser') {
+      // Load up the article node and extract display details.
+      $this_teaser = _render_article_teaser($paragraph, $cache_tags);
+    }
+    elseif ($paragraph_type == 'term_teaser') {
+      // Load up the taxonomy term and extract display details.
+      $this_teaser = _render_term_teaser($paragraph, $cache_tags);
+    }
+    $teasers[] = $this_teaser;
+  }
+  $variables['teasers'] = $teasers;
+  $variables['teasers']['#cache'] = [
+    'tags' => $cache_tags,
+  ];
+}
+
+/**
+ * Utility function to render one article teaser.
+ */
+function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
+  $this_teaser = [];
+  $article = $paragraph->get('field_article');
+  if (!empty($article)) {
+    $nid = $article->getValue()[0]['target_id'];
+    // Add cache tag for this article.
+    $cache_tags[] = 'node:' . $nid;
+    $node = Node::load($nid);
+    if (!empty($node)) {
+      $this_teaser['title_link'] = [
+        '#type' => 'link',
+        '#title' => $node->getTitle(),
+        '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
+      ];
+      $this_teaser['more_link'] = [
+        '#type' => 'link',
+        '#title' => '... ' . t('more'),
+        '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
+      ];
+      $this_teaser['summary_text'] = ['#markup' => $node->get('field_summary')->getValue()[0]['value']];
+    }
+  }
+  return $this_teaser;
+}
+
+/**
+ * Utility function to render one term teaser.
+ */
+function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
+  $this_teaser = [];
+  $term_field = $paragraph->get('field_term');
+  $tid = $term_field->getValue()[0]['target_id'];
+  $term = Term::load($tid);
+  // Add cache tag for this term.
+  $cache_tags[] = 'taxonomy_term:' . $tid;
+  if (!empty($term)) {
+    $this_teaser['title_link'] = [
+      '#type' => 'link',
+      '#title' => $term->getName(),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $tid]),
+    ];
+    $this_teaser['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $tid]),
+    ];
+    $this_teaser['summary_text'] = ['#markup' => $term->get('field_teaser')->getValue()[0]['value']];
+  }
+  return $this_teaser;
+}
+
+/**
+ * Utility function to render 'articles by term' view.
+ */
+function _render_article_teasers_by_term(int $tid, int $current_nid, array &$cache_tags) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderPlain($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $this_result = [];
+    // Exclude the current page from the list.
+    if ($row->nid == $current_nid) {
+      continue;
+    }
+    // This will be a link to an article.
+    $this_result['title_link'] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getTitle(),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+    ];
+    $this_result['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+    ];
+    $this_result['summary_text'] = ['#markup' => $row->_entity->field_summary->value];
+    $this_result['key'] = 'a:' . $row->nid;
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getTitle());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $this_result;
+    // Add cache tag for each article.
+    $cache_tags[] = 'node:' . $row->nid;
+  }
+  return $results;
+}
+
+/**
+ * Utility function to render 'site subtopics' view.
+ */
+function _render_article_teasers_by_topic(int $tid, array &$cache_tags) {
+  // Render the 'site subtopics' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
+  \Drupal::service('renderer')->renderPlain($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+    $thisresult = [];
+    // This will be a link to a taxonomy term.
+    $thisresult['title_link'] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getName(),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+    ];
+    $thisresult['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+    ];
+    $thisresult['summary_text'] = ['#markup' => $row->_entity->field_teaser->value];
+    $thisresult['key'] = 't:' . $row->tid;
+    // Place in an array keyed by lower case title (for sorting).
+    $title = strtolower($row->_entity->getName());
+    // Remove HTML.
+    $title = strip_tags($title);
+    // Now remove non-alpha chars.
+    $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
+    $results[$title] = $thisresult;
+    // Add cache tag for each listed term.
+    $cache_tags[] = 'taxonomy_term:' . $row->tid;
+  }
+  return $results;
 }

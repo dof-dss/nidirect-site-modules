@@ -9,6 +9,7 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
+use Drupal\Core\Render\Markup;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
@@ -147,6 +148,29 @@ function nidirect_common_preprocess_views_view(&$variables) {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
+
+  // Override misleading layout builder notice.
+  if ($entity->bundle() == 'landing_page') {
+    // (Layout builder is only used on landing pages for now, this
+    // may be expanded to other content types later.)
+    $messages = \Drupal::messenger()->messagesByType('status');
+    // Retrieve all status messages and delete them.
+    \Drupal::messenger()->deleteByType('status');
+    foreach ($messages as $message) {
+      $message_text = $message->jsonSerialize();
+      if ($message_text == 'The layout override has been saved.') {
+        // Change text of this message.
+        $link_object = Link::createFromRoute($entity->getTitle(),
+          'entity.node.canonical',
+          ['node' => $entity->id()],
+          ['attributes' => ['rel' => 'nofollow']]);
+        $message_text = t('Landing page <em class="placeholder">@link</em> has been updated.', ['@link' => $link_object->toString()]);
+      }
+      // Add the status message back in.
+      $newmarkup = Markup::create($message_text);
+      \Drupal::messenger()->addMessage($newmarkup);
+    }
+  }
 
   if ($entity->bundle() == 'publication' && $view_mode == 'search_result') {
     $build['field_published_date']['#title'] = t('Published');

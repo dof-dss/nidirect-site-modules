@@ -53,7 +53,6 @@ function nidirect_landing_pages_page_attachments(array &$attachments) {
   $this_route = \Drupal::routeMatch()->getRouteName();
   if ($this_route == 'layout_builder.overrides.node.view') {
     $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers';
-    $attachments['#attached']['library'][] = 'nidirect_landing_pages/lb_config_teasers_css';
   }
   // Only show manual override checkbox if there is a teaser block and it has been populated.
   $node = \Drupal::routeMatch()->getParameter('node');

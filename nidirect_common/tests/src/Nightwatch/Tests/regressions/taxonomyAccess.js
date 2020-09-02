@@ -15,7 +15,7 @@ module.exports = {
     const termName = 'Help';
 
     browser.expect.element('nav ul.nav-menu > li:nth-child(4)').text.to.equal(termName);
-    browser.expect.element('h1.page-title').text.to.equal(termName);
+    browser.expect.element('#main-content h1').text.to.not.equal('Page not found');
 
   }
 

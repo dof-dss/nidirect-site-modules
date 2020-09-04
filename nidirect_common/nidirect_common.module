@@ -314,6 +314,7 @@ function nidirect_common_form_taxonomy_term_form_alter(&$form, FormStateInterfac
   // Relation is fixed with a weight of 10, see https://www.drupal.org/project/drupal/issues/2655328.
   // So we want to change this to something more in line with the broader weight on other form elements.
   $form['relations']['#weight'] = 1;
+  $form['relations']['#description'] = t("The primary parent theme where a link to this theme will appear. Sets the breadcrumb trail shown on the theme landing page.");
 
   $form['description']['widget'][0]['#description'] = t("Optional main body content.  Generally not used as it is preferred to show an automatically generated list of the theme's content.");
 

@@ -294,6 +294,37 @@ function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_
 /**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
+function nidirect_common_form_taxonomy_term_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form['vid']['#value'] != 'site_themes') {
+    return;
+  }
+
+  // Only affect terms from the Site themes vocab.
+  if (NestedArray::keyExists($form, ['name', 'widget', 0, 'value'])) {
+    $title_description =& $form['name']['widget'][0]['value']['#description'];
+    if (empty($title_description)) {
+      $title_description = t('
+          Used as the theme title on landing pages, and in search results and breadcrumb trails.
+          Must be descriptive and concise (60 characters or less).
+        ');
+      $form['name']['widget'][0]['value']['#description'] = $title_description;
+    }
+  }
+
+  // Relation is fixed with a weight of 10, see https://www.drupal.org/project/drupal/issues/2655328.
+  // So we want to change this to something more in line with the broader weight on other form elements.
+  $form['relations']['#weight'] = 1;
+
+  $form['description']['widget'][0]['#description'] = t("Optional main body content.  Generally not used as it is preferred to show an automatically generated list of the theme's content.");
+
+  if (!empty($form['flag']['hide_theme'])) {
+    $form['flag']['hide_theme']['#description'] = t('Prevent links to this theme appearing in navigation menus and on landing pages.');
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
 
   // Add a description to the title field.  This cannot be done in the UI.

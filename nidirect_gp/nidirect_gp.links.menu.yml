@@ -10,3 +10,9 @@ gp.add_page:
   title: 'Add GP'
   route_name: entity.gp.add_form
   parent: system.admin_content
+
+gp.list:
+  title: 'GP list'
+  description: 'List GPs'
+  route_name: view.gp_list.page_1
+  parent: 'nidirect.admin_config'

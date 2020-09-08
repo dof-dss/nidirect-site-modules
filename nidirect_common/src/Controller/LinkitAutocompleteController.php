@@ -10,7 +10,6 @@ namespace Drupal\nidirect_common\Controller;
  * as a workaround for no preprocessing or service replacement options.
  */
 
-use Drupal\Component\Utility\Unicode;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\nidirect_common\LinkitSuggestionManager;
@@ -32,7 +31,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    *
    * @var \Drupal\nidirect_common\LinkitSuggestionManager
    */
-  protected $resultManager;
+  protected $suggestionManager;
 
   /**
    * The linkit profile.
@@ -51,7 +50,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    */
   public function __construct(EntityStorageInterface $linkit_profile_storage, LinkitSuggestionManager $resultManager) {
     $this->linkitProfileStorage = $linkit_profile_storage;
-    $this->resultManager = $resultManager;
+    $this->suggestionManager = $resultManager;
   }
 
   /**
@@ -60,7 +59,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager')->getStorage('linkit_profile'),
-      $container->get('linkit.result_manager')
+      $container->get('linkit.suggestion_manager')
     );
   }
 
@@ -78,15 +77,23 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    *   A JSON response containing the autocomplete suggestions.
    */
   public function autocomplete(Request $request, string $linkit_profile_id) {
+
     $this->linkitProfile = $this->linkitProfileStorage->load($linkit_profile_id);
-    $string = mb_strtolower($request->query->get('q'));
+    $string = $request->query->get('q');
 
-    $matches = $this->resultManager->getResults($this->linkitProfile, $string);
+    $suggestionCollection = $this->suggestionManager->getSuggestions($this->linkitProfile, mb_strtolower($string));
 
-    $json_object = new \stdClass();
-    $json_object->matches = $matches;
+    /*
+     * If there are no suggestions from the matcher plugins, we have to add a
+     * special suggestion that have the same path as the given string so users
+     * can select it and use it anyway. This is a common use case with external
+     * links.
+     */
+    if (!count($suggestionCollection->getSuggestions()) && !empty($string)) {
+      $suggestionCollection = $this->suggestionManager->addUnscathedSuggestion($suggestionCollection, $string);
+    }
 
-    return new JsonResponse($json_object);
+    return new JsonResponse($suggestionCollection);
   }
 
 }

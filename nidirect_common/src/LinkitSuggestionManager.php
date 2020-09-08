@@ -7,6 +7,7 @@ namespace Drupal\nidirect_common;
  * Contains \Drupal\nidirect_common\LinkitSuggestionManager.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
 use Drupal\linkit\Suggestion\DescriptionSuggestion;
@@ -41,6 +42,17 @@ class LinkitSuggestionManager extends SuggestionManager {
       $suggestion->setLabel($this->t('Front page'));
       $suggestion->setDescription($this->t('The front page for this site'));
       $suggestion->setPath(Url::fromRoute('<front>')->toString());
+
+      $suggestions->addSuggestion($suggestion);
+    }
+
+    // Check for an e-mail address and return as mail-to link if appropriate.
+    if (filter_var($search_string, FILTER_VALIDATE_EMAIL)) {
+      $suggestion = new DescriptionSuggestion();
+      $suggestion->setGroup($this->t('E-mail'));
+      $suggestion->setLabel($this->t('E-mail @email', ['@email' => $search_string]));
+      $suggestion->setDescription($this->t('Creates a mailto link for e-mail @email', ['@email' => $search_string]));
+      $suggestion->setPath('mailto:' . Html::escape($search_string));
 
       $suggestions->addSuggestion($suggestion);
     }

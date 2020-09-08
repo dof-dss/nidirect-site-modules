@@ -57,6 +57,11 @@ class LinkitSuggestionManager extends SuggestionManager {
       $suggestions->addSuggestion($suggestion);
     }
 
+    // Perform the standard search.
+    foreach ($linkitProfile->getMatchers() as $plugin) {
+      $suggestions->addSuggestions($plugin->execute($search_string));
+    }
+
     return $suggestions;
   }
 

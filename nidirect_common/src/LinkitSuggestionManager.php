@@ -28,8 +28,8 @@ class LinkitSuggestionManager extends SuggestionManager {
     // Display for empty searches.
     if (empty(trim($search_string))) {
       $suggestion = new DescriptionSuggestion();
-      $suggestion->setLabek('No content results');
-      $suggestion->setDescription('Please enter search terms');
+      $suggestion->setLabek($this->t('No content results'));
+      $suggestion->setDescription($this->t('Please enter search terms'));
 
       $suggestions->addSuggestion($suggestion);
     }
@@ -37,9 +37,9 @@ class LinkitSuggestionManager extends SuggestionManager {
     // Special for link to front page.
     if (strpos($search_string, 'front') !== FALSE) {
       $suggestion = new DescriptionSuggestion();
-      $suggestion->setGroup('System');
-      $suggestion->setLabel('Front page');
-      $suggestion->setDescription(' The front page for this site');
+      $suggestion->setGroup($this->t('System'));
+      $suggestion->setLabel($this->t('Front page'));
+      $suggestion->setDescription($this->t('The front page for this site'));
       $suggestion->setPath(Url::fromRoute('<front>')->toString());
 
       $suggestions->addSuggestion($suggestion);

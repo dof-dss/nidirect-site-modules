@@ -9,7 +9,7 @@ namespace Drupal\nidirect_common;
 
 use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
-use Drupal\linkit\Suggestion\SimpleSuggestion;
+use Drupal\linkit\Suggestion\DescriptionSuggestion;
 use Drupal\linkit\Suggestion\SuggestionCollection;
 use Drupal\linkit\SuggestionManager;
 
@@ -27,18 +27,19 @@ class LinkitSuggestionManager extends SuggestionManager {
 
     // Display for empty searches.
     if (empty(trim($search_string))) {
-      $suggestion = new SimpleSuggestion();
-      $suggestion->setGroup('No content results');
-      $suggestion->setLabel('Please enter search terms');
+      $suggestion = new DescriptionSuggestion();
+      $suggestion->setLabek('No content results');
+      $suggestion->setDescription('Please enter search terms');
 
       $suggestions->addSuggestion($suggestion);
     }
 
     // Special for link to front page.
     if (strpos($search_string, 'front') !== FALSE) {
-      $suggestion = new SimpleSuggestion();
+      $suggestion = new DescriptionSuggestion();
       $suggestion->setGroup('System');
-      $suggestion->setLabel('Front page: The front page for this site.');
+      $suggestion->setLabel('Front page');
+      $suggestion->setDescription(' The front page for this site');
       $suggestion->setPath(Url::fromRoute('<front>')->toString());
 
       $suggestions->addSuggestion($suggestion);

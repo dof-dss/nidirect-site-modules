@@ -17,10 +17,10 @@ class NidirectCommonServiceProvider extends ServiceProviderBase {
    * {@inheritdoc}
    */
   public function alter(ContainerBuilder $container) {
-    // Overrides linkit.result_manager class as return
+    // Overrides linkit.suggestion_manager class as return
     // output cannot be preprocessed.
-    $definition = $container->getDefinition('linkit.result_manager');
-    $definition->setClass('Drupal\nidirect_common\LinkitResultManager');
+    $definition = $container->getDefinition('linkit.suggestion_manager');
+    $definition->setClass('Drupal\nidirect_common\LinkitSuggestionManager');
   }
 
 }

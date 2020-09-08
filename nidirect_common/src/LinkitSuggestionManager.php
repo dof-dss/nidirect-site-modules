@@ -10,11 +10,12 @@ namespace Drupal\nidirect_common;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Url;
 use Drupal\linkit\ProfileInterface;
+use Drupal\linkit\Suggestion\SuggestionCollection;
 
 /**
  * Result service to handle autocomplete matcher results.
  */
-class LinkitResultManager {
+class LinkitSuggestionManager {
 
   /**
    * Gets the results.
@@ -27,7 +28,7 @@ class LinkitResultManager {
    * @return array
    *   An array of matches.
    */
-  public function getResults(ProfileInterface $linkitProfile, string $search_string) {
+  public function getSuggestions(ProfileInterface $linkitProfile, string $search_string) {
     $matches = [];
 
     if (empty(trim($search_string))) {

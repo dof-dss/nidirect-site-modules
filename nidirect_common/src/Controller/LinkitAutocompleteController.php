@@ -13,7 +13,7 @@ namespace Drupal\nidirect_common\Controller;
 use Drupal\Component\Utility\Unicode;
 use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
-use Drupal\nidirect_common\LinkitResultManager;
+use Drupal\nidirect_common\LinkitSuggestionManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,7 +30,7 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
   /**
    * The result manager.
    *
-   * @var \Drupal\nidirect_common\LinkitResultManager
+   * @var \Drupal\nidirect_common\LinkitSuggestionManager
    */
   protected $resultManager;
 
@@ -46,10 +46,10 @@ class LinkitAutocompleteController implements ContainerInjectionInterface {
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $linkit_profile_storage
    *   The linkit profile storage service.
-   * @param \Drupal\nidirect_common\LinkitResultManager $resultManager
+   * @param \Drupal\nidirect_common\LinkitSuggestionManager $resultManager
    *   The result service.
    */
-  public function __construct(EntityStorageInterface $linkit_profile_storage, LinkitResultManager $resultManager) {
+  public function __construct(EntityStorageInterface $linkit_profile_storage, LinkitSuggestionManager $resultManager) {
     $this->linkitProfileStorage = $linkit_profile_storage;
     $this->resultManager = $resultManager;
   }

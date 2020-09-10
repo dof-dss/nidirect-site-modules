@@ -55,6 +55,24 @@ class HealthConditionsListingController extends ControllerBase {
   }
 
   /**
+   * Controller callback for the page title.
+   *
+   * Use this to examine route parameters/any other conditions
+   * and vary the string that is returned.
+   *
+   * @return string
+   *   The page title.
+   */
+  public function getTitle($route_type) {
+    if ($route_type == 'health_conditions_letter') {
+      // A letter has been selected from the A-Z.
+      $letter = \Drupal::routeMatch()->getParameter('letter');
+      return t('Health conditions under :letter', [':letter' => strtoupper($letter)]);
+    }
+    return t('Health conditions A to Z');
+  }
+
+  /**
    * Content when filtered by letter.
    *
    * @return array

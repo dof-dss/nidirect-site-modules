@@ -16,3 +16,9 @@ gp.list:
   description: 'List GPs'
   route_name: view.gp_list.page_1
   parent: 'nidirect.admin_config'
+
+gp.practice.list:
+  title: 'GP practice list'
+  description: 'List GP practices'
+  route_name: view.gp_practice_list.page_1
+  parent: 'nidirect.admin_config'

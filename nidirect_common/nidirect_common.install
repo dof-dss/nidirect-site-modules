@@ -14,7 +14,8 @@ use Drupal\user\Entity\User;
  */
 function nidirect_common_install() {
   // Create some test users for the Nightwatch tests that will come along later.
-  $name_list = ['_news_super' => 'news_supervisor',
+  $name_list = [
+    '_news_super' => 'news_supervisor',
     '_gp_author' => 'gp_author_user',
     '_gp_super' => 'gp_supervisor_user',
     '_apps' => 'apps_user',
@@ -57,7 +58,8 @@ function nidirect_common_install() {
  */
 function nidirect_common_uninstall() {
   // Delete any users created in hook_install.
-  $name_list = ['_news_super' => 'news_supervisor',
+  $name_list = [
+    '_news_super' => 'news_supervisor',
     '_gp_author' => 'gp_author_user',
     '_gp_super' => 'gp_supervisor_user',
     '_apps' => 'apps_user',

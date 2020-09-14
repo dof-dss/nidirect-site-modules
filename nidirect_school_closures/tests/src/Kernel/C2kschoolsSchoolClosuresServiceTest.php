@@ -13,16 +13,22 @@ use Drupal\KernelTests\KernelTestBase;
 class C2kschoolsSchoolClosuresServiceTest extends KernelTestBase {
 
   /**
+   * School closure service.
+   *
    * @var mixed
    */
   protected $closureService;
 
   /**
+   * Set Strict config Schema status.
+   *
    * @var bool
    */
   protected $strictConfigSchema;
 
   /**
+   * Machine name of module to test.
+   *
    * @var array
    */
   public static $modules = [

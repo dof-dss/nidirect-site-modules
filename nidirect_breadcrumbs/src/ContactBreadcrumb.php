@@ -80,7 +80,10 @@ class ContactBreadcrumb implements BreadcrumbBuilderInterface {
     }
 
     // Also check for contacts listing/search pages.
-    if (in_array($route_name, ['nidirect_contacts.default', 'nidirect_contacts.letter'])) {
+    if (in_array($route_name, [
+      'nidirect_contacts.default',
+      'nidirect_contacts.letter',
+    ])) {
       $match = TRUE;
     }
 

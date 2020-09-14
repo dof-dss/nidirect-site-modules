@@ -68,7 +68,11 @@ class CampaignImporterDashboardController extends ControllerBase {
             '#type' => 'html_tag',
             '#tag' => 'span',
             '#value' => $landing_page->status ? 'Yes' : 'No',
-            '#attributes' => ['style' => ['font-weight: bold;', $landing_page->status ? 'color: green' : 'color: red']],
+            '#attributes' => [
+              'style' => [
+                'font-weight: bold;', $landing_page->status ? 'color: green' : 'color: red',
+              ],
+            ],
           ],
         ],
         'drupal7' => Link::fromTextAndUrl('View', Url::fromUri('https://www.nidirect.gov.uk/node/' . $landing_page->nid)),
@@ -81,7 +85,10 @@ class CampaignImporterDashboardController extends ControllerBase {
           ['nid' => $landing_page->nid],
           [
             'query' => [$this->getDestinationArray(), 'op' => 'update'],
-            'attributes' => ['class' => 'button', 'title' => 'This will overwrite any existing content'],
+            'attributes' => [
+              'class' => 'button',
+              'title' => 'This will overwrite any existing content',
+            ],
           ]
         );
       }

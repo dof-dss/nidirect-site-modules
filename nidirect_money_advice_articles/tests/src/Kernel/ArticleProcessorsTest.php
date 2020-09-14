@@ -14,16 +14,22 @@ use Drupal\KernelTests\KernelTestBase;
 class ArticleProcessorsTest extends KernelTestBase {
 
   /**
+   * Set Strict config Schema status.
+   *
    * @var bool
    */
   protected $strictConfigSchema;
 
   /**
+   * Article processing methods.
+   *
    * @var \Drupal\nidirect_money_advice_articles\ArticleProcessors
    */
   protected $articleProcessor;
 
   /**
+   * Module machine name.
+   *
    * @var array
    */
   public static $modules = [

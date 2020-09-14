@@ -13,7 +13,7 @@ use Drupal\Component\Serialization\Json;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class ColdWeatherPaymentCheckerForm.
+ * Form for checking cold weather payments.
  */
 class ColdWeatherPaymentCheckerForm extends FormBase {
 
@@ -74,7 +74,10 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['container'] = ['#type' => 'container', '#attributes' => ['class' => ['container-inline']]];
+    $form['container'] = [
+      '#type' => 'container',
+      '#attributes' => ['class' => ['container-inline']],
+    ];
     $form['container']['postcode'] = [
       '#type' => 'number',
       '#maxlength' => 2,
@@ -204,7 +207,10 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $payments = [];
       foreach ($data['payments_triggered'] as $trigger) {
         if ($trigger['payment_granted']) {
-          $payments[] = ['date_start' => $trigger['date_start'], 'date_end' => $trigger['date_end']];
+          $payments[] = [
+            'date_start' => $trigger['date_start'],
+            'date_end' => $trigger['date_end'],
+          ];
         }
       }
 

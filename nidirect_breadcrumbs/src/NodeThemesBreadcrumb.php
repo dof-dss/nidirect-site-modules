@@ -111,7 +111,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     // Fetch the node or preview node object.
     $node = $route_match->getParameter('node') ?? $route_match->getParameter('node_preview');
 
-    // Return early if it's a supporting/secondary node type: feature/featured_content_list.
+    // Return early if it's a supporting/secondary node type:
+    // feature/featured_content_list.
     if (preg_match('/^feature/', $node->getType())) {
       return $breadcrumb;
     }

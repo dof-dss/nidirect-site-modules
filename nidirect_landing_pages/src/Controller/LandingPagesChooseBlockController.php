@@ -7,7 +7,7 @@ use Drupal\layout_builder\SectionStorageInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class LandingPagesChooseBlockController.
+ * Controller to alter display of Layout builder Block form.
  */
 class LandingPagesChooseBlockController extends ChooseBlockController {
   /**

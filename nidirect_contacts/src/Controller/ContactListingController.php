@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class ContactListingController.
+ * Controller for display Contact A-Z block and View.
  */
 class ContactListingController extends ControllerBase {
 

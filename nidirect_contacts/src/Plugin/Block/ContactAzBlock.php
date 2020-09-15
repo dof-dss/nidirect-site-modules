@@ -4,7 +4,6 @@ namespace Drupal\nidirect_contacts\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Link;
-use Drupal\Core\Url;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -27,6 +26,8 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
   protected $routeMatch;
 
   /**
+   * ContactAzBlock constructor.
+   *
    * @param array $configuration
    *   Site configuration.
    * @param string $plugin_id
@@ -61,7 +62,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     $links = [];
     $skip_link = '';
 
-    $title = $this->t('Find contacts beginning with') . '...';
+    $title = $this->t('Find contacts beginning with...');
 
     if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');

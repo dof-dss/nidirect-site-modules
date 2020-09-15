@@ -6,7 +6,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 
 /**
- * Class GpSettingsForm.
+ * Form for managing GP entity settings.
  *
  * @ingroup nidirect_gp
  */

@@ -3,35 +3,41 @@
 namespace Drupal\nidirect_school_closures;
 
 /**
- * SchoolClosure class.
+ * Class for managing individual school closures.
  */
 class SchoolClosure {
 
   /**
+   * The name of the school.
+   *
    * @var string
    */
   protected $name;
 
   /**
+   * Alternative school name (without diacritics).
+   *
    * @var string
    */
   protected $altName;
 
   /**
-   * @var string
-   */
-
-  /**
+   * The location of the school.
+   *
    * @var string
    */
   protected $location;
 
   /**
+   * DateTime the closure is in effect.
+   *
    * @var \DateTime
    */
   protected $date;
 
   /**
+   * Text reason for the closure.
+   *
    * @var string
    */
   protected $reason;

@@ -7,7 +7,7 @@ use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
- * Class InvalidateTaxonomyListCacheTags.
+ * Utility class to invalidates theme taxonomy cache tags.
  */
 class InvalidateTaxonomyListCacheTags {
 

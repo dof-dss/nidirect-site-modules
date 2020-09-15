@@ -3,4 +3,3 @@ entity.weather_station.add_form:
   title: 'Add Weather station'
   appears_on:
     - entity.weather_station.collection
-

@@ -11,7 +11,7 @@ use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Logger\LoggerChannelFactory;
 
 /**
- * Class C2kschoolsSchoolClosuresService.
+ * Implementation of SchoolClosuresService using C2k service.
  */
 class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface {
 

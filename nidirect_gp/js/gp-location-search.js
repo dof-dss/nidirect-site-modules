@@ -17,9 +17,10 @@
       function performLocationSearch(location) {
         let lat = location.coords.latitude;
         let lng = location.coords.longitude;
+        // @codingStandardsIgnoreStart
         const distance = drupalSettings.nidirect.gpSearch.maxDistance ?? 10;
-
-        let url = '/services/gp-practices?lat=' + lat +'&lng=' + lng + '&proximity=' + distance;
+        // @codingStandardsIgnoreEnd
+        let url = '/services/gp-practices?lat=' + lat + '&lng=' + lng + '&proximity=' + distance;
         window.location.href = url;
       }
 
@@ -29,8 +30,7 @@
         console.warn(`ERROR(${err.code}): ${err.message}`);
         $('#find-by-location-status').html('');
 
-        let errmsg = '' +
-          '<p>' + Drupal.t('There was a problem finding your location.') + '</p>' +
+        let errmsg = '<p>' + Drupal.t('There was a problem finding your location.') + '</p>' +
           '<p>' + Drupal.t('Try searching by entering a GP name, practice, town or postcode') + '</p>';
 
         const confirmationDialog = Drupal.dialog('<div>' + errmsg + '.</div>', {
@@ -65,7 +65,7 @@
             '</div>');
 
           $(this)
-            .find('#use_location').on('click', function() {
+            .find('#use_location').on('click', function () {
               // Update status with a ajax progress indicator (even though it's not an ajax call).
               $('#find-by-location-status').html(Drupal.theme.ajaxProgressIndicatorFullscreen());
 

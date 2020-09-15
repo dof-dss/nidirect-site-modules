@@ -3,7 +3,7 @@
 namespace Drupal\nidirect_school_closures;
 
 /**
- * Interface SchoolClosuresServiceInterface.
+ * Interface for implementing a School Closures Service.
  */
 interface SchoolClosuresServiceInterface {
 

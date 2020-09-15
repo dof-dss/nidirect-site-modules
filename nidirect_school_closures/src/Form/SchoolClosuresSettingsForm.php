@@ -15,6 +15,8 @@ class SchoolClosuresSettingsForm extends ConfigFormBase {
   const SETTINGS = 'nidirect_school_closures.settings';
 
   /**
+   * Instance of the SchoolClosureService.
+   *
    * @var \Drupal\nidirect_school_closures\SchoolClosuresServiceInterface
    */
   protected $closureService;

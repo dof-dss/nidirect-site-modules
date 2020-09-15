@@ -8,7 +8,7 @@ use Symfony\Cmf\Component\Routing\RouteObjectInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class SetParentTermForm.
+ * Form for setting the parent taxonomy term.
  */
 class SetParentTermForm extends FormBase {
 
@@ -171,7 +171,16 @@ class SetParentTermForm extends FormBase {
     }
 
     $this->getRequest()->query->remove('destination');
-    $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent_tid], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
+    $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', [
+      'vocabulary' => $form_values['vocabulary'],
+      'taxonomy_term' => $parent_tid,
+    ],
+    [
+      'query' => [
+        'highlight' => $tid,
+      ],
+      'fragment' => $tid,
+    ]);
   }
 
 }

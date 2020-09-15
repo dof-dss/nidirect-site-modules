@@ -144,7 +144,10 @@ function _retrieve_article_teasers_by_term(int $tid, int $current_nid) {
       'field_article' => ['target_id' => $row->nid],
     ]);
     $paragraph->save();
-    $this_result = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+    $this_result = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => $paragraph->getRevisionId(),
+    ];
 
     // Place in an array keyed by lower case title (for sorting).
     $title = strtolower($row->_entity->getTitle());
@@ -174,7 +177,10 @@ function _retrieve_article_teasers_by_topic(int $tid) {
       'field_term' => ['target_id' => $row->tid],
     ]);
     $paragraph->save();
-    $this_result = ['target_id' => $paragraph->id(), 'target_revision_id' => $paragraph->getRevisionId()];
+    $this_result = [
+      'target_id' => $paragraph->id(),
+      'target_revision_id' => $paragraph->getRevisionId(),
+    ];
     // Place in an array keyed by lower case title (for sorting).
     $title = strtolower($row->_entity->getName());
     // Remove HTML.

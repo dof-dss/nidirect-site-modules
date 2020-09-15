@@ -6,4 +6,3 @@ entity.weather_station.collection:
   description: 'List Weather stations'
   parent: system.admin_structure
   weight: 99
-

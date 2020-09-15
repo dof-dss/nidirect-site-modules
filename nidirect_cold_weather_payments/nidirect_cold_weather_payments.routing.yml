@@ -6,4 +6,3 @@ nidirect_cold_weather_payments.cold_weather_payment_checker_form:
     _title: 'ColdWeatherPaymentCheckerForm'
   requirements:
     _access: 'TRUE'
-  

@@ -157,16 +157,7 @@ class CampaignImporterImportController extends ControllerBase {
           $settings['label'] = 'Page banner';
           $first_section->setLayoutSettings($settings);
 
-
-          $block_config = [
-            'info' => 'Page banner',
-            'type' => 'banner_deep',
-            'langcode' => 'en',
-            'field_banner_image' => $d7_banner_fid[0],
-            'reusable' => 0,
-          ];
-
-          $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
+          $block = $this->createBlock('banner_deep', ['image' => $d7_banner_fid[0]]);
 
           $plugin_config = [
             'id' => 'inline_block:banner_deep',
@@ -208,7 +199,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -226,7 +217,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -244,7 +235,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -360,8 +351,6 @@ class CampaignImporterImportController extends ControllerBase {
    *   The machine name of the content block type.
    * @param array $content
    *   An array of content to populate the block.
-   * @param \Drupal\node\NodeInterface $node
-   *   The node this block will be added to.
    *
    * @return \Drupal\Core\Entity\EntityInterface
    *   The new content block.
@@ -370,21 +359,35 @@ class CampaignImporterImportController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createBlock(string $type, array $content, NodeInterface $node) {
+  protected function createBlock(string $type, array $content) {
 
     // Block plugin configuration.
     // Reusable set to false to prevent creation of custom block library entry.
-    $block_config = [
-      'info' => $content['title'],
-      'type' => $type,
-      'langcode' => 'en',
-      'field_body' => $content['body'],
-      'field_image' => $content['image'],
-      'field_teaser' => $content['teaser'],
-      'field_link' => $content['link'],
-      'title' => $content['title'],
-      'reusable' => 0,
-    ];
+    switch ($type) {
+      case 'card_standard':
+        $block_config = [
+          'info' => $content['title'],
+          'type' => 'card_standard',
+          'langcode' => 'en',
+          'field_body' => $content['body'],
+          'field_image' => $content['image'],
+          'field_teaser' => $content['teaser'],
+          'field_link' => $content['link'],
+          'title' => $content['title'],
+          'reusable' => 0,
+        ];
+        break;
+
+      case 'banner_deep' :
+        $block_config = [
+          'info' => 'Page banner',
+          'type' => 'banner_deep',
+          'langcode' => 'en',
+          'field_banner_image' => $content['image'],
+          'reusable' => 0,
+        ];
+        break;
+    }
 
     $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
 

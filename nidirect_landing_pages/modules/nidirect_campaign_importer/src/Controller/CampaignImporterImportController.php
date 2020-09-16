@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_campaign_importer\Controller;
 
 use Drupal\block_content\BlockContentInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Connection;
@@ -70,6 +71,13 @@ class CampaignImporterImportController extends ControllerBase {
   protected $counters;
 
   /**
+   * The UUID service.
+   *
+   * @var string
+   */
+  protected $uuidService;
+
+  /**
    * Controller constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -81,12 +89,13 @@ class CampaignImporterImportController extends ControllerBase {
    * @param \Drupal\Core\Database\Connection $connection
    *   The default database connection.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection, UuidInterface $uuid) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->request = $request->getCurrentRequest();
     $this->blockManager = $block_manager;
     $this->dbConnD8 = $connection;
+    $this->uuidService = $uuid;
     $this->counters = ['sections' => 0, 'blocks' => 0];
   }
 
@@ -98,7 +107,8 @@ class CampaignImporterImportController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
       $container->get('nidirect_landing_pages.layout_builder_block_manager'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('uuid')
     );
   }
 
@@ -153,11 +163,11 @@ class CampaignImporterImportController extends ControllerBase {
     }
 
     // Parse the body content.
-    $dom = new DOMDocument();
+    $dom = new \DOMDocument();
     $dom->strictErrorChecking = FALSE;
     $dom->preserveWhiteSpace = FALSE;
     $dom->loadHTML($d7_landing_pages['body_value']);
-    $xpath = new DOMXPath($dom);
+    $xpath = new \DOMXPath($dom);
 
     $sections = [];
 
@@ -272,7 +282,7 @@ class CampaignImporterImportController extends ControllerBase {
    * @return array
    *   An array of extract content from the DOM node.
    */
-  protected function extractDomNodeData(DOMNode $dom_node, DOMXPath $xpath) {
+  protected function extractDomNodeData(\DOMNode $dom_node, \DOMXPath $xpath) {
     $content = [];
 
     // Extract the title.
@@ -307,7 +317,7 @@ class CampaignImporterImportController extends ControllerBase {
     try {
       $image_data = json_decode($image_embed_value, FALSE, 512, JSON_THROW_ON_ERROR);
     }
-    catch (JsonException $e) {
+    catch (\JsonException $e) {
       $this->messenger()->addWarning('Unable to decode image data.');
     }
 
@@ -341,9 +351,9 @@ class CampaignImporterImportController extends ControllerBase {
   protected function createBlock(string $type, array $content, NodeInterface $node) {
 
     // Block plugin configuration.
-    // Prepend the title with the nid to make it easier to track node blocks.
+    // Reusable set to false to prevent creation of custom block library entry.
     $block_config = [
-      'info' => $node->id() . ' : ' . $content['title'],
+      'info' => $content['title'],
       'type' => $type,
       'langcode' => 'en',
       'field_body' => $content['body'],
@@ -351,12 +361,10 @@ class CampaignImporterImportController extends ControllerBase {
       'field_teaser' => $content['teaser'],
       'field_link' => $content['link'],
       'title' => $content['title'],
+      'reusable' => 0,
     ];
 
     $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
-    $block->save();
-
-    $this->blockManager->add($node, $block);
 
     // Increment the stats counter.
     $this->counters['blocks']++;
@@ -377,19 +385,17 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected function createSectionContent(BlockContentInterface $block, string $region) {
 
-    // Section Block plugin configuration.
-    // For the plug label we remove the nid from the block label.
+    // Component block plugin configuration containing
+    // content block configuration.
     $plugin_config = [
       'id' => 'inline_block:' . $block->bundle(),
       'provider' => 'layout_builder',
-      'label' => substr($block->label(), (strpos($block->label(), ': ') + 2)),
+      'label' => $block->label(),
       'label_display' => 'visible',
-      'block_revision_id' => $block->getRevisionId(),
+      'block_serialized' => serialize($block),
     ];
 
-    // Create and return a new Layout Builder Section Component using the
-    // content block and plugin configuration.
-    return new SectionComponent($block->uuid(), $region, $plugin_config);
+    return new SectionComponent($this->uuidService->generate(), $region, $plugin_config);
   }
 
 }

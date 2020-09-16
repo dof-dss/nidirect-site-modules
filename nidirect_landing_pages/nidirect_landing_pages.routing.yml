@@ -1,0 +1,7 @@
+TestLBBuilderController:
+  path: 'TestLBBuilderController'
+  defaults:
+    _title: 'TestLBBuilderController'
+    _controller: '\Drupal\nidirect_landing_pages\Controller\TestLBBuilderController::build'
+  requirements:
+    _permission: 'access content'

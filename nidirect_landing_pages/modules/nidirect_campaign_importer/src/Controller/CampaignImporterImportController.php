@@ -13,7 +13,6 @@ use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;
 use Drupal\node\NodeInterface;
 
 /**
@@ -57,13 +56,6 @@ class CampaignImporterImportController extends ControllerBase {
   protected $request;
 
   /**
-   * The Layout Builder Block Manager.
-   *
-   * @var \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager
-   */
-  protected $blockManager;
-
-  /**
    * Array of counters.
    *
    * @var array
@@ -84,16 +76,13 @@ class CampaignImporterImportController extends ControllerBase {
    *   The entity type manager.
    * @param Symfony\Component\HttpFoundation\RequestStack $request
    *   The current request stack.
-   * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
-   *   The Layout Builder Block Manager.
    * @param \Drupal\Core\Database\Connection $connection
    *   The default database connection.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection, UuidInterface $uuid) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, Connection $connection, UuidInterface $uuid) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->request = $request->getCurrentRequest();
-    $this->blockManager = $block_manager;
     $this->dbConnD8 = $connection;
     $this->uuidService = $uuid;
     $this->counters = ['sections' => 0, 'blocks' => 0];

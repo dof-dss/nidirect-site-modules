@@ -95,7 +95,6 @@ class CampaignImporterImportController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('nidirect_landing_pages.layout_builder_block_manager'),
       $container->get('database'),
       $container->get('uuid')
     );
@@ -136,8 +135,7 @@ class CampaignImporterImportController extends ControllerBase {
       ];
 
       $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
-      // Force the node to use Layout Builder storage or duplicate blocks
-      // will be generated.
+
       $this->node->layout_builder__layout->setValue(new Section('layout_onecol'));
       $this->node->save();
     }
@@ -148,7 +146,42 @@ class CampaignImporterImportController extends ControllerBase {
     $d7_banner_fid = $query->fetchCol();
 
     if (isset($d7_banner_fid[0])) {
-      $this->node->set('field_banner_image', $d7_banner_fid[0]);
+      $layout = $this->node->layout_builder__layout->first();
+
+      $layout_contents = $layout->getProperties();
+      if (count($layout_contents) > 0) {
+        $first_section = current($layout_contents)->getValue();
+
+        if ($first_section->getLayoutId() == 'layout_onecol') {
+          $settings = $first_section->getLayoutSettings();
+          $settings['label'] = 'Page banner';
+          $first_section->setLayoutSettings($settings);
+
+
+          $block_config = [
+            'info' => 'Page banner',
+            'type' => 'banner_deep',
+            'langcode' => 'en',
+            'field_banner_image' => $d7_banner_fid[0],
+            'reusable' => 0,
+          ];
+
+          $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
+
+          $plugin_config = [
+            'id' => 'inline_block:banner_deep',
+            'provider' => 'layout_builder',
+            'label' => $block->label(),
+            'block_serialized' => serialize($block),
+          ];
+
+          $first_section->appendComponent(new SectionComponent($this->uuidService->generate(), 'content', $plugin_config));
+
+          $this->node->layout_builder__layout->setValue($first_section);
+          $this->node->save();
+
+        }
+      }
     }
 
     // Parse the body content.
@@ -158,7 +191,7 @@ class CampaignImporterImportController extends ControllerBase {
     $dom->loadHTML($d7_landing_pages['body_value']);
     $xpath = new \DOMXPath($dom);
 
-    $sections = [];
+    $sections[] = $this->node->layout_builder__layout->getValue()[0]['section'];
 
     // Iterate each section and create a layout builder section.
     foreach ($xpath->query('/html/body/div') as $domnode) {

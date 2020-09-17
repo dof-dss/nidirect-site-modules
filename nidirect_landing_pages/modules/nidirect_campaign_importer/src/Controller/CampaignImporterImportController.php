@@ -109,10 +109,6 @@ class CampaignImporterImportController extends ControllerBase {
     // Defines if a node was created or updated.
     $update_existing = FALSE;
 
-    // Check if we have an existing landing page with that nid.
-    $query = $this->dbConnD8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
-    $drupal8_page_exists = empty($query->fetchCol(0)) ? FALSE : TRUE;
-
     // Retrieve details of Drupal 7 landing page.
     $query = $this->dbConnD7->query(
       "SELECT title, body_value FROM {node} INNER JOIN {field_data_body} ON node.nid = field_data_body.entity_id WHERE entity_id = " . $nid);
@@ -124,9 +120,9 @@ class CampaignImporterImportController extends ControllerBase {
       ];
     }
 
-    if ($drupal8_page_exists && $this->request->query->get('op') == 'update') {
+    if (!empty($this->request->query->get('d8nid'))) {
       $update_existing = TRUE;
-      $this->node = $this->entityTypeManager->getStorage('node')->load($nid);
+      $this->node = $this->entityTypeManager->getStorage('node')->load($this->request->query->get('d8nid'));
     }
     else {
       // Create new landing page.
@@ -160,6 +156,17 @@ class CampaignImporterImportController extends ControllerBase {
       // fetch it and the update settings.
       $banner_section = current($layout_contents)->getValue();
       if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
+
+        $components = $banner_section->getComponents();
+        $has_page_banner = FALSE;
+
+        foreach ($components as $component) {
+          if ($component->get('configuration')['label'] == 'Page banner') {
+            $has_page_banner = TRUE;
+            break;
+          }
+        }
+
         $settings = $banner_section->getLayoutSettings();
         $settings['label'] = 'Page photo banner';
         $banner_section->setLayoutSettings($settings);
@@ -168,10 +175,12 @@ class CampaignImporterImportController extends ControllerBase {
         $banner_section = new Section('layout_onecol', ['label' => 'Page photo banner']);
       }
 
-      $banner_section->appendComponent($this->createSectionContent($block, $banner_section->getDefaultRegion()));
+      if (!$has_page_banner) {
+        $banner_section->appendComponent($this->createSectionContent($block, $banner_section->getDefaultRegion()));
 
-      $this->node->layout_builder__layout->setValue($banner_section);
-      $this->node->save();
+        $this->node->layout_builder__layout->setValue($banner_section);
+        $this->node->save();
+      }
     }
 
     // Parse the body content.

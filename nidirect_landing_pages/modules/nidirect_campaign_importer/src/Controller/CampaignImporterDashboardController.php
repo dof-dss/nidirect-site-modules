@@ -98,7 +98,7 @@ class CampaignImporterDashboardController extends ControllerBase {
           ['nid' => $landing_page->nid],
           [
             'query' => [
-              $this->getDestinationArray(),
+              'destination' => $this->getDestinationArray(),
               'op' => 'update',
               'd8nid' => $d8nids[0],
             ],

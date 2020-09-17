@@ -140,39 +140,35 @@ class CampaignImporterImportController extends ControllerBase {
       $this->node->save();
     }
 
-    // Apply the image banner if available.
+    // Query the D7 database for a banner image.
     $query = $this->dbConnD7->query(
       "SELECT field_banner_image_fid FROM field_data_field_banner_image WHERE entity_id = " . $nid);
     $d7_banner_fid = $query->fetchCol();
 
+    // If we have a banner image, fetch the current node layout.
     if (isset($d7_banner_fid[0])) {
       $layout = $this->node->layout_builder__layout->first();
-
       $layout_contents = $layout->getProperties();
-      if (count($layout_contents) > 0) {
-        $first_section = current($layout_contents)->getValue();
 
-        if ($first_section->getLayoutId() == 'layout_onecol') {
-          $settings = $first_section->getLayoutSettings();
-          $settings['label'] = 'Page banner';
-          $first_section->setLayoutSettings($settings);
+      // Create the photo banner block.
+      $block = $this->createBlock('banner_deep', ['label' => 'Banner image', 'image' => $d7_banner_fid[0]]);
 
-          $block = $this->createBlock('banner_deep', ['image' => $d7_banner_fid[0]]);
-
-          $plugin_config = [
-            'id' => 'inline_block:banner_deep',
-            'provider' => 'layout_builder',
-            'label' => $block->label(),
-            'block_serialized' => serialize($block),
-          ];
-
-          $first_section->appendComponent(new SectionComponent($this->uuidService->generate(), 'content', $plugin_config));
-
-          $this->node->layout_builder__layout->setValue($first_section);
-          $this->node->save();
-
-        }
+      // If we have layout sections and the first is a onecol layout,
+      // fetch it and the update settings.
+      $banner_section = current($layout_contents)->getValue();
+      if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
+          $settings = $banner_section->getLayoutSettings();
+          $settings['label'] = 'Page photo banner';
+          $banner_section->setLayoutSettings($settings);
       }
+      else {
+        $banner_section = new Section('layout_onecol', ['label' => 'Page photo banner']);
+      }
+
+      $banner_section->appendComponent($this->createSectionContent($block, $banner_section->getDefaultRegion()));
+
+      $this->node->layout_builder__layout->setValue($banner_section);
+      $this->node->save();
     }
 
     // Parse the body content.

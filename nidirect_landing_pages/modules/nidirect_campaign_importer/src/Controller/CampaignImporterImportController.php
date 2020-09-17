@@ -13,7 +13,6 @@ use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\node\NodeInterface;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -78,6 +77,8 @@ class CampaignImporterImportController extends ControllerBase {
    *   The current request stack.
    * @param \Drupal\Core\Database\Connection $connection
    *   The default database connection.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid
+   *   UUID generator service.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, Connection $connection, UuidInterface $uuid) {
     $this->entityTypeManager = $entity_type_manager;
@@ -151,15 +152,17 @@ class CampaignImporterImportController extends ControllerBase {
       $layout_contents = $layout->getProperties();
 
       // Create the photo banner block.
-      $block = $this->createBlock('banner_deep', ['label' => 'Banner image', 'image' => $d7_banner_fid[0]]);
+      $block = $this->createBlock(
+        'banner_deep',
+        ['label' => 'Banner image', 'image' => $d7_banner_fid[0]]);
 
       // If we have layout sections and the first is a onecol layout,
       // fetch it and the update settings.
       $banner_section = current($layout_contents)->getValue();
       if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
-          $settings = $banner_section->getLayoutSettings();
-          $settings['label'] = 'Page photo banner';
-          $banner_section->setLayoutSettings($settings);
+        $settings = $banner_section->getLayoutSettings();
+        $settings['label'] = 'Page photo banner';
+        $banner_section->setLayoutSettings($settings);
       }
       else {
         $banner_section = new Section('layout_onecol', ['label' => 'Page photo banner']);
@@ -374,7 +377,7 @@ class CampaignImporterImportController extends ControllerBase {
         ];
         break;
 
-      case 'banner_deep' :
+      case 'banner_deep':
         $block_config = [
           'info' => 'Page banner',
           'type' => 'banner_deep',

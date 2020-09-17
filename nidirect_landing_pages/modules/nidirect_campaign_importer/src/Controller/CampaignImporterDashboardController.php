@@ -93,6 +93,8 @@ class CampaignImporterDashboardController extends ControllerBase {
         'update' => '',
       ];
 
+      // TODO: Pass in the D7 and D8 Nid, we could have different Nids if the
+      // original imported node (using d7 nid) was removed.
       if ((count($d8nids) === 1)) {
         $item['update'] = Link::createFromRoute('Update', 'nidirect_campaign_importer.creator',
           ['nid' => $d8nids[0]],

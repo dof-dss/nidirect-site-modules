@@ -4,7 +4,6 @@ namespace Drupal\nidirect_cold_weather_payments;
 
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Entity\Routing\AdminHtmlRouteProvider;
-use Symfony\Component\Routing\Route;
 
 /**
  * Provides routes for Weather station entities.

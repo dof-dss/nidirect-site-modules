@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Messenger\MessengerInterface;
 
 /**
- * Class WeatherStationEntityForm.
+ * Form for creating weather station entities.
  */
 class WeatherStationEntityForm extends EntityForm {
 

@@ -14,6 +14,8 @@ use Drupal\KernelTests\KernelTestBase;
 class SchoolClosuresTest extends KernelTestBase {
 
   /**
+   * Today's date.
+   *
    * @var \DateTime
    */
   protected $today;
@@ -37,7 +39,9 @@ class SchoolClosuresTest extends KernelTestBase {
   }
 
   /**
-   * Test school names with accented characters have alternative non-accented version.
+   * Test school names with accented characters.
+   *
+   * Checks school name has alternative non-accented version.
    */
   public function testAltName() {
     $name = 'Bunscoil Baile Mór';
@@ -54,7 +58,10 @@ class SchoolClosuresTest extends KernelTestBase {
   }
 
   /**
-   * Test location matches original and town is not removed if absent from school name.
+   * School location test.
+   *
+   * Test location matches original and town is not removed if absent
+   * from school name.
    */
   public function testLocation() {
     $name = 'All Saints Primary School';

@@ -26,7 +26,9 @@ class GpListBuilder extends EntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
-    /* @var $entity \Drupal\nidirect_gp\Entity\Gp */
+    /**
+     * @var \Drupal\nidirect_gp\Entity\Gp $entity
+     */
     $row['id'] = $entity->id();
     $row['name'] = Link::createFromRoute(
       $entity->label(),

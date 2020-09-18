@@ -6,7 +6,7 @@ use Drupal\layout_builder\Controller\ChooseSectionController;
 use Drupal\layout_builder\SectionStorageInterface;
 
 /**
- * Class LandingPagesChooseSectionController.
+ * Controller to alter display of Layout builder Sections form.
  */
 class LandingPagesChooseSectionController extends ChooseSectionController {
 

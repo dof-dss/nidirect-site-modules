@@ -14,7 +14,7 @@ use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\nidirect_taxonomy_navigator\TaxonomyNavigatorAccess;
 
 /**
- * Class TaxonomyNavigatorForm.
+ * Displays main Taxonomy Navigator list as a form.
  */
 class TaxonomyNavigatorForm extends FormBase {
 
@@ -195,7 +195,13 @@ class TaxonomyNavigatorForm extends FormBase {
 
         $form['terms'][$key]['operations']['#links']['set_parent'] = [
           'title' => t('Set parent'),
-          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', ['vocabulary' => $vocabulary->id(), 'taxonomy_term' => $term->tid], ['query' => $this->getDestinationArray()]),
+          'url' => Url::fromRoute('nidirect_taxonomy_navigator.set_parent_term_form', [
+            'vocabulary' => $vocabulary->id(),
+            'taxonomy_term' => $term->tid,
+          ],
+          [
+            'query' => $this->getDestinationArray(),
+          ]),
         ];
       }
 
@@ -206,7 +212,8 @@ class TaxonomyNavigatorForm extends FormBase {
         ];
       }
 
-      // Add cache tag to assist with propagating changes across the site's themeable things.
+      // Add cache tag to assist with propagating changes across the site's
+      // themeable things.
       $form['#cache']['tags'][] = 'taxonomy_term:' . $term->tid;
     }
 
@@ -250,10 +257,25 @@ class TaxonomyNavigatorForm extends FormBase {
       if (count($ancestors) > 1) {
         array_shift($ancestors);
         $parent = current($ancestors);
-        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary'], 'taxonomy_term' => $parent->id()], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', [
+          'vocabulary' => $form_values['vocabulary'],
+          'taxonomy_term' => $parent->id(),
+        ],
+        [
+          'query' => ['highlight' => $tid],
+          'fragment' => $tid,
+        ]);
       }
       else {
-        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', ['vocabulary' => $form_values['vocabulary']], ['query' => ['highlight' => $tid], 'fragment' => $tid]);
+        $form_state->setRedirect('nidirect_taxonomy_navigator.taxonomy_navigator_form', [
+          'vocabulary' => $form_values['vocabulary'],
+        ],
+        [
+          'query' => [
+            'highlight' => $tid,
+          ],
+          'fragment' => $tid,
+        ]);
       }
 
     }

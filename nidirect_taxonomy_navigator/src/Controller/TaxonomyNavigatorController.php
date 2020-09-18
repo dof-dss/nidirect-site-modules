@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
- * Class TaxonomyNavigatorController.
+ * Controller for displaying the taxonomy navigator.
  */
 class TaxonomyNavigatorController extends ControllerBase {
 

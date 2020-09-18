@@ -33,7 +33,10 @@ class ColdWeatherPeriodDefaultFormatter extends FormatterBase {
           '#attributes' => [
             'class' => ['field__label'],
           ],
-          '#markup' => t('%start - %end', ['%start' => $item->date_start, '%end' => $item->date_end]),
+          '#markup' => t('%start - %end', [
+            '%start' => $item->date_start,
+            '%end' => $item->date_end,
+          ]),
         ],
         'value' => [
           '#type' => 'container',

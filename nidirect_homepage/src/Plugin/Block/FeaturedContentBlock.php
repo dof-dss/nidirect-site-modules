@@ -60,7 +60,8 @@ class FeaturedContentBlock extends BlockBase implements ContainerFactoryPluginIn
   public function build() {
     $build = [];
 
-    // Our featured content list will be tagged with the "Homepage" term, so load that term object.
+    // Our featured content list will be tagged with the "Homepage" term,
+    // so load that term object.
     $homepage_tag = $this->entityTypeManager
       ->getStorage('taxonomy_term')
       ->loadByProperties(['name' => 'Homepage']);

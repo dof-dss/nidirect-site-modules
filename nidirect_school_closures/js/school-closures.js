@@ -24,7 +24,7 @@ scParent = document.getElementById(scContainerID);
 scResults = scParent.getElementsByClassName(scItemsClass);
 scStatusDefault = '<span class="element-invisible">Showing </span><span class="count">' + scResults.length + '</span> school ';
 // plural closures in status?
-(scResults.length != 1)? scStatusDefault += "closures" : scStatusDefault += "closure";
+(scResults.length != 1) ? scStatusDefault += "closures" : scStatusDefault += "closure";
 
 // enable result filter when listing more than n results
 if (scResults.length > scMin) {
@@ -32,7 +32,7 @@ if (scResults.length > scMin) {
   var elem, text, transliterated;
 
   // Get all the searchable text and clean it up (lowercase, no punctuation, etc)
-  for (var i=0; i < scResults.length; i++) {
+  for (var i = 0; i < scResults.length; i++) {
     elem = scResults[i].getElementsByTagName(scTagToFilter)[0];
     text = scCleanText(elem.innerText);
     transliterated = "";
@@ -51,7 +51,7 @@ if (scResults.length > scMin) {
   // need a form
   scForm = document.createElement("form");
   scForm.setAttribute("id", "sc-form");
-  scForm.onsubmit = function(event) {
+  scForm.onsubmit = function (event) {
     event.preventDefault();
     scParent.focus(); // keyboarders hitting submit will set focus on list of closures
   }
@@ -70,13 +70,13 @@ if (scResults.length > scMin) {
   scFilter.setAttribute("placeholder", "Enter a school name ...");
   scFilter.setAttribute("aria-label", "Enter the name of school and press return or enter.");
   scFilter.setAttribute("maxlength", "128");
-  scFilter.onfocus = function() {
+  scFilter.onfocus = function () {
     // make sure first result visible in browser viewport (so user can see things change as they type)
     if (scResults[0].getBoundingClientRect().top >= window.innerHeight) {
       scResults[0].scrollIntoView(false);
     }
   };
-  scFilter.oninput = function() {
+  scFilter.oninput = function () {
     // start filter processing when something is input and stop when no input
     if (this.value.length >= 1 && !scProcessStarted) {
       scProcessFilterStart();
@@ -85,7 +85,7 @@ if (scResults.length > scMin) {
       setTimeout(scReset, 500)
     }
   };
-  scFilter.onblur = function() {
+  scFilter.onblur = function () {
     // stop the filter processing when focus leaves input
     clearInterval(scFilterProcessor);
   };
@@ -119,7 +119,7 @@ function scProcessFilterStart() {
   var filter, i, result, count, plural, newstatus = '';
 
   // process filter input every so often ...
-  scFilterProcessor = setInterval(function() {
+  scFilterProcessor = setInterval(function () {
 
     // but only if its not busy
     if (!scProcessBusy) {
@@ -143,7 +143,7 @@ function scProcessFilterStart() {
       }
 
       // How many matches are we showing?
-      plural = (count != 1)? "s" : "";
+      plural = (count != 1) ? "s" : "";
       if (filter.length > 0) {
         newstatus = '<span class="element-invisible">Showing </span><span class="count">' + count + "</span> school closure" + plural;
       } else {
@@ -214,7 +214,7 @@ function scMatch(needle, haystack) {
   var pattern;
   var matches = 0;
 
-  for (var i=0; i<arrNeedle.length; i++) {
+  for (var i = 0; i < arrNeedle.length; i++) {
     pattern = '\\b' + arrNeedle[i];
     if (haystack.search(new RegExp(pattern, 'g')) >= 0) {
       matches++;

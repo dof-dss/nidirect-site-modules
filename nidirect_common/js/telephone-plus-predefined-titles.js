@@ -13,7 +13,7 @@
     attach: function (context, settings) {
       $('.telephone-predefined', context)
         .once('telephone-predefined-select')
-        .change(function() {
+        .change(function () {
           var title_field = $(this).parent().next().find('.telephone-title');
           if ($(this).val() === '' || $(this).val() === 'Other') {
             title_field.val('');

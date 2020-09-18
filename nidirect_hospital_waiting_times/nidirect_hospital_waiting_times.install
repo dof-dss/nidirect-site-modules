@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @file
+ * Install and uninstall hooks for the NIDirect hospital waiting times module.
+ */
+
+/**
  * Implements hook_install().
  */
 function nidirect_hospital_waiting_times_install() {

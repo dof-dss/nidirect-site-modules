@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
- * Class HealthConditionsListingController.
+ * Controller for health conditions listings.
  */
 class HealthConditionsListingController extends ControllerBase {
 

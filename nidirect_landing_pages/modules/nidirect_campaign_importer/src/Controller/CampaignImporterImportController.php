@@ -2,9 +2,6 @@
 
 namespace Drupal\nidirect_campaign_importer\Controller;
 
-use DOMDocument;
-use DOMNode;
-use DOMXPath;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
@@ -13,7 +10,6 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
-use JsonException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;

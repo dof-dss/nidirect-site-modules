@@ -24,14 +24,14 @@
 
       const elements = ['header.header', '#block-mainnavigation', '#main-content', '#footer'];
 
-      $.each(elements, function(index, elementRef) {
+      $.each(elements, function (index, elementRef) {
         let classes = ['active', 'link__self'];
 
         if (elementRef === '#block-mainnavigation') {
           classes.push('nav-link');
         }
 
-        $(elementRef + ' a[href*="' + pathname + '"]').each(function() {
+        $(elementRef + ' a[href*="' + pathname + '"]').each(function () {
           // Move to next item if we have a data attribute to indicate we should ignore this element.
           if ($(this).attr('data-self-ref')) {
             return false;

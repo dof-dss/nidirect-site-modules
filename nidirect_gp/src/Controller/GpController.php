@@ -93,7 +93,10 @@ class GpController extends ControllerBase {
     $has_translations = (count($languages) > 1);
     $gp_storage = $this->entityTypeManager()->getStorage('gp');
 
-    $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', ['@langname' => $langname, '%title' => $gp->label()]) : $this->t('Revisions for %title', ['%title' => $gp->label()]);
+    $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', [
+      '@langname' => $langname,
+      '%title' => $gp->label(),
+    ]) : $this->t('Revisions for %title', ['%title' => $gp->label()]);
     $header = [$this->t('Revision'), $this->t('Operations')];
     $revert_permission = (($account->hasPermission("revert all gp revisions") || $account->hasPermission('administer gp entities')));
     $delete_permission = (($account->hasPermission("delete all gp revisions") || $account->hasPermission('administer gp entities')));
@@ -118,7 +121,10 @@ class GpController extends ControllerBase {
         // Use revision link to link to revisions that are not active.
         $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $gp->getRevisionId()) {
-          $link = Link::fromTextAndUrl($date, new Url('entity.gp.revision', ['gp' => $gp->id(), 'gp_revision' => $vid]));
+          $link = Link::fromTextAndUrl($date, new Url('entity.gp.revision', [
+            'gp' => $gp->id(),
+            'gp_revision' => $vid,
+          ]));
         }
         else {
           $link = $gp->toLink($date);
@@ -132,7 +138,10 @@ class GpController extends ControllerBase {
             '#context' => [
               'date' => $link,
               'username' => \Drupal::service('renderer')->renderPlain($username),
-              'message' => ['#markup' => $revision->getRevisionLogMessage(), '#allowed_tags' => Xss::getHtmlTagList()],
+              'message' => [
+                '#markup' => $revision->getRevisionLogMessage(),
+                '#allowed_tags' => Xss::getHtmlTagList(),
+              ],
             ],
           ],
         ];
@@ -172,7 +181,10 @@ class GpController extends ControllerBase {
           if ($delete_permission) {
             $links['delete'] = [
               'title' => $this->t('Delete'),
-              'url' => Url::fromRoute('entity.gp.revision_delete', ['gp' => $gp->id(), 'gp_revision' => $vid]),
+              'url' => Url::fromRoute('entity.gp.revision_delete', [
+                'gp' => $gp->id(),
+                'gp_revision' => $vid,
+              ]),
             ];
           }
 

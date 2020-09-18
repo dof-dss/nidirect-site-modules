@@ -19,7 +19,8 @@ use Drupal\Core\Link;
 function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variables) {
   $query_parameter = 'query';
 
-  // Some inconsistencies between views to work around so if empty, try another known value.
+  // Some inconsistencies between views to work around so if empty, try another
+  // known value.
   $route_name = \Drupal::routeMatch()->getRouteName();
 
   if ($route_name == 'view.health_conditions.search_page') {
@@ -39,8 +40,8 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
     $link_url->setRouteParameter($query_parameter, str_replace(',', '', $link_url_query));
     $link_url->setOptions([
       'attributes' => [
-        'data-self-ref' => ['false']
-      ]
+        'data-self-ref' => ['false'],
+      ],
     ]);
   }
 
@@ -51,10 +52,13 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
 /**
  * Implements hook_search_api_solr_query_alter().
  *
- * Added here because unclear why the spellcheck_en dictionary is not populating/building in Solr.
- * spellcheck_und is an effective mirror image and has the same configuration so can still be safely used.
+ * Added here because unclear why the spellcheck_en dictionary is not
+ * populating/building in Solr.
+ * spellcheck_und is an effective mirror image and has the same configuration
+ * so can still be safely used.
  *
- * This hook can be removed if/when non-local dev Solr config is more cooperative.
+ * This hook can be removed if/when non-local dev Solr config is
+ * more cooperative.
  */
 function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_query, SearchApiQueryInterface $query) {
   $route_name = \Drupal::routeMatch()->getRouteName();
@@ -252,7 +256,8 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
 
   // Add elevations to the query.
   if (!empty($elevation_ids)) {
-    // Prefix/suffix our node ids with <hash>-<index_id>-entity:<entity_type>/<entity_id>:<langcode>.
+    // Prefix/suffix our node ids with:
+    // <hash>-<index_id>-entity:<entity_type>/<entity_id>:<langcode>.
     $solr_hash = '17dthr';
     $index_id = 'default_content';
     $elevation_items = [];

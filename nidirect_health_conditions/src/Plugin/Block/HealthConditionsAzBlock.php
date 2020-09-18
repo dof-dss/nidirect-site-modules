@@ -92,6 +92,10 @@ class HealthConditionsAzBlock extends BlockBase implements ContainerFactoryPlugi
       '#type' => 'html_tag',
       '#tag' => 'p',
       '#value' => $this->t('Or find conditions beginning with ...'),
+      '#attributes' => [
+        'class' => 'label',
+        'id' => 'health-conditions-az-label',
+      ],
     ];
 
     $build['healthconditions_az_block'] = [

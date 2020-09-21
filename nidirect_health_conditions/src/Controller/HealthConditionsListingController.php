@@ -5,6 +5,7 @@ namespace Drupal\nidirect_health_conditions\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Tests\rest\Functional\ResourceTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -63,7 +64,7 @@ class HealthConditionsListingController extends ControllerBase {
    * @return string
    *   The page title.
    */
-  public function getTitle($route_type) {
+  public function getTitle(string $route_type) {
     if ($route_type == 'health_conditions_letter') {
       // A letter has been selected from the A-Z.
       $letter = \Drupal::routeMatch()->getParameter('letter');

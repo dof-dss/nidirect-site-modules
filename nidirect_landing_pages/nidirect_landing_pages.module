@@ -376,6 +376,8 @@ function _render_article_teasers_auto(array &$variables) {
     }
   }
   if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+    // Add custom cache tag for taxonomy term listing.
+    $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
     // Get a list of article teasers by term.
     if (!empty($node->id())) {
       $results = _render_article_teasers_by_term($node->field_subtheme->target_id, $node->id(), $cache_tags);

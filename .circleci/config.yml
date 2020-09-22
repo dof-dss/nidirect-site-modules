@@ -38,24 +38,25 @@ jobs:
             sudo apt-get update
             sudo apt-get install -y libpng-dev
             sudo docker-php-ext-install gd
-            composer global require hirak/prestissimo mglaman/drupal-check
+            composer global require hirak/prestissimo
       - run:
           name: Fetch latest Drupal version
           command: |
-            composer create-project drupal-composer/drupal-project:8.x-dev ${CIRCLE_WORKING_DIRECTORY} --no-interaction
-            mkdir -p ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom
+            cd /home/circleci
+            composer create-project drupal-composer/drupal-project:8.x-dev /home/circleci/project --no-interaction
       - run:
           name: Download dependent contrib modules.
           command: |
-            cd ${CIRCLE_WORKING_DIRECTORY}
-            composer require drupal/webform --no-interaction --optimize-autoloader
+            cd /home/circleci/project
+            composer require drupal/webform drupal/linkit:^6.0 mglaman/drupal-check --no-interaction --optimize-autoloader
       - run:
           name: Move custom code into position
-          command: mv /home/circleci/nidirect-site-modules ${CIRCLE_WORKING_DIRECTORY}/web/modules/custom
+          command: mv /home/circleci/nidirect-site-modules /home/circleci/project/web/modules/custom
       - run:
           name: Deprecated code check
           command: |
-            cd ${CIRCLE_WORKING_DIRECTORY}/web && ~/.composer/vendor/bin/drupal-check modules/custom
+            cd /home/circleci/project/web
+            ../vendor/bin/drupal-check modules/custom -e "*/tests/*"
 
 workflows:
   version: 2

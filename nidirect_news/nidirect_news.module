@@ -95,7 +95,7 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
           $edit_url->setOptions($url_options);
 
           // Generate a link and add to view header.
-          $edit_link = Link::fromTextAndUrl(t('Edit featured news list'), $edit_url )->toString();
+          $edit_link = Link::fromTextAndUrl(t('Edit featured news list'), $edit_url)->toString();
           $view->header['area_text_custom']->options['content'] = $edit_link;
         }
       }

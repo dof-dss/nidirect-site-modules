@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\taxonomy\TermInterface;
 use Drupal\views\ViewExecutable;
 
@@ -77,13 +78,26 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
         }
 
         if (\Drupal::currentUser()->hasPermission('edit any featured content list content')) {
-          // Generate a link to edit the featured content list node.
-          $edit_link = Link::createFromRoute(t('Edit this list'), 'entity.node.edit_form', [
+          // Generate a url to edit the featured content list node.
+          $edit_url = Url::fromRoute('entity.node.edit_form', [
             'node' => $featured_news_list->id(),
             'destination' => \Drupal::routeMatch()->getRouteObject()->getPath(),
           ]);
 
-          $view->header['area_text_custom']->options['content'] = $edit_link->toString();
+          // Add some classes.
+          $url_options = [
+            'attributes' => [
+              'class' => [
+                'faux-contextual-trigger',
+              ],
+              'title' => 'Edit featured news list',
+            ],
+          ];
+          $edit_url->setOptions($url_options);
+
+          // Generate a link and add to view header.
+          $edit_link = Link::fromTextAndUrl(t('Edit featured news list'), $edit_url)->toString();
+          $view->header['area_text_custom']->options['content'] = $edit_link;
         }
       }
     }

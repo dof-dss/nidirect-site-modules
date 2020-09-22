@@ -90,6 +90,7 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
               'class' => [
                 'faux-contextual-trigger',
               ],
+              'title' => 'Edit featured news list',
             ],
           ];
           $edit_url->setOptions($url_options);

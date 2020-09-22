@@ -8,32 +8,6 @@
 use Drupal\Core\Database\Database;
 
 /**
- * Implements hook_schema().
- */
-function nidirect_landing_pages_schema() {
-  $schema['nidirect_layout_builder_block_manager'] = [
-    'description' => 'Stores references to custom blocks created within landing page nodes.',
-    'fields' => [
-      'nid' => [
-        'description' => 'Node ID',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-      'bid' => [
-        'description' => 'Block content ID',
-        'type' => 'int',
-        'unsigned' => TRUE,
-        'not null' => TRUE,
-      ],
-    ],
-    'primary key' => ['bid'],
-  ];
-
-  return $schema;
-}
-
-/**
  * Implementations of hook_update_N().
  */
 
@@ -61,4 +35,12 @@ function nidirect_landing_pages_update_8001() {
   ];
   $schema = Database::getConnection()->schema();
   $schema->createTable('nidirect_layout_builder_block_manager', $table);
+}
+
+/**
+ * Remove redundant Layout Builder Block manager table.
+ */
+function nidirect_landing_pages_update_8002() {
+  $schema = Database::getConnection()->schema();
+  $schema->dropTable('nidirect_layout_builder_block_manager');
 }

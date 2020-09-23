@@ -184,7 +184,7 @@ class NewsListingController extends ControllerBase {
         '#value' => t('Older news items'),
       ];
     }
-    
+
     // Older news.
     $content['older_news'] = [
       '#type' => 'view',

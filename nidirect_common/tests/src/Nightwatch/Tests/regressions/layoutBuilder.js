@@ -17,7 +17,8 @@ module.exports = {
     // Create a published landing page, with obscure/deep theme so it doesn't clash with an existing one.
     // We'll choose 'Help' here... tid 402.
     browser
-      .setValue('input#edit-title-0-value', 'Test landing page [regression test for D8NID-836]')
+      .setValue('input#edit-title-0-value', ['Test landing page [regression test for D8NID-836]', browser.Keys.TAB])
+      .pause(2000)
       .setValue('input#edit-field-teaser-0-value', 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.')
       .click('select[id="edit-field-subtheme-shs-0-0"]')
       .click('select[id="edit-field-subtheme-shs-0-0"] option[value="402"]')

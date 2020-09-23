@@ -1,5 +1,0 @@
-name: 'NIDirect Custom Blocks'
-type: module
-description: 'NIDirect custom blocks'
-core_version_requirement: ^8.8 || ^9
-package: 'NIDirect'

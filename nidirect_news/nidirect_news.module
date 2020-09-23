@@ -77,7 +77,7 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
           $featured_news_list = reset($featured_news_list);
         }
 
-        if (\Drupal::currentUser()->hasPermission('edit any featured content list content')) {
+        if (\Drupal::currentUser()->hasPermission('edit any featured_content_list content')) {
           // Generate a url to edit the featured content list node.
           $edit_url = Url::fromRoute('entity.node.edit_form', [
             'node' => $featured_news_list->id(),

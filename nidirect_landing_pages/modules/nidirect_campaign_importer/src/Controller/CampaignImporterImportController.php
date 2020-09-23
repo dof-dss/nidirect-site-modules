@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_campaign_importer\Controller;
 
 use Drupal\block_content\BlockContentInterface;
+use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Connection;
@@ -12,8 +13,6 @@ use Drupal\layout_builder\Section;
 use Drupal\layout_builder\SectionComponent;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\nidirect_landing_pages\LayoutBuilderBlockManager;
-use Drupal\node\NodeInterface;
 
 /**
  * Returns responses for NIDirect Campaign Utilities routes.
@@ -56,18 +55,18 @@ class CampaignImporterImportController extends ControllerBase {
   protected $request;
 
   /**
-   * The Layout Builder Block Manager.
-   *
-   * @var \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager
-   */
-  protected $blockManager;
-
-  /**
    * Array of counters.
    *
    * @var array
    */
   protected $counters;
+
+  /**
+   * The UUID service.
+   *
+   * @var string
+   */
+  protected $uuidService;
 
   /**
    * Controller constructor.
@@ -76,17 +75,17 @@ class CampaignImporterImportController extends ControllerBase {
    *   The entity type manager.
    * @param Symfony\Component\HttpFoundation\RequestStack $request
    *   The current request stack.
-   * @param \Drupal\nidirect_landing_pages\LayoutBuilderBlockManager $block_manager
-   *   The Layout Builder Block Manager.
    * @param \Drupal\Core\Database\Connection $connection
    *   The default database connection.
+   * @param \Drupal\Component\Uuid\UuidInterface $uuid
+   *   UUID generator service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, LayoutBuilderBlockManager $block_manager, Connection $connection) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, RequestStack $request, Connection $connection, UuidInterface $uuid) {
     $this->entityTypeManager = $entity_type_manager;
     $this->dbConnD7 = Database::getConnection('default', 'migrate');
     $this->request = $request->getCurrentRequest();
-    $this->blockManager = $block_manager;
     $this->dbConnD8 = $connection;
+    $this->uuidService = $uuid;
     $this->counters = ['sections' => 0, 'blocks' => 0];
   }
 
@@ -97,8 +96,8 @@ class CampaignImporterImportController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('request_stack'),
-      $container->get('nidirect_landing_pages.layout_builder_block_manager'),
-      $container->get('database')
+      $container->get('database'),
+      $container->get('uuid')
     );
   }
 
@@ -109,10 +108,6 @@ class CampaignImporterImportController extends ControllerBase {
 
     // Defines if a node was created or updated.
     $update_existing = FALSE;
-
-    // Check if we have an existing landing page with that nid.
-    $query = $this->dbConnD8->query("SELECT nid FROM {node} WHERE nid = " . $nid);
-    $drupal8_page_exists = empty($query->fetchCol(0)) ? FALSE : TRUE;
 
     // Retrieve details of Drupal 7 landing page.
     $query = $this->dbConnD7->query(
@@ -125,9 +120,9 @@ class CampaignImporterImportController extends ControllerBase {
       ];
     }
 
-    if ($drupal8_page_exists && $this->request->query->get('op') == 'update') {
+    if (!empty($this->request->query->get('d8nid'))) {
       $update_existing = TRUE;
-      $this->node = $this->entityTypeManager->getStorage('node')->load($nid);
+      $this->node = $this->entityTypeManager->getStorage('node')->load($this->request->query->get('d8nid'));
     }
     else {
       // Create new landing page.
@@ -137,29 +132,65 @@ class CampaignImporterImportController extends ControllerBase {
       ];
 
       $this->node = $this->entityTypeManager->getStorage('node')->create($node_config);
-      // Force the node to use Layout Builder storage or duplicate blocks
-      // will be generated.
+
       $this->node->layout_builder__layout->setValue(new Section('layout_onecol'));
       $this->node->save();
     }
 
-    // Apply the image banner if available.
+    // Query the D7 database for a banner image.
     $query = $this->dbConnD7->query(
       "SELECT field_banner_image_fid FROM field_data_field_banner_image WHERE entity_id = " . $nid);
     $d7_banner_fid = $query->fetchCol();
 
+    // If we have a banner image, fetch the current node layout.
     if (isset($d7_banner_fid[0])) {
-      $this->node->set('field_banner_image', $d7_banner_fid[0]);
+      $layout = $this->node->layout_builder__layout->first();
+      $layout_contents = $layout->getProperties();
+
+      // Create the photo banner block.
+      $block = $this->createBlock(
+        'banner_deep',
+        ['label' => 'Banner image', 'image' => $d7_banner_fid[0]]);
+
+      // If we have layout sections and the first is a onecol layout,
+      // fetch it and the update settings.
+      $banner_section = current($layout_contents)->getValue();
+      if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
+
+        $components = $banner_section->getComponents();
+        $has_page_banner = FALSE;
+
+        foreach ($components as $component) {
+          if ($component->get('configuration')['label'] == 'Page banner') {
+            $has_page_banner = TRUE;
+            break;
+          }
+        }
+
+        $settings = $banner_section->getLayoutSettings();
+        $settings['label'] = 'Page photo banner';
+        $banner_section->setLayoutSettings($settings);
+      }
+      else {
+        $banner_section = new Section('layout_onecol', ['label' => 'Page photo banner']);
+      }
+
+      if (!$has_page_banner) {
+        $banner_section->appendComponent($this->createSectionContent($block, $banner_section->getDefaultRegion()));
+
+        $this->node->layout_builder__layout->setValue($banner_section);
+        $this->node->save();
+      }
     }
 
     // Parse the body content.
-    $dom = new DOMDocument();
+    $dom = new \DOMDocument();
     $dom->strictErrorChecking = FALSE;
     $dom->preserveWhiteSpace = FALSE;
     $dom->loadHTML($d7_landing_pages['body_value']);
-    $xpath = new DOMXPath($dom);
+    $xpath = new \DOMXPath($dom);
 
-    $sections = [];
+    $sections[] = $this->node->layout_builder__layout->getValue()[0]['section'];
 
     // Iterate each section and create a layout builder section.
     foreach ($xpath->query('/html/body/div') as $domnode) {
@@ -176,7 +207,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -194,7 +225,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -212,7 +243,7 @@ class CampaignImporterImportController extends ControllerBase {
 
               if ($current_region) {
                 $block_content = $this->extractDomNodeData($child, $xpath);
-                $block = $this->createBlock('card_standard', $block_content, $this->node);
+                $block = $this->createBlock('card_standard', $block_content);
                 $component = $this->createSectionContent($block, $current_region);
                 $section->appendComponent($component);
               }
@@ -272,7 +303,7 @@ class CampaignImporterImportController extends ControllerBase {
    * @return array
    *   An array of extract content from the DOM node.
    */
-  protected function extractDomNodeData(DOMNode $dom_node, DOMXPath $xpath) {
+  protected function extractDomNodeData(\DOMNode $dom_node, \DOMXPath $xpath) {
     $content = [];
 
     // Extract the title.
@@ -307,7 +338,7 @@ class CampaignImporterImportController extends ControllerBase {
     try {
       $image_data = json_decode($image_embed_value, FALSE, 512, JSON_THROW_ON_ERROR);
     }
-    catch (JsonException $e) {
+    catch (\JsonException $e) {
       $this->messenger()->addWarning('Unable to decode image data.');
     }
 
@@ -328,8 +359,6 @@ class CampaignImporterImportController extends ControllerBase {
    *   The machine name of the content block type.
    * @param array $content
    *   An array of content to populate the block.
-   * @param \Drupal\node\NodeInterface $node
-   *   The node this block will be added to.
    *
    * @return \Drupal\Core\Entity\EntityInterface
    *   The new content block.
@@ -338,25 +367,37 @@ class CampaignImporterImportController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  protected function createBlock(string $type, array $content, NodeInterface $node) {
+  protected function createBlock(string $type, array $content) {
 
     // Block plugin configuration.
-    // Prepend the title with the nid to make it easier to track node blocks.
-    $block_config = [
-      'info' => $node->id() . ' : ' . $content['title'],
-      'type' => $type,
-      'langcode' => 'en',
-      'field_body' => $content['body'],
-      'field_image' => $content['image'],
-      'field_teaser' => $content['teaser'],
-      'field_link' => $content['link'],
-      'title' => $content['title'],
-    ];
+    // Reusable set to false to prevent creation of custom block library entry.
+    switch ($type) {
+      case 'card_standard':
+        $block_config = [
+          'info' => $content['title'],
+          'type' => 'card_standard',
+          'langcode' => 'en',
+          'field_body' => $content['body'],
+          'field_image' => $content['image'],
+          'field_teaser' => $content['teaser'],
+          'field_link' => $content['link'],
+          'title' => $content['title'],
+          'reusable' => 0,
+        ];
+        break;
+
+      case 'banner_deep':
+        $block_config = [
+          'info' => 'Page banner',
+          'type' => 'banner_deep',
+          'langcode' => 'en',
+          'field_banner_image' => $content['image'],
+          'reusable' => 0,
+        ];
+        break;
+    }
 
     $block = $this->entityTypeManager->getStorage('block_content')->create($block_config);
-    $block->save();
-
-    $this->blockManager->add($node, $block);
 
     // Increment the stats counter.
     $this->counters['blocks']++;
@@ -377,19 +418,17 @@ class CampaignImporterImportController extends ControllerBase {
    */
   protected function createSectionContent(BlockContentInterface $block, string $region) {
 
-    // Section Block plugin configuration.
-    // For the plug label we remove the nid from the block label.
+    // Component block plugin configuration containing
+    // content block configuration.
     $plugin_config = [
       'id' => 'inline_block:' . $block->bundle(),
       'provider' => 'layout_builder',
-      'label' => substr($block->label(), (strpos($block->label(), ': ') + 2)),
+      'label' => $block->label(),
       'label_display' => 'visible',
-      'block_revision_id' => $block->getRevisionId(),
+      'block_serialized' => serialize($block),
     ];
 
-    // Create and return a new Layout Builder Section Component using the
-    // content block and plugin configuration.
-    return new SectionComponent($block->uuid(), $region, $plugin_config);
+    return new SectionComponent($this->uuidService->generate(), $region, $plugin_config);
   }
 
 }

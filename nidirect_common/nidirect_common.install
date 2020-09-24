@@ -6,6 +6,7 @@
  */
 
 use Drupal\user\Entity\User;
+use Drupal\Core\Url;
 
 /**
  * Implements hook_install().
@@ -77,4 +78,22 @@ function nidirect_common_uninstall() {
       $user->delete();
     }
   }
+}
+
+/**
+ * {@inheritdoc}
+ *
+ * Implements hook_requirements().
+ */
+function nidirect_common_requirements($phase) {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+      $requirements['nidirect_common']['title'] = t('NIDirect');
+      $requirements['nidirect_common']['value'] = t('Issues with NIDirect');
+      $requirements['nidirect_common']['description'] = t('The following issues exist:');
+      $requirements['nidirect_common']['severity'] = REQUIREMENT_ERROR;
+  }
+
+  return $requirements;
 }

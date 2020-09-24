@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the NIDirect common module.
+ * Install, update, uninstall and requirements hooks for the NIDirect common module.
  */
 
 use Drupal\Core\Link;
@@ -89,7 +89,6 @@ function nidirect_common_requirements($phase) {
   $requirements = [];
 
   if ($phase === 'runtime') {
-
     $telephone_nids = _check_telephone_field_values();
 
     if (!empty($telephone_nids)) {
@@ -103,14 +102,12 @@ function nidirect_common_requirements($phase) {
       $requirements['nidirect_common']['description'] = \Drupal::service('renderer')->renderPlain($links);
       $requirements['nidirect_common']['severity'] = REQUIREMENT_ERROR;
     }
-
-
   }
 
   return $requirements;
 }
 
-/*
+/**
  * Return a list of nids with problematic telephone numbers.
  */
 function _check_telephone_field_values() {

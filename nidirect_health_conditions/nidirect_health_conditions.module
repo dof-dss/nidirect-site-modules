@@ -227,3 +227,12 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
     hide($entity_form['field_parent_condition']);
   }
 }
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_health_conditions_preprocess_node(array &$variables) {
+  if ($variables['node']->getType() === 'health_condition') {
+    $variables['#attached']['library'][] = 'nidirect_health_conditions/search_conditions_prompt';
+  }
+}

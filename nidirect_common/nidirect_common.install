@@ -2,9 +2,10 @@
 
 /**
  * @file
- * Install, update and uninstall functions for the NIDirect common module.
+ * Install, update, uninstall and requirements hooks for the NIDirect common module.
  */
 
+use Drupal\Core\Link;
 use Drupal\user\Entity\User;
 
 /**
@@ -77,4 +78,46 @@ function nidirect_common_uninstall() {
       $user->delete();
     }
   }
+}
+
+/**
+ * {@inheritdoc}
+ *
+ * Implements hook_requirements().
+ */
+function nidirect_common_requirements($phase) {
+  $requirements = [];
+
+  if ($phase === 'runtime') {
+    $telephone_nids = _check_telephone_field_values();
+
+    if (!empty($telephone_nids)) {
+      $requirements['nidirect_common']['title'] = t('NIDirect');
+      $requirements['nidirect_common']['value'] = t('The following nodes have problematic telephone numbers which may prevent the page from displaying.');
+      foreach ($telephone_nids as $telephone_nid) {
+        $link = Link::createFromRoute($telephone_nid, 'entity.node.canonical', ['node' => $telephone_nid])->toRenderable();
+        $link['#suffix'] = ', ';
+        $links[] = $link;
+      }
+      $requirements['nidirect_common']['description'] = \Drupal::service('renderer')->renderPlain($links);
+      $requirements['nidirect_common']['severity'] = REQUIREMENT_ERROR;
+    }
+  }
+
+  return $requirements;
+}
+
+/**
+ * Return a list of nids with problematic telephone numbers.
+ */
+function _check_telephone_field_values() {
+  // Query the telephone field for numbers with alpha characters as these
+  // will raise an error when trying to process and generate a tel: protocol
+  // link on the page.
+  $database = \Drupal::database();
+  $query = $database->query("SELECT entity_id FROM {node__field_telephone} WHERE field_telephone_telephone_number REGEXP '[a-z]'");
+  $results = $query->fetchCol(0);
+
+  return $results;
+
 }

@@ -81,7 +81,7 @@ class TaxonomyTermThemesBreadcrumb implements BreadcrumbBuilderInterface {
     array_shift($ancestors);
 
     if (!empty($ancestors)) {
-      
+
       $links[] = Link::createFromRoute(t('Home'), '<front>');
 
       $terms = (count($ancestors) > 1) ? array_reverse($ancestors, TRUE) : $ancestors;

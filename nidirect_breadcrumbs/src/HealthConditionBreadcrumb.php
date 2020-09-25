@@ -93,6 +93,11 @@ class HealthConditionBreadcrumb implements BreadcrumbBuilderInterface {
       $match = TRUE;
     }
 
+    if ($route_name == 'nidirect_health_conditions.letter') {
+      // Also match on health condition a-z page.
+      $match = TRUE;
+    }
+
     return $match;
   }
 

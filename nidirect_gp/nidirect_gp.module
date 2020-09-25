@@ -252,22 +252,36 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
  * Implements hook_views_query_alter().
  */
 function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  // Alter the view code for GP Practice Lists if being sorted on the
+  // 'Online appointments' or 'Online prescriptions' fields.
+  // This is necessary because Drupal 8 Views does not seem to handle the case
+  // of sorting on a 'link' field as it does not build the join correctly
+  // and just errors on the 'unknown' field.
   if ($view->id() == 'gp_practice_list' ) {
-    $configuration = [
-      'type'       => 'LEFT',
-      'table'      => 'node__field_gp_appointments',
-      'field'      => 'entity_id',
-      'left_table' => 'node_field_data',
-      'left_field' => 'nid',
-      'operator'   => '=',
-    ];
-    $join_obj = \Drupal\views\Views::pluginManager('join')
-      ->createInstance('standard', $configuration);
-    $rel = $query->addRelationship('gp_appt', $join_obj, 'node_field_data');
-    //$query->addTable('node__field_gp_appointments', $rel, $join_obj, 'node__field_gp_appointments');
-    if (is_array($query->orderby) && isset($query->orderby[0])) {
+    if (isset($query->orderby)
+      && is_array($query->orderby)
+      && isset($query->orderby[0])
+      && isset($query->orderby[0]['field'])) {
       if ($query->orderby[0]['field'] == 'unknown') {
-        $query->orderby[0]['field'] = 'gp_appt.field_gp_appointments_uri';
+        // We are sorting on the 'Online appointments' column.
+        $configuration = [
+          'type'       => 'LEFT',
+          'table'      => 'node__field_gp_appointments',
+          'field'      => 'entity_id',
+          'left_table' => 'node_field_data',
+          'left_field' => 'nid',
+          'operator'   => '=',
+        ];
+        // Add a join to the 'node__field_gp_appointments' table, note that it is
+        // a 'left' join as it is not essential that there is an entry in the
+        // 'node__field_gp_appointments' table for each practice.
+        $join_obj = \Drupal\views\Views::pluginManager('join')
+          ->createInstance('standard', $configuration);
+        // Use the alias 'gp_appointmentst'.
+        $rel = $query->addRelationship('gp_appointmentst', $join_obj, 'node_field_data');
+        // Replace the 'unknown' field in the query 'orderby' with the
+        // 'field_gp_appointments_uri' field on the 'node__field_gp_appointments' table.
+        $query->orderby[0]['field'] = 'gp_appointmentst.field_gp_appointments_uri';
       }
     }
   }

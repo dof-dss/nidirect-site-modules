@@ -11,6 +11,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 
 /**
  * Implements hook_help().
@@ -246,3 +247,29 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
 
   return $title;
 }
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  if ($view->id() == 'gp_practice_list' ) {
+    $configuration = [
+      'type'       => 'LEFT',
+      'table'      => 'node__field_gp_appointments',
+      'field'      => 'entity_id',
+      'left_table' => 'node_field_data',
+      'left_field' => 'nid',
+      'operator'   => '=',
+    ];
+    $join_obj = \Drupal\views\Views::pluginManager('join')
+      ->createInstance('standard', $configuration);
+    $rel = $query->addRelationship('gp_appt', $join_obj, 'node_field_data');
+    //$query->addTable('node__field_gp_appointments', $rel, $join_obj, 'node__field_gp_appointments');
+    if (is_array($query->orderby) && isset($query->orderby[0])) {
+      if ($query->orderby[0]['field'] == 'unknown') {
+        $query->orderby[0]['field'] = 'gp_appt.field_gp_appointments_uri';
+      }
+    }
+  }
+}
+

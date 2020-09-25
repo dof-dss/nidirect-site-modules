@@ -80,9 +80,10 @@ class TaxonomyTermThemesBreadcrumb implements BreadcrumbBuilderInterface {
     // Remove the current term from the list.
     array_shift($ancestors);
 
-    $links[] = Link::createFromRoute(t('Home'), '<front>');
-
     if (!empty($ancestors)) {
+
+      $links[] = Link::createFromRoute(t('Home'), '<front>');
+
       $terms = (count($ancestors) > 1) ? array_reverse($ancestors, TRUE) : $ancestors;
 
       foreach ($terms as $term) {

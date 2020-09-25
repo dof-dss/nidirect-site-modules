@@ -289,37 +289,19 @@ function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $qu
           'left_field' => 'nid',
           'operator'   => '=',
         ];
+        // Add a join to the appropriate table, note
+        // that it is a 'left' join as it is not essential that there
+        // is an entry in the joined table for each practice.
+        $join_obj = Views::pluginManager('join')
+          ->createInstance('standard', $configuration);
+        $rel = $query->addRelationship($join_table, $join_obj, 'node_field_data');
+        // Replace the 'unknown' field in the query 'orderby' with the
+        // correct field.
         if ($join_table == 'node__field_gp_appointments') {
-          // We are sorting on the 'Online appointments' column.
-          //
-          // Add a join to the 'node__field_gp_appointments' table, note
-          // that it is a 'left' join as it is not essential that there
-          // is an entry in the 'node__field_gp_appointments' table for
-          // each practice.
-          $join_obj = Views::pluginManager('join')
-            ->createInstance('standard', $configuration);
-          // Use the alias 'gp_appointments'.
-          $rel = $query->addRelationship('gp_appointments', $join_obj, 'node_field_data');
-          // Replace the 'unknown' field in the query 'orderby' with the
-          // 'field_gp_appointments_uri' field on the
-          // 'node__field_gp_appointments' table.
-          $query->orderby[0]['field'] = 'gp_appointments.field_gp_appointments_uri';
+          $query->orderby[0]['field'] = $join_table . '.field_gp_appointments_uri';
         }
         elseif ($join_table == 'node__field_gp_prescriptions') {
-          // We are sorting on the 'Online prescriptions' column.
-          //
-          // Add a join to the 'node__field_gp_prescriptions' table, note
-          // that it is a 'left' join as it is not essential that there
-          // is an entry in the 'node__field_gp_prescriptions' table for
-          // each practice.
-          $join_obj = Views::pluginManager('join')
-            ->createInstance('standard', $configuration);
-          // Use the alias 'gp_prescriptions'.
-          $rel = $query->addRelationship('gp_prescriptions', $join_obj, 'node_field_data');
-          // Replace the 'unknown' field in the query 'orderby' with the
-          // 'field_gp_prescriptions_uri' field on the
-          // 'node__field_gp_appointments' table.
-          $query->orderby[0]['field'] = 'gp_prescriptions.field_gp_prescriptions_uri';
+          $query->orderby[0]['field'] = $join_table . '.field_gp_prescriptions_uri';
         }
       }
     }

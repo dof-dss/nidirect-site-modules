@@ -74,8 +74,8 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
 
     // Generate the header content to show N condition(s)
     // matching 'search term'.
-    $single_message = "@count condition under @search_term";
-    $plural_message = "@count conditions under @search_term";
+    $single_message = "@count condition";
+    $plural_message = "@count conditions";
   }
 
   if (empty($search_term) || $view->total_rows == 0) {

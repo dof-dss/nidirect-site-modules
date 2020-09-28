@@ -153,7 +153,7 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
       }
 
       $content['related_conditions'] = [
-        '#theme' => 'item_list',
+        '#theme' => 'item_list__related_condition_list',
         '#items' => $links,
         '#attributes' => [
           'class' => 'related-condition-list',

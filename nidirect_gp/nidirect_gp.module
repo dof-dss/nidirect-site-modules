@@ -5,12 +5,14 @@
  * Contains nidirect_gp.module.
  */
 
+use Drupal\views\Views;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
 use Drupal\views\ViewExecutable;
+use Drupal\views\Plugin\views\query\QueryPluginBase;
 
 /**
  * Implements hook_help().
@@ -245,4 +247,63 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   $title = str_replace('&amp;', '&', $title);
 
   return $title;
+}
+
+/**
+ * Implements hook_views_query_alter().
+ */
+function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
+  // Alter the view code for GP Practice Lists if being sorted on the
+  // 'Online appointments' or 'Online prescriptions' fields.
+  // This is necessary because Drupal 8 Views does not seem to handle the case
+  // of sorting on a 'link' field as it does not build the join correctly
+  // and just errors on the 'unknown' field that appears in the 'orderby'.
+  if ($view->id() == 'gp_practice_list') {
+    if (isset($query->orderby)
+      && is_array($query->orderby)
+      && isset($query->orderby[0])
+      && isset($query->orderby[0]['field'])) {
+      if ($query->orderby[0]['field'] == 'unknown') {
+        // Decide whether we are sorting by the 'Online appointments' column or
+        // by 'Online precriptions'.
+        $join_table = NULL;
+        $view_input = $view->getExposedInput();
+        if (isset($view_input) && isset($view_input['order'])) {
+          if ($view_input['order'] == 'nothing') {
+            // We are sorting by 'Online appointments'.
+            $join_table = 'node__field_gp_appointments';
+          }
+          elseif ($view_input['order'] == 'nothing_1') {
+            // We are sorting by 'Online prescriptions'.
+            $join_table = 'node__field_gp_prescriptions';
+          }
+          else {
+            return;
+          }
+        }
+        $configuration = [
+          'type'       => 'LEFT',
+          'table'      => $join_table,
+          'field'      => 'entity_id',
+          'left_table' => 'node_field_data',
+          'left_field' => 'nid',
+          'operator'   => '=',
+        ];
+        // Add a join to the appropriate table, note
+        // that it is a 'left' join as it is not essential that there
+        // is an entry in the joined table for each practice.
+        $join_obj = Views::pluginManager('join')
+          ->createInstance('standard', $configuration);
+        $rel = $query->addRelationship($join_table, $join_obj, 'node_field_data');
+        // Replace the 'unknown' field in the query 'orderby' with the
+        // correct field.
+        if ($join_table == 'node__field_gp_appointments') {
+          $query->orderby[0]['field'] = $join_table . '.field_gp_appointments_uri';
+        }
+        elseif ($join_table == 'node__field_gp_prescriptions') {
+          $query->orderby[0]['field'] = $join_table . '.field_gp_prescriptions_uri';
+        }
+      }
+    }
+  }
 }

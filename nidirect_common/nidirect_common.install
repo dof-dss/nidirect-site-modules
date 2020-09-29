@@ -2,7 +2,7 @@
 
 /**
  * @file
- * Install, update, uninstall and requirements hooks for the NIDirect common module.
+ * Install, update, uninstall & requirements hooks for NIDirect common module.
  */
 
 use Drupal\Core\Link;

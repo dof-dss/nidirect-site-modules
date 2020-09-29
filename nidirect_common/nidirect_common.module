@@ -398,10 +398,15 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if ($add_date_validation) {
     array_unshift($form['#validate'], 'nidirect_common_validate_publication_date');
   }
+
+  if (array_key_exists('field_telephone', $form)) {
+    array_unshift($form['#validate'], 'nidirect_common_validate_telephone');
+  }
+
 }
 
 /**
- * Form validation handler.
+ * Form validation handler for publication dates.
  */
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
   // Temporarily store all form errors.
@@ -475,6 +480,22 @@ function validate_date_field(&$form_state, $date_field) {
       }
     }
   }
+}
+
+/**
+ * Form validation handler for telephone fields.
+ */
+function nidirect_common_validate_telephone(&$form, FormStateInterface $form_state) {
+
+  $telephones = $form_state->getValues()['field_telephone'];
+
+  foreach ($telephones as $index => $telephone) {
+    $number = $telephone['telephone_container']['telephone_number'];
+    if (!empty($number) && preg_match('/[^\d\s+().-]/m', $number)) {
+      $form_state->setErrorByName('field_telephone][' . $index . '][value', t('Telephone number invalid.'));
+    }
+  }
+
 }
 
 /**

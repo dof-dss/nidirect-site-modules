@@ -399,6 +399,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     array_unshift($form['#validate'], 'nidirect_common_validate_publication_date');
   }
 
+  // Custom validation for Telephone_Plus field.
   if (array_key_exists('field_telephone', $form)) {
     array_unshift($form['#validate'], 'nidirect_common_validate_telephone');
   }

@@ -343,7 +343,9 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
     );
 
     // Replace the URL of revisions link with the updated Link Url object.
-    $build['actions']['secondary']['version_history']['#url'] = $revisions_link->getUrl();
+    if (!empty($build['actions']['secondary']['version_history']['#url'])) {
+      $build['actions']['secondary']['version_history']['#url'] = $revisions_link->getUrl();
+    }
 
     // Strip AJAX class to link direct to page.
     if (!empty($build['actions']['version_history']['#attributes']['class'])) {

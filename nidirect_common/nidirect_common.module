@@ -346,7 +346,9 @@ function nidirect_common_moderation_sidebar_alter(&$build, &$context) {
     $build['actions']['secondary']['version_history']['#url'] = $revisions_link->getUrl();
 
     // Strip AJAX class to link direct to page.
-    $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
+    if (!empty($build['actions']['version_history']['#attributes']['class'])) {
+      $build['actions']['secondary']['version_history']['#attributes']['class'] = array_diff($build['actions']['version_history']['#attributes']['class'], ['use-ajax']);
+    }
   }
 
   if ($context instanceof Node && $context->getType() == 'webform') {

@@ -237,7 +237,8 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   // Clear the form errors.
   $form_state->clearErrors();
 
-  $date_fields = ['field_published_date',
+  $date_fields = [
+    'field_published_date',
     'field_last_review_date',
     'field_next_review_date',
     'field_cwp_payments_period',
@@ -434,4 +435,16 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
   }
 
   return $field_value;
+}
+
+/**
+ * Implements hook_clientside_validation_should_validate().
+ */
+function nidirect_common_clientside_validation_should_validate($element, FormStateInterface &$form_state, $form_id) {
+  // Turn off clientside validation jquery functionality on anything that isn't a webform form.
+  // Also see: nidirect_common_page_attachments_alter. nidirect_common_form_BASE_FORM_ID_alter hooks
+  // where similar adjustments have been needed to work around clientside_validation module.
+  if (!preg_match('/^webform_/', $form_id)) {
+    return FALSE;
+  }
 }

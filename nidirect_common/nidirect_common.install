@@ -132,7 +132,12 @@ function nidirect_common_update_8001() {
       'field_summary_value'
     ])
     ->execute()
-    ->fetchAll();
+    ->fetchAllAssoc('entity_id');
+
+  // Remove markup from summary field values.
+  foreach ($summary_data as $id => $data) {
+    $summary_data[$id]->field_summary_value = strip_tags($data->field_summary_value);
+  }
 
   $field_storage = FieldStorageConfig::loadByName('node', 'field_summary');
 

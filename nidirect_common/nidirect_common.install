@@ -109,7 +109,6 @@ function nidirect_common_requirements($phase) {
   return $requirements;
 }
 
-
 /**
  * Implementations of hook_update_N().
  */
@@ -129,7 +128,7 @@ function nidirect_common_update_8001() {
       'revision_id',
       'langcode',
       'delta',
-      'field_summary_value'
+      'field_summary_value',
     ])
     ->execute()
     ->fetchAllAssoc('entity_id');

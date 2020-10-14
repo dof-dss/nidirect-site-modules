@@ -26,12 +26,14 @@ module.exports = {
       .click('input#edit-submit');
 
     // Should now be on the node display page. Open the sidebar.
-    browser.click('.moderation-sidebar-toolbar-tab.toolbar-tab > a');
+    browser.pause(2000).click('.moderation-sidebar-toolbar-tab.toolbar-tab > a');
 
     // Click the Layout button link. We're selecting by order of button appearance;
     // would be better to find some way of reading the link text value instead.
-    browser.expect.element('.moderation-sidebar-secondary-tasks > a:nth-child(3)').text.to.equal('Layout');
-    browser.click('.moderation-sidebar-secondary-tasks > a:nth-child(3)');
+    browser.useXpath().click("//*[@class=\"moderation-sidebar-secondary-tasks\"]//a[text()='Layout']");
+
+    // Swap back to CSS selectors.
+    browser.useCss();
 
     // Now at /node/NID/layout, need to add a section.
     browser.click('#layout-builder a.layout-builder__link--add');

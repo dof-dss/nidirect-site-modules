@@ -186,6 +186,18 @@ function nidirect_common_update_8001() {
         ->execute();
     }
   }
+
+  // Add the updated field to the Form Display mode.
+  foreach ($node_summary_fields as $node_summary_field) {
+    \Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load('node.' . $node_summary_field['bundle'] . '.default')
+      ->setComponent('field_summary', [
+        'weight' => 4,
+        'type' => 'string_textarea',
+        'settings' => [],
+      ])->save();
+  }
 }
 
 /**

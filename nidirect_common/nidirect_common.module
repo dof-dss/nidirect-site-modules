@@ -207,27 +207,6 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_page_attachments_alter().
- */
-function nidirect_common_page_attachments_alter(array &$attachments) {
-  // Turn off clientside_validation on selected routes. Usually due to
-  // interference with other AJAX related features, eg: Media Library.
-  $routes = [
-    'entity.node.edit_form',
-    'entity.media.edit_form',
-    'node.add',
-    'media.add',
-    'layout_builder.overrides.node.view',
-  ];
-
-  if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
-    // 1 == Yes, 2 == No.
-    // See ClientsideValidationjQuerySettingsForm::buildForm().
-    $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
-  }
-}
-
-/**
  * Form validation handler for publication dates.
  */
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {

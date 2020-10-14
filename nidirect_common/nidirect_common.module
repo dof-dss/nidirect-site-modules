@@ -427,3 +427,15 @@ function nidirect_common_clientside_validation_should_validate($element, FormSta
     return FALSE;
   }
 }
+
+  /**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function nidirect_common_form_system_performance_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Alter the system performance admin screen so that a 'Browser and proxy
+  // cache maximum age' of 1 year may be selected.
+  // Also add an informative suffix to make it clear that this has been done.
+  $form['caching']['page_cache_maximum_age']['#options'][31536000] = t("1 year");
+  $form['caching']['page_cache_maximum_age']['#suffix'] = t("<i>@suffix</i>",
+    ['@suffix' => "Note that Drupal core settings have been customised here for NIDirect to allow for a maximum age of 1 year"]);
+}

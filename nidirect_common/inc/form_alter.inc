@@ -120,8 +120,11 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['flag']['featured_content']['#access'] = FALSE;
   }
 
-  // Hide promote to front-page option.
+  // Hide 'promote to front-page' option.
   $form['promote']['#access'] = FALSE;
+
+  // Hide 'Sticky at top of lists' option.
+  $form['sticky']['#access'] = FALSE;
 
   // Update description for Table of Contents option.
   if (array_key_exists('field_toc_enable', $form)) {
@@ -157,7 +160,6 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if (array_key_exists('field_telephone', $form)) {
     array_unshift($form['#validate'], 'nidirect_common_validate_telephone');
   }
-
 }
 
 /**

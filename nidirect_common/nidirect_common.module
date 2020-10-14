@@ -428,7 +428,7 @@ function nidirect_common_clientside_validation_should_validate($element, FormSta
   }
 }
 
-  /**
+/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_system_performance_settings_alter(&$form, FormStateInterface $form_state, $form_id) {

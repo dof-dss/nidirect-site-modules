@@ -149,11 +149,19 @@ function nidirect_common_update_8001() {
   foreach ($field_storage->getBundles() as $id => $label) {
     $field = FieldConfig::loadByName('node', $id, 'field_summary');
     $field_config = $field->toArray();
-    // Change the field type from text_long to string_long.
-    $field_config['field_type'] = 'string_long';
-    // Reset the settings configuration, this will be updated from the yml.
-    $field_config['settings'] = [];
-    $node_summary_fields[] = $field_config;
+
+    if ($field_config['field_type'] === 'text_long') {
+      // Change the field type from text_long to string_long.
+      $field_config['field_type'] = 'string_long';
+      // Reset the settings configuration, this will be updated from the yml.
+      $field_config['settings'] = [];
+      $node_summary_fields[] = $field_config;
+    }
+  }
+
+  // Nothing to update, exit.
+  if (empty($node_summary_fields)) {
+    return;
   }
 
   // Delete the existing summary field storage and purge any existing data.

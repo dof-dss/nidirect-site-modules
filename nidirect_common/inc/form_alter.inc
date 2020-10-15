@@ -56,20 +56,6 @@ function nidirect_common_inline_entity_form_entity_form_alter(&$entity_form, &$f
 }
 
 /**
- * Implements hook_form_media_alter().
- */
-function nidirect_common_form_media_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-  // Turn off client-side validation on media base forms.
-  if (!empty($form['#after_build'])) {
-    foreach ($form['#after_build'] as $key => $value) {
-      if ($value == 'clientside_validation_form_after_build') {
-        unset($form['#after_build'][$key]);
-      }
-    }
-  }
-}
-
-/**
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_taxonomy_term_form_alter(&$form, FormStateInterface $form_state, $form_id) {
@@ -134,8 +120,11 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['flag']['featured_content']['#access'] = FALSE;
   }
 
-  // Hide promote to front-page option.
+  // Hide 'promote to front-page' option.
   $form['promote']['#access'] = FALSE;
+
+  // Hide 'Sticky at top of lists' option.
+  $form['sticky']['#access'] = FALSE;
 
   // Update description for Table of Contents option.
   if (array_key_exists('field_toc_enable', $form)) {
@@ -144,16 +133,6 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
       $field_toc_enable_description = t(
         'Enable to display a list of quick links to Heading 2s on the page.'
       );
-    }
-  }
-
-  // Turn off client-side validation on node base forms;
-  // it breaks entity browser preview widgets.
-  if (!empty($form['#after_build'])) {
-    foreach ($form['#after_build'] as $key => $value) {
-      if ($value == 'clientside_validation_form_after_build') {
-        unset($form['#after_build'][$key]);
-      }
     }
   }
 
@@ -181,7 +160,6 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if (array_key_exists('field_telephone', $form)) {
     array_unshift($form['#validate'], 'nidirect_common_validate_telephone');
   }
-
 }
 
 /**

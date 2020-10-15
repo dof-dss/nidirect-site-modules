@@ -207,27 +207,6 @@ function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
 }
 
 /**
- * Implements hook_page_attachments_alter().
- */
-function nidirect_common_page_attachments_alter(array &$attachments) {
-  // Turn off clientside_validation on selected routes. Usually due to
-  // interference with other AJAX related features, eg: Media Library.
-  $routes = [
-    'entity.node.edit_form',
-    'entity.media.edit_form',
-    'node.add',
-    'media.add',
-    'layout_builder.overrides.node.view',
-  ];
-
-  if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
-    // 1 == Yes, 2 == No.
-    // See ClientsideValidationjQuerySettingsForm::buildForm().
-    $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
-  }
-}
-
-/**
  * Form validation handler for publication dates.
  */
 function nidirect_common_validate_publication_date(&$form, FormStateInterface $form_state) {
@@ -237,7 +216,8 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   // Clear the form errors.
   $form_state->clearErrors();
 
-  $date_fields = ['field_published_date',
+  $date_fields = [
+    'field_published_date',
     'field_last_review_date',
     'field_next_review_date',
     'field_cwp_payments_period',
@@ -434,4 +414,28 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
   }
 
   return $field_value;
+}
+
+/**
+ * Implements hook_clientside_validation_should_validate().
+ */
+function nidirect_common_clientside_validation_should_validate($element, FormStateInterface &$form_state, $form_id) {
+  // Turn off clientside validation jquery functionality on anything that isn't a webform form.
+  // Also see: nidirect_common_page_attachments_alter. nidirect_common_form_BASE_FORM_ID_alter hooks
+  // where similar adjustments have been needed to work around clientside_validation module.
+  if (!preg_match('/^webform_/', $form_id)) {
+    return FALSE;
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function nidirect_common_form_system_performance_settings_alter(&$form, FormStateInterface $form_state, $form_id) {
+  // Alter the system performance admin screen so that a 'Browser and proxy
+  // cache maximum age' of 1 year may be selected.
+  // Also add an informative suffix to make it clear that this has been done.
+  $form['caching']['page_cache_maximum_age']['#options'][31536000] = t("1 year");
+  $form['caching']['page_cache_maximum_age']['#suffix'] = t("<i>@suffix</i>",
+    ['@suffix' => "Note that Drupal core settings have been customised here for NIDirect to allow for a maximum age of 1 year"]);
 }

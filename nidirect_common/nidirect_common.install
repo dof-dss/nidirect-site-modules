@@ -6,6 +6,8 @@
  */
 
 use Drupal\Core\Link;
+use Drupal\field\Entity\FieldConfig;
+use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\user\Entity\User;
 
 /**
@@ -105,6 +107,97 @@ function nidirect_common_requirements($phase) {
   }
 
   return $requirements;
+}
+
+/**
+ * Implementations of hook_update_N().
+ */
+
+/**
+ * Convert field_summary to plain text long.
+ */
+function nidirect_common_update_8001() {
+  $database = \Drupal::database();
+
+  // Fetch the existing summary field data for injecting later.
+  $summary_data = $database->select('node__field_summary', 'n')
+    ->fields('n', [
+      'bundle',
+      'deleted',
+      'entity_id',
+      'revision_id',
+      'langcode',
+      'delta',
+      'field_summary_value',
+    ])
+    ->execute()
+    ->fetchAllAssoc('entity_id');
+
+  // Remove markup from summary field values.
+  foreach ($summary_data as $id => $data) {
+    $summary_data[$id]->field_summary_value = strip_tags($data->field_summary_value);
+  }
+
+  $field_storage = FieldStorageConfig::loadByName('node', 'field_summary');
+
+  // Retrieve and update summary field storage.
+  $summary_field_storage = $field_storage->toArray();
+  $summary_field_storage['type'] = 'string_long';
+  $summary_field_storage['settings'] = [];
+
+  // Retrieve and update summary field config for each node type.
+  foreach ($field_storage->getBundles() as $id => $label) {
+    $field = FieldConfig::loadByName('node', $id, 'field_summary');
+    $field_config = $field->toArray();
+
+    if ($field_config['field_type'] === 'text_long') {
+      // Change the field type from text_long to string_long.
+      $field_config['field_type'] = 'string_long';
+      // Reset the settings configuration, this will be updated from the yml.
+      $field_config['settings'] = [];
+      $node_summary_fields[] = $field_config;
+    }
+  }
+
+  // Nothing to update, exit.
+  if (empty($node_summary_fields)) {
+    return;
+  }
+
+  // Delete the existing summary field storage and purge any existing data.
+  $field_storage->delete();
+  field_purge_batch(100);
+
+  // Create storage for summary field.
+  $summary_field_storage = FieldStorageConfig::create($summary_field_storage);
+  $summary_field_storage->save();
+
+  // Create new summary fields for each node type.
+  foreach ($node_summary_fields as $field) {
+    $field_config = FieldConfig::create($field);
+    $field_config->save();
+  }
+
+  // Inject existing dummary data into new fields.
+  if (!empty($summary_data)) {
+    foreach ($summary_data as $row) {
+      $database->insert('node__field_summary')
+        ->fields((array) $row)
+        ->execute();
+    }
+  }
+
+  // Add the updated field to the Form Display mode.
+  foreach ($node_summary_fields as $node_summary_field) {
+    \Drupal::entityTypeManager()
+      ->getStorage('entity_form_display')
+      ->load('node.' . $node_summary_field['bundle'] . '.default')
+      ->setComponent('field_summary', [
+        'weight' => 4,
+        'type' => 'string_textarea',
+        'settings' => [],
+      ])->save();
+  }
 }
 
 /**

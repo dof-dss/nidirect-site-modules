@@ -7,7 +7,6 @@
 
 use Drupal\Core\Link;
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\views\ViewExecutable;
 
@@ -100,25 +99,5 @@ function nidirect_news_views_pre_render(ViewExecutable $view) {
         }
       }
     }
-  }
-}
-
-/**
- * Implements hook_views_pre_build().
- */
-function nidirect_news_views_pre_build(ViewExecutable $view) {
-  if ($view->id() == 'news' && $view->current_display == 'featured_news_block') {
-    $featured_news_ids = \Drupal::service('nidirect_news.news')->getFeaturedNewsIds();
-
-    // If we're on a news node page, exclude the currently viewed node.
-    $node = \Drupal::routeMatch()->getParameter('node');
-
-    if ($node instanceof NodeInterface) {
-      // Need array_search to return the index of the item to unset, because
-      // unset($key) alone won't check the value, just the array index value.
-      unset($featured_news_ids[array_search($node->id(), $featured_news_ids)]);
-    }
-
-    $view->setArguments([implode(',', $featured_news_ids ?? [])]);
   }
 }

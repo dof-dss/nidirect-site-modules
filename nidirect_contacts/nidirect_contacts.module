@@ -72,9 +72,7 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     ],
   ];
   $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
-  $show_search = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
   $reset_az = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
-  $reset_search = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
 
   // Add to render array by default; toggle visibility after.
   $variables['links']['reset_az'] = $reset_az->toRenderable();

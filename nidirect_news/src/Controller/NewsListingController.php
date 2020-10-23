@@ -114,7 +114,7 @@ class NewsListingController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    *   PluginNotFoundException definition.
    */
-  public function getFeaturedNews() {
+  public function getNewsEmbed($display_id = 'latest_news') {
     $featured_news_ids = $this->getFeaturedNewsIds();
 
     // Load/execute the view to extract the node ids; we add these as
@@ -122,12 +122,12 @@ class NewsListingController extends ControllerBase {
     // duplication between the two blocks and retain the 'sticky'
     // flag ability to pin important items to the list of top four items.
     $view = $this->entityTypeManager()->getStorage('view')->load('news')->getExecutable();
-    $view->setDisplay('latest_news');
+    $view->setDisplay($display_id);
     $view->initHandlers();
     $view->setArguments([implode(',', $featured_news_ids ?? [])]);
     $view->preExecute();
     $view->execute();
-    $view->buildRenderable('latest_news');
+    $view->buildRenderable($display_id);
 
     // Views' SQL query will naturally order the rows by node id, ascending.
     // It's not easy to introduce the original weightings into the SQL query
@@ -141,9 +141,9 @@ class NewsListingController extends ControllerBase {
     // and anonymous/lamba functions within, but we should choose clarity
     // over brevity.
     foreach ($featured_news_ids as $id) {
-      foreach ($view->result as $row) {
+      foreach ($view->result as $index => $row) {
         if ($row->nid == $id) {
-          $sorted_results[] = $row;
+          $sorted_results[$index] = $row;
           break;
         }
       }
@@ -171,7 +171,7 @@ class NewsListingController extends ControllerBase {
 
     // Empty page parameter means we're on the landing page for news.
     if (empty($this->requestStack->getCurrentRequest()->query->get('page'))) {
-      $content['latest_news'] = $this->getFeaturedNews();
+      $content['latest_news'] = $this->getNewsEmbed();
 
       // View title: see views_embed_view() which the render array relies on for
       // details of why this is missing.

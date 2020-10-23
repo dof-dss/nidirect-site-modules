@@ -105,3 +105,29 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_contacts_preprocess_node(&$variables) {
+  $field_address = &$variables['content']['field_address'];
+  $field_location = &$variables['content']['field_location'];
+
+  if (empty($field_address)) {
+    return;
+  }
+
+  $required_fields = $field_address[0]['#address_format']->getRequiredFields();
+
+  // If the address field values don't have any of the required field values, hide the location field.
+  $has_value = FALSE;
+  foreach ($required_fields as $field_id) {
+    if (!empty($field_address[0][$field_id]['#value'])) {
+      $has_value = TRUE;
+    }
+  }
+
+  if ($has_value == FALSE) {
+    hide($field_location);
+  }
+}

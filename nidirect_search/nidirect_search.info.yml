@@ -1,4 +1,4 @@
-name: 'NI Direct Search'
+name: 'NIDirect Search'
 type: module
 description: 'Search customisations for NI Direct'
 core_version_requirement: ^8.8 || ^9

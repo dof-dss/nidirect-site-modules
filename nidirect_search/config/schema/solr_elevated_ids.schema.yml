@@ -8,6 +8,9 @@ nidirect_search.solr_elevated_id.*:
     label:
       type: label
       label: 'Label'
+    index:
+      type: string
+      label: 'Index'
     nodes:
       type: string
       label: 'Nodes'

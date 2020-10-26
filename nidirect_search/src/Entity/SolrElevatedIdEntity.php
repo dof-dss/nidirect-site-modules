@@ -22,7 +22,6 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",
- *     "nodes" = "nodes",
  *     "uuid" = "uuid"
  *   },
  *   links = {
@@ -34,24 +33,38 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
 class SolrElevatedIdEntity extends ConfigEntityBase implements SolrElevatedIdEntityInterface {
 
   /**
-   * The Weather station ID.
+   * The Solr Elevated ID identifier.
    *
    * @var string
    */
   protected $id;
 
   /**
-   * The Weather station label.
+   * The Solr Elevated ID search term.
    *
    * @var string
    */
   protected $label;
 
   /**
-   * The Weather station postcodes.
+   * The Solr index to elevate against.
    *
    * @var string
    */
-  protected $postcodes;
+  protected $index;
+
+  /**
+   * The nodes IDs to elevate for this term.
+   *
+   * @var string
+   */
+  protected $nodes;
+
+  /**
+   * The Solr Elevated ID status.
+   *
+   * @var bool
+   */
+  protected $status;
 
 }

@@ -14,8 +14,8 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['label'] = $this->t('Label');
-    $header['id'] = $this->t('Machine name');
+    $header['label'] = $this->t('Search term');
+    $header['index'] = $this->t('Solr index');
     $header['status'] = $this->t('Status');
     return $header + parent::buildHeader();
   }
@@ -25,9 +25,23 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
    */
   public function buildRow(EntityInterface $entity) {
     $row['label'] = $entity->label();
-    $row['id'] = $entity->id();
+    $row['id'] = $entity->index();
     $row['status'] = $entity->status() ? $this->t('Enabled') : $this->t('Disabled');
     return $row + parent::buildRow($entity);
+  }
+
+  /**
+   * @inheritDoc
+   */
+  public function getOperations(EntityInterface $entity) {
+    $operations = parent::getOperations($entity);
+
+    if (!empty($operations['edit'])) {
+      $edit = $operations['edit']['url'];
+      $edit->setRouteParameters(['solr_elevated_id' => $entity->id(),]);
+    }
+
+    return $operations;
   }
 
 }

@@ -13,3 +13,11 @@ entity.solr_elevated_id.add_form:
     _title: 'Add a Solr elevated ID'
   requirements:
     _permission: 'administer search api'
+
+entity.solr_elevated_id.edit_form:
+  path: '/admin/config/search/solr-elevated-id/{solr_elevated_id}'
+  defaults:
+    _entity_form: 'solr_elevated_id.edit'
+    _title: 'Edit a Solr elevated ID'
+  requirements:
+    _permission: 'administer search api'

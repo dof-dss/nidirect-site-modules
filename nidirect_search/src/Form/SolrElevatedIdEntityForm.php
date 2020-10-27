@@ -91,10 +91,31 @@ class SolrElevatedIdEntityForm extends EntityForm {
     $form['status'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enabled'),
-      '#default_value' => $this->entity->status(),
+      '#default_value' => ($this->entity->isNew()) ? TRUE : $this->entity->status(),
     ];
 
     return $form;
+  }
+
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+
+    $nodes = trim($form_state->getValue('nodes'), ',');
+    $error_nids = [];
+
+    foreach(explode(',', $nodes) as $nid) {
+      if (!is_numeric($nid)) {
+        $error_nids[] = $nid;
+      }
+    }
+
+    if (!empty($error_nids)) {
+      $form_state->setErrorByName('nodes',
+        $this->t('The following should be node id\'s only: @error_nids', [
+          '@error_nids' => implode(',', $error_nids)
+        ])
+      );
+    }
   }
 
   /**
@@ -102,6 +123,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $form_state->setValue('label', strtolower($form_state->getValue('label')));
+    $form_state->setValue('nodes', trim($form_state->getValue('nodes'), ','));
 
     parent::submitForm($form, $form_state);
   }

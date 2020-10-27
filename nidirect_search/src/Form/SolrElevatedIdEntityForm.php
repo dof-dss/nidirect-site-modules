@@ -83,7 +83,8 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#title' => $this->t('Nodes'),
       '#maxlength' => 255,
       '#default_value' => $this->entity->nodes(),
-      '#description' => $this->t('Nodes to elevate'),
+      '#description' => $this->t('Comma separated nodes ids to elevate'),
+      '#placeholder' => 'e.g. 1, 1021, 67',
       '#required' => TRUE,
     ];
 
@@ -94,6 +95,15 @@ class SolrElevatedIdEntityForm extends EntityForm {
     ];
 
     return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $form_state->setValue('label', strtolower($form_state->getValue('label')));
+
+    parent::submitForm($form, $form_state);
   }
 
   /**

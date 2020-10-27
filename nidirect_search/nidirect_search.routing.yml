@@ -21,3 +21,11 @@ entity.solr_elevated_id.edit_form:
     _title: 'Edit a Solr elevated ID'
   requirements:
     _permission: 'administer search api'
+
+entity.solr_elevated_id.delete_form:
+  path: '/admin/config/search/solr-elevated-id/{solr_elevated_id}/delete'
+  defaults:
+    _entity_form: 'solr_elevated_id.delete'
+    _title: 'Delete a Solr elevated ID'
+  requirements:
+    _permission: 'administer search api'

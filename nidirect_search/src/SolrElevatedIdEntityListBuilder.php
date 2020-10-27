@@ -41,6 +41,11 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
       $edit->setRouteParameters(['solr_elevated_id' => $entity->id(),]);
     }
 
+    if (!empty($operations['delete'])) {
+      $edit = $operations['delete']['url'];
+      $edit->setRouteParameters(['solr_elevated_id' => $entity->id(),]);
+    }
+
     return $operations;
   }
 

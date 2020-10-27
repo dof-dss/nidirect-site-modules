@@ -15,7 +15,8 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
  *     "list_builder" = "Drupal\nidirect_search\SolrElevatedIdEntityListBuilder",
  *     "form" = {
  *       "add" = "Drupal\nidirect_search\Form\SolrElevatedIdEntityForm",
- *       "edit" = "Drupal\nidirect_search\Form\SolrElevatedIdEntityForm"
+ *       "edit" = "Drupal\nidirect_search\Form\SolrElevatedIdEntityForm",
+ *       "delete" = "Drupal\Core\Entity\EntityDeleteForm"
  *     }
  *   },
  *   config_prefix = "solr_elevated_id",
@@ -28,6 +29,7 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
  *   links = {
  *     "add-form" = "/admin/config/search/solr-elevated-id/add",
  *     "edit-form" = "/admin/config/search/solr-elevated-id/{solr_elevated_id}",
+ *     "delete-form" = "/admin/config/search/solr-elevated-id/{solr_elevated_id}/delete",
  *     "collection" = "/admin/config/search/solr-elevated-id/"
  *   }
  * )

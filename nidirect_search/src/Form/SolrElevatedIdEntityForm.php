@@ -44,7 +44,6 @@ class SolrElevatedIdEntityForm extends EntityForm {
    * {@inheritdoc}
    */
   public function form(array $form, FormStateInterface $form_state) {
-
     $form = parent::form($form, $form_state);
 
     $form['label'] = [
@@ -65,6 +64,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#disabled' => !$this->entity->isNew(),
     ];
 
+    // Construct the index options by fetching the current Solr server indexes.
     foreach ($this->solr_server->getIndexes() as $id => $index) {
       $index_options[$id] = $index->label();
     }
@@ -83,7 +83,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#title' => $this->t('Nodes'),
       '#maxlength' => 255,
       '#default_value' => $this->entity->nodes(),
-      '#description' => $this->t('Comma separated nodes ids to elevate'),
+      '#description' => $this->t('Comma separated node ids to elevate for this search term'),
       '#placeholder' => 'e.g. 1, 1021, 67',
       '#required' => TRUE,
     ];
@@ -103,6 +103,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
     $nodes = trim($form_state->getValue('nodes'), ',');
     $error_nids = [];
 
+    // Ensure that we're dealing with nids only.
     foreach(explode(',', $nodes) as $nid) {
       if (!is_numeric($nid)) {
         $error_nids[] = $nid;
@@ -122,6 +123,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    // Lower case the search term/label for query search matching.
     $form_state->setValue('label', strtolower($form_state->getValue('label')));
     $form_state->setValue('nodes', trim($form_state->getValue('nodes'), ','));
 
@@ -135,8 +137,8 @@ class SolrElevatedIdEntityForm extends EntityForm {
     $result = parent::save($form, $form_state);
 
     $message = $result === SAVED_NEW
-      ? $this->t('Created new Solr elevated id: %label.', ['%label' => $this->entity->label()])
-      : $this->t('Updated Solr elevated id: %label.', ['%label' => $this->entity->label()]);
+      ? $this->t('Created new Solr elevated ID entity: %label.', ['%label' => $this->entity->label()])
+      : $this->t('Updated Solr elevated ID entity: %label.', ['%label' => $this->entity->label()]);
     $this->messenger()->addStatus($message);
 
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));

@@ -72,8 +72,20 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   $solarium_query->addParam('spellcheck.extendedResults', FALSE);
   $solarium_query->addParam('spellcheck.count', 1);
 
-  $elevation_ids = [];
+  // General search tweaks.
+  $solarium_query->addParam('mm.autoRelax', TRUE);
+
   $index_id = 'default_content';
+
+  if ($route_name == 'view.search.search_page') {
+    // General search config.
+    $solarium_query->addParam('defType', 'edismax');
+    $solarium_query->addParam('tie', '0.01');
+  }
+
+  if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
+    $index_id = 'contacts';
+  }
 
   $solr_elevated_entity_storage = \Drupal::entityTypeManager()->getStorage('solr_elevated_id');
 
@@ -89,52 +101,11 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
 
   $solr_elevated_entity = $solr_elevated_entity_storage->load(current($solr_elevated_entity_id));
 
-  if (empty($solr_elevated_entity)) {
+  if ($solr_elevated_entity === null) {
     return;
   }
 
   $elevation_ids = explode(',', $solr_elevated_entity->nodes());
-
-  $solarium_query->addParam('mm.autoRelax', TRUE);
-
-  if ($route_name == 'view.search.search_page') {
-    // General search config.
-    $solarium_query->addParam('defType', 'edismax');
-    $solarium_query->addParam('tie', '0.01');
-  }
-
-  // Contacts search refinements.
-  if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
-    $index_id = 'contacts';
-
-    // Contacts elevations.
-    switch (strtolower($search_term)) {
-      case 'access ni':
-        // Access NI.
-        $elevation_ids[] = 'node/9925';
-
-        break;
-
-      case 'water board':
-        // Northern Ireland Water.
-        $elevation_ids[] = 'node/330';
-
-        break;
-
-      case 'tourism ni':
-        // Tourism Northern Ireland.
-        $elevation_ids[] = 'node/468';
-
-        break;
-
-      case 'transport ni':
-      case 'roads service':
-        // DfI Roads (formerly known as: TransportNI, Roads Service).
-        $elevation_ids[] = 'node/3710';
-
-        break;
-    }
-  }
 
   // Add elevations to the query.
   if (!empty($elevation_ids)) {

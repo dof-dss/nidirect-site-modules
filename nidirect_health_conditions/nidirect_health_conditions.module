@@ -9,6 +9,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\Markup;
+use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 use Drupal\views\ViewExecutable;
 
@@ -234,5 +235,71 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
 function nidirect_health_conditions_preprocess_node(array &$variables) {
   if ($variables['node']->getType() === 'health_condition') {
     $variables['#attached']['library'][] = 'nidirect_health_conditions/search_conditions_prompt';
+  }
+}
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function nidirect_health_conditions_page_attachments_alter(array &$attachments) {
+
+  if (empty($attachments['#attached']['html_head'])) {
+    return;
+  }
+
+  if (\Drupal::routeMatch()->getRouteName() != 'entity.node.canonical') {
+    return;
+  }
+
+  // Preprocess Health condition nodes' schema.org metatags.
+  $node = \Drupal::routeMatch()->getParameter('node');
+
+  if ($node instanceof NodeInterface && $node->bundle() == 'health_condition') {
+    // Collect tags added by Schema Metatag into structured data array.
+    $schema_metatag_manager = \Drupal::service('schema_metatag.schema_metatag_manager');
+    $items = $schema_metatag_manager->parseJsonld($attachments['#attached']['html_head']);
+
+    // Always add or replace any existing entries for 'about' with some
+    // preprocessed details from the health condition node.
+    $items['@graph'][0]['about'] = [
+      '@type' => "MedicalCondition",
+      'name' => $node->getTitle(),
+    ];
+
+    $hc_alternative_nodes = \Drupal::entityTypeManager()->getStorage('node')
+      ->loadByProperties([
+        'type' => 'health_condition_alternative',
+        'field_parent_condition' => $node->id(),
+        'status' => 1,
+      ]);
+
+    if (!empty($hc_alternative_nodes)) {
+      $ac_names = array_map(function ($alt_node) {
+        return $alt_node->getTitle();
+      }, $hc_alternative_nodes);
+
+      $items['@graph'][0]['about']['alternateName'] = array_values($ac_names);
+    }
+
+    // Map our symptoms to the 'keywords' element.
+    $symptoms = \Drupal::service('nidirect_health_conditions.utility')->getSymptoms($node);
+
+    if (!empty($symptoms)) {
+      $items['@graph'][0]['keywords'] = $symptoms;
+    }
+
+    // Re-encode the JSON-LD for the page head.
+    $jsonld = $schema_metatag_manager->encodeJsonld($items);
+    if (!empty($jsonld)) {
+      $attachments['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#value' => $jsonld,
+          '#attributes' => ['type' => 'application/ld+json'],
+        ],
+        'schema_metatag',
+      ];
+    }
   }
 }

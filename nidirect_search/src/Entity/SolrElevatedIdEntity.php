@@ -67,4 +67,18 @@ class SolrElevatedIdEntity extends ConfigEntityBase implements SolrElevatedIdEnt
    */
   protected $status;
 
+  /**
+   * {@inheritdoc}
+   */
+  public function index() {
+    return $this->index;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function nodes() {
+    return $this->nodes;
+  }
+
 }

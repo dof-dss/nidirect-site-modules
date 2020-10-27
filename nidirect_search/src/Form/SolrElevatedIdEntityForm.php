@@ -73,7 +73,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Search index'),
       '#options' => $index_options,
-      '#default_value' => $this->entity->label(),
+      '#default_value' => $this->entity->index(),
       '#description' => $this->t('Solr search index to elevate against.'),
       '#required' => TRUE,
     ];
@@ -82,7 +82,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Nodes'),
       '#maxlength' => 255,
-      '#default_value' => $this->entity->label(),
+      '#default_value' => $this->entity->nodes(),
       '#description' => $this->t('Nodes to elevate'),
       '#required' => TRUE,
     ];

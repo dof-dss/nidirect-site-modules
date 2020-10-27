@@ -14,9 +14,25 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildHeader() {
-    $header['label'] = $this->t('Search term');
-    $header['index'] = $this->t('Solr index');
-    $header['status'] = $this->t('Status');
+    $header = [
+      'label' => [
+        'data' => $this->t('Search term'),
+        'field' => 'label',
+        'specifier' => 'label',
+      ],
+      'index' => [
+        'data' => $this->t('Solr index'),
+        'field' => 'index',
+        'specifier' => 'index',
+        'class' => [RESPONSIVE_PRIORITY_LOW],
+      ],
+      'status' => [
+        'data' => $this->t('Status'),
+        'field' => 'status',
+        'specifier' => 'status',
+      ],
+    ];
+
     return $header + parent::buildHeader();
   }
 
@@ -47,6 +63,18 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
     }
 
     return $operations;
+  }
+
+  public function load() {
+    $query = $this->getStorage()->getQuery();
+    $header = $this->buildHeader();
+
+    $query->pager(50);
+    $query->tableSort($header);
+
+    $ids = $query->execute();
+
+    return $this->storage->loadMultiple($ids);
   }
 
 }

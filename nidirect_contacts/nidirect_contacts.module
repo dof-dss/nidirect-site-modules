@@ -129,5 +129,6 @@ function nidirect_contacts_preprocess_node(&$variables) {
 
   if ($has_value == FALSE) {
     hide($field_location);
+    hide($field_address);
   }
 }

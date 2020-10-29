@@ -147,13 +147,14 @@ class SolrElevatedIdEntityForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $result = parent::save($form, $form_state);
+    extract($form_state->getValues());
 
     $message = $result === SAVED_NEW
       ? $this->t('Created new Solr elevated ID entity: %label.', ['%label' => $this->entity->label()])
       : $this->t('Updated Solr elevated ID entity: %label.', ['%label' => $this->entity->label()]);
     $this->messenger()->addStatus($message);
 
-    $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ','_', strtolower($search_term));
+    $search_cid = 'solr_elevated_id:' . $index . ':' . str_replace(' ', '_', $label);
 
     if ($result === SAVED_UPDATED) {
       $this->cache->delete($search_cid);

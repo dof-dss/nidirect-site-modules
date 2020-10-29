@@ -5,6 +5,7 @@
  * Contains nidirect_search.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\search_api_solr\Utility\Utility as SolrUtility;
 use Solarium\Core\Query\QueryInterface;
 use Drupal\search_api\Query\QueryInterface as SearchApiQueryInterface;
@@ -87,26 +88,34 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
     $index_id = 'contacts';
   }
 
-  $solr_elevated_entity_storage = \Drupal::entityTypeManager()->getStorage('solr_elevated_id');
+  $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ','_', strtolower($search_term));
 
-  // Search for elevation entities that match the search term and Solr index.
-  $solr_elevated_entity_id = $solr_elevated_entity_storage->getQuery()
-    ->condition('label', strtolower($search_term))
-    ->condition('index', $index_id)
-    ->condition('status', '1')
-    ->execute();
+  $elevation_cache = \Drupal::cache()->get($search_cid)->data;
 
-  if (!is_array($solr_elevated_entity_id)) {
-    return;
+  if (empty($elevation_ids)) {
+    $solr_elevated_entity_storage = \Drupal::entityTypeManager()->getStorage('solr_elevated_id');
+
+    // Search for elevation entities that match the search term and Solr index.
+    $solr_elevated_entity_id = $solr_elevated_entity_storage->getQuery()
+      ->condition('label', strtolower($search_term))
+      ->condition('index', $index_id)
+      ->condition('status', '1')
+      ->execute();
+
+    if (!is_array($solr_elevated_entity_id)) {
+      return;
+    }
+
+    $solr_elevated_entity = $solr_elevated_entity_storage->load(current($solr_elevated_entity_id));
+
+    if ($solr_elevated_entity === null) {
+      return;
+    }
+
+    $elevation_ids = explode(',', $solr_elevated_entity->nodes());
+
+    \Drupal::cache()->set($search_cid, $elevation_ids, Cache::PERMANENT);
   }
-
-  $solr_elevated_entity = $solr_elevated_entity_storage->load(current($solr_elevated_entity_id));
-
-  if ($solr_elevated_entity === null) {
-    return;
-  }
-
-  $elevation_ids = explode(',', $solr_elevated_entity->nodes());
 
   // Add elevations to the query.
   if (!empty($elevation_ids)) {

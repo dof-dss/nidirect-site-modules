@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_search\Form;
 
+use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Entity\EntityForm;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
@@ -22,13 +23,23 @@ class SolrElevatedIdEntityForm extends EntityForm {
   protected $solr_server;
 
   /**
+   * Default cache bin.
+   *
+   * @var \Drupal\Core\Cache\CacheBackendInterface
+   */
+  protected $cache;
+
+  /**
    * Class constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager service.
+   * @param \Drupal\Core\Cache\CacheBackendInterface $cache
+   *   The cache bin.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, CacheBackendInterface $cache) {
     $this->solr_server = $entity_type_manager->getStorage('search_api_server')->load('solr_default');
+    $this->cache = $cache;
   }
 
   /**
@@ -36,7 +47,8 @@ class SolrElevatedIdEntityForm extends EntityForm {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('cache.default')
     );
   }
 
@@ -140,6 +152,12 @@ class SolrElevatedIdEntityForm extends EntityForm {
       ? $this->t('Created new Solr elevated ID entity: %label.', ['%label' => $this->entity->label()])
       : $this->t('Updated Solr elevated ID entity: %label.', ['%label' => $this->entity->label()]);
     $this->messenger()->addStatus($message);
+
+    $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ','_', strtolower($search_term));
+
+    if ($result === SAVED_UPDATED) {
+      $this->cache->delete($search_cid);
+    }
 
     $form_state->setRedirectUrl($this->entity->toUrl('collection'));
     return $result;

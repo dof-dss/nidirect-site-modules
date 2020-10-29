@@ -47,24 +47,27 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
   }
 
   /**
-   * @inheritDoc
+   * {@inheritDoc}
    */
   public function getOperations(EntityInterface $entity) {
     $operations = parent::getOperations($entity);
 
     if (!empty($operations['edit'])) {
       $edit = $operations['edit']['url'];
-      $edit->setRouteParameters(['solr_elevated_id' => $entity->id(),]);
+      $edit->setRouteParameters(['solr_elevated_id' => $entity->id()]);
     }
 
     if (!empty($operations['delete'])) {
       $edit = $operations['delete']['url'];
-      $edit->setRouteParameters(['solr_elevated_id' => $entity->id(),]);
+      $edit->setRouteParameters(['solr_elevated_id' => $entity->id()]);
     }
 
     return $operations;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function load() {
     $query = $this->getStorage()->getQuery();
     $header = $this->buildHeader();

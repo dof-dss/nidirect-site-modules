@@ -20,7 +20,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
    *
    * @var \Drupal\search_api\Entity\Server
    */
-  protected $solr_server;
+  protected $solrServer;
 
   /**
    * Default cache bin.
@@ -38,7 +38,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
    *   The cache bin.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, CacheBackendInterface $cache) {
-    $this->solr_server = $entity_type_manager->getStorage('search_api_server')->load('solr_default');
+    $this->solrServer = $entity_type_manager->getStorage('search_api_server')->load('solr_default');
     $this->cache = $cache;
   }
 
@@ -77,7 +77,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
     ];
 
     // Construct the index options by fetching the current Solr server indexes.
-    foreach ($this->solr_server->getIndexes() as $id => $index) {
+    foreach ($this->solrServer->getIndexes() as $id => $index) {
       $index_options[$id] = $index->label();
     }
 
@@ -109,6 +109,9 @@ class SolrElevatedIdEntityForm extends EntityForm {
     return $form;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
 
@@ -116,7 +119,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
     $error_nids = [];
 
     // Ensure that we're dealing with nids only.
-    foreach(explode(',', $nodes) as $nid) {
+    foreach (explode(',', $nodes) as $nid) {
       if (!is_numeric($nid)) {
         $error_nids[] = $nid;
       }
@@ -124,8 +127,8 @@ class SolrElevatedIdEntityForm extends EntityForm {
 
     if (!empty($error_nids)) {
       $form_state->setErrorByName('nodes',
-        $this->t('The following should be node id\'s only: @error_nids', [
-          '@error_nids' => implode(',', $error_nids)
+        $this->t("The following should be node id's only: @error_nids", [
+          '@error_nids' => implode(',', $error_nids),
         ])
       );
     }

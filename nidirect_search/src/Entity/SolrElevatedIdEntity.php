@@ -85,6 +85,9 @@ class SolrElevatedIdEntity extends ConfigEntityBase implements SolrElevatedIdEnt
     return $this->nodes;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function delete() {
 
     $search_cid = 'solr_elevated_id:' . $this->index() . ':' . str_replace(' ', '_', $this->label());

@@ -1,18 +1,33 @@
 # Solr configuration and query pipeline
 
-The search_api_solr module provides a default bundle of config files which can be used that provide a decent approximation of configuration needed to match up to the fields defined in the UI.
+The search_api_solr module provides a default bundle of config files which can
+be used that provide a decent approximation of configuration needed to match
+up to the fields defined in the UI.
 
-NIDirect makes some notable changes to these files, which will need to be evaluated and checked with each re-export of the config files to ensure they're not lost.
+NIDirect makes some notable changes to these files, which will need to be
+evaluated and checked with each re-export of the config files to ensure
+they're not lost.
 
 # Fulltext fields
 
-Search API produces two Solr fields in `schema_extra_types.xml`: `text_und` and `text_en`. For all intents and purposes, their configuration should be identical and should not need to differ unless the site becomes multilingual.
+Search API produces two Solr fields in `schema_extra_types.xml`: `text_und`
+and `text_en`. For all intents and purposes, their configuration should be
+identical and should not need to differ unless the site becomes multilingual.
 
-There are other field types including ngram and edgestring variants. These are not presently used but could be if a specific use case demands it. ngram is useful for tokenising small chunks of input values, edgegram does the same but from the front or back of a string. Generally speaking, whitespace tokenising with stemming is a good, efficient baseline for fuzzy searches.
+There are other field types including ngram and edgestring variants. These
+are not presently used but could be if a specific use case demands it. ngram
+is useful for tokenising small chunks of input values, edgegram does the same
+but from the front or back of a string. Generally speaking, whitespace
+tokenising with stemming is a good, efficient baseline for fuzzy searches.
 
-Search API defines a `title_fulltext` aggregate field on the indexes which is in addition to the basic `title` field, which is defined as a string and does not permit more than very basic search tasks to take place.
+Search API defines a `title_fulltext` aggregate field on the indexes which is
+in addition to the basic `title` field, which is defined as a string and does
+not permit more than very basic search tasks to take place.
 
-Breaking down the `text_und` field, we can see two important stanzas for index types and the analyzers within them. We define an analyzer for tokenising the field in the index as well as the same for tokenising query terms.
+Breaking down the `text_und` field, we can see two important stanzas for
+index types and the analyzers within them. We define an analyzer for
+tokenising the field in the index as well as the same for tokenising query
+terms.
 
 See comments below for further detail.
 
@@ -74,15 +89,19 @@ See comments below for further detail.
 
 # Updating the module or Solr config
 
-1. Validate the inbound changes and ensure the modifications before are not accidentally overwritten.
+1. Validate the inbound changes and ensure the modifications before are not
+accidentally overwritten.
 2. Apply the changes in two places: Lando and Platform.sh.
 
-- [Lando](https://github.com/dof-dss/lando-d7-to-d8-migrate): `config/solr/7.x/default`
-- [Platform.sh](https://github.com/dof-dss/nidirect-drupal): `.platform/solr_config`
+- [Lando](https://github.com/dof-dss/lando-d7-to-d8-migrate):
+`config/solr/7.x/default`
+- [Platform.sh](https://github.com/dof-dss/nidirect-drupal):
+`.platform/solr_config`
 
 # Debugging
 
-Lando will tell you how you can access the web UI for Solr using `lando info`, eg:
+Lando will tell you how you can access the web UI for Solr using `lando info`,
+eg:
 
 ```
 { service: 'solr',
@@ -103,28 +122,45 @@ Lando will tell you how you can access the web UI for Solr using `lando info`, e
 
 ## Query screen
 
-Open your browser and you can access to raw Solr query interface, eg: `http://localhost:32855/solr/#/default/query`
+Open your browser and you can access to raw Solr query interface, eg:
+`http://localhost:32855/solr/#/default/query`
 
-See https://lucene.apache.org/solr/guide/7_7/query-screen.html for full details.
+See https://lucene.apache.org/solr/guide/7_7/query-screen.html for full
+details.
 
 ## Analysis screen
 
-The 'Analysis' page at `http://localhost:32855/solr/#/default/analysis` allows you to evaluate how your current Solr config is able to tokenise and parse values for either the index or the query input. This is extremely useful as it shows you the sequence of each step in the analyzer as well as the state of the input value and any matched tokens.
+The 'Analysis' page at `http://localhost:32855/solr/#/default/analysis` allows
+you to evaluate how your current Solr config is able to tokenise and parse
+values for either the index or the query input. This is extremely useful as it
+shows you the sequence of each step in the analyzer as well as the state of
+the input value and any matched tokens.
 
-See https://lucene.apache.org/solr/guide/7_7/analysis-screen.html for full details.
+See https://lucene.apache.org/solr/guide/7_7/analysis-screen.html for full
+details.
 
 ## Drupal
 
-Enable `search_api_solr_devel` and it will print extensive request/response output in the Drupal messages area. This is verbose and can be a little flaky with dynamic page cache enabled but it can be very useful to validate outbound queries and responses.
+Enable `search_api_solr_devel` and it will print extensive request/response
+output in the Drupal messages area. This is verbose and can be a little flaky
+with dynamic page cache enabled but it can be very useful to validate outbound
+queries and responses.
 
 ## Updated config
 
-Changes to the Solr config XML files need a service reload to take effect. While it's possible to restart the Java application container inside the docker container, it's far faster to rebuild the Solr service image: `lando rebuild -s solr -y`. This usually takes 10-15 seconds to perform.
+Changes to the Solr config XML files need a service reload to take effect.
+While it's possible to restart the Java application container inside the
+docker container, it's far faster to rebuild the Solr service image:
+`lando rebuild -s solr -y`. This usually takes 10-15 seconds to perform.
 
-If you need to re-index your content then there is a quick command chain. The example below will:
+If you need to re-index your content then there is a quick command chain.
+The example below will:
 
 - Rebuild the Solr service and start it with the latest config.
-- Drush will clear the named Solr index (omit for all indexes), mark all content for re-indexing and then index it.
-- Drush then clears the Drupal render cache (omit if you're not evaluating search results from Drupal).
+- Drush will clear the named Solr index (omit for all indexes), mark all
+content for re-indexing and then index it.
+- Drush then clears the Drupal render cache (omit if you're not evaluating
+search results from Drupal).
 
-`lando rebuild -s solr -y && lando drush sapi-c contacts && lando drush sapi-r contacts && lando drush sapi-i contacts && lando drush cc render`
+`lando rebuild -s solr -y && lando drush sapi-c contacts && lando drush sapi-r
+contacts && lando drush sapi-i contacts && lando drush cc render`

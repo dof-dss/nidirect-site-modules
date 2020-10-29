@@ -76,6 +76,7 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   // General search tweaks.
   $solarium_query->addParam('mm.autoRelax', TRUE);
 
+  // Set the default Solr search index.
   $index_id = 'default_content';
 
   if ($route_name == 'view.search.search_page') {
@@ -84,6 +85,7 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
     $solarium_query->addParam('tie', '0.01');
   }
 
+  // Change Solr index to Contacts.
   if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
     $index_id = 'contacts';
   }

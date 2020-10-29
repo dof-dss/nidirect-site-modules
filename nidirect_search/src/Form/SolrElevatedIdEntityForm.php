@@ -159,6 +159,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
 
     $search_cid = 'solr_elevated_id:' . $index . ':' . str_replace(' ', '_', $label);
 
+    // Delete the cached elevated ids if entity is updated.
     if ($result === SAVED_UPDATED) {
       $this->cache->delete($search_cid);
     }

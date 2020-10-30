@@ -20,7 +20,7 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
  *     }
  *   },
  *   config_prefix = "solr_elevated_id",
- *   admin_permission = "administer solr elevated ids",
+ *   admin_permission = "administer search api",
  *   entity_keys = {
  *     "id" = "id",
  *     "label" = "label",

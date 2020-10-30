@@ -5,6 +5,7 @@
  * Contains nidirect_search.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\search_api_solr\Utility\Utility as SolrUtility;
 use Solarium\Core\Query\QueryInterface;
 use Drupal\search_api\Query\QueryInterface as SearchApiQueryInterface;
@@ -72,154 +73,11 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   $solarium_query->addParam('spellcheck.extendedResults', FALSE);
   $solarium_query->addParam('spellcheck.count', 1);
 
-  $elevation_ids = [];
-  $index_id = 'default_content';
-
-  // General search adjustments.
+  // General search tweaks.
   $solarium_query->addParam('mm.autoRelax', TRUE);
 
-  switch (strtolower($search_term)) {
-    case 'access ni':
-      $elevation_ids[] = 'node/4007';
-      $elevation_ids[] = 'node/3861';
-      $elevation_ids[] = 'node/3859';
-
-      break;
-
-    case 'mot':
-      $elevation_ids[] = 'node/3839';
-
-      break;
-
-    case 'go on ni':
-      $elevation_ids[] = 'node/5182';
-      $elevation_ids[] = 'node/5087';
-      $elevation_ids[] = 'node/5495';
-
-      break;
-
-    case 'make the call':
-      $elevation_ids[] = 'node/5177';
-
-      break;
-
-    case 'ancestry':
-      $elevation_ids[] = 'node/2005';
-      $elevation_ids[] = 'node/3319';
-
-      break;
-
-    case 'groni':
-      $elevation_ids[] = 'node/3438';
-      $elevation_ids[] = 'node/2041';
-      $elevation_ids[] = 'node/2014';
-
-      break;
-
-    case 'proni maps':
-      $elevation_ids[] = 'node/9474';
-      $elevation_ids[] = 'node/9475';
-
-      break;
-
-    case 'dog':
-      $elevation_ids[] = 'node/2416';
-
-      break;
-
-    case 'fishing license':
-      $elevation_ids[] = 'node/2231';
-      $elevation_ids[] = 'node/2263';
-
-      break;
-
-    case 'fishing license price':
-      $elevation_ids[] = 'node/10040';
-      $elevation_ids[] = 'node/10039';
-
-      break;
-
-    case 'fishing permit costs':
-      $elevation_ids[] = 'node/2235';
-
-      break;
-
-    case 'angling permit':
-      $elevation_ids[] = 'node/2263';
-      $elevation_ids[] = 'node/2231';
-
-      break;
-
-    case 'angling permit price':
-      $elevation_ids[] = 'node/2235';
-
-      break;
-
-    case 'angling license price':
-      $elevation_ids[] = 'node/10040';
-      $elevation_ids[] = 'node/10039';
-
-      break;
-
-    case 'voluntary work':
-      $elevation_ids[] = 'node/1463';
-      $elevation_ids[] = 'node/1970';
-      $elevation_ids[] = 'node/1961';
-
-      break;
-
-    case 'jobs':
-      $elevation_ids[] = 'node/1604';
-
-      break;
-
-    case 'central heating grants':
-      $elevation_ids[] = 'node/2979';
-
-      break;
-
-    case 'energy advisors':
-      $elevation_ids[] = 'node/2979';
-      $elevation_ids[] = 'node/7663';
-
-      break;
-
-    case 'grant for replacement windows':
-      $elevation_ids[] = 'node/2979';
-
-      break;
-
-    case 'grant loft insulation':
-      $elevation_ids[] = 'node/2979';
-
-      break;
-
-    case 'heating grants':
-      $elevation_ids[] = 'node/2979';
-
-      break;
-
-    case 'sustainable heating grants':
-      $elevation_ids[] = 'node/2979';
-
-      break;
-
-    case 'giant hogweed':
-      $elevation_ids[] = 'node/1826';
-
-      break;
-
-    case 'pollution in rivers':
-      $elevation_ids[] = 'node/973';
-      $elevation_ids[] = 'node/963';
-
-      break;
-
-    case 'suspected pollution':
-      $elevation_ids[] = 'node/963';
-
-      break;
-  }
+  // Set the default Solr search index.
+  $index_id = 'default_content';
 
   if ($route_name == 'view.search.search_page') {
     // General search config.
@@ -227,51 +85,52 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
     $solarium_query->addParam('tie', '0.01');
   }
 
-  // Contacts search refinements.
+  // Change Solr index to Contacts.
   if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
     $index_id = 'contacts';
+  }
 
-    // Contacts elevations.
-    switch (strtolower($search_term)) {
-      case 'access ni':
-        // Access NI.
-        $elevation_ids[] = 'node/9925';
+  $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ', '_', strtolower($search_term));
 
-        break;
+  $elevation_ids = \Drupal::cache()->get($search_cid)->data;
 
-      case 'water board':
-        // Northern Ireland Water.
-        $elevation_ids[] = 'node/330';
+  if (empty($elevation_ids)) {
+    $solr_elevated_entity_storage = \Drupal::entityTypeManager()->getStorage('solr_elevated_id');
 
-        break;
+    // Search for elevation entities that match the search term and Solr index.
+    $solr_elevated_entity_id = $solr_elevated_entity_storage->getQuery()
+      ->condition('label', strtolower($search_term))
+      ->condition('index', $index_id)
+      ->condition('status', '1')
+      ->execute();
 
-      case 'tourism ni':
-        // Tourism Northern Ireland.
-        $elevation_ids[] = 'node/468';
-
-        break;
-
-      case 'transport ni':
-      case 'roads service':
-        // DfI Roads (formerly known as: TransportNI, Roads Service).
-        $elevation_ids[] = 'node/3710';
-
-        break;
+    if (!is_array($solr_elevated_entity_id)) {
+      return;
     }
+
+    $solr_elevated_entity = $solr_elevated_entity_storage->load(current($solr_elevated_entity_id));
+
+    if ($solr_elevated_entity === NULL) {
+      return;
+    }
+
+    $elevation_ids = explode(',', $solr_elevated_entity->nodes());
+
+    \Drupal::cache()->set($search_cid, $elevation_ids, Cache::PERMANENT);
   }
 
   // Add elevations to the query.
   if (!empty($elevation_ids)) {
-    // Prefix/suffix our node ids with:
-    // <hash>-<index_id>-entity:<entity_type>/<entity_id>:<langcode>.
     $solr_hash = SolrUtility::getSiteHash();
     $elevation_items = [];
 
+    // Prefix/suffix our node ids with:
+    // <hash>-<index_id>-entity:<entity_type>/<entity_id>:<langcode>.
     foreach ($elevation_ids as $entity_ref) {
       $elevation_items[] = sprintf('%s-%s-entity:%s:%s',
         $solr_hash,
         $index_id,
-        $entity_ref,
+        'node/' . $entity_ref,
         Language::LANGCODE_NOT_SPECIFIED);
     }
 

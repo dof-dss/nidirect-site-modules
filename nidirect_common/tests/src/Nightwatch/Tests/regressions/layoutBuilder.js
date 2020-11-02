@@ -30,28 +30,29 @@ module.exports = {
 
     // Click the Layout button link. We're selecting by order of button appearance;
     // would be better to find some way of reading the link text value instead.
-    browser.useXpath().click("//*[@class=\"moderation-sidebar-secondary-tasks\"]//a[text()='Layout']");
-
-    // Swap back to CSS selectors.
-    browser.useCss();
+    browser.click('xpath', "//*[@class=\"moderation-sidebar-secondary-tasks\"]//a[text()='Layout']");
 
     // Now at /node/NID/layout, need to add a section.
     browser.click('#layout-builder a.layout-builder__link--add');
 
     // Click the 'Cards standard x 3' option in the sidebar.
-    browser.expect.element('#drupal-off-canvas > ul > li:nth-child(2) > a').text.to.equal('Cards standard x3');
-    browser.click('#drupal-off-canvas > ul > li:nth-child(2) > a');
+    browser.useXpath();
+    browser.expect.element('//a[contains(@href, "teasers_x3")]').text.to.equal('Cards standard x3');
+    browser.click('//a[contains(@href, "teasers_x3")]');
+    browser.useCss();
 
     // Populate the Admin label with something.
-    browser.setValue('input[data-drupal-selector="edit-layout-settings-label"]', 'Regression test for D8NID-836')
-      .click('input[data-drupal-selector="edit-actions-submit"]');
+    browser.setValue('form.layout-builder-configure-section input[data-drupal-selector="edit-layout-settings-label"]', 'Regression test for D8NID-836');
+    browser.click('form.layout-builder-configure-section input[data-drupal-selector="edit-actions-submit"]');
 
     // Add a block.
     browser.click('section[data-region="one"] > .layout-builder__add-block a.layout-builder__link--add');
     browser.click('#drupal-off-canvas .inline-block-create-button');
     // Click the 'Card - standard' link.
-    browser.expect.element('#drupal-off-canvas .inline-block-list > li > a').text.to.equal('Card - standard');
-    browser.click('#drupal-off-canvas .inline-block-list > li > a');
+    browser.useXpath();
+    browser.expect.element('//a[contains(@href, "inline_block%3Acard_standard")]').text.to.equal('Card - standard');
+    browser.click('//a[contains(@href, "inline_block%3Acard_standard")]');
+    browser.useCss();
 
     // If we can see the media browser, then we aren't getting any clientside JS validation errors blocking our progress.
     browser.click('#layout-builder-modal .js-media-library-open-button');

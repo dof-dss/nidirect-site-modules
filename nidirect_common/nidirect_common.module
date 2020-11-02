@@ -439,3 +439,24 @@ function nidirect_common_form_system_performance_settings_alter(&$form, FormStat
   $form['caching']['page_cache_maximum_age']['#suffix'] = t("<i>@suffix</i>",
     ['@suffix' => "Note that Drupal core settings have been customised here for NIDirect to allow for a maximum age of 1 year"]);
 }
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function nidirect_common_page_attachments_alter(array &$attachments) {
+  // Turn off clientside_validation on selected routes. Usually due to
+  // interference with other AJAX related features, eg: Media Library.
+  $routes = [
+    'entity.node.edit_form',
+    'entity.media.edit_form',
+    'node.add',
+    'media.add',
+    'layout_builder.overrides.node.view',
+  ];
+
+  if (in_array(\Drupal::routeMatch()->getRouteName(), $routes)) {
+    // 1 == Yes, 2 == No.
+    // See ClientsideValidationjQuerySettingsForm::buildForm().
+    $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
+  }
+}

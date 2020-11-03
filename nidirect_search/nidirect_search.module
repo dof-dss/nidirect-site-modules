@@ -74,6 +74,7 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   $solarium_query->addParam('spellcheck.count', 1);
 
   // General search tweaks.
+  $solarium_query->addParam('defType', 'edismax');
   $solarium_query->addParam('mm.autoRelax', TRUE);
 
   // Set the default Solr search index.
@@ -81,13 +82,15 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
 
   if ($route_name == 'view.search.search_page') {
     // General search config.
-    $solarium_query->addParam('defType', 'edismax');
     $solarium_query->addParam('tie', '0.01');
   }
 
   // Change Solr index to Contacts.
   if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
     $index_id = 'contacts';
+    // See https://lucene.apache.org/solr/guide/7_7/the-dismax-query-parser.html#mm-minimum-should-match-parameter.
+    // Adjusts the sensitivity of matching based on the number of search terms provided.
+    $solarium_query->addParam('mm', '2<67% 5<50%');
   }
 
   $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ', '_', strtolower($search_term));

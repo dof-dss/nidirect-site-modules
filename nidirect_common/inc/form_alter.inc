@@ -165,6 +165,11 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if (array_key_exists('field_telephone', $form)) {
     array_unshift($form['#validate'], 'nidirect_common_validate_telephone');
   }
+
+  // Increase the size of the teaser textfield.
+  if (NestedArray::keyExists($form, ['field_teaser', 'widget', 0, 'value'])) {
+    $form['field_teaser']['widget'][0]['value']['#size'] = 140;
+  }
 }
 
 /**

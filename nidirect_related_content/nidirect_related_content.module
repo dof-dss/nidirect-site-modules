@@ -14,7 +14,8 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
   $id = $view->id();
   $display = $view->current_display;
 
-  if ($id == 'related_content' && $display == 'content_by_theme') {
+  if (in_array($id, ['related_content', 'popular_content']) &&
+    in_array($display, ['content_by_theme', 'pop_by_term'])) {
 
     $route_name = \Drupal::routeMatch()->getRouteName();
 
@@ -25,16 +26,23 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
     elseif ($route_name == 'entity.node.preview') {
       $node = \Drupal::routeMatch()->getParameter('node_preview');
     }
+    elseif ($route_name == 'entity.taxonomy_term.canonical') {
+      $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+    }
     else {
       return [];
     }
 
-    if (empty($node->field_subtheme)) {
+    if (empty($node->field_subtheme) && empty($term)) {
       return;
     }
 
     $sub_theme = $node->field_subtheme->target_id ?? 'all';
     $site_themes = $node->field_site_themes->target_id ?? 'all';
+
+    if (!empty($term)) {
+      $sub_theme = $term->id();
+    }
 
     $view->setArguments([$sub_theme, $site_themes]);
   }

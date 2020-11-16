@@ -44,6 +44,17 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
       $sub_theme = $term->id();
     }
 
+    // If it's an editorially privileged user account, remove
+    // the hidden flag filters. Catchily named 'flagged_1' and 'flagged_2'
+    // by flag modoule, one for each filter group defined in the views UI.
+    if (\Drupal::currentUser()->hasPermission('administer nodes')) {
+      foreach (['flagged_1', 'flagged_2'] as $filter_id) {
+        if (!empty($view->filter[$filter_id])) {
+          unset($view->filter[$filter_id]);
+        }
+      }
+    }
+
     $view->setArguments([$sub_theme, $site_themes]);
   }
 }

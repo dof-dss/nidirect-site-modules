@@ -9,6 +9,7 @@
  * include (inc/) files and required in this file.
  */
 
+use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Link;
@@ -458,5 +459,25 @@ function nidirect_common_page_attachments_alter(array &$attachments) {
     // 1 == Yes, 2 == No.
     // See ClientsideValidationjQuerySettingsForm::buildForm().
     $attachments['#attached']['drupalSettings']['clientside_validation_jquery']['validate_all_ajax_forms'] = 2;
+  }
+}
+
+/**
+ * Implements hook_block_build_alter().
+ *
+ * Use this hook to disable placeholders using the Drupal 8
+ * lazy builder API. This allows for more dynamically rendered
+ * page components but can make it impossible for theme template
+ * checks to assess whether a variable is empty or not.
+ *
+ * See https://www.drupal.org/node/953034.
+ */
+function nidirect_common_block_build_alter(array &$build, BlockPluginInterface $block) {
+  $disable_lazyload_blocks = [
+    'views_block:popular_content-pop_by_term',
+  ];
+
+  if (in_array($block->getPluginId(), $disable_lazyload_blocks)) {
+    $build['#create_placeholder'] = FALSE;
   }
 }

@@ -220,7 +220,6 @@ class GpSearchController extends ControllerBase {
     $view->execute();
     $view->buildRenderable($display_id, $args);
 
-
     $build['form'] = $this->viewForm($view);
     // Set exposed form and cache contexts.
     $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';

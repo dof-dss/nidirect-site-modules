@@ -53,25 +53,31 @@
 
       $(context).find('#views-exposed-form-gp-practices-find-a-gp').once('gp-location-search').each(function () {
 
+        let $searchForm = $(this);
         let querystring = new URLSearchParams(window.location.search);
+        let locationButtonTxt = 'Use my location';
 
-        // Display 'Use my location' if the browser supports the Geolocation API and
-        // we are not on a a fulltext search results page.
-        if('geolocation' in navigator && !querystring.has('search_api_views_fulltext')) {
-          $(this).prepend('<div class="find-by-location">' +
+        if (querystring.has('lat') || querystring.has('lng')) {
+          locationButtonTxt = 'Reset my location';
+        }
+
+        // Display 'Use my location' if the browser supports the Geolocation API.
+        if('geolocation' in navigator) {
+          $searchForm.prepend('<div class="find-by-location">' +
             '<label for="use_location">' + Drupal.t('Search for a GP practice near you') + '</label>' +
-            '<input type="button" id="use_location" name="use_location" value="' + Drupal.t('Use my location') + '" />' +
+            '<input type="button" class="button button--primary button--medium" id="use_location" name="use_location" value="' + Drupal.t(locationButtonTxt) + '" />' +
             '<div id="find-by-location-status" role="alert" aria-live="assertive"></div>' +
             '</div>');
 
-          $(this)
+          $searchForm
             .find('#use_location').on('click', function () {
               // Update status with a ajax progress indicator (even though it's not an ajax call).
               $('#find-by-location-status').html(Drupal.theme.ajaxProgressIndicatorFullscreen());
 
               // Do the location search
               navigator.geolocation.getCurrentPosition(performLocationSearch, locationError, locationOptions);
-            })
+            });
+          $searchForm
             .find('label[for="edit-search-api-views-fulltext"]')
             .text(Drupal.t('Or enter a GP name, practice, town or postcode'));
         }

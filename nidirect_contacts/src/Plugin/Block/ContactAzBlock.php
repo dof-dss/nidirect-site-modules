@@ -72,7 +72,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     }
 
     $build['title'] = [
-      '#markup' => $skip_link . '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
+      '#markup' => $skip_link . '<h2 class="label visually-hidden" id="contacts-az--title">' . $title . '</h2>',
     ];
 
     foreach (array_merge(range('a', 'z'), range('0', '9')) as $item) {

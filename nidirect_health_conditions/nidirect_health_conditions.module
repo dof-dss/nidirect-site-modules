@@ -201,13 +201,16 @@ function nidirect_health_conditions_preprocess_field(&$variables) {
  */
 function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &$entity_form, FormStateInterface &$form_state) {
   if ($entity_form['#bundle'] == 'health_condition_alternative') {
-    $is_edit_form = \Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form';
     $node = \Drupal::routeMatch()->getParameter('node');
-    $is_health_condition = $node->bundle() == 'health_condition';
+    if ($node instanceof NodeInterface === FALSE) {
+      return;
+    }
+
+    $is_edit_form = \Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form';
 
     // If we're adding from the health condition node edit form then pre-set
     // the parent condition value and hide it so it's out of the way.
-    if ($is_edit_form && $is_health_condition && $entity_form['#op'] == 'add') {
+    if ($is_edit_form && $node->bundle() == 'health_condition' && $entity_form['#op'] == 'add') {
       // The autocomplete widget doesn't take a node id as a value, it
       // requires the full-fat node object as per:
       // https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Entity%21Element%21EntityAutocomplete.php/class/EntityAutocomplete/8.7.x
@@ -226,6 +229,18 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
     // $entity_form['#op']. To change this value, don't use the IEF form. Edit
     // the node directly via the main content edit listings.
     hide($entity_form['field_parent_condition']);
+  }
+}
+
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ *
+ * Hide the alternative condition options as we can't (yet) associate a new
+ * alternative title node with a node that hasn't yet been created.
+ */
+function nidirect_health_conditions_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if ($form_id == 'node_health_condition_form' && \Drupal::routeMatch()->getRouteName() == 'node.add') {
+    hide($form['field_alternative_condition']);
   }
 }
 

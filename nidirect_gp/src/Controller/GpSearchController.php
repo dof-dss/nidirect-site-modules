@@ -220,14 +220,11 @@ class GpSearchController extends ControllerBase {
     $view->execute();
     $view->buildRenderable($display_id, $args);
 
-    // Hide search for for location based results.
-    if ($search_type['type'] !== 'LOCATION') {
-      $build['form'] = $this->viewForm($view);
-      // Set exposed form and cache contexts.
-      $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
-      $build['form']['#cache']['contexts'][] = 'url.query_args:lat';
-      $build['form']['#cache']['contexts'][] = 'url.query_args:lng';
-    }
+    $build['form'] = $this->viewForm($view);
+    // Set exposed form and cache contexts.
+    $build['form']['#cache']['contexts'][] = 'url.query_args:search_api_views_fulltext';
+    $build['form']['#cache']['contexts'][] = 'url.query_args:lat';
+    $build['form']['#cache']['contexts'][] = 'url.query_args:lng';
 
     $build['view'] = $view->render();
     $build['#attached']['drupalSettings']['nidirect']['gpSearch']['maxDistance'] = $this->proximityMaxDistance;

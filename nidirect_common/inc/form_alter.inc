@@ -93,7 +93,6 @@ function nidirect_common_form_taxonomy_term_form_alter(&$form, FormStateInterfac
  * Implements hook_form_BASE_FORM_ID_alter().
  */
 function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_state, $form_id) {
-
   // Add a description to the title field.  This cannot be done in the UI.
   if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'])) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
@@ -169,6 +168,12 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   // Increase the size of the teaser textfield.
   if (NestedArray::keyExists($form, ['field_teaser', 'widget', 0, 'value'])) {
     $form['field_teaser']['widget'][0]['value']['#size'] = 140;
+  }
+
+  // Change button text for 'Alternative Condition Titles' inline entity form.
+  if ($form_id === 'node_health_condition_form') {
+    $form['field_alternative_condition']['widget']['actions']['ief_add']['#value'] = 'Add new';
+    $form['field_alternative_condition']['widget']['actions']['ief_add_existing']['#value'] = 'Add existing';
   }
 }
 

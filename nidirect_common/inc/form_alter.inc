@@ -172,8 +172,14 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 
   // Change button text for 'Alternative Condition Titles' inline entity form.
   if ($form_id === 'node_health_condition_form') {
+    // Inline Entity Form table.
     $form['field_alternative_condition']['widget']['actions']['ief_add']['#value'] = 'Add new';
     $form['field_alternative_condition']['widget']['actions']['ief_add_existing']['#value'] = 'Add existing';
+
+    // Add existing form.
+    $form['field_alternative_condition']['widget']['form']['#title'] = 'Add alternative health condition title';
+    $form['field_alternative_condition']['widget']['form']['entity_id']['#title'] = 'Title';
+    $form['field_alternative_condition']['widget']['form']['actions']['ief_reference_save']['#value'] = 'Add';
   }
 }
 

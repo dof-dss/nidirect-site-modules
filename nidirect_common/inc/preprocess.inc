@@ -75,3 +75,13 @@ function nidirect_common_preprocess_status_messages(&$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_inline_entity_form_entity_table().
+ */
+function nidirect_common_preprocess_inline_entity_form_entity_table(&$variables) {
+  // Change the checkbox label for 'remove node from system'.
+  if (!empty($variables['table'][1][0]['delete'])) {
+    $variables['table'][1][0]['delete']['#title'] = t('Delete alternative title from the system');
+  }
+}

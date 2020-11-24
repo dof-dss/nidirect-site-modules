@@ -5,7 +5,6 @@
  * Contains hook_preprocess functions for nidirect_common.module.
  */
 
-use Drupal\Component\Utility\NestedArray;
 use Drupal\node\Entity\Node;
 
 /**

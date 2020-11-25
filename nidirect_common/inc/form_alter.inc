@@ -171,7 +171,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   }
 
   // Change button text for 'Alternative Condition Titles' inline entity form.
-  if ($form_id === 'node_health_condition_form') {
+  if ($form_id === 'node_health_condition_form' || $form_id === 'node_health_condition_edit_form') {
     // Inline Entity Form table.
     $form['field_alternative_condition']['widget']['actions']['ief_add']['#value'] = 'Add new';
     $form['field_alternative_condition']['widget']['actions']['ief_add_existing']['#value'] = 'Add existing';

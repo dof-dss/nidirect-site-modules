@@ -240,6 +240,20 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
 }
 
 /**
+ * Implements hook_node_insert().
+ */
+function nidirect_health_conditions_node_insert(NodeInterface $node) {
+  if ($node->getType() === 'health_condition') {
+    $alt_conditions = $node->get('field_alternative_condition');
+    // Update parent of each alternative condition.
+    foreach ($alt_conditions->referencedEntities() as $alt) {
+      $alt->set('field_parent_condition', $node);
+      $alt->save();
+    }
+  }
+}
+
+/**
  * Implements hook_preprocess_node().
  */
 function nidirect_health_conditions_preprocess_node(array &$variables) {

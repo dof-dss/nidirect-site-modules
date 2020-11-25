@@ -97,7 +97,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if (NestedArray::keyExists($form, ['title', 'widget', 0, 'value'])) {
     $title_description =& $form['title']['widget'][0]['value']['#description'];
     if (empty($title_description)) {
-      if ($form_id === 'node_featured_content_list_form') {
+      if ($form_id === 'node_featured_content_list_form' || $form_id === 'node_featured_content_list_edit_form') {
         $title_description = t('Title is for administrative purposes only and is not displayed.');
       }
       else {

@@ -206,7 +206,6 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
     $is_edit_form = \Drupal::routeMatch()->getRouteName() == 'entity.node.edit_form';
     $node = \Drupal::routeMatch()->getParameter('node');
 
-
     // If we're adding from the health condition node edit form then pre-set
     // the parent condition value and hide it so it's out of the way.
     if ($is_edit_form && $node->bundle() === 'health_condition' && $entity_form['#op'] == 'add') {
@@ -214,8 +213,12 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
       // requires the full-fat node object as per:
       // https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Entity%21Element%21EntityAutocomplete.php/class/EntityAutocomplete/8.7.x
       $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = $node;
-    } else {
+    }
+    else {
       // Assign a temporary health condition as the parent.
+      // The parent will be updated to the actual health condition once that
+      // node has been saved.
+      // See: nidirect_health_conditions_node_insert().
       $temp_node = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'health_condition']);
       $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = reset($temp_node);
     }
@@ -244,6 +247,9 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
  * Implements hook_node_insert().
  */
 function nidirect_health_conditions_node_insert(NodeInterface $node) {
+  // Update each alternative health condition parent to the newly
+  // saved health condition node.
+  // See: nidirect_health_conditions_inline_entity_form_entity_form_alter().
   if ($node->getType() === 'health_condition') {
     $alt_conditions = $node->get('field_alternative_condition');
     // Update parent of each alternative condition.

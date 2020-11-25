@@ -213,6 +213,10 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
       // requires the full-fat node object as per:
       // https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Entity%21Element%21EntityAutocomplete.php/class/EntityAutocomplete/8.7.x
       $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = $node;
+    } else {
+      // Assign a temporary health condition as the parent.
+      $temp_node = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'health_condition']);
+      $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = reset($temp_node);
     }
 
     // Change element type as hide() appears to ignore the value we set.

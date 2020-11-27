@@ -20,7 +20,9 @@ class FeaturedNewsBlock extends BlockBase {
    * {@inheritdoc}
    */
   public function build() {
-    $content['featured_news'] = \Drupal::service('nidirect_news.news')->getNewsEmbed('featured_news');
+    $view = \Drupal::service('nidirect_news.news')->getLatestNewsView();
+    $content['featured_news'] = $view->buildRenderable('latest_news_block');
+
     return $content;
   }
 

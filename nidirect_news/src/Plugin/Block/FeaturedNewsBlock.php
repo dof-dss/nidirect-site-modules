@@ -3,9 +3,11 @@
 namespace Drupal\nidirect_news\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\node\NodeInterface;
 
 /**
- * Block for presenting featured news; wrapper around FCL node tagged with 'News'.
+ * Block for presenting featured news; shared with news embed display
+ * on the main news landing page. See NewsListingController.php::default().
  *
  * @Block(
  *  id = "featured_news_block",

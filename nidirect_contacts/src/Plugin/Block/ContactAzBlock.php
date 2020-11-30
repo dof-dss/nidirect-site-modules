@@ -72,7 +72,8 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
       $build['title'] = [
         '#markup' => $skip_link . '<h2 class="label visually-hidden" id="contacts-az--title">' . $title . '</h2>',
       ];
-    } else {
+    }
+    else {
       $build['title'] = [
         '#markup' => '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
       ];

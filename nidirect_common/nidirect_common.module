@@ -481,3 +481,12 @@ function nidirect_common_block_build_alter(array &$build, BlockPluginInterface $
     $build['#create_placeholder'] = FALSE;
   }
 }
+
+/**
+ * Implements hook_toolbar_alter().
+ */
+function nidirect_common_toolbar_alter(&$items) {
+  if (\Drupal::currentUser()->hasPermission('administer blocks') === FALSE) {
+    unset($items['contextual']);
+  }
+}

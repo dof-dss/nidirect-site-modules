@@ -89,3 +89,13 @@ function nidirect_common_preprocess_inline_entity_form_entity_table(&$variables)
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_form_element().
+ */
+function nidirect_common_preprocess_form_element(&$variables) {
+  // Force the Content Theme/Subtheme select element onto a new line.
+  if ($variables['element']['#id'] === 'edit-term-node-tid-depth') {
+    $variables['attributes']['style'] = "float: none; clear: both";
+  }
+}

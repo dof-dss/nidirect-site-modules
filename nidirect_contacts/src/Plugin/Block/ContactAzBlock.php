@@ -69,11 +69,15 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
       $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
       $skip_link = '<a href="#contact-links" class="skip-link visually-hidden focusable">';
       $skip_link .= t('Skip A to Z') . '</a>';
+      $build['title'] = [
+        '#markup' => $skip_link . '<h2 class="label visually-hidden" id="contacts-az--title">' . $title . '</h2>',
+      ];
     }
-
-    $build['title'] = [
-      '#markup' => $skip_link . '<h2 class="label visually-hidden" id="contacts-az--title">' . $title . '</h2>',
-    ];
+    else {
+      $build['title'] = [
+        '#markup' => '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
+      ];
+    }
 
     foreach (array_merge(range('a', 'z'), range('0', '9')) as $item) {
       $links[] = Link::createFromRoute(strtoupper($item), 'nidirect_contacts.letter', ['letter' => $item])

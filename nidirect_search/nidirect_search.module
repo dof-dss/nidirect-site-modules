@@ -64,7 +64,20 @@ function nidirect_search_preprocess_search_api_spellcheck_did_you_mean(&$variabl
  */
 function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_query, SearchApiQueryInterface $query) {
   $route_name = \Drupal::routeMatch()->getRouteName();
-  $query_id = ($route_name == 'nidirect_contacts.default') ? 'query_contacts_az' : 'query';
+
+  $query_id = 'query';
+
+  switch ($route_name) {
+    case 'nidirect_contacts.default':
+      $query_id = 'query_contacts_az';
+      break;
+
+    case 'search_api_autocomplete.autocomplete':
+      $query_id = 'q';
+      break;
+
+  }
+
   $search_term = \Drupal::requestStack()->getCurrentRequest()->get($query_id);
 
   // Maps to <str name="name">spelling_und</str> in solrconfig_extra.xml.
@@ -86,7 +99,10 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   }
 
   // Change Solr index to Contacts.
-  if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
+  if ($route_name == 'nidirect_contacts.default' ||
+        $route_name == 'nidirect_contacts.letter' ||
+          $route_name == 'search_api_autocomplete.autocomplete') {
+
     $index_id = 'contacts';
     // See https://lucene.apache.org/solr/guide/7_7/the-dismax-query-parser.html#mm-minimum-should-match-parameter.
     // Adjusts the sensitivity of matching based on the number of search terms provided.

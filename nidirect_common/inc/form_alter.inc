@@ -128,7 +128,7 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   $form['promote']['#access'] = FALSE;
 
   // Hide 'Sticky at top of lists' option, except for news and contact nodes.
-  if (!preg_match('/^node_news/', $form['#form_id']) && !preg_match('/^node_contact/', $form['#form_id'])) {
+  if (!preg_match('/^node_(news|contact)/', $form['#form_id'])) {
     $form['sticky']['#access'] = FALSE;
   }
 

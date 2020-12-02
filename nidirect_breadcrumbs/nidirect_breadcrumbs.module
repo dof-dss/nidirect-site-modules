@@ -21,11 +21,11 @@ function nidirect_breadcrumbs_form_node_form_alter(&$form, FormStateInterface $f
 }
 
 /**
- * Invalidates the node:id cache to ensure we get accurate previews.
+ * Invalidates the node:uuid cache to ensure we get accurate previews.
  *
  * If the Theme/subtheme field has changed and the user requests a preview
  * the breadcrumb builder will not be called after the initial preview, we
- * need to force a rebuild by invalidating the node:id cache.
+ * need to force a rebuild by invalidating the node:uuid cache.
  *
  * @param array $form
  *   Form array.
@@ -34,11 +34,10 @@ function nidirect_breadcrumbs_form_node_form_alter(&$form, FormStateInterface $f
  */
 function nidirect_breadcrumbs_preview_cache_handler(array &$form, FormStateInterface $form_state) {
   if ($form_state->getFormObject() instanceof EntityFormInterface) {
-    $nid = $form_state->getformObject()->getEntity()->id();
+    $route = $form_state->getRedirect();
 
-    if (!empty($nid)) {
-      Cache::invalidateTags(['node:' . $nid]);
-    }
+    $uuid = $route->getRouteParameters()['node_preview'];
+    Cache::invalidateTags(['node:' . $uuid]);
   }
 
 }

@@ -30,24 +30,3 @@ function nidirect_news_preprocess_field(array &$variables) {
   // Adjust the title in full display mode to match present site value.
   $variables['label'] = t('Date published');
 }
-
-/**
- * Implements hook_preprocess_node().
- */
-function nidirect_news_preprocess_node(array &$variables) {
-  if ($variables['node']->getType() == 'featured_content_list') {
-    if ($variables['view_mode'] == 'full' && !empty($variables['node']->field_tags->target_id)) {
-      $news_tag = \Drupal::entityTypeManager()
-        ->getStorage('taxonomy_term')
-        ->loadByProperties(['name' => 'News']);
-      $news_tag = reset($news_tag);
-
-      if ($variables['node']->field_tags->target_id == $news_tag->id()) {
-        // Replace the node view with a rendered view display, using the node
-        // items as arguments. This mirrors the display you would see on the
-        // embedded views display.
-        $variables['content'] = \Drupal::service('nidirect_news.news')->getFeaturedNews();
-      }
-    }
-  }
-}

@@ -133,14 +133,16 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
-    // Invalidate the breadcrumb cache if the node is updated.
-    $cache_tags[] = 'node:' . $node->id();
-
     // Assemble a new breadcrumb object, add the links and set
     // a URL path cache context so it varies as you move from one
     // set of content to another.
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
+
+    if ($route_match->getRouteName() !== 'entity.node.preview') {
+      // Invalidate the breadcrumb cache if the node is updated.
+      $cache_tags[] = 'node:' . $node->id();
+    }
 
     if (!empty($cache_tags)) {
       $breadcrumb->addCacheTags($cache_tags);

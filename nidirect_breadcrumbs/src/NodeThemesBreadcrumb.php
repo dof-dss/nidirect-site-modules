@@ -139,7 +139,17 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
     $breadcrumb->setLinks($links);
     $breadcrumb->addCacheContexts(['url.path']);
 
-    if ($route_match->getRouteName() !== 'entity.node.preview') {
+    // Prevent the caching of breadcrumbs on updated content and node previews.
+    if ($route_match->getRouteName() === 'entity.node.preview') {
+      // Node previews don't have a Node ID we can reference but instead use a
+      // UUID that is present in the preview url path. Using this UUID we can
+      // build a cache tag that can invalidated on the preview form submit
+      // handler: nidirect_breadcrumbs_preview_cache_handler().
+      $url_path = \Drupal::request()->getPathInfo();
+      $paths = explode('/', $url_path);
+      $cache_tags[] = 'node:' . $paths[3];
+    }
+    else {
       // Invalidate the breadcrumb cache if the node is updated.
       $cache_tags[] = 'node:' . $node->id();
     }

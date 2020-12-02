@@ -89,3 +89,15 @@ function nidirect_common_preprocess_inline_entity_form_entity_table(&$variables)
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_form_element().
+ */
+function nidirect_common_preprocess_form_element(&$variables) {
+  $route = \Drupal::routeMatch()->getRouteName();
+
+  // Force the admin Content Theme/Subtheme select element onto a new line.
+  if ($route === 'system.admin_content' && $variables['element']['#id'] === 'edit-term-node-tid-depth') {
+    $variables['attributes']['style'] = "float: none; clear: both";
+  }
+}

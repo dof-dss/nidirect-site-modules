@@ -33,15 +33,14 @@ function nidirect_related_content_views_pre_build(ViewExecutable $view) {
       return [];
     }
 
-    if (empty($node->field_subtheme) && empty($term)) {
-      return;
+    if (!empty($node->field_subtheme)) {
+      $sub_theme = $node->field_subtheme->target_id ?? 'all';
+      $site_themes = $node->field_site_themes->target_id ?? 'all';
     }
 
-    $sub_theme = $node->field_subtheme->target_id ?? 'all';
-    $site_themes = $node->field_site_themes->target_id ?? 'all';
-
     if (!empty($term)) {
-      $sub_theme = $term->id();
+      $sub_theme = $term->id() ?? 'all';
+      $site_themes = $term->id() ?? 'all';
     }
 
     // If it's an editorially privileged user account, remove

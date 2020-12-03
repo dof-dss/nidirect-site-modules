@@ -147,41 +147,6 @@ function nidirect_health_conditions_preprocess_field(&$variables) {
   if ($variables['element']['#bundle'] == 'health_condition' && $variables['element']['#view_mode'] == 'full') {
     // Change field label on health_condition bundle, full view mode.
     $variables['label'] = t('More useful links');
-
-    // Check through all items and add attributes for external links.
-    foreach ($variables['items'] as &$item) {
-      if ($item['content']['#url']->isExternal()) {
-        // Create render arrays for accessibility (a11y) markup to glue to the
-        // end of the Link element title.
-        $a11y_spans = [
-          [
-            '#type' => 'html_tag',
-            '#tag' => 'span',
-            '#attributes' => [
-              'class' => ['element-invisible'],
-            ],
-            '#value' => ' (external link opens in a new window / tab)',
-          ],
-          [
-            '#type' => 'html_tag',
-            '#tag' => 'span',
-            '#attributes' => [
-              'class' => ['elink'],
-            ],
-          ],
-        ];
-
-        $item['content']['#title'] = Markup::create($item['content']['#title'] . render($a11y_spans));
-
-        // Set URL attributes for external URLs.
-        $item['content']['#url']->setOptions([
-          'attributes' => [
-            'title' => t('external link opens in a new window / tab'),
-            'target' => '_blank',
-          ],
-        ]);
-      }
-    }
   }
 }
 

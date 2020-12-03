@@ -30,3 +30,16 @@ function nidirect_news_preprocess_field(array &$variables) {
   // Adjust the title in full display mode to match present site value.
   $variables['label'] = t('Date published');
 }
+
+/**
+ * Implements hook_views_pre_build().
+ */
+function nidirect_news_views_pre_build(ViewExecutable $view) {
+  if ($view->id() == 'news' && $view->current_display == 'latest_news_block') {
+    $exclude_nids = \Drupal::service('nidirect_news.news')->getFeaturedNewsIds();
+
+    if (!empty($exclude_nids)) {
+      $view->setArguments([implode(',', $exclude_nids)]);
+    }
+  }
+}

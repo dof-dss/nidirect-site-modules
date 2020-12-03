@@ -77,7 +77,7 @@ class NewsListingController extends ControllerBase {
       // duplication between the two blocks and retain the 'sticky'
       // flag ability to pin important items to the list of top four items.
       $display_id = 'latest_news';
-      $view = $this->getLatestNewsView($display_id);
+      $view = $this->getNewsView($display_id);
 
       if (!empty($view->result)) {
         // Latest news.
@@ -123,7 +123,7 @@ class NewsListingController extends ControllerBase {
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    */
-  public function getLatestNewsView($display_id = 'latest_news') {
+  public function getNewsView($display_id = 'latest_news') {
     $view = $this->entityTypeManager()->getStorage('view')->load('news')->getExecutable();
     $view->setDisplay($display_id);
     $view->initHandlers();
@@ -131,6 +131,26 @@ class NewsListingController extends ControllerBase {
     $view->execute();
 
     return $view;
+  }
+
+  /**
+   * Returns node ids of content we expect to appear in the 'featured' or 'latest news'
+   * sections on the news landing page (/news).
+   * @return array
+   *   Array of node ids.
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   */
+  public function getFeaturedNewsIds() {
+    $view = $this->getNewsView('latest_news');
+
+    $nids = [];
+
+    foreach ($view->result as $row) {
+      $nids[] = $row->nid;
+    }
+
+    return $nids;
   }
 
 }

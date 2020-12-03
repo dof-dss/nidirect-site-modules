@@ -20,6 +20,7 @@ use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -487,6 +488,15 @@ function nidirect_common_block_build_alter(array &$build, BlockPluginInterface $
  */
 function nidirect_common_toolbar_alter(&$items) {
   if (\Drupal::currentUser()->hasPermission('administer blocks') === FALSE) {
+    // Hide the toolbar for users without the 'administer blocks' permission
+    // except if we're looking at a landing page node so editors can use the
+    // contextual layout builder tools.
+    $node = \Drupal::routeMatch()->getParameter('node');
+
+    if ($node instanceof NodeInterface && $node->bundle() == 'landing_page') {
+      return;
+    }
+
     unset($items['contextual']);
   }
 }

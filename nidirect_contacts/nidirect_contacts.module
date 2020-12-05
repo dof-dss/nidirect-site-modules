@@ -7,6 +7,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 
@@ -71,12 +72,14 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
       'data-self-ref' => ['false'],
     ],
   ];
+
   $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
   $reset_az = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
 
   // Add to render array by default; toggle visibility after.
   $variables['links']['reset_az'] = $reset_az->toRenderable();
   $variables['links']['show_az'] = $show_az->toRenderable();
+
 
   // Hide the sort options when there is no search term and we're not looking
   // at the contacts A-Z.
@@ -95,13 +98,92 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   }
 
   if ($route_name == 'nidirect_contacts.default') {
+
     if (empty($q)) {
       unset($variables['links']['show_az']);
       unset($variables['links']['reset_az']);
     }
 
+    // Generate sort order link based on current URI parameters.
+    // Default query options for title sort criteria.
+    $title_options = [
+      'query' => [
+        'sort_by' => 'title',
+        'sort_order' => 'ASC',
+        'query_contacts_az' => $q['query_contacts_az'],
+      ],
+    ];
+
+    // Default query options for relevance sort criteria.
+    $relevance_options = [
+      'query' => [
+        'sort_by' => 'search_api_relevance',
+        'sort_order' => 'DESC',
+        'query_contacts_az' => $q['query_contacts_az'],
+      ],
+    ];
+
+    // Determine which sort is currently active.
+    // Default is to set to relevance.
+    $active_sort = $q['sort_by'] ? $q['sort_by'] : 'search_api_relevance';
+
+    // Set the sort options.
+    $sort_options = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [
+          'view-sort-options',
+        ],
+      ],
+    ];
+
+    if ($active_sort === 'title') {
+      $sort_options['sort_label'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => t('Sorted alphabetically'),
+        '#attributes' => [
+          'class' => ['label-inline'],
+        ],
+      ];
+      $sort_options['sort_link'] = [
+        '#type' => 'link',
+        '#title' => 'sort by relevance',
+        '#url' => Url::fromRoute('nidirect_contacts.default', [], $relevance_options),
+        '#attributes' => [
+          'data-self-ref' => ['false'],
+        ],
+      ];
+    }
+    elseif ($active_sort === 'search_api_relevance') {
+      $sort_options['sort_label'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => t('Sorted by relevance'),
+        '#attributes' => [
+          'class' => ['label-inline'],
+        ],
+      ];
+      $sort_options['sort_link'] = [
+        '#type' => 'link',
+        '#title' => 'sort alphabetically',
+        '#url' => Url::fromRoute('nidirect_contacts.default', [], $title_options),
+        '#attributes' => [
+          'data-self-ref' => ['false'],
+        ],
+      ];
+    }
+
     if (!empty($q['query_contacts_az'])) {
       $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
+      $variables['header']['row_count'] = \Drupal::translation()->formatPlural(
+        $variables['view']->total_rows,
+        '@count result',
+        '@count results',
+        ['@count' => $variables['view']->total_rows]
+      );
+      //$variables['header']['sort_by_links'] = $sort_link->toRenderable();
+      $variables['header']['sort_options'] = $sort_options;
     }
   }
 }

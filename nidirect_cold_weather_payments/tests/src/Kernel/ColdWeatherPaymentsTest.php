@@ -34,11 +34,16 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
    */
   protected $stations;
 
+  /**
+   * List of payment entities.
+   *
+   * @var array
+   */
   protected $payment;
 
-//  /**
-//   * {@inheritdoc}
-//   */
+  /**
+   * {@inheritdoc}
+   */
   public static $modules = [
     'user',
     'system',
@@ -49,7 +54,7 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     'datetime_range',
     'filter',
     'entity_test',
-    'nidirect_cold_weather_payments'
+    'nidirect_cold_weather_payments',
   ];
 
   /**
@@ -96,4 +101,3 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
   }
 
 }
-

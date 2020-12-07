@@ -11,7 +11,8 @@ use Drupal\node\Entity\NodeType;
 /**
  * Tests Driving Instructor title generation.
  *
- * @group nidirect_common
+ * @group nidirect_driving_instructors
+ * @group nidirect
  */
 class DrivingInstructorTest extends EntityKernelTestBase {
 
@@ -39,7 +40,7 @@ class DrivingInstructorTest extends EntityKernelTestBase {
   }
 
   /**
-   * Tests the behavior when creating the node.
+   * Tests that the correct title is generated when creating a new node.
    */
   public function testNodeCreate() {
     // Create a driving instructor.

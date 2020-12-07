@@ -28,20 +28,6 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
   protected $paymentsService;
 
   /**
-   * List of Weather station entities.
-   *
-   * @var array
-   */
-  protected $stations;
-
-  /**
-   * List of payment entities.
-   *
-   * @var array
-   */
-  protected $payment;
-
-  /**
    * {@inheritdoc}
    */
   public static $modules = [
@@ -67,8 +53,8 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     $this->entityTypeManager = $this->container->get('entity_type.manager');
     $this->paymentsService = $this->container->get('nidirect_cold_weather_payments.payments');
 
-    $this->stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple();
-
+    // Create and save two payment nodes so we can test the latest payment
+    // period functionality.
     Node::create([
       'title' => t('CWP test 2019'),
       'type' => 'cold_weather_payment',
@@ -114,9 +100,6 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
         ],
       ],
     ])->save();
-
-    $this->payment = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'cold_weather_payment']);
-
   }
 
   /**

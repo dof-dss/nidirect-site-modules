@@ -2,13 +2,11 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Plugin\rest\resource;
 
-use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService;
 use Drupal\rest\Plugin\ResourceBase;
 use Drupal\rest\ResourceResponse;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 
 /**
  * Provides a resource to view cold weather payment details.

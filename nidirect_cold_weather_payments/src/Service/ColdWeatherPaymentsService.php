@@ -2,8 +2,6 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Service;
 
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-
 /**
  * Provides cold weather payments information.
  */
@@ -19,17 +17,20 @@ class ColdWeatherPaymentsService {
   /**
    * Cold Weather Payments Service constructor.
    *
-   * @param EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager) {
     $this->entityTypeManager = $entity_type_manager;
   }
 
-  /*
-   * Returns a list of payments (or not) for a postcode during the most recent
-   * payments period.
+  /**
+   * Return payment information for a given postcode.
+   *
+   * @param string $postcode
+   *   The postcode to check for payments.
    */
-  public function ForPostcode($postcode = NULL) {
+  public function forPostcode($postcode = NULL) {
     preg_match_all('/^(BT)?(\d{1,2})\s?/mi', $postcode, $matches, PREG_SET_ORDER, 0);
     $response['postcode'] = $matches[0][2];
 

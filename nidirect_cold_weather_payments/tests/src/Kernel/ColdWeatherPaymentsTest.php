@@ -23,7 +23,7 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
   /**
    * Cold Weather Payments service.
    *
-   * @var Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService
+   * @var \Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService
    */
   protected $paymentsService;
 
@@ -80,17 +80,17 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'field_cwp_payments_triggered' => [
         [
           'date_start' => '2020-12-03',
-          'date_start' => '2020-12-17',
+          'date_end' => '2020-12-17',
           'stations' => 'aldergrove,glenanne,magilligan',
         ],
         [
           'date_start' => '2020-12-10',
-          'date_start' => '2020-12-22',
+          'date_end' => '2020-12-22',
           'stations' => 'katesbridge',
         ],
         [
           'date_start' => '2020-12-22',
-          'date_start' => '2020-12-28',
+          'date_end' => '2020-12-28',
           'stations' => 'aldergrove',
         ],
       ],
@@ -98,6 +98,26 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
 
     $this->payment = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'cold_weather_payment']);
 
+  }
+
+  /**
+   * Tests that payment details are returned for qualifying postcode.
+   */
+  public function testPostcodeHasPayment() {
+
+    // Postcode that matches the 'Katesbridge' station.
+    $postcode = 'BT24 1AB';
+
+    $result = $this->paymentsService->forPostcode($postcode);
+
+    self::assertEquals([
+      'date_start' => '2020-12-10',
+      'date_end' => '2020-12-22',
+      'stations' => 'katesbridge',
+      'postcodes' => [24,25,26,30,31,32,33,34],
+      'payment_granted' => true,
+
+    ], $result['payments_triggered'][1]);
   }
 
 }

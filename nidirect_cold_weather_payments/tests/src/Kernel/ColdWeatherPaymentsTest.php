@@ -70,9 +70,28 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     $this->stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple();
 
     Node::create([
-      'title' => t('CWP test'),
+      'title' => t('CWP test 2019'),
       'type' => 'cold_weather_payment',
       'language' => 'en',
+      'created' => 1575729507,
+      'field_cwp_payments_period' => [
+        'value' => "2019-12-01",
+        'end_value' => "2020-01-31",
+      ],
+      'field_cwp_payments_triggered' => [
+        [
+          'date_start' => '2020-12-03',
+          'date_end' => '2020-12-17',
+          'stations' => 'magilligan',
+        ],
+      ],
+    ])->save();
+
+    Node::create([
+      'title' => t('CWP test 2020'),
+      'type' => 'cold_weather_payment',
+      'language' => 'en',
+      'created' => 1606918937,
       'field_cwp_payments_period' => [
         'value' => "2020-12-03",
         'end_value' => "2020-12-25",
@@ -99,6 +118,28 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     $this->payment = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'cold_weather_payment']);
 
   }
+
+  /**
+   * Tests the current payment period.
+   */
+  public function testPaymentPeriod() {
+
+    // Postcode that matches the 'Katesbridge' station.
+    $postcode = 'BT24 1AB';
+
+    $result = $this->paymentsService->forPostcode($postcode);
+
+    self::assertNotEquals([
+      'date_start' => '2019-12-01',
+      'date_end' => '2020-01-31',
+    ], $result['payments_period']);
+
+    self::assertEquals([
+      'date_start' => '2020-12-03',
+      'date_end' => '2020-12-25',
+    ], $result['payments_period']);
+  }
+
 
   /**
    * Tests that payment details are returned for qualifying postcode.

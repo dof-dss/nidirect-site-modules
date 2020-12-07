@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\nidirect_common\Kernel;
+namespace Drupal\Tests\nidirect_driving_instructors\Kernel;
 
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
@@ -16,11 +16,18 @@ use Drupal\node\Entity\NodeType;
 class DrivingInstructorTest extends EntityKernelTestBase {
 
   /**
-   * Modules to install.
-   *
-   * @var array
+   * {@inheritdoc}
    */
-  public static $modules = ['node', 'nidirect_common'];
+  public static $modules = [
+    'user',
+    'system',
+    'node',
+    'field',
+    'text',
+    'filter',
+    'entity_test',
+    'nidirect_driving_instructors',
+  ];
 
   /**
    * Test setup function.
@@ -28,28 +35,7 @@ class DrivingInstructorTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a content type for testing.
-    NodeType::create([
-      'type' => 'driving_instructor',
-      'label' => 'driving_instructor',
-    ])->save();
-
-    // Add required fields.
-    $fields = ['field_di_firstname', 'field_di_lastname', 'field_di_adi_no'];
-    foreach ($fields as $field) {
-      FieldStorageConfig::create([
-        'field_name' => $field,
-        'type' => 'string',
-        'entity_type' => 'node',
-        'cardinality' => 1,
-      ])->save();
-      FieldConfig::create([
-        'field_name' => $field,
-        'label' => $field,
-        'entity_type' => 'node',
-        'bundle' => 'driving_instructor',
-      ])->save();
-    }
+    $this->installConfig('nidirect_driving_instructors');
   }
 
   /**

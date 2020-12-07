@@ -2,6 +2,8 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Service;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+
 /**
  * Provides cold weather payments information.
  */

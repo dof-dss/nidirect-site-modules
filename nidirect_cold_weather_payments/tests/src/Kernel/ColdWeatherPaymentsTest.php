@@ -120,4 +120,39 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     ], $result['payments_triggered'][1]);
   }
 
+  /**
+   * Tests that multiple payment details are returned for qualifying postcode.
+   */
+  public function testPostcodeHasMultiplePayments() {
+
+    // Postcode that matches the 'Aldergrove' station.
+    $postcode = 'BT28 1AB';
+
+    $result = $this->paymentsService->forPostcode($postcode);
+
+    self::assertEquals([
+      'date_start' => '2020-12-03',
+      'date_end' => '2020-12-17',
+      'stations' => 'aldergrove,glenanne,magilligan',
+      'postcodes' => [
+        '27','28','29','39','40','41','42','43','44',
+        '45','46','80','35','60','61','62','63','64',
+        '65','66','67','68','69','70','71','47','48',
+        '49','51','52','53','54','55','56','57'],
+      'payment_granted' => true,
+
+    ], $result['payments_triggered'][0]);
+
+    self::assertEquals([
+      'date_start' => '2020-12-22',
+      'date_end' => '2020-12-28',
+      'stations' => 'aldergrove',
+      'postcodes' => [
+        '27','28','29','39','40','41','42','43','44',
+        '45','46','80'],
+      'payment_granted' => true,
+
+    ], $result['payments_triggered'][2]);
+  }
+
 }

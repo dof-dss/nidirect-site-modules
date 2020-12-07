@@ -84,7 +84,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
    */
   public function get($postcode = NULL) {
 
-    $results = $this->paymentsService->ForPostcode($postcode);
+    $results = $this->paymentsService->forPostcode($postcode);
 
     return new ResourceResponse($results, 200);
   }

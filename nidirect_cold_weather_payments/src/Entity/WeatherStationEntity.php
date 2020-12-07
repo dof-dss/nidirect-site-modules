@@ -23,6 +23,12 @@ use Drupal\Core\Config\Entity\ConfigEntityBase;
  *     },
  *   },
  *   config_prefix = "weather_station",
+ *   config_export = {
+ *     "id",
+ *     "label",
+ *     "postcodes",
+ *     "uuid"
+ *   },
  *   admin_permission = "administer site configuration",
  *   entity_keys = {
  *     "id" = "id",

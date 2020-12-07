@@ -140,7 +140,6 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
     ], $result['payments_period']);
   }
 
-
   /**
    * Tests that payment details are returned for qualifying postcode.
    */
@@ -155,9 +154,8 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_start' => '2020-12-10',
       'date_end' => '2020-12-22',
       'stations' => 'katesbridge',
-      'postcodes' => [24,25,26,30,31,32,33,34],
-      'payment_granted' => true,
-
+      'postcodes' => ['24', '25', '26', '30', '31', '32', '33', '34'],
+      'payment_granted' => TRUE,
     ], $result['payments_triggered'][1]);
   }
 
@@ -176,12 +174,12 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_end' => '2020-12-17',
       'stations' => 'aldergrove,glenanne,magilligan',
       'postcodes' => [
-        '27','28','29','39','40','41','42','43','44',
-        '45','46','80','35','60','61','62','63','64',
-        '65','66','67','68','69','70','71','47','48',
-        '49','51','52','53','54','55','56','57'],
-      'payment_granted' => true,
-
+        '27', '28', '29', '39', '40', '41', '42', '43', '44',
+        '45', '46', '80', '35', '60', '61', '62', '63', '64',
+        '65', '66', '67', '68', '69', '70', '71', '47', '48',
+        '49', '51', '52', '53', '54', '55', '56', '57',
+      ],
+      'payment_granted' => TRUE,
     ], $result['payments_triggered'][0]);
 
     self::assertEquals([
@@ -189,10 +187,10 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_end' => '2020-12-28',
       'stations' => 'aldergrove',
       'postcodes' => [
-        '27','28','29','39','40','41','42','43','44',
-        '45','46','80'],
-      'payment_granted' => true,
-
+        '27', '28', '29', '39', '40', '41', '42', '43', '44',
+        '45', '46', '80',
+      ],
+      'payment_granted' => TRUE,
     ], $result['payments_triggered'][2]);
   }
 
@@ -211,12 +209,12 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_end' => '2020-12-17',
       'stations' => 'aldergrove,glenanne,magilligan',
       'postcodes' => [
-        '27','28','29','39','40','41','42','43','44',
-        '45','46','80','35','60','61','62','63','64',
-        '65','66','67','68','69','70','71','47','48',
-        '49','51','52','53','54','55','56','57'],
-      'payment_granted' => false,
-
+        '27', '28', '29', '39', '40', '41', '42', '43', '44',
+        '45', '46', '80', '35', '60', '61', '62', '63', '64',
+        '65', '66', '67', '68', '69', '70', '71', '47', '48',
+        '49', '51', '52', '53', '54', '55', '56', '57',
+      ],
+      'payment_granted' => FALSE,
     ], $result['payments_triggered'][0]);
 
     self::assertEquals([
@@ -224,9 +222,9 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_end' => '2020-12-22',
       'stations' => 'katesbridge',
       'postcodes' => [
-        '24','25','26','30','31','32','33','34'],
-      'payment_granted' => false,
-
+        '24', '25', '26', '30', '31', '32', '33', '34',
+      ],
+      'payment_granted' => FALSE,
     ], $result['payments_triggered'][1]);
 
     self::assertEquals([
@@ -234,10 +232,10 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
       'date_end' => '2020-12-28',
       'stations' => 'aldergrove',
       'postcodes' => [
-        '27','28','29','39','40','41','42','43','44',
-        '45','46','80'],
-      'payment_granted' => false,
-
+        '27', '28', '29', '39', '40', '41', '42', '43', '44',
+        '45', '46', '80',
+      ],
+      'payment_granted' => FALSE,
     ], $result['payments_triggered'][2]);
   }
 

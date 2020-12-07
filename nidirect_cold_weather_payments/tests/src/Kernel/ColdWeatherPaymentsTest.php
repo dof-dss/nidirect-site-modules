@@ -2,7 +2,8 @@
 
 namespace Drupal\Tests\nidirect_cold_weather_payments\Kernel;
 
-use Drupal\KernelTests\KernelTestBase;
+use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
+use Drupal\node\Entity\Node;
 
 /**
  * Cold Weather Payments tests.
@@ -10,7 +11,7 @@ use Drupal\KernelTests\KernelTestBase;
  * @group nidirect_cold_weather_payments
  * @group nidirect
  */
-class ColdWeatherPaymentsTest extends KernelTestBase {
+class ColdWeatherPaymentsTest extends EntityKernelTestBase {
 
   /**
    * The entity type manager service.
@@ -19,6 +20,12 @@ class ColdWeatherPaymentsTest extends KernelTestBase {
    */
   protected $entityTypeManager;
 
+  /**
+   * Drupal\Core\Http\ClientFactory definition.
+   *
+   * @var \Drupal\Core\Http\ClientFactory
+   */
+  protected $httpClientFactory;
 
   /**
    * List of Weather station entities.
@@ -27,17 +34,22 @@ class ColdWeatherPaymentsTest extends KernelTestBase {
    */
   protected $stations;
 
-  /**
-   * {@inheritdoc}
-   */
+  protected $payment;
+
+//  /**
+//   * {@inheritdoc}
+//   */
   public static $modules = [
+    'user',
+    'system',
     'node',
     'field',
     'text',
     'datetime',
     'datetime_range',
-    'user',
-    'nidirect_cold_weather_payments',
+    'filter',
+    'entity_test',
+    'nidirect_cold_weather_payments'
   ];
 
   /**
@@ -46,12 +58,42 @@ class ColdWeatherPaymentsTest extends KernelTestBase {
   protected function setUp() {
     parent::setUp();
 
-    $this->installEntitySchema('weather_station');
-    $this->installConfig(['nidirect_cold_weather_payments']);
-
+    $this->installConfig('nidirect_cold_weather_payments');
     $this->entityTypeManager = $this->container->get('entity_type.manager');
+    $this->httpClientFactory = $this->container->get('http_client_factory');
 
     $this->stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple();
+
+    Node::create([
+      'title' => t('CWP test'),
+      'type' => 'cold_weather_payment',
+      'language' => 'en',
+      'field_cwp_payments_period' => [
+        'value' => "2020-12-03",
+        'end_value' => "2020-12-25",
+      ],
+      'field_cwp_payments_triggered' => [
+        [
+          'date_start' => '2020-12-03',
+          'date_start' => '2020-12-17',
+          'stations' => 'aldergrove,glenanne,magilligan',
+        ],
+        [
+          'date_start' => '2020-12-10',
+          'date_start' => '2020-12-22',
+          'stations' => 'katesbridge',
+        ],
+        [
+          'date_start' => '2020-12-22',
+          'date_start' => '2020-12-28',
+          'stations' => 'aldergrove',
+        ],
+      ],
+    ])->save();
+
+    $this->payment = $this->entityTypeManager->getStorage('node')->loadByProperties(['type' => 'cold_weather_payment']);
+
   }
 
 }
+

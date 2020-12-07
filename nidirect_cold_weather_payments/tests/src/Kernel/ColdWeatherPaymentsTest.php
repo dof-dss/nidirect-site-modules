@@ -21,11 +21,11 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
   protected $entityTypeManager;
 
   /**
-   * Drupal\Core\Http\ClientFactory definition.
+   * Cold Weather Payments service.
    *
-   * @var \Drupal\Core\Http\ClientFactory
+   * @var Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService
    */
-  protected $httpClientFactory;
+  protected $paymentsService;
 
   /**
    * List of Weather station entities.
@@ -65,7 +65,7 @@ class ColdWeatherPaymentsTest extends EntityKernelTestBase {
 
     $this->installConfig('nidirect_cold_weather_payments');
     $this->entityTypeManager = $this->container->get('entity_type.manager');
-    $this->httpClientFactory = $this->container->get('http_client_factory');
+    $this->paymentsService = $this->container->get('nidirect_cold_weather_payments.payments');
 
     $this->stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple();
 

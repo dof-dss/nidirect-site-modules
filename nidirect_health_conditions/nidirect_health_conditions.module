@@ -313,3 +313,12 @@ function nidirect_health_conditions_page_attachments_alter(array &$attachments) 
     }
   }
 }
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function nidirect_health_conditions_inline_entity_form_table_fields_alter(array &$fields, array $context) {
+  if ($context['parent_bundle'] == 'health_condition' && $context['field_name'] == 'field_alternative_condition') {
+    unset($fields['status']);
+  }
+}

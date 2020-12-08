@@ -86,7 +86,7 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   // If we are looking at the A-Z ...
   if ($route_name == 'nidirect_contacts.letter') {
 
-    // Add a-z block;
+    // Add a-z block.
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
 

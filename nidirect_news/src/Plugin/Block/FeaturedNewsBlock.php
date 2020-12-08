@@ -58,7 +58,7 @@ class FeaturedNewsBlock extends BlockBase implements ContainerFactoryPluginInter
    * {@inheritdoc}
    */
   public function build() {
-    $view = $this->newsService->getLatestNewsView();
+    $view = $this->newsService->getNewsView();
     $content['featured_news'] = $view->buildRenderable('latest_news_block');
 
     return $content;

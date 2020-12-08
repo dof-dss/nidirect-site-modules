@@ -231,8 +231,9 @@ function nidirect_health_conditions_node_insert(NodeInterface $node) {
 function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
   // Preset specific theme on new health condition node form.
   if (\Drupal::routeMatch()->getRouteName() == 'node.add' && $entity->bundle() == 'health_condition') {
-    $term = reset(\Drupal::entityTypeManager()->getStorage('taxonomy_term')
-      ->loadByProperties(['name' => 'Illnesses and conditions']));
+    $result = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties(['name' => 'Illnesses and conditions']);
+    $term = reset($result);
 
     if ($term instanceof TermInterface) {
       $entity->set('field_subtheme', $term->id());

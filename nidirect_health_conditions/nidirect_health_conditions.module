@@ -198,17 +198,10 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
     // Publish by default.
     $entity_form['status']['widget']['value']['#value'] = TRUE;
 
-    // Save the entity by default when adding.
-    $entity_form['#save_entity'] = TRUE;
-
     // Always hide some fields when using the inline entity form regardless of
     // $entity_form['#op']. To change this value, don't use the IEF form. Edit
     // the node directly via the main content edit listings.
     hide($entity_form['field_parent_condition']);
-    hide($entity_form['publish_on']);
-    hide($entity_form['publish_state']);
-    hide($entity_form['unpublish_on']);
-    hide($entity_form['unpublish_state']);
 
   }
 }

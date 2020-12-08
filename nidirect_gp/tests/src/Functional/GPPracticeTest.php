@@ -1,14 +1,15 @@
 <?php
 
-namespace Drupal\Tests\nidirect_common\Functional;
+namespace Drupal\Tests\nidirect_gp\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
 
 /**
- * Tests Driving Instructor title generation.
+ * Tests for GP practice.
  *
- * @group nidirect_common
+ * @group nidirect_gp
+ * @group nidirect
  */
 class GPPracticeTest extends BrowserTestBase {
 

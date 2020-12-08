@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\Tests\nidirect_common\Functional;
+namespace Drupal\Tests\nidirect_driving_instructors\Functional;
 
 use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
@@ -8,7 +8,8 @@ use Drupal\node\Entity\Node;
 /**
  * Tests Driving Instructor title generation.
  *
- * @group nidirect_common
+ * @group nidirect_driving_instructors
+ * @group nidirect
  */
 class DrivingInstructorTest extends BrowserTestBase {
 
@@ -17,7 +18,7 @@ class DrivingInstructorTest extends BrowserTestBase {
    *
    * @var array
    */
-  public static $modules = ['nidirect_common', 'node'];
+  public static $modules = ['node', 'nidirect_driving_instructors'];
 
   /**
    * Use install profile so that we have all content types, modules etc.

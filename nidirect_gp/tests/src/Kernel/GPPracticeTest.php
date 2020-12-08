@@ -1,17 +1,15 @@
 <?php
 
-namespace Drupal\Tests\nidirect_common\Kernel;
+namespace Drupal\Tests\nidirect_gp\Kernel;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\node\Entity\Node;
-use Drupal\node\Entity\NodeType;
 
 /**
  * Tests Driving Instructor title generation.
  *
- * @group nidirect_common
+ * @group nidirect_gp
+ * @group nidirect
  */
 class GPPracticeTest extends EntityKernelTestBase {
 
@@ -20,7 +18,7 @@ class GPPracticeTest extends EntityKernelTestBase {
    *
    * @var array
    */
-  public static $modules = ['nidirect_common', 'node'];
+  public static $modules = ['node', 'nidirect_gp'];
 
   /**
    * Test setup function.
@@ -28,28 +26,7 @@ class GPPracticeTest extends EntityKernelTestBase {
   public function setUp() {
     parent::setUp();
 
-    // Create a content type for testing.
-    NodeType::create([
-      'type' => 'gp_practice',
-      'label' => 'gp_practice',
-    ])->save();
-
-    // Add required fields.
-    $fields = ['field_gp_practice_name', 'field_gp_surgery_name'];
-    foreach ($fields as $field) {
-      FieldStorageConfig::create([
-        'field_name' => $field,
-        'type' => 'string',
-        'entity_type' => 'node',
-        'cardinality' => 1,
-      ])->save();
-      FieldConfig::create([
-        'field_name' => $field,
-        'label' => $field,
-        'entity_type' => 'node',
-        'bundle' => 'gp_practice',
-      ])->save();
-    }
+    $this->installConfig('nidirect_gp');
   }
 
   /**

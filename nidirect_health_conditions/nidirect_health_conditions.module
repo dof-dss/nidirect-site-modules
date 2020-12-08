@@ -184,7 +184,12 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
       // The parent will be updated to the actual health condition once that
       // node has been saved.
       // See: nidirect_health_conditions_node_insert().
-      $temp_node = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'health_condition']);
+      $temp_node = \Drupal::entityTypeManager()->getStorage('node')
+        ->loadByProperties([
+          'type' => 'health_condition',
+          'status' => 1,
+        ]);
+
       $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = reset($temp_node);
     }
 

@@ -2,11 +2,8 @@
 
 namespace Drupal\Tests\nidirect_gp\Kernel;
 
-use Drupal\field\Entity\FieldConfig;
-use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\KernelTests\Core\Entity\EntityKernelTestBase;
 use Drupal\node\Entity\Node;
-use Drupal\node\Entity\NodeType;
 
 /**
  * Tests Driving Instructor title generation.

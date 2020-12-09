@@ -15,4 +15,5 @@ related_info:
     js/related-info.js: {}
   dependencies:
     - core/jquery
+    - core/jquery.ui
     - core/drupal

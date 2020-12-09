@@ -10,3 +10,9 @@ link_manager:
   dependencies:
     - core/jquery
     - core/drupal
+related_info:
+  js:
+    js/related-info.js: {}
+  dependencies:
+    - core/jquery
+    - core/drupal

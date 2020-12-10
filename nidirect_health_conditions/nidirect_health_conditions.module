@@ -184,7 +184,12 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
       // The parent will be updated to the actual health condition once that
       // node has been saved.
       // See: nidirect_health_conditions_node_insert().
-      $temp_node = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(['type' => 'health_condition']);
+      $temp_node = \Drupal::entityTypeManager()->getStorage('node')
+        ->loadByProperties([
+          'type' => 'health_condition',
+          'status' => 1,
+        ]);
+
       $entity_form['field_parent_condition']['widget'][0]['target_id']['#default_value'] = reset($temp_node);
     }
 
@@ -193,17 +198,10 @@ function nidirect_health_conditions_inline_entity_form_entity_form_alter(array &
     // Publish by default.
     $entity_form['status']['widget']['value']['#value'] = TRUE;
 
-    // Save the entity by default when adding.
-    $entity_form['#save_entity'] = TRUE;
-
     // Always hide some fields when using the inline entity form regardless of
     // $entity_form['#op']. To change this value, don't use the IEF form. Edit
     // the node directly via the main content edit listings.
     hide($entity_form['field_parent_condition']);
-    hide($entity_form['publish_on']);
-    hide($entity_form['publish_state']);
-    hide($entity_form['unpublish_on']);
-    hide($entity_form['unpublish_state']);
 
   }
 }
@@ -231,8 +229,9 @@ function nidirect_health_conditions_node_insert(NodeInterface $node) {
 function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {
   // Preset specific theme on new health condition node form.
   if (\Drupal::routeMatch()->getRouteName() == 'node.add' && $entity->bundle() == 'health_condition') {
-    $term = reset(\Drupal::entityTypeManager()->getStorage('taxonomy_term')
-      ->loadByProperties(['name' => 'Illnesses and conditions']));
+    $result = \Drupal::entityTypeManager()->getStorage('taxonomy_term')
+      ->loadByProperties(['name' => 'Illnesses and conditions']);
+    $term = reset($result);
 
     if ($term instanceof TermInterface) {
       $entity->set('field_subtheme', $term->id());
@@ -312,5 +311,14 @@ function nidirect_health_conditions_page_attachments_alter(array &$attachments) 
         'schema_metatag',
       ];
     }
+  }
+}
+
+/**
+ * Implements hook_inline_entity_form_table_fields_alter().
+ */
+function nidirect_health_conditions_inline_entity_form_table_fields_alter(array &$fields, array $context) {
+  if ($context['parent_bundle'] == 'health_condition' && $context['field_name'] == 'field_alternative_condition') {
+    unset($fields['status']);
   }
 }

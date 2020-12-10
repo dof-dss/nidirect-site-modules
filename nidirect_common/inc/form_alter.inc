@@ -183,6 +183,11 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     $form['field_alternative_condition']['widget']['form']['entity_id']['#title'] = 'Title';
     $form['field_alternative_condition']['widget']['form']['actions']['ief_reference_save']['#value'] = 'Add';
   }
+
+  // Apply Related Info library to forms with field_related_info.
+  if (array_key_exists('field_related_info', $form)) {
+    $form['#attached']['library'][] = 'nidirect_common/related_info';
+  }
 }
 
 /**

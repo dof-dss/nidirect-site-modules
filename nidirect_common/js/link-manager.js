@@ -34,7 +34,7 @@
         $(elementRef + ' a[href*="' + pathname + '"]').each(function () {
           // Move to next item if we have a data attribute to indicate we should ignore this element.
           if ($(this).attr('data-self-ref')) {
-            return false;
+            return true;
           }
 
           let href = $(this).attr('href');

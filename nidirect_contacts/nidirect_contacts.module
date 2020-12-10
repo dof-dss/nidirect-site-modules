@@ -37,12 +37,21 @@ function nidirect_contacts_form_views_exposed_form_alter(&$form, FormStateInterf
  */
 function nidirect_contacts_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'contacts_a_z' && $view->current_display == 'contacts_by_letter') {
-    // Argument condition referenced by array index feels a tad brittle. There
-    // doesn't seem to be a functional convenience function on the Views
-    // query object that lets us replace/alter the condition types and
-    // operators so it's set below.
-    $query->where[0]['conditions'][0]['value'] .= '%';
-    $query->where[0]['conditions'][0]['operator'] = 'LIKE';
+    // The search letter is passed in via a Contextual argument against the
+    // title field.
+    $letter = $query->where[0]['conditions'][0]['value'];
+
+    // Alter the SQL query on the node title field.
+    $query->where[2]['conditions'][0]['value'] = $letter . '%';
+    $query->where[2]['conditions'][0]['operator'] = 'LIKE';
+
+    // Copy the altered title SQL to the supplementary title query.
+    $query->where[2]['conditions'][1]['value'] = $query->where[2]['conditions'][0]['value'];
+    $query->where[2]['conditions'][1]['operator'] = $query->where[2]['conditions'][0]['operator'];
+
+    // Remove the contextual argument to prevent the creation of an 'AND' clause
+    // in the final SQL.
+    unset($query->where[0]);
   }
 }
 

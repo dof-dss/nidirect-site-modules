@@ -132,7 +132,8 @@ function nidirect_contacts_preprocess_node(&$variables) {
 
   $required_fields = $field_address[0]['#address_format']->getRequiredFields();
 
-  // If the address field values don't have any of the required field values, hide the location field.
+  // If the address field values don't have any of the required field values,
+  // hide the location field.
   $has_value = FALSE;
   foreach ($required_fields as $field_id) {
     if (!empty($field_address[0][$field_id]['#value'])) {

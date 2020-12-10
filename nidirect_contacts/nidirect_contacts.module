@@ -7,6 +7,8 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Link;
+use Drupal\Core\Url;
+use Drupal\Component\Utility\Html;
 use Drupal\views\ViewExecutable;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
 
@@ -73,25 +75,30 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
   $q = \Drupal::request()->query->all();
   $route_name = \Drupal::routeMatch()->getRouteName();
 
-  // Convenience links.
-  // (Add 'data-self-ref' so that these self referencing links are not removed)
+  // Reset link - link text depends on whether we are using the a-z or the search.
+  $reset_link_text = ($route_name == 'nidirect_contacts.letter') ? 'show search | reset a-z' : 'new search | show a-z';
+
+  // Add 'data-self-ref' so that these self referencing links are not removed.
   $options = [
     'attributes' => [
       'data-self-ref' => ['false'],
     ],
   ];
-  $show_az = Link::createFromRoute('show search', 'nidirect_contacts.default', [], $options);
-  $reset_az = Link::createFromRoute('reset a-z', 'nidirect_contacts.default', [], $options);
 
-  // Add to render array by default; toggle visibility after.
-  $variables['links']['reset_az'] = $reset_az->toRenderable();
-  $variables['links']['show_az'] = $show_az->toRenderable();
+  $reset_link = Link::createFromRoute($reset_link_text, 'nidirect_contacts.default', [], $options);
 
-  // Hide the sort options when there is no search term and we're not looking
-  // at the contacts A-Z.
+  // Add reset link if search has been conducted or viewing a-z.
+  if (!empty($q) || $route_name == 'nidirect_contacts.letter') {
+    $variables['links']['reset_link'] = $reset_link->toRenderable();
+  }
+
+  // If we are looking at the A-Z ...
   if ($route_name == 'nidirect_contacts.letter') {
+
+    // Add a-z block.
     $az_block = \Drupal::service('plugin.manager.block')->createInstance('contact_az_block', []);
     $variables['header']['az'] = $az_block->build();
+
     // Add result count to letter search.
     if ($variables['view']->total_rows > 0) {
       $variables['row_count'] = \Drupal::translation()->formatPlural(
@@ -103,14 +110,107 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
     }
   }
 
-  if ($route_name == 'nidirect_contacts.default') {
-    if (empty($q)) {
-      unset($variables['links']['show_az']);
-      unset($variables['links']['reset_az']);
+  // If we are looking at contacts search results ...
+  if ($route_name == 'nidirect_contacts.default' && !empty($q['query_contacts_az'])) {
+
+    // Hide the search input label.
+    $variables['exposed']['query_contacts_az']['#title_display'] = 'invisible';
+
+    // Generate results heading containing results count and sort options.
+    // Need a unique id for the results heading.
+    $results_header_id = Html::getUniqueId('results-heading');
+
+    // Sort option links based on current URI parameters.
+    // Sort alphabetically link options.
+    $title_options = [
+      'query' => [
+        'sort_by' => 'title',
+        'sort_order' => 'ASC',
+        'query_contacts_az' => $q['query_contacts_az'],
+      ],
+      'fragment' => $results_header_id,
+    ];
+
+    // Sort by relevance options.
+    $relevance_options = [
+      'query' => [
+        'sort_by' => 'search_api_relevance',
+        'sort_order' => 'DESC',
+        'query_contacts_az' => $q['query_contacts_az'],
+      ],
+      'fragment' => $results_header_id,
+    ];
+
+    // Determine which sort is currently active.
+    // Default is to set to relevance.
+    $active_sort = $q['sort_by'] ? $q['sort_by'] : 'search_api_relevance';
+
+    // Set the sort options render array.
+    $sort_options = [
+      '#type' => 'container',
+      '#attributes' => [
+        'class' => [
+          'subtitle view-sort-options',
+        ],
+      ],
+    ];
+
+    if ($active_sort === 'title') {
+      $sort_options['sort_label'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => t('sorted alphabetically'),
+        '#attributes' => [
+          'class' => ['label-inline'],
+        ],
+      ];
+      $sort_options['sort_link'] = [
+        '#type' => 'link',
+        '#title' => 'sort by relevance',
+        '#url' => Url::fromRoute('nidirect_contacts.default', [], $relevance_options),
+        '#attributes' => [
+          'data-self-ref' => ['false'],
+        ],
+      ];
+    }
+    elseif ($active_sort === 'search_api_relevance') {
+      $sort_options['sort_label'] = [
+        '#type' => 'html_tag',
+        '#tag' => 'span',
+        '#value' => t('sorted by relevance'),
+        '#attributes' => [
+          'class' => ['label-inline'],
+        ],
+      ];
+      $sort_options['sort_link'] = [
+        '#type' => 'link',
+        '#title' => 'sort alphabetically',
+        '#url' => Url::fromRoute('nidirect_contacts.default', [], $title_options),
+        '#attributes' => [
+          'data-self-ref' => ['false'],
+        ],
+      ];
     }
 
-    if (!empty($q['query_contacts_az'])) {
-      $variables['exposed']['#info']['filter-search_api_fulltext']['label'] = t('Search results for');
+    // Add the results heading with result count and sort options.
+    $variables['header']['result'] = [
+      '#type' => 'html_tag',
+      '#tag' => 'h2',
+      '#attributes' => [
+        'id' => $results_header_id,
+        'class' => ['view--count'],
+      ],
+      '#value' => \Drupal::translation()->formatPlural(
+        $variables['view']->total_rows,
+        '@count result',
+        '@count results',
+        ['@count' => $variables['view']->total_rows]
+      ),
+    ];
+
+    // Add in the sort options if more than one result.
+    if ($variables['view']->total_rows > 1) {
+      $variables['header']['result']['sort_options'] = $sort_options;
     }
   }
 }

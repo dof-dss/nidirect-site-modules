@@ -11,6 +11,24 @@
    */
   Drupal.behaviors.relatedInfo = {
     attach: function (context, settings) {
+
+      $('.field--name-field-related-info .field-add-more-submit',context).once('relatedInfoEntitySelect').each(function() {
+        var link_type_select = $('<select></select>')
+          .attr('class', 'field--name-field-related-info-select')
+          .attr('style', 'margin-right: 10px');
+        link_type_select.append($('<option>')
+          .attr('value', 'node' )
+          .text('Content'));
+        link_type_select.append($('<option>')
+          .attr('value', 'taxonomy_term' )
+          .text('Site theme'));
+        link_type_select.on('change', function () {
+          $('input[name=add_more_entity]').val($(this).val());
+        })
+
+        $(this).before(link_type_select);
+      });
+
       // Match nid which is the last occurrence of open bracket, number, close bracket.
       const regex = /\(\d+\)$/gm;
 
@@ -23,6 +41,7 @@
           }
         }
       });
+
     }
   };
 

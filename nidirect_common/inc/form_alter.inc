@@ -199,11 +199,16 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 
     $form['field_related_info']['widget']['add_more']['#value'] = t('Add link');
 
+    $delta = $form['field_related_info']['widget']['#max_delta'];
+
     if ($autocomplete_entity === 'taxonomy_term') {
-      $delta = $form['field_related_info']['widget']['#max_delta'];
       $form['field_related_info']['widget'][$delta]['uri']['#target_type'] = 'taxonomy_term';
+      $form['field_related_info']['widget'][$delta]['uri']['#title'] = t('Site theme or external URL');
+      $form['field_related_info']['widget'][$delta]['uri']['#description'] = t('Start typing the title of a site theme to select it. You can also enter an internal path such as /information-and-services/motoring or an external URL such as http://example.com. Enter <front> to link to the front page. Enter <nolink> to display link text only.');
       $form['field_related_info']['widget'][$delta]['#entity_type'] = 'taxonomy_term';
       $form['field_related_info']['widget'][$delta]['#bundle'] = 'site_themes';
+    } else {
+      $form['field_related_info']['widget'][$delta]['uri']['#title'] = t('Site content or external URL');
     }
 
   }

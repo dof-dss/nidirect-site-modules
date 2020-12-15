@@ -26,6 +26,7 @@
           $('input[name=add_more_entity]').val($(this).val());
         })
         $(this).before(link_type_select);
+        $(link_type_select).val($('input[name=add_more_entity]').val());
       });
 
       // Match nid which is the last occurrence of open bracket, number, close bracket.

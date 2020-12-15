@@ -25,7 +25,6 @@
         link_type_select.on('change', function () {
           $('input[name=add_more_entity]').val($(this).val());
         })
-
         $(this).before(link_type_select);
       });
 

@@ -188,10 +188,18 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
   if (array_key_exists('field_related_info', $form)) {
     $form['#attached']['library'][] = 'nidirect_common/related_info';
 
-    $form['field_related_info']['widget']['add_more']['#value'] = t('Add a link');
-    $form['field_related_info']['widget']['add_more']['#attributes']['data-entity'] = 'taxonomy_term';
+    $autocomplete_entity =  $form_state->getUserInput()['add_more_entity'];
 
-    if ($form['field_related_info']['widget']['add_more']['#attributes']['data-entity'] === 'taxonomy_term') {
+    if (empty($autocomplete_entity)) {
+      $form['field_related_info']['add_more_entity'] = [
+        '#type' => 'hidden',
+        '#value' => 'node',
+      ];
+    }
+
+    $form['field_related_info']['widget']['add_more']['#value'] = t('Add link');
+
+    if ($autocomplete_entity === 'taxonomy_term') {
       $delta = $form['field_related_info']['widget']['#max_delta'];
       $form['field_related_info']['widget'][$delta]['uri']['#target_type'] = 'taxonomy_term';
       $form['field_related_info']['widget'][$delta]['#entity_type'] = 'taxonomy_term';

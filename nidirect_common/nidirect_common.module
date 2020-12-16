@@ -511,6 +511,11 @@ function _render_articles_by_term(&$cache_tags) {
   \Drupal::service('renderer')->renderRoot($articles_view);
   foreach ($articles_view['view_build']['#view']->result as $row) {
 
+    // If we are dealing with a book entry and it's lower than the first page,
+    // don't add to the list of articles for the taxonomy term.
+    if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
+      continue;
+    }
     // This will be a link to an article.
     $results[strtolower($row->_entity->getTitle())] = [
       '#type' => 'link',

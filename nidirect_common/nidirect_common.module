@@ -500,3 +500,55 @@ function nidirect_common_toolbar_alter(&$items) {
     unset($items['contextual']);
   }
 }
+
+/**
+ * Utility function to render 'articles by term' view.
+ */
+function _render_articles_by_term(&$cache_tags) {
+  // Render the 'articles by term' view and process the results.
+  $results = [];
+  $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed');
+  \Drupal::service('renderer')->renderRoot($articles_view);
+  foreach ($articles_view['view_build']['#view']->result as $row) {
+
+    // This will be a link to an article.
+    $results[strtolower($row->_entity->getTitle())] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getTitle(),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+    ];
+    // Add cache tag for each article.
+    $cache_tags[] = 'node:' . $row->nid;
+  }
+  return $results;
+}
+
+/**
+ * Utility function to render 'site subtopics' view.
+ */
+function _render_site_subtopics(&$cache_tags) {
+  // Get a list of taxonomy terms that have been overridden
+  // by campaigns.
+  $terms_to_override = _render_campaign_list();
+  // Render the 'site subtopics' view and process the results.
+  $results = [];
+  $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed');
+  \Drupal::service('renderer')->renderRoot($subtopics_view);
+  foreach ($subtopics_view['view_build']['#view']->result as $row) {
+    // Do we need to override?
+    if (array_key_exists($row->tid, $terms_to_override)) {
+      // This will be a link to a campaign (landing page).
+      $results[strtolower($terms_to_override[$row->tid]['#title'])] = $terms_to_override[$row->tid];
+      continue;
+    }
+    // This will be a link to another taxonomy page.
+    $results[strtolower($row->_entity->getName())] = [
+      '#type' => 'link',
+      '#title' => $row->_entity->getName(),
+      '#url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $row->tid]),
+    ];
+    // Add cache tag for each listed term.
+    $cache_tags[] = 'taxonomy_term:' . $row->tid;
+  }
+  return $results;
+}

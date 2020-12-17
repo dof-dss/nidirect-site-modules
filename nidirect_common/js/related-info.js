@@ -18,6 +18,10 @@
         close: function(event, ui) {
           $(this).trigger('change');
         }
+      }).keypress(function(event) {
+        if (event.which === 13)  {
+          $(this).trigger('change');
+        }
       }).change(function() {
         // Copy the autocomplete text to the title field after removing the
         // node identifier.

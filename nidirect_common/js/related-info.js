@@ -16,13 +16,15 @@
 
       $('.field--name-field-related-info input.form-autocomplete').autocomplete({
         close: function(event, ui) {
-          // Only process the title if we are dealing with internal urls.
-          if (this.value.startsWith('http://') === false || this.value.startsWith('https://') === false) {
-            let title = this.value.replace(regex, '');
-            $(this).parent().next().children('input').val(title);
-          }
+          $(this).trigger('change');
         }
+      }).change(function() {
+        // Copy the autocomplete text to the title field after removing the
+        // node identifier.
+        let title = this.value.replace(regex, '');
+        $(this).parent().next().children('input').val(title);
       });
+
     }
   };
 

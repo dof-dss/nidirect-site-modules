@@ -133,6 +133,26 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       }
     }
 
+    // Determine if node is part of a book and add link(s) to its book parent(s).
+    if (!empty($node->book)) {
+
+      // Determine depth of node in the book.
+      $book_depth = $node->book['depth'];
+
+      // Create links to parent nodes in the depths above - if published.
+      $i = 1;
+      while ($i < $book_depth) {
+        $p = 'p' . $i++;
+        $nid_published = \Drupal::entityQuery('node')
+          ->condition('nid', $node->book[$p], '=')
+          ->condition('status', NodeInterface::PUBLISHED)
+          ->execute();
+        if ($nid_published && $parent = \Drupal::service('book.manager')->loadBookLink($node->book[$p])) {
+          $links[] = Link::fromTextandUrl($parent['title'], Url::fromUri('entity:node/' . $node->book[$p]));
+        }
+      }
+    }
+
     // Assemble a new breadcrumb object, add the links and set
     // a URL path cache context so it varies as you move from one
     // set of content to another.

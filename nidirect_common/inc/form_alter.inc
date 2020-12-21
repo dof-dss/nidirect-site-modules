@@ -317,6 +317,19 @@ function nidirect_common_form_editor_media_dialog_alter(array &$form, FormStateI
     return;
   }
 
+  $form['guidance_label'] = [
+    '#type' => 'label',
+    '#title' => 'Overriding media options',
+    '#weight' => -100,
+  ];
+  $form['guidance'] = [
+    '#type' => 'html_tag',
+    '#tag' => 'p',
+    '#value' => t("The options presented are allow you to override some of the options for this media item
+      when it is embedded in other content. To replace the image, or alter other field values, please use the
+      'Edit all media fields' button (opens in a new tab/window)"),
+    '#weight' => -99,
+  ];
   $form['actions']['edit_media_link']['#markup'] = $media->toLink(
     t('Edit all media fields'),
     'edit-form',

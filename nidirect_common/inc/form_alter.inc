@@ -7,6 +7,7 @@
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\media\MediaInterface;
 use Nette\Utils\Arrays;
 
 /**
@@ -297,4 +298,33 @@ function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element
       ':input[name="field_telephone[' . $context['delta'] . '][telephone_predefined]"]' => ['value' => 'Other'],
     ],
   ];
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ * Minor adjustments to the media dialog form, inspired by the
+ * patch at https://www.drupal.org/project/drupal/issues/3168868,
+ * so we can distinguish between editing and overridding alt/alignment
+ * properties (from core) and another button to take you to the canonical
+ * media form to allow editors to edit any canonical custom field values.
+ */
+function nidirect_common_form_editor_media_dialog_alter(array &$form, FormStateInterface $form_state) {
+  $media_embed_element = $form_state->get('media_embed_element');
+  $media = \Drupal::service('entity.repository')->loadEntityByUuid('media', $media_embed_element['data-entity-uuid']);
+
+  if ($media instanceof MediaInterface === FALSE) {
+    return;
+  }
+
+  $form['actions']['edit_media_link']['#markup'] = $media->toLink(
+    t('Edit all media fields'),
+    'edit-form',
+    [
+      'attributes' => [
+        'class' => 'button',
+        'target' => '_blank',
+      ]
+    ]
+  )->toString();
 }

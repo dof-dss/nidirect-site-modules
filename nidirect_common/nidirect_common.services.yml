@@ -4,3 +4,7 @@ services:
     arguments: ['@cache_tags.invalidator', '@entity_type.manager']
   linkit.suggestion_manager:
     class: Drupal\nidirect_common\LinkitSuggestionManager
+  nidirect_common.route_subscriber:
+    class: Drupal\nidirect_common\Routing\RouteSubscriber
+    tags:
+      - { name: event_subscriber }

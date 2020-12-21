@@ -224,6 +224,28 @@ function nidirect_health_conditions_node_insert(NodeInterface $node) {
 }
 
 /**
+ * Implements hook_NODE_update().
+ *
+ * Intended to keep Health Condition Alternative Title nodes' publish status
+ * in sync with the parent Health Condition publish status. This ensures
+ * consistency of appearance in the db and solr search results which are
+ * all pre-filtered on entity status.
+ */
+function nidirect_health_conditions_node_update(NodeInterface $node) {
+  if ($node->bundle() != 'health_condition') {
+    return;
+  }
+
+  $alt_titles = $node->field_alternative_condition->referencedEntities() ?? [];
+  $hc_publish_state = $node->isPublished();
+
+  foreach ($alt_titles as $index => $alt_node) {
+    $alt_node->setPublished($hc_publish_state);
+    $alt_node->save();
+  }
+}
+
+/**
  * Implements hook_entity_prepare_form().
  */
 function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity, $operation, FormStateInterface $form_state) {

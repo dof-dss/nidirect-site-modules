@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
+use Drupal\book\BookManagerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -41,10 +42,24 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
   protected $node;
 
   /**
-   * Class constructor.
+   * Core BookManager instance.
+   *
+   * @var \Drupal\book\BookManagerInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  protected $bookManager;
+
+  /**
+   * Class constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   *
+   * @param \Drupal\book\BookManagerInterface $book_manager
+   *   The book manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, BookManagerInterface $book_manager) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->bookManager = $book_manager;
   }
 
   /**
@@ -52,7 +67,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('book.manager')
     );
   }
 
@@ -147,7 +163,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
           ->condition('nid', $node->book[$p], '=')
           ->condition('status', NodeInterface::PUBLISHED)
           ->execute();
-        if ($nid_published && $parent = \Drupal::service('book.manager')->loadBookLink($node->book[$p])) {
+        if ($nid_published && $parent = $this->bookManager->loadBookLink($node->book[$p])) {
           $links[] = Link::fromTextandUrl($parent['title'], Url::fromUri('entity:node/' . $node->book[$p]));
         }
       }

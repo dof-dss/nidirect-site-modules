@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_breadcrumbs;
 
+use Drupal\book\BookManagerInterface;
 use Drupal\Core\Breadcrumb\Breadcrumb;
 use Drupal\Core\Breadcrumb\BreadcrumbBuilderInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -41,10 +42,24 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
   protected $node;
 
   /**
-   * Class constructor.
+   * Core BookManager instance.
+   *
+   * @var \Drupal\book\BookManagerInterface
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+  protected $bookManager;
+
+  /**
+   * Class constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   The entity type manager.
+   *
+   * @param \Drupal\book\BookManagerInterface $book_manager
+   *   The book manager.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, BookManagerInterface $book_manager) {
     $this->entityTypeManager = $entity_type_manager;
+    $this->bookManager = $book_manager;
   }
 
   /**
@@ -52,7 +67,8 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
    */
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('book.manager')
     );
   }
 
@@ -130,6 +146,28 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       foreach ($ancestors as $term) {
         $links[] = Link::fromTextandUrl($term->label(), Url::fromUri('entity:taxonomy_term/' . $term->id()));
         $cache_tags[] = 'taxonomy_term:' . $term->id();
+      }
+    }
+
+    // Determine if node is part of a book and add link(s) to its book parent(s).
+    if (!empty($node->book)) {
+
+      // Determine depth of node in the book.
+      $book_depth = $node->book['depth'];
+
+      // Create links to parent nodes in the depths above - if published.
+      $i = 1;
+      while ($i < $book_depth) {
+        $p = 'p' . $i++;
+        $query = $this->entityTypeManager->getStorage('node')->getQuery();
+
+        $nid_published = $query->condition('nid', $node->book[$p], '=')
+          ->condition('status', NodeInterface::PUBLISHED)
+          ->execute();
+
+        if ($nid_published && $parent = $this->bookManager->loadBookLink($node->book[$p])) {
+          $links[] = Link::fromTextandUrl($parent['title'], Url::fromUri('entity:node/' . $node->book[$p]));
+        }
       }
     }
 

@@ -159,10 +159,12 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       $i = 1;
       while ($i < $book_depth) {
         $p = 'p' . $i++;
-        $nid_published = \Drupal::entityQuery('node')
-          ->condition('nid', $node->book[$p], '=')
+        $query = $this->entityTypeManager->getStorage('node')->getQuery();
+
+        $nid_published = $query->condition('nid', $node->book[$p], '=')
           ->condition('status', NodeInterface::PUBLISHED)
           ->execute();
+
         if ($nid_published && $parent = $this->bookManager->loadBookLink($node->book[$p])) {
           $links[] = Link::fromTextandUrl($parent['title'], Url::fromUri('entity:node/' . $node->book[$p]));
         }

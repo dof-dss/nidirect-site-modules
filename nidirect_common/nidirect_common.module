@@ -516,12 +516,24 @@ function _render_articles_by_term(&$cache_tags) {
     if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
       continue;
     }
+
+    // External link nodes' titles should be replaced with the link value they contain.
+    if ($row->_entity->bundle() === 'external_link') {
+      $title = $row->_entity->field_link->title;
+      $url = Url::fromUri($row->_entity->field_link->uri);
+    }
+    else {
+      $title = $row->_entity->getTitle();
+      $url = Url::fromRoute('entity.node.canonical', ['node' => $row->nid]);
+    }
+
     // This will be a link to an article.
-    $results[strtolower($row->_entity->getTitle())] = [
+    $results[strtolower($title)] = [
       '#type' => 'link',
-      '#title' => $row->_entity->getTitle(),
-      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+      '#title' => $title,
+      '#url' => $url,
     ];
+
     // Add cache tag for each article.
     $cache_tags[] = 'node:' . $row->nid;
   }

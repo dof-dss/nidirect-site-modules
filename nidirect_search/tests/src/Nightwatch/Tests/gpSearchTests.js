@@ -1,5 +1,5 @@
 module.exports = {
-  '@tags': ['search', 'debug'],
+  '@tags': ['search'],
 
   'Confirm search results on: GP search page': browser => {
 

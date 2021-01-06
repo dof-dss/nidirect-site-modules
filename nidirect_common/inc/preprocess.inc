@@ -115,6 +115,7 @@ function nidirect_common_preprocess_taxonomy_term(array &$variables) {
   $cache_tags[] = 'taxonomy_term_list:' . $variables['term']->id();
   // Add the standard taxonomy term cache tag as well.
   $cache_tags[] = 'taxonomy_term:' . $variables['term']->id();
+
   // Render the 'articles by term' view and process the results.
   $results = _render_articles_by_term($cache_tags);
   // Render the 'site subtopics' view and process the results.

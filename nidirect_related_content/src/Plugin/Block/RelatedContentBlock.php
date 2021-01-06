@@ -4,8 +4,8 @@ namespace Drupal\nidirect_related_content\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\nidirect_related_content\RelatedContentManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -57,11 +57,16 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
       $container->get('entity_type.manager')
     );
   }
-  
+
   /**
    * {@inheritdoc}
    */
   public function build() {
+
+    $content_manager = new RelatedContentManager();
+
+    $content = $content_manager->getThemeContent(121, $content_manager::CONTENT_THEMES)->asArray();
+
     $build['content'] = [
       '#markup' => $this->t('Related content list'),
     ];

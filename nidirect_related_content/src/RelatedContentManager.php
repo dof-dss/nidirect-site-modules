@@ -32,6 +32,15 @@ class RelatedContentManager {
    * @return $this
    */
   public function getThemeContent($term_id, $content = self::CONTENT_ALL): RelatedContentManager {
+
+    if ($content === 'themes') {
+      $this->getThemeThemes($term_id);
+    } elseif ($content === 'nodes') {
+
+    } else {
+
+    }
+
     return $this;
   }
 
@@ -53,6 +62,39 @@ class RelatedContentManager {
    */
   public function asRenderArray(): array {
     return [];
+  }
+
+  protected function getThemeThemes($term_id) {
+
+  }
+
+  /**
+   * Returns an array of term id's with a campaign page.
+   *
+   * @return array
+   *   Term ID indexed array of node objects.
+   */
+  protected function getTermsWithCampaignPages() {
+    // Array of terms with campaign pages.
+    $terms = [];
+
+    // Fetch every published campaign page.
+    $query = \Drupal::entityQuery('node')
+      ->condition('type', 'landing_page')
+      ->condition('status', 1);
+    $nids = $query->execute();
+
+    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+
+    // Construct the terms array assigning the campaign node to each
+    // overridden tid.
+    foreach ($nodes as $node) {
+      if (isset($node->get('field_subtheme')->target_id)) {
+        $terms[$node->get('field_subtheme')->getString()] = $node;
+      }
+    }
+
+    return $terms;
   }
 
 }

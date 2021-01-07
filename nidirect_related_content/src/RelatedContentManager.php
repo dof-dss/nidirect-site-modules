@@ -2,6 +2,10 @@
 
 namespace Drupal\nidirect_related_content;
 
+use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
+use Drupal\node\NodeTypeInterface;
+
 /**
  * Provides methods for managing related content display.
  *
@@ -19,7 +23,7 @@ class RelatedContentManager {
    * @var array
    *   Array of theme content.
    */
-  protected $content = [];
+  protected $content;
 
   /**
    * Fetches content for a theme.
@@ -65,7 +69,30 @@ class RelatedContentManager {
   }
 
   protected function getThemeThemes($term_id) {
+    $campaign_terms = $this->getTermsWithCampaignPages();
 
+    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed');
+    \Drupal::service('renderer')->renderRoot($subtopics_view);
+
+    foreach ($subtopics_view['view_build']['#view']->result as $row) {
+      // Do we need to override?
+      if (array_key_exists($row->tid, $campaign_terms)) {
+        // This will be a link to a campaign (landing page).
+        $this->content[] = [
+          'entity' => $campaign_terms[$row->tid],
+          'title' => $campaign_terms[$row->tid]->getTitle(),
+          'url' => Url::fromRoute('entity.node.canonical', ['node' => $campaign_terms[$row->tid]->id()]),
+        ];
+        continue;
+      }
+      // This will be a link to another taxonomy page.
+      $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($row->tid);
+      $this->content[] = [
+        'entity' => $term,
+        'title' => $term->getName(),
+        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $campaign_terms[$term->id()]]),
+      ];
+    }
   }
 
   /**

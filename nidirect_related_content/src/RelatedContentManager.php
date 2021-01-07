@@ -35,14 +35,15 @@ class RelatedContentManager {
    *
    * @return $this
    */
-  public function getThemeContent($term_id, $content = self::CONTENT_ALL): RelatedContentManager {
+  public function getThemeContent($content = self::CONTENT_ALL): RelatedContentManager {
 
     if ($content === 'themes') {
-      $this->getThemeThemes($term_id);
+      $this->getThemeThemes();
     } elseif ($content === 'nodes') {
-
+      $this->getThemeNodes();
     } else {
-
+      $this->getThemeThemes();
+      $this->getThemeNodes();
     }
 
     return $this;
@@ -100,7 +101,7 @@ class RelatedContentManager {
 
   }
 
-  protected function getThemeThemes($term_id) {
+  protected function getThemeThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
     $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed');

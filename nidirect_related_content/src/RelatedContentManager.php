@@ -150,7 +150,7 @@ class RelatedContentManager {
       $this->content[] = [
         'entity' => $term,
         'title' => $term->getName(),
-        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $campaign_terms[$term->id()]]),
+        'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->id()]),
       ];
     }
   }

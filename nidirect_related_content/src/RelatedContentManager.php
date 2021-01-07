@@ -68,6 +68,38 @@ class RelatedContentManager {
     return [];
   }
 
+  protected function getThemeNodes() {
+    // Render the 'articles by term' view and process the results.
+
+    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed');
+    \Drupal::service('renderer')->renderRoot($articles_view);
+    foreach ($articles_view['view_build']['#view']->result as $row) {
+
+      // If we are dealing with a book entry and it's lower than the first page,
+      // don't add to the list of articles for the taxonomy term.
+      if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
+        continue;
+      }
+
+      // External link nodes' titles should be replaced with the link value they contain.
+      if ($row->_entity->bundle() === 'external_link') {
+        $title = $row->_entity->field_link->title;
+        $url = Url::fromUri($row->_entity->field_link->uri);
+      }
+      else {
+        $title = $row->_entity->getTitle();
+        $url = Url::fromRoute('entity.node.canonical', ['node' => $row->nid]);
+      }
+
+      $this->content[] = [
+        'entity' => $row->_entity,
+        'title' => $title,
+        'url' => $url,
+      ];
+    }
+
+  }
+
   protected function getThemeThemes($term_id) {
     $campaign_terms = $this->getTermsWithCampaignPages();
 

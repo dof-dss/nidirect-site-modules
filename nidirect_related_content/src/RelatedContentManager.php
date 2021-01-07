@@ -93,7 +93,23 @@ class RelatedContentManager {
    *   A Drupal render array of theme content.
    */
   public function asRenderArray(): array {
-    return [];
+
+    $items = [];
+
+    foreach ($this->content as $item) {
+      $items[] = [
+        '#type' => 'link',
+        '#title' => $item['title'],
+        '#url' => $item['url'],
+      ];
+    }
+
+    $cache_tags = '';
+
+    return [
+      '#theme' => 'item_list',
+      '#items' => $items,
+    ];
   }
 
   protected function getThemeNodes(array $term_ids) {

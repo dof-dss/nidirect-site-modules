@@ -28,22 +28,22 @@ class RelatedContentManager {
   /**
    * Fetches content for a theme.
    *
-   * @param string|int $term_id
-   *   Taxonomy term id.
+   * @param array $term_ids
+   *   Array of taxonomy term ids to retrieve content for.
    * @param string $content
    *   Return themes, nodes or both.
    *
    * @return $this
    */
-  public function getThemeContent($content = self::CONTENT_ALL): RelatedContentManager {
+  public function getThemeContent(array $term_ids, $content = self::CONTENT_ALL): RelatedContentManager {
 
     if ($content === 'themes') {
-      $this->getThemeThemes();
+      $this->getThemeThemes($term_ids);
     } elseif ($content === 'nodes') {
-      $this->getThemeNodes();
+      $this->getThemeNodes($term_ids);
     } else {
-      $this->getThemeThemes();
-      $this->getThemeNodes();
+      $this->getThemeThemes($term_ids);
+      $this->getThemeNodes($term_ids);
     }
 
     return $this;
@@ -69,10 +69,10 @@ class RelatedContentManager {
     return [];
   }
 
-  protected function getThemeNodes() {
+  protected function getThemeNodes(array $term_ids) {
     // Render the 'articles by term' view and process the results.
 
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed');
+    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', implode(',', $term_ids));
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
 
@@ -101,10 +101,10 @@ class RelatedContentManager {
 
   }
 
-  protected function getThemeThemes() {
+  protected function getThemeThemes(array $term_ids) {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed');
+    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', implode(',', $term_ids));
     \Drupal::service('renderer')->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

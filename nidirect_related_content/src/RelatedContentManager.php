@@ -60,6 +60,10 @@ class RelatedContentManager {
       }
     }
 
+    if (count($term_ids) < 2) {
+      $term_ids[1] = $term_ids[0];
+    }
+
     if ($content === 'themes') {
       $this->getThemeThemes($term_ids);
     } elseif ($content === 'nodes') {
@@ -95,7 +99,7 @@ class RelatedContentManager {
   protected function getThemeNodes(array $term_ids) {
     // Render the 'articles by term' view and process the results.
 
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', implode(',', $term_ids));
+    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $term_ids[0], $term_ids[1]);
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
 
@@ -127,7 +131,7 @@ class RelatedContentManager {
   protected function getThemeThemes(array $term_ids) {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', implode(',', $term_ids));
+    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $term_ids[0], $term_ids[1]);
     \Drupal::service('renderer')->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

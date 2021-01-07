@@ -8,7 +8,6 @@
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -222,6 +221,7 @@ function nidirect_health_conditions_node_insert(NodeInterface $node) {
     // Update parent of each alternative condition.
     foreach ($alt_conditions->referencedEntities() as $alt) {
       $alt->set('field_parent_condition', $node);
+      $alt->setPublished($node->isPublished());
       $alt->save();
     }
   }
@@ -269,8 +269,18 @@ function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity,
  * Implements hook_preprocess_node().
  */
 function nidirect_health_conditions_preprocess_node(array &$variables) {
-  if ($variables['node']->getType() === 'health_condition') {
+  $node_type = $variables['node']->getType();
+  $view_mode = $variables['view_mode'];
+
+  if ($node_type === 'health_condition') {
     $variables['#attached']['library'][] = 'nidirect_health_conditions/search_conditions_prompt';
+  }
+  if ($node_type === 'health_condition_alternative' && $view_mode === 'search_result') {
+    $hc_node = $variables['content']['field_parent_condition'][0]['#node'];
+
+    if ($hc_node instanceof NodeInterface && $hc_node->bundle() === 'health_condition') {
+      $variables['url'] = $hc_node->toUrl()->toString();
+    }
   }
 }
 

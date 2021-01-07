@@ -18,6 +18,14 @@ class RelatedContentManager {
   public const CONTENT_NODES = 'nodes';
 
   /**
+   * Theme/term ids.
+   *
+   * @var array
+   *   Array of taxonomy term ids.
+   */
+  protected $term_ids;
+
+  /**
    * Theme content.
    *
    * @var array
@@ -60,20 +68,25 @@ class RelatedContentManager {
       }
     }
 
-    if (count($term_ids) < 2) {
-      $term_ids[1] = $term_ids[0];
-    }
+    $this->setTerms($term_ids);
 
     if ($content === 'themes') {
-      $this->getThemeThemes($term_ids);
+      $this->getThemeThemes();
     } elseif ($content === 'nodes') {
-      $this->getThemeNodes($term_ids);
+      $this->getThemeNodes();
     } else {
-      $this->getThemeThemes($term_ids);
-      $this->getThemeNodes($term_ids);
+      $this->getThemeThemes();
+      $this->getThemeNodes();
     }
 
     return $this;
+  }
+
+  public function setTerms(array $term_ids) {
+    if (count($term_ids) < 2) {
+      $term_ids[1] = $term_ids[0];
+    }
+    $this->term_ids = $term_ids;
   }
 
   /**
@@ -112,10 +125,10 @@ class RelatedContentManager {
     ];
   }
 
-  protected function getThemeNodes(array $term_ids) {
+  protected function getThemeNodes() {
     // Render the 'articles by term' view and process the results.
 
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $term_ids[0], $term_ids[1]);
+    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->term_ids[0], $this->term_ids[1]);
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
 
@@ -144,10 +157,10 @@ class RelatedContentManager {
 
   }
 
-  protected function getThemeThemes(array $term_ids) {
+  protected function getThemeThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $term_ids[0], $term_ids[1]);
+    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->term_ids[0], $this->term_ids[1]);
     \Drupal::service('renderer')->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

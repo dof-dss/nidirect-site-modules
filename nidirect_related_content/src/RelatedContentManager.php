@@ -35,7 +35,30 @@ class RelatedContentManager {
    *
    * @return $this
    */
-  public function getThemeContent(array $term_ids, $content = self::CONTENT_ALL): RelatedContentManager {
+  public function getThemeContent(array $term_ids = NULL, $content = self::CONTENT_ALL): RelatedContentManager {
+
+    if ($term_ids === NULL) {
+
+      $route_name = \Drupal::routeMatch()->getRouteName();
+
+      if ($route_name === 'entity.node.canonical') {
+        $node = \Drupal::routeMatch()->getParameter('node');
+        if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
+          $term_ids[] = $node->get('field_subtheme')->getString();
+        }
+        if ($node->hasField('field_site_themes') && !$node->get('field_site_themes')->isEmpty()) {
+          $term_ids[] = $node->get('field_site_themes')->getString();
+        }
+      } elseif ($route_name === 'entity.taxonomy_term.canonical') {
+        $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+        $term_ids[] = $term->id();
+        if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
+          $term_ids[] = $term->get('field_supplementary_parents')->getString();
+        }
+      } else {
+        return $this;
+      }
+    }
 
     if ($content === 'themes') {
       $this->getThemeThemes($term_ids);

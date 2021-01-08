@@ -3,8 +3,6 @@
 namespace Drupal\nidirect_related_content;
 
 use Drupal\Core\Url;
-use Drupal\node\NodeInterface;
-use Drupal\node\NodeTypeInterface;
 use Drupal\taxonomy\TermInterface;
 
 /**
@@ -24,7 +22,7 @@ class RelatedContentManager {
    * @var array
    *   Array of taxonomy term ids.
    */
-  protected $term_ids;
+  protected $termIds;
 
   /**
    * Theme content.
@@ -58,13 +56,15 @@ class RelatedContentManager {
         if ($node->hasField('field_site_themes') && !$node->get('field_site_themes')->isEmpty()) {
           $term_ids[] = $node->get('field_site_themes')->getString();
         }
-      } elseif ($route_name === 'entity.taxonomy_term.canonical') {
+      }
+      elseif ($route_name === 'entity.taxonomy_term.canonical') {
         $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
         $term_ids[] = $term->id();
         if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
           $term_ids[] = $term->get('field_supplementary_parents')->getString();
         }
-      } else {
+      }
+      else {
         return $this;
       }
     }
@@ -73,9 +73,11 @@ class RelatedContentManager {
 
     if ($content === 'themes') {
       $this->getThemeThemes();
-    } elseif ($content === 'nodes') {
+    }
+    elseif ($content === 'nodes') {
       $this->getThemeNodes();
-    } else {
+    }
+    else {
       $this->getThemeThemes();
       $this->getThemeNodes();
     }
@@ -86,11 +88,17 @@ class RelatedContentManager {
     return $this;
   }
 
+  /**
+   * Set the taxonomy terms to fetch content for.
+   *
+   * @param array $term_ids
+   *   Maximum of 2 term ids for fetching content from.
+   */
   public function setTerms(array $term_ids) {
     if (count($term_ids) < 2) {
       $term_ids[1] = $term_ids[0];
     }
-    $this->term_ids = $term_ids;
+    $this->termIds = $term_ids;
   }
 
   /**
@@ -113,8 +121,8 @@ class RelatedContentManager {
 
     $items = [];
     $cache_tags = [
-      'taxonomy_term_list:' . $this->term_ids[0],
-      'taxonomy_term:' . $this->term_ids[0],
+      'taxonomy_term_list:' . $this->termIds[0],
+      'taxonomy_term:' . $this->termIds[0],
     ];
 
     foreach ($this->content as $item) {
@@ -126,7 +134,8 @@ class RelatedContentManager {
 
       if ($item['entity'] instanceof TermInterface) {
         $cache_tags[] = 'taxonomy_term:' . $item['entity']->id();
-      } else {
+      }
+      else {
         $cache_tags[] = 'node:' . $item['entity']->id();
       }
 
@@ -141,6 +150,11 @@ class RelatedContentManager {
     ];
   }
 
+  /**
+   * Removes the currently viewed term from the content results.
+   *
+   * @return $this
+   */
   public function excludingCurrentTheme() {
     $route_name = \Drupal::routeMatch()->getRouteName();
 
@@ -157,10 +171,12 @@ class RelatedContentManager {
     return $this;
   }
 
+  /**
+   * Fetches node content for the term ids.
+   */
   protected function getThemeNodes() {
     // Render the 'articles by term' view and process the results.
-
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->term_ids[0], $this->term_ids[1]);
+    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->termIds[0], $this->termIds[1]);
     \Drupal::service('renderer')->renderRoot($articles_view);
     foreach ($articles_view['view_build']['#view']->result as $row) {
 
@@ -170,7 +186,8 @@ class RelatedContentManager {
         continue;
       }
 
-      // External link nodes' titles should be replaced with the link value they contain.
+      // External link nodes' titles should be replaced with the link value
+      // they contain.
       if ($row->_entity->bundle() === 'external_link') {
         $title = $row->_entity->field_link->title;
         $url = Url::fromUri($row->_entity->field_link->uri);
@@ -189,10 +206,13 @@ class RelatedContentManager {
 
   }
 
+  /**
+   * Fetches child themes for the term ids.
+   */
   protected function getThemeThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->term_ids[0], $this->term_ids[1]);
+    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->termIds[0], $this->termIds[1]);
     \Drupal::service('renderer')->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

@@ -5,6 +5,7 @@ namespace Drupal\nidirect_related_content;
 use Drupal\Core\Url;
 use Drupal\node\NodeInterface;
 use Drupal\node\NodeTypeInterface;
+use Drupal\taxonomy\TermInterface;
 
 /**
  * Provides methods for managing related content display.
@@ -111,6 +112,10 @@ class RelatedContentManager {
   public function asRenderArray(): array {
 
     $items = [];
+    $cache_tags = [
+      'taxonomy_term_list:' . $this->term_ids[0],
+      'taxonomy_term:' . $this->term_ids[0],
+    ];
 
     foreach ($this->content as $item) {
       $items[] = [
@@ -118,14 +123,21 @@ class RelatedContentManager {
         '#title' => $item['title'],
         '#url' => $item['url'],
       ];
-    }
 
-    // TODO: Add render cache tags
-    $cache_tags = '';
+      if ($item['entity'] instanceof TermInterface) {
+        $cache_tags[] = 'taxonomy_term:' . $item['entity']->id();
+      } else {
+        $cache_tags[] = 'node:' . $item['entity']->id();
+      }
+
+    }
 
     return [
       '#theme' => 'item_list',
       '#items' => $items,
+      '#cache' => [
+        'tags' => $cache_tags,
+      ],
     ];
   }
 

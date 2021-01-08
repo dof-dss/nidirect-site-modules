@@ -141,6 +141,22 @@ class RelatedContentManager {
     ];
   }
 
+  public function excludingCurrentTheme() {
+    $route_name = \Drupal::routeMatch()->getRouteName();
+
+    if ($route_name === 'entity.taxonomy_term.canonical') {
+      $term_id = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+
+      foreach ($this->content as $key => $item) {
+        if ($item['entity'] instanceof TermInterface && $item['entity']->id() == $term_id) {
+          unset($this->content[$key]);
+        }
+      }
+
+    }
+    return $this;
+  }
+
   protected function getThemeNodes() {
     // Render the 'articles by term' view and process the results.
 

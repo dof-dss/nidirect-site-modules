@@ -79,6 +79,9 @@ class RelatedContentManager {
       $this->getThemeNodes();
     }
 
+    // Sort the content list by title alphabetically.
+    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
+
     return $this;
   }
 
@@ -117,6 +120,7 @@ class RelatedContentManager {
       ];
     }
 
+    // TODO: Add render cache tags
     $cache_tags = '';
 
     return [

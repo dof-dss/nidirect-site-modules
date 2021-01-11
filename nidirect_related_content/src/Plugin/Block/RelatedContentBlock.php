@@ -73,10 +73,8 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function build() {
-    // TODO: Inject service
-    $content_manager = \Drupal::service('nidirect_related_content.manager');
-    $content = $content_manager
-      ->getThemeContent(NULL, $content_manager::CONTENT_ALL)
+    $content = $this->relatedContentManager
+      ->getThemeContent(NULL, $this->relatedContentManager::CONTENT_ALL)
       ->asRenderArray();
 
     $build = $content;

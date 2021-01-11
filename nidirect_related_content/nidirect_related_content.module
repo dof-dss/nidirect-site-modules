@@ -124,6 +124,9 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
   $variables['#cache']['contexts'][] = 'url';
 }
 
+/**
+ * Implements hook_block_view_alter().
+ */
 function nidirect_related_content_block_view_alter(array &$build, BlockPluginInterface $block) {
   if ($block->getPluginId() === 'nidirect_related_content_block') {
 

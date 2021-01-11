@@ -33,7 +33,7 @@ class RelatedContentManager {
   protected $content;
 
   /**
-   * Fetches content for a theme.
+   * Fetches content (Terms & Nodes) for a theme.
    *
    * @param array $term_ids
    *   Array of taxonomy term ids to retrieve content for.
@@ -44,8 +44,9 @@ class RelatedContentManager {
    */
   public function getThemeContent(array $term_ids = NULL, $content = self::CONTENT_ALL): RelatedContentManager {
 
+    // If no terms_ids are passed in try and extract from the current request,
+    // either a node or taxonomy page.
     if ($term_ids === NULL) {
-
       $route_name = \Drupal::routeMatch()->getRouteName();
 
       if ($route_name === 'entity.node.canonical') {
@@ -95,6 +96,7 @@ class RelatedContentManager {
    *   Maximum of 2 term ids for fetching content from.
    */
   public function setTerms(array $term_ids) {
+    // The Views used to generate the content lists accept 2 term id arguments.
     if (count($term_ids) < 2) {
       $term_ids[1] = $term_ids[0];
     }
@@ -153,6 +155,9 @@ class RelatedContentManager {
   /**
    * Removes the currently viewed term from the content results.
    *
+   * Looks at the current page request for a taxonomy parameter and removes the
+   * term from the content list.
+   *
    * @return $this
    */
   public function excludingCurrentTheme() {
@@ -175,11 +180,11 @@ class RelatedContentManager {
    * Fetches node content for the term ids.
    */
   protected function getThemeNodes() {
-    // Render the 'articles by term' view and process the results.
+    // Render the 'articles by term' View and process the results.
     $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->termIds[0], $this->termIds[1]);
     \Drupal::service('renderer')->renderRoot($articles_view);
-    foreach ($articles_view['view_build']['#view']->result as $row) {
 
+    foreach ($articles_view['view_build']['#view']->result as $row) {
       // If we are dealing with a book entry and it's lower than the first page,
       // don't add to the list of articles for the taxonomy term.
       if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {

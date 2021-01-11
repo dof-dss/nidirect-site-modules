@@ -114,7 +114,7 @@ function nidirect_common_preprocess_taxonomy_term(array &$variables) {
 
   // Return as an 'item_list' themed render array, with
   // cache tags set appropriately.
-  $content_manager = new RelatedContentManager();
+  $content_manager = \Drupal::service('nidirect_related_content.manager');
   $content = $content_manager
     ->getThemeContent(NULL, $content_manager::CONTENT_ALL)
     ->excludingCurrentTheme()

@@ -27,6 +27,13 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
   protected $entityTypeManager;
 
   /**
+   * Related content manager.
+   *
+   * @var \Drupal\nidirect_related_content\RelatedContentManager
+   */
+  protected $relatedContentManager;
+
+  /**
    * Constructs a new RelatedContentBlock instance.
    *
    * @param array $configuration
@@ -40,10 +47,13 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
    *   The plugin implementation definition.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
+   * @param \Drupal\nidirect_related_content\RelatedContentManager $related_content_manager
+   *   The related content manager.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, RelatedContentManager $related_content_manager) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
+    $this->relatedContentManager = $related_content_manager;
   }
 
   /**
@@ -54,7 +64,8 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('nidirect_related_content.manager')
     );
   }
 
@@ -62,14 +73,14 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
    * {@inheritdoc}
    */
   public function build() {
+    // TODO: Inject service
+    $content_manager = \Drupal::service('nidirect_related_content.manager');
+    $content = $content_manager
+      ->getThemeContent(NULL, $content_manager::CONTENT_ALL)
+      ->asRenderArray();
 
-    $content_manager = new RelatedContentManager();
+    $build['content'] = $content;
 
-    $content = $content_manager->getThemeContent(121, $content_manager::CONTENT_THEMES)->asArray();
-
-    $build['content'] = [
-      '#markup' => $this->t('Related content list'),
-    ];
     return $build;
   }
 

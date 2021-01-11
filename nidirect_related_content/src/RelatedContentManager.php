@@ -61,9 +61,10 @@ class RelatedContentManager {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity query manager.
-   *
-   * @param \Drupal\Core\Entity\Query\QueryFactoryInterface $query_factory
-   *   Entity query factory.
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
+   *   Current route match.
+   * @param \Drupal\Core\Render\Renderer $renderer
+   *   Drupal renderer.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer) {
     $this->entityTypeManager = $entity_type_manager;
@@ -187,6 +188,7 @@ class RelatedContentManager {
       '#items' => $items,
       '#cache' => [
         'tags' => $cache_tags,
+        'contexts' => ['url.path'],
       ],
     ];
   }
@@ -296,7 +298,7 @@ class RelatedContentManager {
       ->condition('status', 1);
     $nids = $query->execute();
 
-    $nodes =  $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
+    $nodes = $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
 
     // Construct the terms array assigning the campaign node to each
     // overridden tid.

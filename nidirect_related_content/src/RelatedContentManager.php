@@ -2,6 +2,9 @@
 
 namespace Drupal\nidirect_related_content;
 
+use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Render\Renderer;
+use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\taxonomy\TermInterface;
 
@@ -15,6 +18,27 @@ class RelatedContentManager {
   public const CONTENT_ALL = 'all';
   public const CONTENT_THEMES = 'themes';
   public const CONTENT_NODES = 'nodes';
+
+  /**
+   * Entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * The current route.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
+  protected $routeMatch;
+
+  /**
+   * Drupal renderer service.
+   *
+   * @var \Drupal\Core\Render\Renderer
+   */
+  protected $renderer;
 
   /**
    * Theme/term ids.
@@ -33,6 +57,21 @@ class RelatedContentManager {
   protected $content;
 
   /**
+   * Constructor.
+   *
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   Entity query manager.
+   *
+   * @param \Drupal\Core\Entity\Query\QueryFactoryInterface $query_factory
+   *   Entity query factory.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer) {
+    $this->entityTypeManager = $entity_type_manager;
+    $this->routeMatch = $route_match;
+    $this->renderer = $renderer;
+  }
+
+  /**
    * Fetches content (Terms & Nodes) for a theme.
    *
    * @param array $term_ids
@@ -47,10 +86,10 @@ class RelatedContentManager {
     // If no terms_ids are passed in try and extract from the current request,
     // either a node or taxonomy page.
     if ($term_ids === NULL) {
-      $route_name = \Drupal::routeMatch()->getRouteName();
+      $route_name = $this->routeMatch->getRouteName();
 
       if ($route_name === 'entity.node.canonical') {
-        $node = \Drupal::routeMatch()->getParameter('node');
+        $node = $this->routeMatch->getParameter('node');
         if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
           $term_ids[] = $node->get('field_subtheme')->getString();
         }
@@ -59,7 +98,7 @@ class RelatedContentManager {
         }
       }
       elseif ($route_name === 'entity.taxonomy_term.canonical') {
-        $term = \Drupal::routeMatch()->getParameter('taxonomy_term');
+        $term = $this->routeMatch->getParameter('taxonomy_term');
         $term_ids[] = $term->id();
         if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
           $term_ids[] = $term->get('field_supplementary_parents')->getString();
@@ -161,10 +200,10 @@ class RelatedContentManager {
    * @return $this
    */
   public function excludingCurrentTheme() {
-    $route_name = \Drupal::routeMatch()->getRouteName();
+    $route_name = $this->routeMatch->getRouteName();
 
     if ($route_name === 'entity.taxonomy_term.canonical') {
-      $term_id = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+      $term_id = $this->routeMatch->getRawParameter('taxonomy_term');
 
       foreach ($this->content as $key => $item) {
         if ($item['entity'] instanceof TermInterface && $item['entity']->id() == $term_id) {
@@ -182,7 +221,7 @@ class RelatedContentManager {
   protected function getThemeNodes() {
     // Render the 'articles by term' View and process the results.
     $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->termIds[0], $this->termIds[1]);
-    \Drupal::service('renderer')->renderRoot($articles_view);
+    $this->renderer->renderRoot($articles_view);
 
     foreach ($articles_view['view_build']['#view']->result as $row) {
       // If we are dealing with a book entry and it's lower than the first page,
@@ -218,7 +257,7 @@ class RelatedContentManager {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
     $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->termIds[0], $this->termIds[1]);
-    \Drupal::service('renderer')->renderRoot($subtopics_view);
+    $this->renderer->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {
       // Do we need to override?
@@ -232,7 +271,7 @@ class RelatedContentManager {
         continue;
       }
       // This will be a link to another taxonomy page.
-      $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($row->tid);
+      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->tid);
       $this->content[] = [
         'entity' => $term,
         'title' => $term->getName(),
@@ -252,12 +291,12 @@ class RelatedContentManager {
     $terms = [];
 
     // Fetch every published campaign page.
-    $query = \Drupal::entityQuery('node')
+    $query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'landing_page')
       ->condition('status', 1);
     $nids = $query->execute();
 
-    $nodes = \Drupal::entityTypeManager()->getStorage('node')->loadMultiple($nids);
+    $nodes =  $this->entityTypeManager->getStorage('node')->loadMultiple($nids);
 
     // Construct the terms array assigning the campaign node to each
     // overridden tid.

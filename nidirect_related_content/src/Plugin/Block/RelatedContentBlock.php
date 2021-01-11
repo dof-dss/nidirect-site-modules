@@ -79,7 +79,7 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
       ->getThemeContent(NULL, $content_manager::CONTENT_ALL)
       ->asRenderArray();
 
-    $build['content'] = $content;
+    $build = $content;
 
     return $build;
   }

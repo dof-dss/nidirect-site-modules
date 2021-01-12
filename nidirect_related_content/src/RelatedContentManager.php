@@ -112,10 +112,10 @@ class RelatedContentManager {
 
     $this->setTerms($term_ids);
 
-    if ($content === 'themes') {
+    if ($content === self::CONTENT_THEMES) {
       $this->getThemeThemes();
     }
-    elseif ($content === 'nodes') {
+    elseif ($content === self::CONTENT_NODES) {
       $this->getThemeNodes();
     }
     else {
@@ -184,11 +184,13 @@ class RelatedContentManager {
     }
 
     return [
-      '#theme' => 'item_list',
-      '#items' => $items,
-      '#cache' => [
-        'tags' => $cache_tags,
-        'contexts' => ['url.path'],
+      'related_content' => [
+        '#theme' => 'item_list',
+        '#items' => $items,
+        '#cache' => [
+          'tags' => $cache_tags,
+          'contexts' => ['url.path'],
+        ],
       ],
     ];
   }

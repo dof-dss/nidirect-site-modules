@@ -88,6 +88,11 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     // Add a validate handler to detect any duplicates.
     $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
+
+  // Hide the display title checkbox on the inline block form.
+  if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
+    $form['settings']['label_display']['#access'] = FALSE;
+  }
 }
 
 /**

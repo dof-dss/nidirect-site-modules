@@ -10,7 +10,10 @@ module.exports = {
       .waitForElementVisible('body', 1000)
       .drupalRelativeURL('/contacts?query_contacts_az=marne')
       .expect.element('.sapi-did-you-mean').text.to.contain('Did you mean');
-    browser.expect.element('.sapi-did-you-mean > a').text.to.contain('marine');
+    // Swapping previous test to check for string 'marine' to a presence test
+    // because the Solr suggestions can vary over time as the index grows, breaking
+    // the tests defined here in a more static manner.
+    browser.expect.element('.sapi-did-you-mean > a').to.be.present;
 
   },
 

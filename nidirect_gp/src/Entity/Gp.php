@@ -59,7 +59,7 @@ use Drupal\user\UserInterface;
  *   },
  *   links = {
  *     "canonical" = "/gp/{gp}",
- *     "add-form" = "/gp/add",
+ *     "add-form" = "/node/add/gp",
  *     "edit-form" = "/gp/{gp}/edit",
  *     "delete-form" = "/gp/{gp}/delete",
  *     "version-history" = "/gp/{gp}/revisions",

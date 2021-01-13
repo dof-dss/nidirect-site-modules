@@ -6,3 +6,7 @@ nidirect_gp.gp_search:
   requirements:
     _permission: 'access content'
     search_api_views_fulltext: ^(\w)+
+view.gp_list.gp_list_page:
+  path: '/admin/content/gp'
+view.gp_practice_list.gp_practice_list_page:
+  path: '/admin/content/gp_practice'

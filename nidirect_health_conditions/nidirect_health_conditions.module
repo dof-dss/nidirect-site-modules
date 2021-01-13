@@ -8,7 +8,6 @@
 use Drupal\Core\Entity\Display\EntityViewDisplayInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
-use Drupal\Core\Render\Markup;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\TermInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
@@ -32,14 +31,18 @@ function nidirect_health_conditions_node_view(array &$build, EntityInterface $en
   }
 
   if ($entity->bundle() == 'health_condition_alternative' && $view_mode == 'search_result') {
-    // We want to render the referenced health condition's search_result node
-    // contents but replace its title with the title from this
-    // health_condition_alternative node. This ensures we can introduce
-    // duplicates of a certain health condition, with a custom title, without
-    // having to intricately preprocess various parts of the views display.
-    $build['field_parent_condition'][0]['#node']->setTitle($entity->getTitle());
-    // Hide the original health_condition_alternative node title.
-    $build['title']['#access'] = FALSE;
+    // Inject the parent condition's summary text into the render array
+    // and hide the parent condition node so it doesn't render in itself.
+    $hc_node = &$build['field_parent_condition'][0]['#node'];
+
+    if ($hc_node instanceof NodeInterface &&
+      $hc_node->bundle() == 'health_condition' &&
+        $hc_node->isPublished()) {
+
+      // Use of $view_mode ensures we get the appropriate field config.
+      $build['field_summary'] = $hc_node->field_summary->view($view_mode);
+      $build['field_parent_condition']['#access'] = FALSE;
+    }
   }
 }
 
@@ -218,8 +221,31 @@ function nidirect_health_conditions_node_insert(NodeInterface $node) {
     // Update parent of each alternative condition.
     foreach ($alt_conditions->referencedEntities() as $alt) {
       $alt->set('field_parent_condition', $node);
+      $alt->setPublished($node->isPublished());
       $alt->save();
     }
+  }
+}
+
+/**
+ * Implements hook_NODE_update().
+ *
+ * Intended to keep Health Condition Alternative Title nodes' publish status
+ * in sync with the parent Health Condition publish status. This ensures
+ * consistency of appearance in the db and solr search results which are
+ * all pre-filtered on entity status.
+ */
+function nidirect_health_conditions_node_update(NodeInterface $node) {
+  if ($node->bundle() != 'health_condition') {
+    return;
+  }
+
+  $alt_titles = $node->field_alternative_condition->referencedEntities() ?? [];
+  $hc_publish_state = $node->isPublished();
+
+  foreach ($alt_titles as $index => $alt_node) {
+    $alt_node->setPublished($hc_publish_state);
+    $alt_node->save();
   }
 }
 
@@ -243,8 +269,18 @@ function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity,
  * Implements hook_preprocess_node().
  */
 function nidirect_health_conditions_preprocess_node(array &$variables) {
-  if ($variables['node']->getType() === 'health_condition') {
+  $node_type = $variables['node']->getType();
+  $view_mode = $variables['view_mode'];
+
+  if ($node_type === 'health_condition') {
     $variables['#attached']['library'][] = 'nidirect_health_conditions/search_conditions_prompt';
+  }
+  if ($node_type === 'health_condition_alternative' && $view_mode === 'search_result') {
+    $hc_node = $variables['content']['field_parent_condition'][0]['#node'];
+
+    if ($hc_node instanceof NodeInterface && $hc_node->bundle() === 'health_condition') {
+      $variables['url'] = $hc_node->toUrl()->toString();
+    }
   }
 }
 

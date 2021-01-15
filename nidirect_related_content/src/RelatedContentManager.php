@@ -151,13 +151,13 @@ class RelatedContentManager {
     }
 
     if ($this->return_content_types === self::CONTENT_THEMES) {
-      $this->getThemeThemes();
+      $this->getThemeSubThemes();
     }
     elseif ($this->return_content_types === self::CONTENT_NODES) {
       $this->getThemeNodes();
     }
     else {
-      $this->getThemeThemes();
+      $this->getThemeSubThemes();
       $this->getThemeNodes();
     }
 
@@ -248,13 +248,13 @@ class RelatedContentManager {
    */
   protected function getThemeNodes() {
     // Fetch nodes by parent term.
-    $content_view = views_embed_view('site_toc_content', 'by_parent_term', $this->termId);
+    $content_view = views_embed_view('related_content_manager__content', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($content_view);
 
     $parent_rows = $content_view['view_build']['#view']->result;
 
     // Fetch nodes by supplementary term.
-    $content_view = views_embed_view('site_toc_content', 'by_supplementary_term', $this->termId);
+    $content_view = views_embed_view('related_content_manager__content', 'by_supplementary_term', $this->termId);
     $this->renderer->renderRoot($content_view);
 
     $supplementary_rows = $content_view['view_build']['#view']->result;
@@ -291,10 +291,10 @@ class RelatedContentManager {
   /**
    * Fetches child themes for the term ids.
    */
-  protected function getThemeThemes() {
+  protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_toc_themes', 'by_parent_term', $this->termId);
+    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

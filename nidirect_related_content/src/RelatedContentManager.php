@@ -15,9 +15,9 @@ use Drupal\taxonomy\TermInterface;
  */
 class RelatedContentManager {
 
-  public const CONTENT_ALL = 'all';
-  public const CONTENT_THEMES = 'themes';
-  public const CONTENT_NODES = 'nodes';
+  protected const CONTENT_ALL = 'all';
+  protected const CONTENT_THEMES = 'themes';
+  protected const CONTENT_NODES = 'nodes';
 
   /**
    * Entity type manager.
@@ -110,25 +110,34 @@ class RelatedContentManager {
     return $this;
   }
 
+  /**
+   * Term id to retrieve content for.
+   *
+   * @param null $term_id
+   *   Theme term_id or null to retrieve the requested page term.
+   *
+   * @return $this
+   */
+  public function forTheme($term_id = NULL) {
     // If no terms_ids are passed in try and extract from the current request,
     // either a node or taxonomy page.
-    if ($term_ids === NULL) {
+    if ($term_id === NULL) {
       $route_name = $this->routeMatch->getRouteName();
 
       if ($route_name === 'entity.node.canonical') {
         $node = $this->routeMatch->getParameter('node');
         if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
-          $term_ids[] = $node->get('field_subtheme')->getString();
+          $term_id[] = $node->get('field_subtheme')->getString();
         }
         if ($node->hasField('field_site_themes') && !$node->get('field_site_themes')->isEmpty()) {
-          $term_ids[] = $node->get('field_site_themes')->getString();
+          $term_id[] = $node->get('field_site_themes')->getString();
         }
       }
       elseif ($route_name === 'entity.taxonomy_term.canonical') {
         $term = $this->routeMatch->getParameter('taxonomy_term');
-        $term_ids[] = $term->id();
+        $term_id[] = $term->id();
         if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
-          $term_ids[] = $term->get('field_supplementary_parents')->getString();
+          $term_id[] = $term->get('field_supplementary_parents')->getString();
         }
       }
       else {
@@ -136,12 +145,12 @@ class RelatedContentManager {
       }
     }
 
-    $this->setTerms($term_ids);
+    $this->setTerms($term_id);
 
-    if ($content === self::CONTENT_THEMES) {
+    if ($this->return_content_types === self::CONTENT_THEMES) {
       $this->getThemeThemes();
     }
-    elseif ($content === self::CONTENT_NODES) {
+    elseif ($this->return_content_types === self::CONTENT_NODES) {
       $this->getThemeNodes();
     }
     else {
@@ -154,6 +163,7 @@ class RelatedContentManager {
 
     return $this;
   }
+
 
   /**
    * Set the taxonomy terms to fetch content for.

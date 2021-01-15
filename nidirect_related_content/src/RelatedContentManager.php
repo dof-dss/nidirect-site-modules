@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
+use Drupal\flag\FlagService;
 use Drupal\taxonomy\TermInterface;
 
 /**
@@ -41,6 +42,13 @@ class RelatedContentManager {
   protected $renderer;
 
   /**
+   * Flag module service.
+   *
+   * @var \Drupal\flag\FlagService
+   */
+  protected $flagService;
+
+  /**
    * Theme/term id.
    *
    * @var int
@@ -73,11 +81,14 @@ class RelatedContentManager {
    *   Current route match.
    * @param \Drupal\Core\Render\Renderer $renderer
    *   Drupal renderer.
+   * @param \Drupal\flag\FlagService $flag
+   *   Flag module service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer, FlagService $flag) {
     $this->entityTypeManager = $entity_type_manager;
     $this->routeMatch = $route_match;
     $this->renderer = $renderer;
+    $this->flagService = $flag;
   }
 
   /**
@@ -283,11 +294,13 @@ class RelatedContentManager {
   protected function getThemeThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_toc_themes', 'by_parent_term', $this->termIds[0]);
+    $subtopics_view = views_embed_view('site_toc_themes', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {
-      // Do we need to override?
+      // Lookup the list of landing/campaign pages for matches against the
+      // current row tid. If we get a match, insert a entry for the landing page
+      // node and skip adding the term entry.
       if (array_key_exists($row->tid, $campaign_terms)) {
         // This will be a link to a campaign (landing page).
         $this->content[] = [
@@ -297,8 +310,19 @@ class RelatedContentManager {
         ];
         continue;
       }
-      // This will be a link to another taxonomy page.
+
       $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->tid);
+      $flags = $this->flagService->getAllEntityFlaggings($term);
+
+      if ($flags) {
+        foreach ($flags as $flag) {
+          // If we have a term flagged as 'Hide Theme' don't add an entry.
+          if ($flag->getFlagId() === 'hide_theme') {
+            continue 2;
+          }
+        }
+      }
+
       $this->content[] = [
         'entity' => $term,
         'title' => $term->getName(),

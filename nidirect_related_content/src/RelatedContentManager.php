@@ -41,12 +41,12 @@ class RelatedContentManager {
   protected $renderer;
 
   /**
-   * Theme/term ids.
+   * Theme/term id.
    *
-   * @var array
-   *   Array of taxonomy term ids.
+   * @var int
+   *   ID of the term to return results for.
    */
-  protected $termIds;
+  protected $termId;
 
   /**
    * Theme content.
@@ -126,26 +126,18 @@ class RelatedContentManager {
 
       if ($route_name === 'entity.node.canonical') {
         $node = $this->routeMatch->getParameter('node');
+
         if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
-          $term_id[] = $node->get('field_subtheme')->getString();
-        }
-        if ($node->hasField('field_site_themes') && !$node->get('field_site_themes')->isEmpty()) {
-          $term_id[] = $node->get('field_site_themes')->getString();
+          $this->termId = (int) $node->get('field_subtheme')->getString();
         }
       }
       elseif ($route_name === 'entity.taxonomy_term.canonical') {
-        $term = $this->routeMatch->getParameter('taxonomy_term');
-        $term_id[] = $term->id();
-        if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
-          $term_id[] = $term->get('field_supplementary_parents')->getString();
-        }
+        $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
       }
       else {
         return $this;
       }
     }
-
-    $this->setTerms($term_id);
 
     if ($this->return_content_types === self::CONTENT_THEMES) {
       $this->getThemeThemes();
@@ -162,21 +154,6 @@ class RelatedContentManager {
     array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
 
     return $this;
-  }
-
-
-  /**
-   * Set the taxonomy terms to fetch content for.
-   *
-   * @param array $term_ids
-   *   Maximum of 2 term ids for fetching content from.
-   */
-  public function setTerms(array $term_ids) {
-    // The Views used to generate the content lists accept 2 term id arguments.
-    if (count($term_ids) < 2) {
-      $term_ids[1] = $term_ids[0];
-    }
-    $this->termIds = $term_ids;
   }
 
   /**
@@ -259,13 +236,14 @@ class RelatedContentManager {
    * Fetches node content for the term ids.
    */
   protected function getThemeNodes() {
-    // Render the 'articles by term' View and process the results.
-    $content_view = views_embed_view('site_toc_content', 'by_parent_term', $this->termIds[0]);
+    // Fetch nodes by parent term.
+    $content_view = views_embed_view('site_toc_content', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($content_view);
 
     $parent_rows = $content_view['view_build']['#view']->result;
 
-    $content_view = views_embed_view('site_toc_content', 'by_supplementary_term', $this->termIds[0]);
+    // Fetch nodes by supplementary term.
+    $content_view = views_embed_view('site_toc_content', 'by_supplementary_term', $this->termId);
     $this->renderer->renderRoot($content_view);
 
     $supplementary_rows = $content_view['view_build']['#view']->result;

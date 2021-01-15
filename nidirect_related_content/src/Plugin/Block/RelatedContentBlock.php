@@ -74,7 +74,8 @@ class RelatedContentBlock extends BlockBase implements ContainerFactoryPluginInt
    */
   public function build() {
     $content = $this->relatedContentManager
-      ->getThemeContent(NULL, $this->relatedContentManager::CONTENT_ALL)
+      ->getSubThemesAndNodes()
+      ->forNode()
       ->asRenderArray();
 
     $build = $content;

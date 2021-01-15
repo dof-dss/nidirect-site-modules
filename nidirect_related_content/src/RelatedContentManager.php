@@ -224,10 +224,19 @@ class RelatedContentManager {
    */
   protected function getThemeNodes() {
     // Render the 'articles by term' View and process the results.
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->termIds[0], $this->termIds[1]);
-    $this->renderer->renderRoot($articles_view);
+    $content_view = views_embed_view('site_toc_content', 'by_parent_term', $this->termIds[0]);
+    $this->renderer->renderRoot($content_view);
 
-    foreach ($articles_view['view_build']['#view']->result as $row) {
+    $parent_rows = $content_view['view_build']['#view']->result;
+
+    $content_view = views_embed_view('site_toc_content', 'by_supplementary_term', $this->termIds[0]);
+    $this->renderer->renderRoot($content_view);
+
+    $supplementary_rows = $content_view['view_build']['#view']->result;
+
+    $rows = array_merge($parent_rows, $supplementary_rows);
+
+    foreach ($rows as $row) {
       // If we are dealing with a book entry and it's lower than the first page,
       // don't add to the list of articles for the taxonomy term.
       if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
@@ -260,7 +269,7 @@ class RelatedContentManager {
   protected function getThemeThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->termIds[0], $this->termIds[1]);
+    $subtopics_view = views_embed_view('site_toc_themes', 'by_parent_term', $this->termIds[0]);
     $this->renderer->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {

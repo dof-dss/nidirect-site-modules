@@ -135,20 +135,7 @@ class RelatedContentManager {
         $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
     }
 
-    if ($this->return_content_types === self::CONTENT_THEMES) {
-      $this->getThemeSubThemes();
-    }
-    elseif ($this->return_content_types === self::CONTENT_NODES) {
-      $this->getThemeNodes();
-    }
-    else {
-      $this->getThemeSubThemes();
-      $this->getThemeNodes();
-    }
-
-    // Sort the content list by title alphabetically.
-    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
-
+    $this->getContent();
     return $this;
   }
 
@@ -172,20 +159,7 @@ class RelatedContentManager {
       $this->termId = (int) $node->get('field_subtheme')->getString();
     }
 
-    if ($this->return_content_types === self::CONTENT_THEMES) {
-      $this->getThemeSubThemes();
-    }
-    elseif ($this->return_content_types === self::CONTENT_NODES) {
-      $this->getThemeNodes();
-    }
-    else {
-      $this->getThemeSubThemes();
-      $this->getThemeNodes();
-    }
-
-    // Sort the content list by title alphabetically.
-    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
-
+    $this->getContent();
     return $this;
   }
 
@@ -263,6 +237,25 @@ class RelatedContentManager {
 
     }
     return $this;
+  }
+
+  /**
+   * Fetches and sorts content.
+   */
+  protected function getContent() {
+    if ($this->return_content_types === self::CONTENT_THEMES) {
+      $this->getThemeSubThemes();
+    }
+    elseif ($this->return_content_types === self::CONTENT_NODES) {
+      $this->getThemeNodes();
+    }
+    else {
+      $this->getThemeSubThemes();
+      $this->getThemeNodes();
+    }
+
+    // Sort the content list by title alphabetically.
+    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
   }
 
   /**

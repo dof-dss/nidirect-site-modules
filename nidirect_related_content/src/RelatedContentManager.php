@@ -130,24 +130,46 @@ class RelatedContentManager {
    * @return $this
    */
   public function forTheme($term_id = NULL) {
-    // If no terms_ids are passed in try and extract from the current request,
-    // either a node or taxonomy page.
-    if ($term_id === NULL) {
-      $route_name = $this->routeMatch->getRouteName();
-
-      if ($route_name === 'entity.node.canonical') {
-        $node = $this->routeMatch->getParameter('node');
-
-        if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
-          $this->termId = (int) $node->get('field_subtheme')->getString();
-        }
-      }
-      elseif ($route_name === 'entity.taxonomy_term.canonical') {
+    // If term_id isn't passed in try and extract from the current request.
+    if ($term_id === NULL && $this->routeMatch->getRouteName() === 'entity.taxonomy_term.canonical') {
         $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
-      }
-      else {
-        return $this;
-      }
+    }
+
+    if ($this->return_content_types === self::CONTENT_THEMES) {
+      $this->getThemeSubThemes();
+    }
+    elseif ($this->return_content_types === self::CONTENT_NODES) {
+      $this->getThemeNodes();
+    }
+    else {
+      $this->getThemeSubThemes();
+      $this->getThemeNodes();
+    }
+
+    // Sort the content list by title alphabetically.
+    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
+
+    return $this;
+  }
+
+  /**
+   * Node id to retrieve term content for.
+   *
+   * @param null $node_id
+   *   Node id or null to retrieve the requested page node.
+   *
+   * @return $this
+   */
+  public function forNode($node_id = NULL) {
+    // If node_id isn't passed in try and extract from the current request.
+    if ($node_id === NULL && $this->routeMatch->getRouteName() === 'entity.node.canonical') {
+        $node = $this->routeMatch->getParameter('node');
+    } else {
+      $node = $this->entityTypeManager->getStorage('node')->load($node_id);
+    }
+
+    if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
+      $this->termId = (int) $node->get('field_subtheme')->getString();
     }
 
     if ($this->return_content_types === self::CONTENT_THEMES) {

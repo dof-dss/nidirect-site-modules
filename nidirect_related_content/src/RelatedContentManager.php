@@ -57,6 +57,14 @@ class RelatedContentManager {
   protected $content;
 
   /**
+   * Content types to retrieve.
+   *
+   * @var string
+   *   Array of theme content.
+   */
+  protected $return_content_types;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -73,16 +81,34 @@ class RelatedContentManager {
   }
 
   /**
-   * Fetches content (Terms & Nodes) for a theme.
-   *
-   * @param array $term_ids
-   *   Array of taxonomy term ids to retrieve content for.
-   * @param string $content
-   *   Return themes, nodes or both.
+   * Set the query to return subthemes and nodes.
    *
    * @return $this
    */
-  public function getThemeContent(array $term_ids = NULL, $content = self::CONTENT_ALL): RelatedContentManager {
+  public function getSubThemesAndNodes() {
+    $this->return_content_types = self::CONTENT_ALL;
+    return $this;
+  }
+
+  /**
+   * Set the query to return subthemes.
+   *
+   * @return $this
+   */
+  public function getSubThemes() {
+    $this->return_content_types = self::CONTENT_THEMES;
+    return $this;
+  }
+
+  /**
+   * Set the query to return nodes.
+   *
+   * @return $this
+   */
+  public function getNodes() {
+    $this->return_content_types = self::CONTENT_NODES;
+    return $this;
+  }
 
     // If no terms_ids are passed in try and extract from the current request,
     // either a node or taxonomy page.

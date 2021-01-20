@@ -70,7 +70,7 @@ class RelatedContentManager {
    * @var string
    *   Array of theme content.
    */
-  protected $return_content_types;
+  protected $returnContentTypes;
 
   /**
    * Constructor.
@@ -97,7 +97,7 @@ class RelatedContentManager {
    * @return $this
    */
   public function getSubThemesAndNodes() {
-    $this->return_content_types = self::CONTENT_ALL;
+    $this->returnContentTypes = self::CONTENT_ALL;
     return $this;
   }
 
@@ -107,7 +107,7 @@ class RelatedContentManager {
    * @return $this
    */
   public function getSubThemes() {
-    $this->return_content_types = self::CONTENT_THEMES;
+    $this->returnContentTypes = self::CONTENT_THEMES;
     return $this;
   }
 
@@ -117,22 +117,22 @@ class RelatedContentManager {
    * @return $this
    */
   public function getNodes() {
-    $this->return_content_types = self::CONTENT_NODES;
+    $this->returnContentTypes = self::CONTENT_NODES;
     return $this;
   }
 
   /**
    * Term id to retrieve content for.
    *
-   * @param null $term_id
+   * @param int|null $term_id
    *   Theme term_id or null to retrieve the requested page term.
    *
    * @return $this
    */
-  public function forTheme($term_id = NULL) {
+  public function forTheme(int $term_id = NULL) {
     // If term_id isn't passed in try and extract from the current request.
     if ($term_id === NULL && $this->routeMatch->getRouteName() === 'entity.taxonomy_term.canonical') {
-        $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
+      $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
     }
 
     $this->getContent();
@@ -142,16 +142,17 @@ class RelatedContentManager {
   /**
    * Node id to retrieve term content for.
    *
-   * @param null $node_id
+   * @param int|null $node_id
    *   Node id or null to retrieve the requested page node.
    *
    * @return $this
    */
-  public function forNode($node_id = NULL) {
+  public function forNode(int $node_id = NULL) {
     // If node_id isn't passed in try and extract from the current request.
     if ($node_id === NULL && $this->routeMatch->getRouteName() === 'entity.node.canonical') {
-        $node = $this->routeMatch->getParameter('node');
-    } else {
+      $node = $this->routeMatch->getParameter('node');
+    }
+    else {
       $node = $this->entityTypeManager->getStorage('node')->load($node_id);
     }
 
@@ -243,10 +244,10 @@ class RelatedContentManager {
    * Fetches and sorts content.
    */
   protected function getContent() {
-    if ($this->return_content_types === self::CONTENT_THEMES) {
+    if ($this->returnContentTypes === self::CONTENT_THEMES) {
       $this->getThemeSubThemes();
     }
-    elseif ($this->return_content_types === self::CONTENT_NODES) {
+    elseif ($this->returnContentTypes === self::CONTENT_NODES) {
       $this->getThemeNodes();
     }
     else {
@@ -304,7 +305,7 @@ class RelatedContentManager {
   }
 
   /**
-   * Fetches child themes for the term ids.
+   * Fetches child themes for the term id.
    */
   protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();

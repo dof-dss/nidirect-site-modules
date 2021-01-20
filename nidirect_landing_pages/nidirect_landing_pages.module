@@ -452,7 +452,10 @@ function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
         '#title' => '... ' . t('more'),
         '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
       ];
-      $this_teaser['summary_text'] = ['#markup' => $node->get('field_summary')->getValue()[0]['value']];
+      $this_teaser['summary_text'] = '';
+      if ($node->hasField('field_summary')) {
+        $this_teaser['summary_text'] = ['#markup' => $node->get('field_summary')->getValue()[0]['value']];
+      }
     }
   }
   return $this_teaser;

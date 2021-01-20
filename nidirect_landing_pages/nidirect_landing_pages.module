@@ -93,6 +93,11 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
   if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
     $form['settings']['label_display']['#access'] = FALSE;
   }
+  // Hide the listing fields as they may now only be edited in layout builder.
+  if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {
+    $form['field_manually_control_listing']['#access'] = FALSE;
+    $form['field_listing']['#access'] = FALSE;
+  }
 }
 
 /**

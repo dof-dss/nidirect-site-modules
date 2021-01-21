@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
+use Drupal\flag\FlagService;
 use Drupal\taxonomy\TermInterface;
 
 /**
@@ -15,9 +16,9 @@ use Drupal\taxonomy\TermInterface;
  */
 class RelatedContentManager {
 
-  public const CONTENT_ALL = 'all';
-  public const CONTENT_THEMES = 'themes';
-  public const CONTENT_NODES = 'nodes';
+  protected const CONTENT_ALL = 'all';
+  protected const CONTENT_THEMES = 'themes';
+  protected const CONTENT_NODES = 'nodes';
 
   /**
    * Entity type manager.
@@ -41,12 +42,19 @@ class RelatedContentManager {
   protected $renderer;
 
   /**
-   * Theme/term ids.
+   * Flag module service.
    *
-   * @var array
-   *   Array of taxonomy term ids.
+   * @var \Drupal\flag\FlagService
    */
-  protected $termIds;
+  protected $flagService;
+
+  /**
+   * Theme/term id.
+   *
+   * @var int
+   *   ID of the term to return results for.
+   */
+  protected $termId;
 
   /**
    * Theme content.
@@ -57,6 +65,14 @@ class RelatedContentManager {
   protected $content;
 
   /**
+   * Content types to retrieve.
+   *
+   * @var string
+   *   Array of theme content.
+   */
+  protected $returnContentTypes;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -65,82 +81,87 @@ class RelatedContentManager {
    *   Current route match.
    * @param \Drupal\Core\Render\Renderer $renderer
    *   Drupal renderer.
+   * @param \Drupal\flag\FlagService $flag
+   *   Flag module service.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager, CurrentRouteMatch $route_match, Renderer $renderer, FlagService $flag) {
     $this->entityTypeManager = $entity_type_manager;
     $this->routeMatch = $route_match;
     $this->renderer = $renderer;
+    $this->flagService = $flag;
   }
 
   /**
-   * Fetches content (Terms & Nodes) for a theme.
-   *
-   * @param array $term_ids
-   *   Array of taxonomy term ids to retrieve content for.
-   * @param string $content
-   *   Return themes, nodes or both.
+   * Set the query to return subthemes and nodes.
    *
    * @return $this
    */
-  public function getThemeContent(array $term_ids = NULL, $content = self::CONTENT_ALL): RelatedContentManager {
-
-    // If no terms_ids are passed in try and extract from the current request,
-    // either a node or taxonomy page.
-    if ($term_ids === NULL) {
-      $route_name = $this->routeMatch->getRouteName();
-
-      if ($route_name === 'entity.node.canonical') {
-        $node = $this->routeMatch->getParameter('node');
-        if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
-          $term_ids[] = $node->get('field_subtheme')->getString();
-        }
-        if ($node->hasField('field_site_themes') && !$node->get('field_site_themes')->isEmpty()) {
-          $term_ids[] = $node->get('field_site_themes')->getString();
-        }
-      }
-      elseif ($route_name === 'entity.taxonomy_term.canonical') {
-        $term = $this->routeMatch->getParameter('taxonomy_term');
-        $term_ids[] = $term->id();
-        if ($term->hasField('field_supplementary_parents') && !$term->get('field_supplementary_parents')->isEmpty()) {
-          $term_ids[] = $term->get('field_supplementary_parents')->getString();
-        }
-      }
-      else {
-        return $this;
-      }
-    }
-
-    $this->setTerms($term_ids);
-
-    if ($content === self::CONTENT_THEMES) {
-      $this->getThemeThemes();
-    }
-    elseif ($content === self::CONTENT_NODES) {
-      $this->getThemeNodes();
-    }
-    else {
-      $this->getThemeThemes();
-      $this->getThemeNodes();
-    }
-
-    // Sort the content list by title alphabetically.
-    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
-
+  public function getSubThemesAndNodes() {
+    $this->returnContentTypes = self::CONTENT_ALL;
     return $this;
   }
 
   /**
-   * Set the taxonomy terms to fetch content for.
+   * Set the query to return subthemes.
    *
-   * @param array $term_ids
-   *   Maximum of 2 term ids for fetching content from.
+   * @return $this
    */
-  public function setTerms(array $term_ids) {
-    // The Views used to generate the content lists accept 2 term id arguments.
-    if (count($term_ids) < 2) {
-      $term_ids[1] = $term_ids[0];
+  public function getSubThemes() {
+    $this->returnContentTypes = self::CONTENT_THEMES;
+    return $this;
+  }
+
+  /**
+   * Set the query to return nodes.
+   *
+   * @return $this
+   */
+  public function getNodes() {
+    $this->returnContentTypes = self::CONTENT_NODES;
+    return $this;
+  }
+
+  /**
+   * Term id to retrieve content for.
+   *
+   * @param int|null $term_id
+   *   Theme term_id or null to retrieve the requested page term.
+   *
+   * @return $this
+   */
+  public function forTheme(int $term_id = NULL) {
+    // If term_id isn't passed in try and extract from the current request.
+    if ($term_id === NULL && $this->routeMatch->getRouteName() === 'entity.taxonomy_term.canonical') {
+      $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
     }
-    $this->termIds = $term_ids;
+
+    $this->getContent();
+    return $this;
+  }
+
+  /**
+   * Node id to retrieve term content for.
+   *
+   * @param int|null $node_id
+   *   Node id or null to retrieve the requested page node.
+   *
+   * @return $this
+   */
+  public function forNode(int $node_id = NULL) {
+    // If node_id isn't passed in try and extract from the current request.
+    if ($node_id === NULL && $this->routeMatch->getRouteName() === 'entity.node.canonical') {
+      $node = $this->routeMatch->getParameter('node');
+    }
+    else {
+      $node = $this->entityTypeManager->getStorage('node')->load($node_id);
+    }
+
+    if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
+      $this->termId = (int) $node->get('field_subtheme')->getString();
+    }
+
+    $this->getContent();
+    return $this;
   }
 
   /**
@@ -220,14 +241,43 @@ class RelatedContentManager {
   }
 
   /**
+   * Fetches and sorts content.
+   */
+  protected function getContent() {
+    if ($this->returnContentTypes === self::CONTENT_THEMES) {
+      $this->getThemeSubThemes();
+    }
+    elseif ($this->returnContentTypes === self::CONTENT_NODES) {
+      $this->getThemeNodes();
+    }
+    else {
+      $this->getThemeSubThemes();
+      $this->getThemeNodes();
+    }
+
+    // Sort the content list by title alphabetically.
+    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
+  }
+
+  /**
    * Fetches node content for the term ids.
    */
   protected function getThemeNodes() {
-    // Render the 'articles by term' View and process the results.
-    $articles_view = views_embed_view('articles_by_term', 'articles_by_term_embed', $this->termIds[0], $this->termIds[1]);
-    $this->renderer->renderRoot($articles_view);
+    // Fetch nodes by parent term.
+    $content_view = views_embed_view('related_content_manager__content', 'by_parent_term', $this->termId);
+    $this->renderer->renderRoot($content_view);
 
-    foreach ($articles_view['view_build']['#view']->result as $row) {
+    $parent_rows = $content_view['view_build']['#view']->result;
+
+    // Fetch nodes by supplementary term.
+    $content_view = views_embed_view('related_content_manager__content', 'by_supplementary_term', $this->termId);
+    $this->renderer->renderRoot($content_view);
+
+    $supplementary_rows = $content_view['view_build']['#view']->result;
+
+    $rows = array_merge($parent_rows, $supplementary_rows);
+
+    foreach ($rows as $row) {
       // If we are dealing with a book entry and it's lower than the first page,
       // don't add to the list of articles for the taxonomy term.
       if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
@@ -255,16 +305,18 @@ class RelatedContentManager {
   }
 
   /**
-   * Fetches child themes for the term ids.
+   * Fetches child themes for the term id.
    */
-  protected function getThemeThemes() {
+  protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('site_subtopics', 'by_topic_simple_embed', $this->termIds[0], $this->termIds[1]);
+    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($subtopics_view);
 
     foreach ($subtopics_view['view_build']['#view']->result as $row) {
-      // Do we need to override?
+      // Lookup the list of landing/campaign pages for matches against the
+      // current row tid. If we get a match, insert a entry for the landing page
+      // node and skip adding the term entry.
       if (array_key_exists($row->tid, $campaign_terms)) {
         // This will be a link to a campaign (landing page).
         $this->content[] = [
@@ -274,8 +326,19 @@ class RelatedContentManager {
         ];
         continue;
       }
-      // This will be a link to another taxonomy page.
+
       $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->tid);
+      $flags = $this->flagService->getAllEntityFlaggings($term);
+
+      if ($flags) {
+        foreach ($flags as $flag) {
+          // If we have a term flagged as 'Hide Theme' don't add an entry.
+          if ($flag->getFlagId() === 'hide_theme') {
+            continue 2;
+          }
+        }
+      }
+
       $this->content[] = [
         'entity' => $term,
         'title' => $term->getName(),

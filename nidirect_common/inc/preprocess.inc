@@ -6,7 +6,6 @@
  */
 
 use Drupal\node\Entity\Node;
-use Drupal\nidirect_related_content\RelatedContentManager;
 
 /**
  * Implements hook_preprocess_views_view().
@@ -112,11 +111,12 @@ function nidirect_common_preprocess_taxonomy_term(array &$variables) {
     return;
   }
 
-  // Return as an 'item_list' themed render array, with
-  // cache tags set appropriately.
+  // Return as an 'item_list' themed render array of content for this term
+  // with cache tags set appropriately.
   $content_manager = \Drupal::service('nidirect_related_content.manager');
   $content = $content_manager
-    ->getThemeContent(NULL, $content_manager::CONTENT_ALL)
+    ->getSubThemesAndNodes()
+    ->forTheme()
     ->excludingCurrentTheme()
     ->asRenderArray();
 

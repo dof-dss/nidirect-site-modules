@@ -345,7 +345,6 @@ function nidirect_landing_pages_preprocess_block(array &$variables) {
   // Preprocess the article teasers by topic block.
   if ($variables['plugin_id'] == 'inline_block:article_teasers_by_topic') {
     _render_article_teasers_block($variables);
-    $block_content = $variables['content']['#block_content'];
   }
 }
 
@@ -402,7 +401,7 @@ function _render_article_teasers_auto(array &$variables) {
     }
   }
   $variables['teasers'] = $results;
-  $variables['teasers']['#cache'] = [
+  $variables['#cache'] = [
     'tags' => $cache_tags,
   ];
 }
@@ -430,7 +429,7 @@ function _render_article_teasers_manual_control(array &$variables) {
     $teasers[] = $this_teaser;
   }
   $variables['teasers'] = $teasers;
-  $variables['teasers']['#cache'] = [
+  $variables['#cache'] = [
     'tags' => $cache_tags,
   ];
 }

@@ -256,11 +256,15 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
 
     $results = &$view->result;
     foreach ($results as $key => $result) {
+
       if (substr(strtolower($result->node_field_data_title), 0, 1) != $search_letter) {
         $node_title = $result->_entity->field_supplementary_contact->getString();
         $results[$key]->node_field_data_title = $node_title;
         $result->_entity->setTitle($node_title);
       }
     }
+
+    array_multisort(array_column($results, 'node_field_data_title'), SORT_ASC, $results);
+    $view->result = $results;
   }
 }

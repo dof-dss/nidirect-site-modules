@@ -261,7 +261,7 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
       // contact. Extract that Supplementary title and replace the entity
       // result title. We also update the node_field_data_title so we can
       // extract an array of titles for sorting the results.
-      if (substr(strtolower($result->node_field_data_title), 0, 1) != $search_letter) {
+      if (strtolower(substr($result->node_field_data_title, 0, 1)) !== $search_letter) {
         $node_title = $result->_entity->field_supplementary_contact->getString();
         $results[$key]->node_field_data_title = $node_title;
         $result->_entity->setTitle($node_title);

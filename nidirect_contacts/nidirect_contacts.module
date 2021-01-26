@@ -256,7 +256,11 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
 
     $results = &$view->result;
     foreach ($results as $key => $result) {
-
+      // If the current result doesn't start with the search letter it's been
+      // added to the results because we have a match with the Supplementary
+      // contact. Extract that Supplementary title and replace the entity
+      // result title. We also update the node_field_data_title so we can
+      // extract an array of titles for sorting the results.
       if (substr(strtolower($result->node_field_data_title), 0, 1) != $search_letter) {
         $node_title = $result->_entity->field_supplementary_contact->getString();
         $results[$key]->node_field_data_title = $node_title;
@@ -264,6 +268,7 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
       }
     }
 
+    // Alphabetically sort the updated results on the node_field_data_title.
     array_multisort(array_column($results, 'node_field_data_title'), SORT_ASC, $results);
     $view->result = $results;
   }

@@ -246,3 +246,21 @@ function nidirect_contacts_preprocess_node(&$variables) {
     hide($field_address);
   }
 }
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function nidirect_contacts_views_pre_render(ViewExecutable $view) {
+  if ($view->id() == 'contacts_a_z' && $view->current_display) {
+    $search_letter = $view->args[0];
+
+    $results = &$view->result;
+    foreach ($results as $key => $result) {
+      if (substr(strtolower($result->node_field_data_title), 0, 1) != $search_letter) {
+        $node_title = $result->_entity->field_supplementary_contact->getString();
+        $results[$key]->node_field_data_title = $node_title;
+        $result->_entity->setTitle($node_title);
+      }
+    }
+  }
+}

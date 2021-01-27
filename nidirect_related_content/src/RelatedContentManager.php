@@ -152,6 +152,7 @@ class RelatedContentManager {
     if ($node_id === NULL) {
       $route_name = $this->routeMatch->getRouteName();
 
+      // Ensure we're only dealing with node entity routes.
       if (strpos($route_name, 'entity.node.') !== 0) {
         return $this;
       }
@@ -160,6 +161,8 @@ class RelatedContentManager {
         $node = \Drupal::routeMatch()->getParameter('node_preview');
       }
       else {
+        // Use the raw value as some node routes have the entity object and
+        // others only pass the id.
         $node_id = \Drupal::routeMatch()->getRawParameter('node');
         $node = $this->entityTypeManager->getStorage('node')->load($node_id);
       }

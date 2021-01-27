@@ -130,9 +130,7 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
 function nidirect_related_content_block_view_alter(array &$build, BlockPluginInterface $block) {
   if ($block->getPluginId() === 'nidirect_related_content_block') {
 
-    $route_name = \Drupal::routeMatch()->getRouteName();
-
-    if ($route_name === 'entity.node.canonical') {
+    if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
       $node = \Drupal::routeMatch()->getParameter('node');
       if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
         $build['#configuration']['label'] = $node->get('field_subtheme')->entity->getName();

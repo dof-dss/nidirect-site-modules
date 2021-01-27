@@ -148,9 +148,21 @@ class RelatedContentManager {
    * @return $this
    */
   public function forNode(int $node_id = NULL) {
-    // If node_id isn't passed in try and extract from the current request.
-    if ($node_id === NULL && $this->routeMatch->getRouteName() === 'entity.node.canonical') {
-      $node = $this->routeMatch->getParameter('node');
+
+    if ($node_id === NULL) {
+      $route_name = $this->routeMatch->getRouteName();
+
+      if (strpos($route_name, 'entity.node.') !== 0) {
+        return $this;
+      }
+
+      if ($route_name === 'entity.node.preview') {
+        $node = \Drupal::routeMatch()->getParameter('node_preview');
+      }
+      else {
+        $node_id = \Drupal::routeMatch()->getRawParameter('node');
+        $node = $this->entityTypeManager->getStorage('node')->load($node_id);
+      }
     }
     else {
       $node = $this->entityTypeManager->getStorage('node')->load($node_id);

@@ -328,7 +328,16 @@ class RelatedContentManager {
     $subtopics_view = views_embed_view('related_content_manager__terms', 'by_parent_term', $this->termId);
     $this->renderer->renderRoot($subtopics_view);
 
-    foreach ($subtopics_view['view_build']['#view']->result as $row) {
+    $parent_rows = $subtopics_view['view_build']['#view']->result;
+
+    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_supplementary_term', $this->termId);
+    $this->renderer->renderRoot($subtopics_view);
+
+    $supplementary_rows = $subtopics_view['view_build']['#view']->result;
+
+    $rows = array_merge($parent_rows, $supplementary_rows);
+
+    foreach ($rows as $row) {
       // Lookup the list of landing/campaign pages for matches against the
       // current row tid. If we get a match, insert a entry for the landing page
       // node and skip adding the term entry.

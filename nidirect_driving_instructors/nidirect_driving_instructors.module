@@ -40,7 +40,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
 
     // Add additional form classes.
     $form['#attributes']['class'][] = 'search-form';
-    $form['categories']['#attributes']['class'][] = 'container-inline';
+    $form['#attributes']['class'][] = 'search-form--driving-instructors';
 
     // Add postcode placeholder example.
     $form['search_api_fulltext']['#placeholder'] = t("e.g. 'BT1'");

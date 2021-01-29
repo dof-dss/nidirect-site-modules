@@ -21,7 +21,7 @@ use Drupal\taxonomy\Entity\Term;
  */
 function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
 
-  if (isset($entity->moderation_state) && nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+  if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_theme_value($entity)) {
     if ($entity->moderation_state->value == 'published') {
       // Create a redirect from the taxonomy term when a landing page is created
       // (as long as a subtheme has been selected and the node is being published).
@@ -37,7 +37,7 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function nidirect_landing_pages_entity_update(EntityInterface $entity) {
-  if (isset($entity->moderation_state) && nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+  if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_theme_value($entity)) {
     if ($entity->moderation_state->value == 'published') {
       // Create a redirect from the taxonomy term when a landing page is created
       // (as long as a subtheme has been selected and the node is being published).
@@ -266,7 +266,7 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
  * @return bool
  *   TRUE if it is a landing page with theme field value, otherwise FALSE.
  */
-function nidirect_landing_pages_is_landing_page_with_theme_value(EntityInterface &$entity) {
+function nidirect_landing_pages_is_node_with_theme_value(EntityInterface &$entity) {
   if ($entity instanceof Node == FALSE) {
     return FALSE;
   }

@@ -20,12 +20,15 @@ use Drupal\taxonomy\Entity\Term;
  * Implements hook_entity_insert().
  */
 function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+
+  if (isset($entity->moderation_state) && nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+    if ($entity->moderation_state->value == 'published') {
+      // Create a redirect from the taxonomy term when a landing page is created
+      // (as long as a subtheme has been selected and the node is being published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
+    }
+    else {
+      nidirect_landing_pages_delete_landing_page_redirect($entity);
     }
   }
 }
@@ -34,12 +37,20 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function nidirect_landing_pages_entity_update(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+  if ($entity instanceof Node && isset($entity->moderation_state)) {
+    if ($entity->moderation_state->value == 'published') {
+      // Create a redirect from the taxonomy term when a landing page is created
+      // (as long as a subtheme has been selected and the node is being published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
+    }
+    else {
+      $redirect_repository = \Drupal::service('redirect.repository');
+      $destination_path[] = 'internal:/node/' . $entity->id();
+
+      $redirects = $redirect_repository->findByDestinationUri($destination_path);
+      foreach ($redirects as $redirect) {
+        $redirect->delete();
+      }
     }
   }
 }

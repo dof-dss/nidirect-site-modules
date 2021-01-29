@@ -27,9 +27,6 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
       // (as long as a subtheme has been selected and the node is being published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
     }
-    else {
-      nidirect_landing_pages_delete_landing_page_redirect($entity);
-    }
   }
 }
 
@@ -44,13 +41,7 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
       nidirect_landing_pages_create_landing_page_redirect($entity);
     }
     else {
-      $redirect_repository = \Drupal::service('redirect.repository');
-      $destination_path[] = 'internal:/node/' . $entity->id();
-
-      $redirects = $redirect_repository->findByDestinationUri($destination_path);
-      foreach ($redirects as $redirect) {
-        $redirect->delete();
-      }
+      nidirect_landing_pages_delete_landing_page_redirect($entity);
     }
   }
 }
@@ -349,15 +340,20 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
   }
 }
 
+/**
+ * Deletes a landing page redirect.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The landing page node.
+ */
 function nidirect_landing_pages_delete_landing_page_redirect(EntityInterface $entity) {
-  $tid = $entity->get('field_subtheme')->getString();
-  $taxonomy_term_path = 'index/taxonomy/term/' . $tid;
-  $source_url = nidirect_landing_pages_get_redirect_url($taxonomy_term_path);
-
   $redirect_repository = \Drupal::service('redirect.repository');
-  $redirect = $redirect_repository->findBySourcePath($source_url);
+  $destination_path[] = 'internal:/node/' . $entity->id();
 
-  $redirect->delete();
+  $redirects = $redirect_repository->findByDestinationUri($destination_path);
+  foreach ($redirects as $redirect) {
+    $redirect->delete();
+  }
 }
 
 /**

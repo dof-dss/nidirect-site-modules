@@ -20,11 +20,11 @@ use Drupal\taxonomy\Entity\Term;
  * Implements hook_entity_insert().
  */
 function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+
+  if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_subtheme_value($entity)) {
+    if ($entity->moderation_state->value == 'published') {
+      // Create a redirect from the taxonomy term when a landing page is created
+      // (as long as a subtheme has been selected and the node is published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
     }
   }
@@ -34,12 +34,16 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
  * Implements hook_entity_update().
  */
 function nidirect_landing_pages_entity_update(EntityInterface $entity) {
-  // Create a redirect from the taxonomy term when a landing page is created
-  // (as long as a subtheme has been selected and the node is being published).
-  if (isset($entity->moderation_state)
-    && ($entity->moderation_state->value == 'published')) {
-    if (nidirect_landing_pages_is_landing_page_with_theme_value($entity)) {
+  if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_subtheme_value($entity)) {
+    if ($entity->moderation_state->value == 'published') {
+      // Create a redirect from the taxonomy term when a landing page is created
+      // (as long as a subtheme has been selected and the node is published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
+    }
+    else {
+      // Delete any URL redirects associated with this node when in an
+      // unpublished(draft, archive) state.
+      nidirect_landing_pages_delete_landing_page_redirect($entity);
     }
   }
 }
@@ -257,7 +261,7 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
  * @return bool
  *   TRUE if it is a landing page with theme field value, otherwise FALSE.
  */
-function nidirect_landing_pages_is_landing_page_with_theme_value(EntityInterface &$entity) {
+function nidirect_landing_pages_is_node_with_subtheme_value(EntityInterface &$entity) {
   if ($entity instanceof Node == FALSE) {
     return FALSE;
   }
@@ -337,6 +341,22 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
           "You can @link to remove any unwanted redirects.", ["@link" => $link])
       );
     }
+  }
+}
+
+/**
+ * Deletes a landing page redirect.
+ *
+ * @param \Drupal\Core\Entity\EntityInterface $entity
+ *   The landing page node.
+ */
+function nidirect_landing_pages_delete_landing_page_redirect(EntityInterface $entity) {
+  $redirect_repository = \Drupal::service('redirect.repository');
+  $destination_path[] = 'internal:/node/' . $entity->id();
+
+  $redirects = $redirect_repository->findByDestinationUri($destination_path);
+  foreach ($redirects as $redirect) {
+    $redirect->delete();
   }
 }
 

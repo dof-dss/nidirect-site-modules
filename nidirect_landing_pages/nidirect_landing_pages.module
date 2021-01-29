@@ -24,7 +24,7 @@ function nidirect_landing_pages_entity_insert(EntityInterface $entity) {
   if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_subtheme_value($entity)) {
     if ($entity->moderation_state->value == 'published') {
       // Create a redirect from the taxonomy term when a landing page is created
-      // (as long as a subtheme has been selected and the node is being published).
+      // (as long as a subtheme has been selected and the node is published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
     }
   }
@@ -37,10 +37,12 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
   if (isset($entity->moderation_state) && nidirect_landing_pages_is_node_with_subtheme_value($entity)) {
     if ($entity->moderation_state->value == 'published') {
       // Create a redirect from the taxonomy term when a landing page is created
-      // (as long as a subtheme has been selected and the node is being published).
+      // (as long as a subtheme has been selected and the node is published).
       nidirect_landing_pages_create_landing_page_redirect($entity);
     }
     else {
+      // Delete any URL redirects associated with this node when in an
+      // unpublished(draft, archive) state.
       nidirect_landing_pages_delete_landing_page_redirect($entity);
     }
   }

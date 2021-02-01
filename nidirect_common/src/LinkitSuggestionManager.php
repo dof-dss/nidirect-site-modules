@@ -57,12 +57,32 @@ class LinkitSuggestionManager extends SuggestionManager {
       $suggestions->addSuggestion($suggestion);
     }
 
+    // Prune any absolute URLs matching this site so we can match to internal content.
+    if ($this->isAbsoluteUrlForThisSite($search_string)) {
+      $url_parts = parse_url($search_string);
+      $search_string = $url_parts['path'] . $url_parts['query'];
+    }
+
     // Perform the standard search.
     foreach ($linkitProfile->getMatchers() as $plugin) {
       $suggestions->addSuggestions($plugin->execute($search_string));
     }
 
     return $suggestions;
+  }
+
+  /**
+   * Function to assess whether a search string is
+   * referencing an environment used by this site.
+   *
+   * @param string $search_string
+   *   The search string.
+   * @return bool
+   *   True if for this site, False if not.
+   */
+  protected function isAbsoluteUrlForThisSite(string $search_string) {
+    $host = \Drupal::request()->getHost();
+    return preg_match("|(${host}\/)|", $search_string);
   }
 
 }

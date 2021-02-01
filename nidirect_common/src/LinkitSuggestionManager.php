@@ -13,11 +13,26 @@ use Drupal\linkit\ProfileInterface;
 use Drupal\linkit\Suggestion\DescriptionSuggestion;
 use Drupal\linkit\Suggestion\SuggestionCollection;
 use Drupal\linkit\SuggestionManager;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Replacement suggestion service to handle Linkit autocomplete results.
  */
 class LinkitSuggestionManager extends SuggestionManager {
+
+  /**
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
+   * LinkitSuggestionManager constructor.
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request
+   *   The requeststack service.
+   */
+  public function __construct(RequestStack $request) {
+    $this->requestStack = $request;
+  }
 
   /**
    * {@inheritdoc}
@@ -81,7 +96,7 @@ class LinkitSuggestionManager extends SuggestionManager {
    *   True if for this site, False if not.
    */
   protected function isAbsoluteUrlForThisSite(string $search_string) {
-    $host = \Drupal::request()->getHost();
+    $host = $this->requestStack->getCurrentRequest()->getHost();
     return preg_match("|(${host}\/)|", $search_string);
   }
 

@@ -59,7 +59,7 @@ function nidirect_common_preprocess_page(&$variables) {
         'type' => 'entity_reference_entity_view',
         'settings' => [
           'view_mode' => 'banner_thin',
-          'link' => false,
+          'link' => FALSE,
         ],
       ]);
     }

@@ -54,7 +54,14 @@ function nidirect_common_preprocess_page(&$variables) {
     $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {
-      $variables['page']['top_banner']['banner_display'] = $banner_image->view('default');
+      $variables['page']['top_banner']['banner_display'] = $banner_image->view([
+        'label' => 'hidden',
+        'type' => 'entity_reference_entity_view',
+        'settings' => [
+          'view_mode' => 'banner_thin',
+          'link' => false,
+        ],
+      ]);
     }
   }
 }

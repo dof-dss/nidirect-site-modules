@@ -45,7 +45,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\NewsBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.landingpages:
     class: Drupal\nidirect_breadcrumbs\LandingPageBreadcrumb

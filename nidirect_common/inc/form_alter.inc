@@ -201,60 +201,70 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
  */
 function nidirect_common_field_widget_telephone_plus_widget_form_alter(&$element, FormStateInterface $form_state, $context) {
 
-  $telephone_predefined = [
-    'Phone' => 'Phone',
-    'Fax' => 'Fax',
-    'Textphone' => 'Textphone',
-    'Freephone' => 'Freephone',
-    'Helpline' => 'Helpline',
-    'General enquiries' => 'General enquiries',
-    'If calling from outside the UK' => 'If calling from outside the UK',
-    'Headquarters' => 'Headquarters',
-    'Main office' => 'Main office',
-    'Main switchboard' => 'Main switchboard',
-    'Billing and payments' => [
-      'Billing and payments' => 'Billing and payments',
-      'Billing enquiries' => 'Billing enquiries',
-      'Payments' => 'Payments',
-      'Payment enquiries' => 'Payment enquiries',
-      'Payments using a credit or debit card' => 'Payments using a credit or debit card',
-    ],
-    'Complaints' => [
-      'Complaints' => 'Complaints',
-      'Complaints helpline' => 'Complaints helpline',
-      'Customer complaints' => 'Customer complaints',
-    ],
-    'Enquiries' => [
-      'General enquiries' => 'General enquiries',
-      'Billing enquiries' => 'Billing enquiries',
-      'Payment enquiries' => 'Payment enquiries',
-      'Course enquiries' => 'Course enquiries',
-    ],
-    'Emergency' => [
-      'Emergency out-of-hours' => 'Emergency out-of-hours',
-      'Non-emergency' => 'Non-emergency',
-      'Non-emergency and general enquiries' => 'Non-emergency and general enquiries',
-      '24 hour emergency helpline' => '24 hour emergency helpline',
-    ],
-    'Freephone numbers' => [
-      'Freephone advice line' => 'Freephone advice line',
-      'Freephone helpline' => 'Freephone helpline',
-    ],
-    'Helpline numbers' => [
+  // Set a limited number of phone title options for driving instructors.
+  if ($element['#bundle'] === 'driving_instructor') {
+    $telephone_predefined = [
+      'Landline' => 'Landline',
+      'Mobile' => 'Mobile',
+      'Other' => 'Other (please specify)',
+    ];
+  }
+  else {
+    $telephone_predefined = [
+      'Phone' => 'Phone',
+      'Fax' => 'Fax',
+      'Textphone' => 'Textphone',
+      'Freephone' => 'Freephone',
       'Helpline' => 'Helpline',
-      'Freephone helpline' => 'Freephone helpline',
-      'Helpline for adults (18+)' => 'Helpline for adults (18+)',
-      'Helpline for young people (under 18)' => 'Helpline for young people (under 18)',
-      'National helpline' => 'National helpline',
-      'Northern Ireland helpline' => 'Northern Ireland helpline',
-      '24 hour helpline' => '24 hour helpline',
-    ],
-    'Out-of-hours' => [
-      'Out-of-hours phone' => 'Out-of-hours phone',
-      'Out of office hours phone' => 'Out of office hours phone',
-    ],
-    'Other' => 'Other (please specify)',
-  ];
+      'General enquiries' => 'General enquiries',
+      'If calling from outside the UK' => 'If calling from outside the UK',
+      'Headquarters' => 'Headquarters',
+      'Main office' => 'Main office',
+      'Main switchboard' => 'Main switchboard',
+      'Billing and payments' => [
+        'Billing and payments' => 'Billing and payments',
+        'Billing enquiries' => 'Billing enquiries',
+        'Payments' => 'Payments',
+        'Payment enquiries' => 'Payment enquiries',
+        'Payments using a credit or debit card' => 'Payments using a credit or debit card',
+      ],
+      'Complaints' => [
+        'Complaints' => 'Complaints',
+        'Complaints helpline' => 'Complaints helpline',
+        'Customer complaints' => 'Customer complaints',
+      ],
+      'Enquiries' => [
+        'General enquiries' => 'General enquiries',
+        'Billing enquiries' => 'Billing enquiries',
+        'Payment enquiries' => 'Payment enquiries',
+        'Course enquiries' => 'Course enquiries',
+      ],
+      'Emergency' => [
+        'Emergency out-of-hours' => 'Emergency out-of-hours',
+        'Non-emergency' => 'Non-emergency',
+        'Non-emergency and general enquiries' => 'Non-emergency and general enquiries',
+        '24 hour emergency helpline' => '24 hour emergency helpline',
+      ],
+      'Freephone numbers' => [
+        'Freephone advice line' => 'Freephone advice line',
+        'Freephone helpline' => 'Freephone helpline',
+      ],
+      'Helpline numbers' => [
+        'Helpline' => 'Helpline',
+        'Freephone helpline' => 'Freephone helpline',
+        'Helpline for adults (18+)' => 'Helpline for adults (18+)',
+        'Helpline for young people (under 18)' => 'Helpline for young people (under 18)',
+        'National helpline' => 'National helpline',
+        'Northern Ireland helpline' => 'Northern Ireland helpline',
+        '24 hour helpline' => '24 hour helpline',
+      ],
+      'Out-of-hours' => [
+        'Out-of-hours phone' => 'Out-of-hours phone',
+        'Out of office hours phone' => 'Out of office hours phone',
+      ],
+      'Other' => 'Other (please specify)',
+    ];
+  }
 
   // Fetch the stored Title field value.
   $telephone_title = $context['items']->get($context['delta'])->get('telephone_title')->getValue();

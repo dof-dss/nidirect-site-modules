@@ -32,8 +32,8 @@ module.exports = {
 
     let searchTerms = {
       'BT44': 'The Frocess Medical Centre',
-      'BT1': 'Dr. Crossin and Partners',
-      'BT20': 'Ashley Medical Centre - Dr. Craig and Partners',
+      'BT1': 'Dr. Crossin (and|&) Partners',
+      'BT20': 'Ashley Medical Centre - Dr. Craig (and|&) Partners',
     }
 
     // Resize default window size.
@@ -41,11 +41,12 @@ module.exports = {
 
     for (let term in searchTerms) {
       const surgeryName = searchTerms[term];
+      const regex = new RegExp(surgeryName);
 
       browser
         .drupalRelativeURL('/services/gp-practices?search_api_views_fulltext=' + term)
         .waitForElementVisible('body', 1000)
-        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.contain(surgeryName);
+        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.match(regex);
     }
 
   },
@@ -54,8 +55,8 @@ module.exports = {
 
     let searchTerms = {
       'BT44 9LF': 'The Frocess Medical Centre',
-      'BT1 2JR': 'Dr. Crossin and Partners',
-      'BT20 5PE': 'Ashley Medical Centre - Dr. Craig and Partners',
+      'BT1 2JR': 'Dr. Crossin (and|&) Partners',
+      'BT20 5PE': 'Ashley Medical Centre - Dr. Craig (and|&) Partners',
     }
 
     // Resize default window size.
@@ -63,11 +64,12 @@ module.exports = {
 
     for (let term in searchTerms) {
       const surgeryName = searchTerms[term];
+      const regex = new RegExp(surgeryName);
 
       browser
         .drupalRelativeURL('/services/gp-practices?search_api_views_fulltext=' + term.replace(' ', '+'))
         .waitForElementVisible('body', 1000)
-        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.contain(surgeryName);
+        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.match(regex);
     }
 
   },

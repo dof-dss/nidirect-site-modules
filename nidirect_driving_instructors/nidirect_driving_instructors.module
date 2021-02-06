@@ -5,6 +5,7 @@
  * Contains nidirect_driving_instructors.module.
  */
 
+use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
@@ -38,29 +39,54 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['sort_by']['#type'] = 'hidden';
     $form['sort_order']['#type'] = 'hidden';
 
-    // Add additional form classes.
-    $form['#attributes']['class'][] = 'search-form';
-    $form['#attributes']['class'][] = 'search-form--driving-instructors';
+    // Add some form help.
+    $help = [
+      '#theme' => 'item_list',
+      '#list_type' => 'ul',
+      '#items' => [
+        t('Enter your postcode to find instructors who work in your area'),
+        t('You can also find instructors by name or ADI/AMI number if you know it'),
+      ],
+    ];
+    $form['help'] = [
+      '#type' => 'item',
+      'content' => $help,
+    ];
 
     // Add postcode placeholder example.
     $form['search_api_fulltext']['#placeholder'] = t("e.g. 'BT1'");
 
-    // Update exposed Categories element and text.
-    $form['categories']['#type'] = 'radios';
-    $form['categories']['#options'] = [];
-    $form['categories']['#options']['All'] = t('All');
-    $form['categories']['#options']['1160'] = t('Driving instructors');
-    $form['categories']['#options']['1161'] = t('Motorcycle instructors');
+    // Hide exposed categories radios.
+    $form['categories']['#type'] = 'hidden';
+
+    // Instead, output facet category radios.
+    $form['f[0]'] = [
+      '#id' => Html::getUniqueId('edit-categories'),
+      '#type' => 'radios',
+      '#title' => t('Filter by type of tuition'),
+      '#title_display' => 'above',
+      '#options' => [
+        'categories:all' => t('All'),
+        'categories:1160'  => t('Driving instructors'),
+        'categories:1161' => t('Motorcycle instructors'),
+      ],
+      '#default_value' => 'categories:all',
+      '#attributes' => [
+        'class' => ['search-options'],
+      ],
+    ];
 
     // Reorder exposed search form fields.
-    $form['search_api_fulltext']['#weight'] = 1;
-    $form['actions']['#weight'] = 2;
-    $form['categories']['#weight'] = 3;
+    $form['help']['#weight'] = 1;
+    $form['search_api_fulltext']['#weight'] = 2;
+    $form['actions']['#weight'] = 3;
+    $form['f[0]']['#weight'] = 4;
 
-    // Hide category options from results page.
+    // Hide help and category radios on results page.
     $inputs = $form_state->getUserInput();
     if (!empty($inputs['search_api_fulltext'])) {
-      $form['categories']['#type'] = 'hidden';
+      unset($form['help']);
+      $form['f[0]']['#type'] = 'hidden';
     }
   }
 

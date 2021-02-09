@@ -57,14 +57,6 @@ class RelatedContentManager {
   protected $termId;
 
   /**
-   * Theme content.
-   *
-   * @var array
-   *   Array of theme content.
-   */
-  protected $content;
-
-  /**
    * Content types to retrieve.
    *
    * @var string
@@ -199,8 +191,8 @@ class RelatedContentManager {
 
     $items = [];
     $cache_tags = [
-      'taxonomy_term_list:' . $this->termIds[0],
-      'taxonomy_term:' . $this->termIds[0],
+      'taxonomy_term_list:' . $this->termId,
+      'taxonomy_term:' . $this->termId,
     ];
 
     foreach ($this->content as $item) {

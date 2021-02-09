@@ -175,6 +175,9 @@ class RelatedContentManager {
       $this->termId = (int) $node->get('field_subtheme')->getString();
     }
 
+    // Add the current node as a cache tag for when theme/subtheme is changed.
+    $this->cacheTags[] = 'node:' . $node->id();
+
     $this->getContent();
     return $this;
   }

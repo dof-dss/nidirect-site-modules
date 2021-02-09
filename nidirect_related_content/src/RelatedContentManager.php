@@ -65,6 +65,14 @@ class RelatedContentManager {
   protected $returnContentTypes;
 
   /**
+   * Cache tags for render array.
+   *
+   * @var array
+   *   String array of cache tags.
+   */
+  protected $cacheTags;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -188,13 +196,10 @@ class RelatedContentManager {
    *   A Drupal render array of theme content.
    */
   public function asRenderArray(): array {
+    $this->cacheTags[] = 'taxonomy_term_list:' . $this->termId;
+    $this->cacheTags[] = 'taxonomy_term:' . $this->termId;
 
     $items = [];
-    $cache_tags = [
-      'taxonomy_term_list:' . $this->termId,
-      'taxonomy_term:' . $this->termId,
-    ];
-
     foreach ($this->content as $item) {
       $items[] = [
         '#type' => 'link',
@@ -203,10 +208,10 @@ class RelatedContentManager {
       ];
 
       if ($item['entity'] instanceof TermInterface) {
-        $cache_tags[] = 'taxonomy_term:' . $item['entity']->id();
+        $this->cacheTags[] = 'taxonomy_term:' . $item['entity']->id();
       }
       else {
-        $cache_tags[] = 'node:' . $item['entity']->id();
+        $this->cacheTags[] = 'node:' . $item['entity']->id();
       }
 
     }
@@ -216,7 +221,7 @@ class RelatedContentManager {
         '#theme' => 'item_list',
         '#items' => $items,
         '#cache' => [
-          'tags' => $cache_tags,
+          'tags' => $this->cacheTags,
           'contexts' => ['url.path'],
         ],
       ],

@@ -63,3 +63,13 @@ function nidirect_webforms_theme() {
     ],
   ];
 }
+
+/**
+ * Implements hook_preprocess_webform_actions().
+ */
+function nidirect_webforms_preprocess_input(array &$variables) {
+  if ($variables['attributes']['value'] == 'Send feedback') {
+    $variables['attributes']['id'] = 'edit-actions-submit-2';
+  }
+}
+

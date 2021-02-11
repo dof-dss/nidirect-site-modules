@@ -80,8 +80,9 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    // Full node view.
-    if ($route_name == 'entity.node.canonical') {
+    // Full node view or webform confirmation.
+    if (($route_name == 'entity.node.canonical')
+      || ($route_name == 'entity.node.webform.confirmation')) {
       $this->node = $route_match->getParameter('node');
     }
 

@@ -58,7 +58,9 @@ class WebformBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if (($route_name == 'entity.webform.confirmation') || ($route_name == 'entity.webform.canonical')) {
+    if (($route_name == 'entity.webform.confirmation')
+      || ($route_name == 'entity.node.webform.confirmation')
+      || ($route_name == 'entity.webform.canonical')) {
       $match = TRUE;
     }
 

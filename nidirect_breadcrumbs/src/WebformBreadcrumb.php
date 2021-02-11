@@ -21,6 +21,36 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class WebformBreadcrumb implements BreadcrumbBuilderInterface {
 
   /**
+   * Drupal entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Node object, or null if on a non-node page.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
+  protected $node;
+
+  /**
+   * Class constructor.
+   */
+  public function __construct(EntityTypeManagerInterface $entity_type_manager) {
+    $this->entityTypeManager = $entity_type_manager;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('entity_type.manager')
+    );
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function applies(RouteMatchInterface $route_match) {
@@ -28,7 +58,7 @@ class WebformBreadcrumb implements BreadcrumbBuilderInterface {
 
     $route_name = $route_match->getRouteName();
 
-    if ($route_name == 'entity.webform.confirmation') {
+    if (($route_name == 'entity.webform.confirmation') || ($route_name == 'entity.webform.canonical')) {
       $match = TRUE;
     }
 

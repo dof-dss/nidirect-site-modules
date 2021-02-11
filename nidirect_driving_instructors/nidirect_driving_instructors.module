@@ -252,13 +252,3 @@ function nidirect_driving_instructors_preprocess_facets_item_list(array &$variab
   }
 }
 
-function nidirect_driving_instructors_preprocess_facets_item_summary(array &$variables) {
-  // Turn off JS from nidirect_common/link-manager.js which would otherwise break the facet links.
-  if (empty($variables['items'])) {
-    return;
-  }
-
-  foreach ($variables['items'] as $key => &$facet) {
-    $facet['value']['#attributes']['data-self-ref'] = 'false';
-  }
-}

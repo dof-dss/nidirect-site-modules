@@ -99,13 +99,14 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
       if (!empty($this->node)) {
         $applies_to_types = [
-          'article',
-          'landing_page',
           'application',
-          'publication',
-          'webform',
+          'article',
+          'external_link',
           'feature',
           'featured_content_list',
+          'landing_page',
+          'publication',
+          'webform',
         ];
 
         $match = in_array($this->node->bundle(), $applies_to_types);

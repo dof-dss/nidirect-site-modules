@@ -17,6 +17,11 @@ services:
     tags:
       - { name: breadcrumb_builder }
 
+  nidirect_breadcrumbs.breadcrumb.webform:
+    class: Drupal\nidirect_breadcrumbs\WebformBreadcrumb
+    tags:
+      - { name: breadcrumb_builder, priority: 5000 }
+
   nidirect_breadcrumbs.breadcrumb.govt_contact:
     class: Drupal\nidirect_breadcrumbs\GovernmentContactBreadcrumb
     arguments: ['%breadcrumb.contacts_govt.matches%', '@request_stack']

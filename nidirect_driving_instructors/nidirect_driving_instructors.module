@@ -59,7 +59,9 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     // Hide exposed categories radios.
     $form['categories']['#type'] = 'hidden';
 
-    // Instead, output facet category radios.
+    // Instead, output radios for choosing facet filters.
+    // See driving instructors facet source configuration (/admin/config/search/facets)
+    // for the correct filter key to use.
     $form['f[0]'] = [
       '#id' => Html::getUniqueId('edit-categories'),
       '#type' => 'radios',
@@ -223,11 +225,13 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
           '#type' => 'html_tag',
           '#tag' => 'h2',
           '#value' => $result_count,
-        ],
-        'sort_by' => [
-          '#title' => $link_text,
-          '#type' => 'link',
-          '#url' => Url::fromUri($uri),
+          'sort_by' => [
+            '#title' => $link_text,
+            '#type' => 'link',
+            '#url' => Url::fromUri($uri),
+            '#prefix' => '<span class="subtitle">',
+            '#suffix' => '</span>',
+          ],
         ],
       ];
     }
@@ -238,6 +242,17 @@ function nidirect_driving_instructors_views_pre_render(ViewExecutable $view) {
  * Implements hook_preprocess_facets_item_list().
  */
 function nidirect_driving_instructors_preprocess_facets_item_list(array &$variables) {
+  // Turn off JS from nidirect_common/link-manager.js which would otherwise break the facet links.
+  if (empty($variables['items'])) {
+    return;
+  }
+
+  foreach ($variables['items'] as $key => &$facet) {
+    $facet['value']['#attributes']['data-self-ref'] = 'false';
+  }
+}
+
+function nidirect_driving_instructors_preprocess_facets_item_summary(array &$variables) {
   // Turn off JS from nidirect_common/link-manager.js which would otherwise break the facet links.
   if (empty($variables['items'])) {
     return;

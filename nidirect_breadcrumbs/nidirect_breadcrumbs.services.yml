@@ -15,31 +15,31 @@ services:
     class: Drupal\nidirect_breadcrumbs\ContactBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.webform:
     class: Drupal\nidirect_breadcrumbs\WebformBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder, priority: 5000 }
+      - { name: breadcrumb_builder, priority: 4999 }
 
   nidirect_breadcrumbs.breadcrumb.govt_contact:
     class: Drupal\nidirect_breadcrumbs\GovernmentContactBreadcrumb
     arguments: ['%breadcrumb.contacts_govt.matches%', '@request_stack']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.driving_instructors:
     class: Drupal\nidirect_breadcrumbs\DrivingInstructorsBreadcrumb
     arguments: ['%breadcrumb.driving_instructors.matches%', '@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.gp_practice:
     class: Drupal\nidirect_breadcrumbs\GpPracticeBreadcrumb
     arguments: ['@entity_type.manager']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.health_condition:
     class: Drupal\nidirect_breadcrumbs\HealthConditionBreadcrumb
@@ -63,13 +63,13 @@ services:
     class: Drupal\nidirect_breadcrumbs\SearchBreadcrumb
     arguments: ['%breadcrumb.search.matches%']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.schoolclosures:
     class: Drupal\nidirect_breadcrumbs\SchoolClosuresBreadcrumb
     arguments: ['%breadcrumb.schoolclosures.matches%', '@request_stack']
     tags:
-      - { name: breadcrumb_builder }
+      - { name: breadcrumb_builder, priority: 5000 }
 
   nidirect_breadcrumbs.breadcrumb.null_breadcrumb:
     class: Drupal\nidirect_breadcrumbs\NullBreadcrumb

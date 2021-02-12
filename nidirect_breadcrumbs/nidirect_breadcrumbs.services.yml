@@ -17,12 +17,6 @@ services:
     tags:
       - { name: breadcrumb_builder, priority: 5000 }
 
-  nidirect_breadcrumbs.breadcrumb.webform:
-    class: Drupal\nidirect_breadcrumbs\WebformBreadcrumb
-    arguments: ['@entity_type.manager']
-    tags:
-      - { name: breadcrumb_builder, priority: 4999 }
-
   nidirect_breadcrumbs.breadcrumb.govt_contact:
     class: Drupal\nidirect_breadcrumbs\GovernmentContactBreadcrumb
     arguments: ['%breadcrumb.contacts_govt.matches%', '@request_stack']
@@ -75,7 +69,7 @@ services:
     class: Drupal\nidirect_breadcrumbs\NullBreadcrumb
     arguments: ['%breadcrumb.nullbreadcrumb.matches%', '@request_stack']
     tags:
-      - { name: breadcrumb_builder, priority: 5000 }
+      - { name: breadcrumb_builder, priority: 4999 }
 
 parameters:
   breadcrumb.search.matches:
@@ -99,3 +93,6 @@ parameters:
     - user.reset.login
     - nidirect_contacts.default
     - nidirect_contacts.letter
+    - entity.webform.canonical
+    - entity.webform.confirmation
+    - entity.node.webform.confirmation

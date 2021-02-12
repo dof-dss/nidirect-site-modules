@@ -59,7 +59,17 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     // Hide exposed categories radios.
     $form['categories']['#type'] = 'hidden';
 
-    // Instead, output radios for choosing facet filters.
+    // Add our own facet filters to select driving instruction categories.
+    // Load categories from taxonomy - we want the top level categories.
+    $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('drive_instr_categories', $parent = 0, $max_depth = 1);
+
+    // Build radio options.
+    $options['categories:all'] = t('All');
+    foreach ($terms as $term) {
+      $options['categories:' . $term->tid] = t($term->name);
+    }
+
+    // Build the radios.
     // See driving instructors facet source configuration (/admin/config/search/facets)
     // for the correct filter key to use.
     $form['f[0]'] = [
@@ -67,11 +77,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
       '#type' => 'radios',
       '#title' => t('Filter by type of tuition'),
       '#title_display' => 'above',
-      '#options' => [
-        'categories:all' => t('All'),
-        'categories:1160'  => t('Driving instructors'),
-        'categories:1161' => t('Motorcycle instructors'),
-      ],
+      '#options' => $options,
       '#default_value' => 'categories:all',
       '#attributes' => [
         'class' => ['search-options'],

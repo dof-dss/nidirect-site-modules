@@ -90,11 +90,11 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $form['actions']['#weight'] = 3;
     $form['f[0]']['#weight'] = 4;
 
-    // Hide help and category radios on results page.
+    // Remove help and category radios on results page.
     $inputs = $form_state->getUserInput();
     if (!empty($inputs['search_api_fulltext'])) {
       unset($form['help']);
-      $form['f[0]']['#type'] = 'hidden';
+      unset($form['f[0]']);
     }
   }
 

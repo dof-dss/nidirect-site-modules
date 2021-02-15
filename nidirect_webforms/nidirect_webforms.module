@@ -63,3 +63,11 @@ function nidirect_webforms_theme() {
     ],
   ];
 }
+
+/**
+ * Implements hook_page_attachments().
+ */
+function nidirect_webforms_page_attachments(array &$attachments) {
+  // Add js to look for multiple webforms on a page.
+  $attachments['#attached']['library'][] = 'nidirect_webforms/multiple_webform_submit.js';
+}

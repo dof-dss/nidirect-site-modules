@@ -57,20 +57,20 @@ class RelatedContentManager {
   protected $termId;
 
   /**
-   * Theme content.
-   *
-   * @var array
-   *   Array of theme content.
-   */
-  protected $content;
-
-  /**
    * Content types to retrieve.
    *
    * @var string
    *   Array of theme content.
    */
   protected $returnContentTypes;
+
+  /**
+   * Cache tags for render array.
+   *
+   * @var array
+   *   String array of cache tags.
+   */
+  protected $cacheTags;
 
   /**
    * Constructor.
@@ -175,6 +175,9 @@ class RelatedContentManager {
       $this->termId = (int) $node->get('field_subtheme')->getString();
     }
 
+    // Add the current node as a cache tag for when theme/subtheme is changed.
+    $this->cacheTags[] = 'node:' . $node->id();
+
     $this->getContent();
     return $this;
   }
@@ -196,13 +199,10 @@ class RelatedContentManager {
    *   A Drupal render array of theme content.
    */
   public function asRenderArray(): array {
+    $this->cacheTags[] = 'taxonomy_term_list:' . $this->termId;
+    $this->cacheTags[] = 'taxonomy_term:' . $this->termId;
 
     $items = [];
-    $cache_tags = [
-      'taxonomy_term_list:' . $this->termIds[0],
-      'taxonomy_term:' . $this->termIds[0],
-    ];
-
     foreach ($this->content as $item) {
       $items[] = [
         '#type' => 'link',
@@ -211,10 +211,10 @@ class RelatedContentManager {
       ];
 
       if ($item['entity'] instanceof TermInterface) {
-        $cache_tags[] = 'taxonomy_term:' . $item['entity']->id();
+        $this->cacheTags[] = 'taxonomy_term:' . $item['entity']->id();
       }
       else {
-        $cache_tags[] = 'node:' . $item['entity']->id();
+        $this->cacheTags[] = 'node:' . $item['entity']->id();
       }
 
     }
@@ -224,7 +224,7 @@ class RelatedContentManager {
         '#theme' => 'item_list',
         '#items' => $items,
         '#cache' => [
-          'tags' => $cache_tags,
+          'tags' => $this->cacheTags,
           'contexts' => ['url.path'],
         ],
       ],

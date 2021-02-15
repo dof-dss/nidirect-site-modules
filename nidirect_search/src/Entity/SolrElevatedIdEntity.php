@@ -88,11 +88,19 @@ class SolrElevatedIdEntity extends ConfigEntityBase implements SolrElevatedIdEnt
   /**
    * {@inheritdoc}
    */
-  public function delete() {
+  public function save() {
+    // Delete the stale cached elevated ids.
+    \Drupal::cache()->delete('elevated_solr_ids');
 
-    // Delete the cached elevated ids.
-    $search_cid = 'solr_elevated_id:' . $this->index() . ':' . str_replace(' ', '_', $this->label());
-    \Drupal::cache()->delete($search_cid);
+    return parent::save();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function delete() {
+    // Delete the stale cached elevated ids.
+    \Drupal::cache()->delete('elevated_solr_ids');
 
     parent::delete();
   }

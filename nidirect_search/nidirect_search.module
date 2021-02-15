@@ -99,43 +99,33 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   }
 
   // Change Solr index to Contacts.
-  if ($route_name == 'nidirect_contacts.default' ||
-        $route_name == 'nidirect_contacts.letter' ||
-          $route_name == 'search_api_autocomplete.autocomplete') {
+  if ($route_name == 'nidirect_contacts.default' || $route_name == 'nidirect_contacts.letter') {
 
     $index_id = 'contacts';
     // See https://lucene.apache.org/solr/guide/7_7/the-dismax-query-parser.html#mm-minimum-should-match-parameter.
-    // Adjusts the sensitivity of matching based on the number of search terms provided.
+    // Adjusts the sensitivity of matching based on the number of search
+    // terms provided.
     $solarium_query->addParam('mm', '2<67% 5<50%');
   }
 
-  $search_cid = 'solr_elevated_id:' . $index_id . ':' . str_replace(' ', '_', strtolower($search_term));
+  $search_cache = \Drupal::cache()->get('elevated_solr_ids');
 
-  $elevation_ids = \Drupal::cache()->get($search_cid)->data;
+  // Load enabled elevated solr id entities if not stored in the cache.
+  if (empty($search_cache->data)) {
+    $elevated_id_entities = \Drupal::entityTypeManager()->getStorage('solr_elevated_id')->loadByProperties(['status' => 1]);
+    \Drupal::cache()->set('elevated_solr_ids', $elevated_id_entities, Cache::PERMANENT);
+  }
+  else {
+    $elevated_id_entities = $search_cache->data;
+  }
 
-  if (empty($elevation_ids)) {
-    $solr_elevated_entity_storage = \Drupal::entityTypeManager()->getStorage('solr_elevated_id');
+  $elevation_ids = [];
 
-    // Search for elevation entities that match the search term and Solr index.
-    $solr_elevated_entity_id = $solr_elevated_entity_storage->getQuery()
-      ->condition('label', strtolower($search_term))
-      ->condition('index', $index_id)
-      ->condition('status', '1')
-      ->execute();
-
-    if (!is_array($solr_elevated_entity_id)) {
-      return;
+  // Build up a collection of node id's to use in the elevated query.
+  foreach ($elevated_id_entities as $elevated_entity) {
+    if ($elevated_entity->index() == $index_id && $elevated_entity->label() == $search_term) {
+      $elevation_ids = array_merge($elevation_ids, explode(',', $elevated_entity->nodes()));
     }
-
-    $solr_elevated_entity = $solr_elevated_entity_storage->load(current($solr_elevated_entity_id));
-
-    if ($solr_elevated_entity === NULL) {
-      return;
-    }
-
-    $elevation_ids = explode(',', $solr_elevated_entity->nodes());
-
-    \Drupal::cache()->set($search_cid, $elevation_ids, Cache::PERMANENT);
   }
 
   // Add elevations to the query.

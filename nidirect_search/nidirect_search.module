@@ -123,7 +123,7 @@ function nidirect_search_search_api_solr_query_alter(QueryInterface $solarium_qu
   // Build up a collection of node id's to use in the elevated query.
   foreach ($elevated_id_entities as $elevated_entity) {
     if ($elevated_entity->index() == $index_id && $elevated_entity->label() == $search_term) {
-      $elevation_ids = array_merge($elevation_ids, explode(',',$elevated_entity->nodes()));
+      $elevation_ids = array_merge($elevation_ids, explode(',', $elevated_entity->nodes()));
     }
   }
 

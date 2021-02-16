@@ -64,7 +64,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
     $terms = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->loadTree('drive_instr_categories', $parent = 0, $max_depth = 1);
 
     // Build radio options.
-    $options['categories:all'] = t('All');
+    $options['All'] = t('All');
     foreach ($terms as $term) {
       $options['categories:' . $term->tid] = t($term->name);
     }
@@ -78,7 +78,7 @@ function nidirect_driving_instructors_form_alter(&$form, &$form_state, &$form_id
       '#title' => t('Filter by type of tuition'),
       '#title_display' => 'above',
       '#options' => $options,
-      '#default_value' => 'categories:all',
+      '#default_value' => 'All',
       '#attributes' => [
         'class' => ['search-options'],
       ],

@@ -6,6 +6,8 @@ nidirect_gp.gp_search:
   requirements:
     _permission: 'access content'
     search_api_views_fulltext: ^(\w)+
+nidirect_gp.gp.add:
+  path: '/node/add/gp'
 nidirect_gp.gp.collection:
   path: '/admin/content/gps'
   defaults:

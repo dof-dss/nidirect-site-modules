@@ -2,7 +2,6 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
-use Drupal\Component\Utility\Html;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -110,19 +109,30 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       ],
     ];
 
-    // Placeholder to put the results/ajax error messages.
+    // Placeholder for postcode validation error messages.
+    $form['postcode-error-message'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'role' => 'alert',
+        'class' => ['cwp-error-container', 'form-item--error-message'],
+      ],
+      'content' => [
+        '#markup' => $form_state->get('postcode'),
+      ],
+    ];
+
+    // Placeholder to put the results in.
     $form['message'] = [
       '#type' => 'container',
       '#attributes' => [
         'role' => 'alert',
-        'class' => ['cwp-message-container'],
+        'class' => ['cwp-results-container'],
       ],
       'content' => [
         '#markup' => $form_state->get('message', ''),
-        '#prefix' => '<div id="cwp-message">',
+        '#prefix' => '<div id="cwp-results">',
         '#suffix' => '</div>',
       ],
-
     ];
 
     return $form;
@@ -138,8 +148,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // Postcode district validation - must be 1-99.
     if (!$postcode_district || $postcode_district < 0 || $postcode_district > 99) {
+      $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
-        new HtmlCommand('#cwp-message', $this->t('Postcode must be a valid Northern Ireland postcode.'))
+        new HtmlCommand('#edit-postcode-error-message', $content)
       );
 
       return $response;
@@ -163,7 +174,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     }
 
     $response->addCommand(
-      new HtmlCommand('#cwp-message', $output)
+      new HtmlCommand('#cwp-results', $output)
     );
 
     return $response;

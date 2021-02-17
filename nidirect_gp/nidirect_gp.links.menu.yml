@@ -1,4 +1,3 @@
-
 # GP menu items definition
 gp.admin.structure.settings:
   title: 'GP settings'
@@ -6,7 +5,13 @@ gp.admin.structure.settings:
   route_name: gp.settings
   parent: system.admin_structure
 
-gp.add_page:
+gp.add:
   title: 'GP'
   route_name: entity.gp.add_form
   parent: system.admin_content
+
+gp.collection:
+  title: "GP's"
+  route_name: nidirect_gp.gp.collection
+  parent: system.admin_content
+  weight: 2

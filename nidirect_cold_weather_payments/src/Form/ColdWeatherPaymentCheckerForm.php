@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -79,33 +80,24 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       'class' => ['search-form', 'search-form--cwp'],
     ];
 
-    // Create our own label for the postcode input.
-    $form['postcode_label'] = [
-      '#markup' => '<label for="edit-postcode">' . t('Enter your Northern Ireland postcode') . '</label>',
-      '#allowed_tags' => ['label'],
+    // Contain a search input and submit together.
+    $form['postcode'] = [
+      '#type' => 'textfield',
+      '#maxlength' => 8,
+      '#size' => 8,
+      '#weight' => '0',
+      '#title' => t('Enter your Northern Ireland postcode'),
+      '#title_display' => 'before',
     ];
 
-    // Contain a search input and submit together.
-    $form['search-and-submit'] = [
-      '#type' => 'container',
+    $form['submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Check postcode'),
       '#attributes' => [
-        'class' => ['search-and-submit'],
+        'class' => ['form-submit'],
       ],
-      'postcode' => [
-        '#type' => 'textfield',
-        '#maxlength' => 8,
-        '#size' => 8,
-        '#weight' => '0',
-      ],
-      'submit' => [
-        '#type' => 'submit',
-        '#value' => $this->t('Check postcode'),
-        '#attributes' => [
-          'class' => ['form-submit'],
-        ],
-        '#ajax' => [
-          'callback' => '::cwpCheck',
-        ],
+      '#ajax' => [
+        'callback' => '::cwpCheck',
       ],
     ];
 
@@ -115,9 +107,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       '#attributes' => [
         'role' => 'alert',
         'class' => ['cwp-error-container', 'form-item--error-message'],
-      ],
-      'content' => [
-        '#markup' => $form_state->get('postcode'),
       ],
     ];
 
@@ -142,6 +131,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * AJAX callback function.
    */
   public function cwpCheck(array $form, FormStateInterface $form_state) {
+
     $postcode = $form_state->getValue('postcode');
     $postcode_district = $this->cwpGetDistrictFromNIPostcode($postcode);
     $response = new AjaxResponse();
@@ -151,6 +141,12 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
         new HtmlCommand('#edit-postcode-error-message', $content)
+      );
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'addClass', ['error'])
+      );
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'focus')
       );
 
       return $response;

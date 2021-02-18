@@ -504,7 +504,7 @@ function nidirect_common_toolbar_alter(&$items) {
 /**
  * Implements custom taxonomy term validation.
  *
- * @param array $form
+ * @param $form
  *   The form array of uninstall confirm form.
  * @param \Drupal\Core\Form\FormStateInterface $form_state
  *   The form state value of uninstall confirm form.
@@ -514,6 +514,6 @@ function nidirect_common_taxonomy_term_validate(&$form, FormStateInterface $form
   // may have happened if the parent dropdown for taxaonomy terms has
   // been changed to single select rather than multiple).
   if (!is_array($form_state->getValue('parent'))) {
-    $form_state->setValue('parent',[$form_state->getValue('parent')]);
+    $form_state->setValue('parent', [$form_state->getValue('parent')]);
   }
 }

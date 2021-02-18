@@ -265,7 +265,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       if (strlen($postcode) > 4) {
         // Full postcode - remove first 2 and last 3 characters to get the district number.
         $postcode_district = substr($postcode, 2, -3);
-      } else {
+      }
+      else {
         // Postcode outward code - just strip of first two 'BT' characters.
         $postcode_district = substr($postcode, 2);
       }

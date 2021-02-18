@@ -500,3 +500,15 @@ function nidirect_common_toolbar_alter(&$items) {
     unset($items['contextual']);
   }
 }
+
+/**
+ * Implements custom taxonomy term validation.
+ */
+function nidirect_common_taxonomy_term_validate(&$form, FormStateInterface $form_state) {
+  // If the parent field is not an array then make it an array (this
+  // may have happened if the parent dropdown for taxaonomy terms has
+  // been changed to single select rather than multiple).
+  if (!is_array($form_state->getValue('parent'))) {
+    $form_state->setValue('parent', [$form_state->getValue('parent')]);
+  }
+}

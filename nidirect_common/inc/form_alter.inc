@@ -85,6 +85,8 @@ function nidirect_common_form_taxonomy_term_form_alter(&$form, FormStateInterfac
   $form['relations']['#description'] = t("The primary parent theme where a link to this theme will appear. Sets the breadcrumb trail shown on the theme landing page.");
   $form['relations']['parent']['#chosen'] = TRUE;
   $form['relations']['parent']['#multiple'] = FALSE;
+  // Add a custom validator.
+  array_unshift($form['#validate'], 'nidirect_common_taxonomy_term_validate');
 
   $form['description']['widget'][0]['#description'] = t("Optional main body content. Generally not used as it is preferred to show an automatically generated list of the theme's content.");
   if (!empty($form['flag']['hide_theme'])) {

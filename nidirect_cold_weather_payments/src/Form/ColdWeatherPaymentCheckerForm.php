@@ -79,8 +79,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       'role' => 'search',
       'class' => ['search-form', 'search-form--cwp'],
     ];
-
-    // Contain a search input and submit together.
+    
     $form['postcode'] = [
       '#type' => 'textfield',
       '#maxlength' => 8,

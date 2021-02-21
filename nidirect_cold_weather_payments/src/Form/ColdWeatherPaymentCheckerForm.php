@@ -87,6 +87,10 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       '#weight' => '0',
       '#title' => t('Enter your Northern Ireland postcode'),
       '#title_display' => 'before',
+      '#attributes' => [
+        'autocomplete' => 'postal-code',
+      ],
+      '#default_value' => $form_state->getValue('postcode', ''),
     ];
 
     $form['submit'] = [
@@ -183,11 +187,15 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // Adding this validation to take care of older browsers.
     $postcode = $form_state->getValue('postcode');
-    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
 
-    if (!is_numeric($postcode_district) || $postcode_district < 1 || $postcode_district > 99) {
-      $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
+    if (!empty($postcode)) {
+      $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
+
+      if (!is_numeric($postcode_district) || $postcode_district < 1 || $postcode_district > 99) {
+        $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
+      }
     }
+    
   }
 
   /**
@@ -258,13 +266,14 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * For Northern Ireland postcodes, the postcode district is always 1 or 2 digits following the postcode area 'BT'.
    */
   private function cwpGetPostcodeDistrict(string $postcode) {
+    $postcode = trim($postcode);
     $postcode_district = NULL;
 
     // If postcode is a full NI postcode, or just the first part (outward code - e.g. BT1) ...
-    if (preg_match('/^[bB][tT][0-9]{1,2}( ?[0-9][a-zA-Z]{2})?$/', $postcode)) {
+    if (preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $postcode)) {
       if (strlen($postcode) > 4) {
-        // Full postcode - remove first 2 and last 3 characters to get the district number.
-        $postcode_district = substr($postcode, 2, -3);
+        // Full postcode - remove first 2 and last 3 characters plus any trailing spaces to get the district number.
+        $postcode_district = rtrim(substr($postcode, 2, -3));
       }
       else {
         // Postcode outward code - just strip of first two 'BT' characters.

@@ -9,6 +9,7 @@ use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Render\Renderer;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
+use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Component\Serialization\Json;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -74,33 +75,56 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
 
-    $form['container'] = [
-      '#type' => 'container',
-      '#attributes' => ['class' => ['container-inline']],
+    $form['#attributes'] = [
+      'role' => 'search',
+      'class' => ['search-form', 'search-form--cwp'],
     ];
-    $form['container']['postcode'] = [
-      '#type' => 'number',
-      '#maxlength' => 2,
-      '#size' => 2,
-      '#min' => 1,
-      '#max' => 99,
+
+    $form['postcode'] = [
+      '#type' => 'textfield',
+      '#maxlength' => 8,
+      '#size' => 8,
       '#weight' => '0',
-      '#prefix' => 'BT',
+      '#title' => t('Enter your Northern Ireland postcode'),
+      '#title_display' => 'before',
+      '#attributes' => [
+        'autocomplete' => 'postal-code',
+      ],
+      '#default_value' => $form_state->getValue('postcode', ''),
     ];
-    $form['container']['submit'] = [
+
+    $form['submit'] = [
       '#type' => 'submit',
-      '#value' => $this->t('Search'),
+      '#value' => $this->t('Check postcode'),
+      '#attributes' => [
+        'class' => ['form-submit'],
+      ],
       '#ajax' => [
         'callback' => '::cwpCheck',
       ],
     ];
 
-    // Placeholder to put the results/ajax error messages.
+    // Placeholder for postcode validation error messages.
+    $form['postcode-error-message'] = [
+      '#type' => 'container',
+      '#attributes' => [
+        'role' => 'alert',
+        'class' => ['cwp-error-container', 'form-item--error-message'],
+      ],
+    ];
+
+    // Placeholder to put the results in.
     $form['message'] = [
-      '#type' => 'markup',
-      '#markup' => $form_state->get('message', ''),
-      '#prefix' => '<div id="cwp-message">',
-      '#suffix' => '</div>',
+      '#type' => 'container',
+      '#attributes' => [
+        'role' => 'alert',
+        'class' => ['cwp-results-container'],
+      ],
+      'content' => [
+        '#markup' => $form_state->get('message'),
+        '#prefix' => '<div id="cwp-results">',
+        '#suffix' => '</div>',
+      ],
     ];
 
     return $form;
@@ -110,19 +134,28 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * AJAX callback function.
    */
   public function cwpCheck(array $form, FormStateInterface $form_state) {
+
     $postcode = $form_state->getValue('postcode');
+    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $response = new AjaxResponse();
 
-    // Postcode validation.
-    if (!is_numeric($postcode)) {
+    // Postcode district validation - must be 1-99.
+    if (!$postcode_district || $postcode_district < 0 || $postcode_district > 99) {
+      $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
-        new HtmlCommand('#cwp-message', $this->t('Postcode must consist of 1 or 2 digits.'))
+        new HtmlCommand('#edit-postcode-error-message', $content)
+      );
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'addClass', ['error'])
+      );
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'focus')
       );
 
       return $response;
     }
 
-    $data = $this->cwpLookup($postcode);
+    $data = $this->cwpLookup($postcode_district);
 
     // Check we have data back from the API.
     if (is_null($data)) {
@@ -140,7 +173,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     }
 
     $response->addCommand(
-      new HtmlCommand('#cwp-message', $output)
+      new HtmlCommand('#cwp-results', $output)
     );
 
     return $response;
@@ -154,11 +187,13 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // Adding this validation to take care of older browsers.
     $postcode = $form_state->getValue('postcode');
-    if (!is_numeric($postcode)) {
-      $form_state->setErrorByName('postcode', $this->t('Postcode must consist of 1 or 2 digits.'));
-    }
-    elseif ($postcode < 1 || $postcode > 99) {
-      $form_state->setErrorByName('postcode', $this->t('Postcode must be between 1 and 99.'));
+
+    if (!empty($postcode)) {
+      $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
+
+      if (!is_numeric($postcode_district) || $postcode_district < 1 || $postcode_district > 99) {
+        $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
+      }
     }
   }
 
@@ -167,8 +202,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $postcode = $form_state->getValue('postcode');
-
-    $data = $this->cwpLookup($postcode);
+    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
+    $data = $this->cwpLookup($postcode_district);
 
     // Check we have data back from the API.
     if (is_null($data)) {
@@ -192,7 +227,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * Call CWP API and process data.
    */
-  private function cwpLookup($postcode) {
+  private function cwpLookup($postcode_district) {
     $data = NULL;
 
     try {
@@ -200,7 +235,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         'base_uri' => $this->request->getCurrentRequest()->getSchemeAndHttpHost(),
       ]);
 
-      $api_response = $client->get('api/cwp/BT' . $postcode, []);
+      $api_response = $client->get('api/cwp/BT' . $postcode_district, []);
       $json = $api_response->getBody()->getContents();
       $data = Json::decode($json);
 
@@ -222,6 +257,31 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     finally {
       return $data;
     }
+  }
+
+  /**
+   * Get postcode district from a Northern Ireland postcode.
+   *
+   * For Northern Ireland postcodes, the postcode district is always 1 or 2 digits following the postcode area 'BT'.
+   */
+  private function cwpGetPostcodeDistrict(string $postcode) {
+    $postcode = trim($postcode);
+    $postcode_district = NULL;
+
+    // If postcode is a full NI postcode, or just the first part (outward code - e.g. BT1) ...
+    if (preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $postcode)) {
+      if (strlen($postcode) > 4) {
+        // Full postcode - remove first 2 and last 3 characters plus any trailing spaces to get the district number.
+        $postcode_district = rtrim(substr($postcode, 2, -3));
+      }
+      else {
+        // Postcode outward code - just strip of first two 'BT' characters.
+        $postcode_district = substr($postcode, 2);
+      }
+
+    }
+
+    return $postcode_district;
   }
 
 }

@@ -195,7 +195,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
       }
     }
-    
   }
 
   /**

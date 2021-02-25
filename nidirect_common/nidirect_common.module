@@ -512,3 +512,18 @@ function nidirect_common_taxonomy_term_validate(&$form, FormStateInterface $form
     $form_state->setValue('parent', [$form_state->getValue('parent')]);
   }
 }
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function nidirect_common_views_pre_view(ViewExecutable $view) {
+  $alias = \Drupal::request()->getRequestUri();
+  $path = \Drupal::service('path.alias_manager')->getPathByAlias($alias);
+  $url_404 = Url::fromRoute('system.404')->toString();
+  if (!preg_match('/node\/(\d+)/', $path, $matches)
+    && ($alias != $url_404)
+    && (preg_match( '|^\/publications\/|', $alias))) {
+    $response = new RedirectResponse($url_404);
+    $response->send();
+  }
+}

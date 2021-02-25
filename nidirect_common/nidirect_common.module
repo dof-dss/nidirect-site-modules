@@ -529,7 +529,7 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
   // the publications search and we should return a
   // 404 'page not found' response.
   if (!preg_match('/node\/(\d+)/', $path, $matches)
-    && (preg_match( '|^\/publications\/|', $alias))) {
+    && (preg_match('|^\/publications\/|', $alias))) {
     // Retrieve the system 404 path.
     $url_404 = Url::fromRoute('system.404')->toString();
     $response = new RedirectResponse($url_404);

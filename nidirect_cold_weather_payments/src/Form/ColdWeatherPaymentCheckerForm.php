@@ -262,16 +262,19 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * Get postcode district from a Northern Ireland postcode.
    *
-   * For Northern Ireland postcodes, the postcode district is always 1 or 2 digits following the postcode area 'BT'.
+   * For Northern Ireland postcodes, the postcode district is always 1 or 2
+   * digits following the postcode area 'BT'.
    */
   private function cwpGetPostcodeDistrict(string $postcode) {
     $postcode = trim($postcode);
     $postcode_district = NULL;
 
-    // If postcode is a full NI postcode, or just the first part (outward code - e.g. BT1) ...
+    // If postcode is a full NI postcode, or just the first part
+    // (outward code - e.g. BT1) ...
     if (preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $postcode)) {
       if (strlen($postcode) > 4) {
-        // Full postcode - remove first 2 and last 3 characters plus any trailing spaces to get the district number.
+        // Full postcode - remove first 2 and last 3 characters plus any
+        // trailing spaces to get the district number.
         $postcode_district = rtrim(substr($postcode, 2, -3));
       }
       else {

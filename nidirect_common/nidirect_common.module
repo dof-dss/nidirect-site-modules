@@ -512,3 +512,27 @@ function nidirect_common_taxonomy_term_validate(&$form, FormStateInterface $form
     $form_state->setValue('parent', [$form_state->getValue('parent')]);
   }
 }
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function nidirect_common_views_pre_view(ViewExecutable $view) {
+  // Code here to check for invalid publications.
+  // Previously, invalid urls such as '/publications/somethingbad' would
+  // show the publications search page rather than showing the 404
+  // 'not found' page. This code corrects that problem.
+  $alias = \Drupal::request()->getRequestUri();
+  // Get the true Drupal path for the current alias.
+  $path = \Drupal::service('path.alias_manager')->getPathByAlias($alias);
+  // If the Drupal path does not lead us to a node and is in the
+  // format '/publications/....' then it cannot be related to
+  // the publications search and we should return a
+  // 404 'page not found' response.
+  if (!preg_match('/node\/(\d+)/', $path, $matches)
+    && (preg_match('|^\/publications\/|', $alias))) {
+    // Retrieve the system 404 path.
+    $url_404 = Url::fromRoute('system.404')->toString();
+    $response = new RedirectResponse($url_404);
+    $response->send();
+  }
+}

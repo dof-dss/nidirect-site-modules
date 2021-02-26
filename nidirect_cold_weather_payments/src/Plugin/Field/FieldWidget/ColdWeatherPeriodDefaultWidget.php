@@ -62,19 +62,18 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $element += [
       '#type' => 'fieldset',
       '#attributes' => ['class' => ['container-inline']],
+      '#element_validate' => [[$this, 'validate']],
     ];
 
     $element['date_start'] = [
       '#type' => 'date',
       '#title' => t('Start date'),
-      '#required' => TRUE,
       '#default_value' => $item->date_start ?? '',
     ];
 
     $element['date_end'] = [
       '#type' => 'date',
       '#title' => t('End date'),
-      '#required' => TRUE,
       '#default_value' => $item->date_end ?? '',
     ];
 
@@ -89,7 +88,6 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
       '#title' => t('Weather stations'),
       '#options' => $weather_stations ?? [],
       '#default_value' => explode(',', $item->stations),
-      '#required' => TRUE,
       '#description' => t('Tick the boxes for the weather stations where a cold weather payment was triggered.'),
     ];
 
@@ -108,6 +106,39 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     }
 
     return $values;
+  }
+
+  /**
+   * Cold weather payment triggered widget validation.
+   */
+  public function validate($element, FormStateInterface $form_state) {
+
+    $date_start = $element["date_start"]["#value"];
+    $date_end = $element["date_end"]["#value"];
+    $stations = $element["stations"]["#value"];
+
+    // If any part of the widget has been altered, start the validation checks.
+    if (!empty($date_start) || !empty($date_end) || !empty($stations)) {
+
+      if (empty($date_start)) {
+        $form_state->setError($element["date_start"], t("You must provide a start date."));
+      }
+
+      if (empty($date_end)) {
+        $form_state->setError($element["date_end"], t("You must provide a end date."));
+      }
+
+      if (!empty($date_start) && !empty($date_end)) {
+        if (new \DateTime($date_start) > new \DateTime($date_end)) {
+          $form_state->setError($element["date_end"], t("End date must come after the start date."));
+        }
+      }
+
+      if (empty($stations) || count($stations) < 1) {
+        $form_state->setError($element["stations"], t("You must provide at least one or more weather stations"));
+      }
+    }
+
   }
 
 }

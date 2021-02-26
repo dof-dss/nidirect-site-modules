@@ -5,6 +5,7 @@
  * Contains nidirect_cold_weather_payments.module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\nidirect_cold_weather_payments\Form\ColdWeatherPaymentCheckerForm;
@@ -75,4 +76,36 @@ function nidirect_cold_weather_payments_theme($existing, $type, $theme, $path) {
       ],
     ],
   ];
+}
+
+/**
+ *Implements hook_form_alter().
+ */
+function nidirect_cold_weather_payments_form_alter(&$form, &$form_state, $form_id) {
+  if ($form_id == 'node_cold_weather_payment_edit_form') {
+    $form['#validate'][] = 'nidirect_cold_weather_payments_cwp_form_validate';
+  }
+}
+
+function nidirect_cold_weather_payments_cwp_form_validate($form, $form_state) {
+
+  if ($form_state->hasValue('field_cwp_payments_triggered')) {
+
+    foreach ($form_state->getValue('field_cwp_payments_triggered') as $key => $item) {
+
+      if (is_array($item) && (!empty($item['date_start']) || !empty($item['date_end']))) {
+        $station_selected = false;
+        foreach ($item['stations'] as $station => $station_value) {
+          if (!empty($station_value)) {
+            $station_selected = true;
+          }
+        }
+        if (!$station_selected) {
+          $form_state->setError($item['stations'], t('You must select a weather station.'));
+        }
+      }
+    }
+
+  }
+
 }

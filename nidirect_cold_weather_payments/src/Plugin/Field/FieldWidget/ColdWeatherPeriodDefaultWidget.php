@@ -127,6 +127,12 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
         $form_state->setError($element["date_end"], t("You must provide a end date."));
       }
 
+      if (!empty($date_start) && !empty($date_end)) {
+        if (new \DateTime($date_start) > new \DateTime($date_end)) {
+          $form_state->setError($element["date_end"], t("End date must come after the start date."));
+        }
+      }
+
       if (empty($stations) || count($stations) < 1) {
         $form_state->setError($element["stations"], t("You must provide at least one or more weather stations"));
       }

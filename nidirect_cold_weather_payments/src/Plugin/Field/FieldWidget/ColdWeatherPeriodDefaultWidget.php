@@ -67,14 +67,12 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $element['date_start'] = [
       '#type' => 'date',
       '#title' => t('Start date'),
-      '#required' => TRUE,
       '#default_value' => $item->date_start ?? '',
     ];
 
     $element['date_end'] = [
       '#type' => 'date',
       '#title' => t('End date'),
-      '#required' => TRUE,
       '#default_value' => $item->date_end ?? '',
     ];
 
@@ -89,7 +87,6 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
       '#title' => t('Weather stations'),
       '#options' => $weather_stations ?? [],
       '#default_value' => explode(',', $item->stations),
-      '#required' => TRUE,
       '#description' => t('Tick the boxes for the weather stations where a cold weather payment was triggered.'),
     ];
 

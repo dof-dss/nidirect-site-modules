@@ -117,6 +117,7 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $date_end = $element["date_end"]["#value"];
     $stations = $element["stations"]["#value"];
 
+    // If any part of the widget has been altered, start the validation checks.
     if (!empty($date_start) || !empty($date_end) || !empty($stations)) {
 
       if (empty($date_start)) {

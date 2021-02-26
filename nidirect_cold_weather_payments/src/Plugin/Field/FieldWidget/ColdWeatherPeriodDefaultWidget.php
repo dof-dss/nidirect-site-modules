@@ -62,6 +62,7 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $element += [
       '#type' => 'fieldset',
       '#attributes' => ['class' => ['container-inline']],
+      '#element_validate' => [[$this, 'validate']],
     ];
 
     $element['date_start'] = [
@@ -105,6 +106,32 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     }
 
     return $values;
+  }
+
+  /**
+   * Cold weather payment triggered widget validation.
+   */
+  public function validate($element, FormStateInterface $form_state) {
+
+    $date_start = $element["date_start"]["#value"];
+    $date_end = $element["date_end"]["#value"];
+    $stations = $element["stations"]["#value"];
+
+    if (!empty($date_start) || !empty($date_end) || !empty($stations)) {
+
+      if (empty($date_start)) {
+        $form_state->setError($element["date_start"], t("You must provide a start date."));
+      }
+
+      if (empty($date_end)) {
+        $form_state->setError($element["date_end"], t("You must provide a end date."));
+      }
+
+      if (empty($stations) || count($stations) < 1) {
+        $form_state->setError($element["stations"], t("You must provide at least one or more weather stations"));
+      }
+    }
+
   }
 
 }

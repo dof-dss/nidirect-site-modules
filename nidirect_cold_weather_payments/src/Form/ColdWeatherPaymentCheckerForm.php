@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
+use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -148,11 +149,16 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $response->addCommand(
         new InvokeCommand('#edit-postcode', 'addClass', ['error'])
       );
-      $response->addCommand(
-        new InvokeCommand('#edit-postcode', 'focus')
-      );
 
       return $response;
+    }
+    else {
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'removeClass', ['error'])
+      );
+      $response->addCommand(
+        new RemoveCommand('#edit-postcode-error-message .error')
+      );
     }
 
     $data = $this->cwpLookup($postcode_district);
@@ -184,7 +190,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
     parent::validateForm($form, $form_state);
-
+    /*
     // Adding this validation to take care of older browsers.
     $postcode = $form_state->getValue('postcode');
 
@@ -195,6 +201,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
       }
     }
+    */
   }
 
   /**
@@ -222,6 +229,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     $form_state->set('message', $output);
     $form_state->setRebuild(TRUE);
+
+    parent::validateForm($form, $form_state);
   }
 
   /**

@@ -208,9 +208,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   protected function validatePostcode(array &$form, FormStateInterface $form_state) {
     if (preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'))) {
-      return true;
+      return TRUE;
     }
-    return false;
+    return FALSE;
   }
 
   /**

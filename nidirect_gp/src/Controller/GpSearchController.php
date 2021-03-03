@@ -199,7 +199,7 @@ class GpSearchController extends ControllerBase {
       if ($search_type['type'] === 'POSTCODE') {
         // Geocode the first postcode (only accept single values for search).
         $provider = $this->entityTypeManager->getStorage('geocoder_provider')->loadMultiple([$this->geocodingServiceId]);
-        $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], [$provider]);
+        $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], $provider);
 
         if (!empty(($geocode_task_results))) {
           $geocode_coordinates = $geocode_task_results->first()->getCoordinates();

@@ -142,7 +142,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     $response = new AjaxResponse();
 
     // Set error message if postcode does not validate.
-    if (!$this->isValidNIPostcode($form, $form_state)) {
+    if (!$this->isValidNiPostcode($form, $form_state)) {
       $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
         new HtmlCommand('#edit-postcode-error-message', $content)
@@ -206,7 +206,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * Validates that a postcode is a valid NI postcode or outward code (first half of the postcode).
    */
-  protected function isValidNIPostcode(array &$form, FormStateInterface $form_state) {
+  protected function isValidNiPostcode(array &$form, FormStateInterface $form_state) {
     return preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'));
   }
 
@@ -223,7 +223,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       '#suffix' => '</p>',
     ];
 
-    if (!$this->isValidNIPostcode($form, $form_state)) {
+    if (!$this->isValidNiPostcode($form, $form_state)) {
       $error['#markup'] = $this->t('Postcode must be a valid Northern Ireland postcode');
       $output = $this->renderer->render($error);
     }

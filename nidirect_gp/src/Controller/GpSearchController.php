@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBuilder;
 use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
@@ -77,6 +78,13 @@ class GpSearchController extends ControllerBase {
   protected $formBuilder;
 
   /**
+   * Core EntityTypeManager instance.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * GpSearchController constructor.
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
@@ -98,7 +106,8 @@ class GpSearchController extends ControllerBase {
     GeocoderInterface $geocoder,
     int $proximity_max_distance,
     string $geocoding_service_id,
-    FormBuilder $form_builder
+    FormBuilder $form_builder,
+    EntityTypeManagerInterface $entity_type_manager
   ) {
 
     $this->requestStack = $request_stack;
@@ -107,6 +116,7 @@ class GpSearchController extends ControllerBase {
     $this->proximityMaxDistance = $proximity_max_distance;
     $this->geocodingServiceId = $geocoding_service_id;
     $this->formBuilder = $form_builder;
+    $this->entityTypeManager = $entity_type_manager;
   }
 
   /**
@@ -119,7 +129,8 @@ class GpSearchController extends ControllerBase {
       $container->get('geocoder'),
       $container->getParameter('nidirect_gp.proximity_max_distance'),
       $container->getParameter('nidirect_gp.geocoding_service'),
-      $container->get('form_builder')
+      $container->get('form_builder'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -187,7 +198,8 @@ class GpSearchController extends ControllerBase {
       // Set Postcode search arguments.
       if ($search_type['type'] === 'POSTCODE') {
         // Geocode the first postcode (only accept single values for search).
-        $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], [$this->geocodingServiceId]);
+        $provider = $this->entityTypeManager->getStorage('geocoder_provider')->loadMultiple([$this->geocodingServiceId]);
+        $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], [$provider]);
 
         if (!empty(($geocode_task_results))) {
           $geocode_coordinates = $geocode_task_results->first()->getCoordinates();

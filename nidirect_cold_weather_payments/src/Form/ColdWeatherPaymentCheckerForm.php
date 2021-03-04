@@ -101,7 +101,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         'class' => ['form-submit'],
       ],
       '#ajax' => [
-        'callback' => '::cwpCheck',
+        'callback' => '::submitAjax',
         'wrapper' => 'cwp-results-container',
         'effect' => 'fade',
         'method' => 'replace',
@@ -137,7 +137,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * AJAX callback function.
    */
-  public function cwpCheck(array $form, FormStateInterface $form_state) {
+  public function submitAjax(array $form, FormStateInterface $form_state) {
 
     $response = new AjaxResponse();
 

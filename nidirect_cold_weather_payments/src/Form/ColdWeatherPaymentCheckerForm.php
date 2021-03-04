@@ -177,6 +177,14 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       ];
       $output = $this->renderer->render($error);
     }
+    elseif (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+      $error = [
+        '#prefix' => '<p class="info-notice info-notice--error">',
+        '#markup' => $this->t('Sorry, there was a problem checking for Cold Weather Payments due to an authentication error.'),
+        '#suffix' => '</p>',
+      ];
+      $output = $this->renderer->render($error);
+    }
     else {
       $renderable = [
         '#theme' => 'cwp_search_result',
@@ -237,6 +245,10 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         $error['#markup'] = $this->t('Sorry, we were unable to process this request.');
         $output = $this->renderer->render($error);
       }
+      elseif (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+        $error['#markup'] = $this->t('Sorry, we were unable to process this request due to authentication failure.');
+        $output = $this->renderer->render($error);
+      }
       else {
         $renderable = [
           '#theme' => 'cwp_search_result',
@@ -281,7 +293,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $data['payments'] = $payments;
     }
     catch (\Exception $e) {
+      $data['response'] = $e->getResponse();
       \Drupal::logger('type')->error($e->getMessage());
+      return $data;
     }
     finally {
       return $data;

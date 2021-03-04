@@ -135,6 +135,21 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   }
 
   /**
+   * {@inheritdoc}
+   */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    parent::validateForm($form, $form_state);
+    // Validation is handled by ajax callback - or if no JS, by submitForm().
+  }
+
+  /**
+   * Validates that a postcode is a valid NI postcode or outward code (first half of the postcode).
+   */
+  protected function isValidNiPostcode(array &$form, FormStateInterface $form_state) {
+    return preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'));
+  }
+
+  /**
    * AJAX callback function.
    */
   public function submitAjax(array $form, FormStateInterface $form_state) {
@@ -169,20 +184,17 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     $data = $this->cwpLookup($postcode_district);
 
     // Check we have data back from the API.
-    if (is_null($data)) {
+    if (is_null($data) || $data['has_error']) {
       $error = [
         '#prefix' => '<p class="info-notice info-notice--error">',
         '#markup' => $this->t('Sorry, there was a problem checking for Cold Weather Payments.'),
         '#suffix' => '</p>',
       ];
-      $output = $this->renderer->render($error);
-    }
-    elseif (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
-      $error = [
-        '#prefix' => '<p class="info-notice info-notice--error">',
-        '#markup' => $this->t('Sorry, there was a problem checking for Cold Weather Payments due to an authentication error.'),
-        '#suffix' => '</p>',
-      ];
+
+      if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+        $error['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
+      }
+
       $output = $this->renderer->render($error);
     }
     else {
@@ -201,21 +213,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     );
 
     return $response;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-    // Validation is handled by ajax callback - or if no JS, by submitForm().
-  }
-
-  /**
-   * Validates that a postcode is a valid NI postcode or outward code (first half of the postcode).
-   */
-  protected function isValidNiPostcode(array &$form, FormStateInterface $form_state) {
-    return preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'));
   }
 
   /**
@@ -241,12 +238,13 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $data = $this->cwpLookup($postcode_district);
 
       // Check we have data back from the API.
-      if (is_null($data)) {
-        $error['#markup'] = $this->t('Sorry, we were unable to process this request.');
-        $output = $this->renderer->render($error);
-      }
-      elseif (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
-        $error['#markup'] = $this->t('Sorry, we were unable to process this request due to authentication failure.');
+      if (is_null($data) || $data['has_error']) {
+        $error['#markup'] = $this->t('Sorry, there was a problem checking for Cold Weather Payments.');
+
+        if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+          $error['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
+        }
+
         $output = $this->renderer->render($error);
       }
       else {
@@ -293,9 +291,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $data['payments'] = $payments;
     }
     catch (\Exception $e) {
+      $data['has_error'] = TRUE;
       $data['response'] = $e->getResponse();
       \Drupal::logger('type')->error($e->getMessage());
-      return $data;
     }
     finally {
       return $data;

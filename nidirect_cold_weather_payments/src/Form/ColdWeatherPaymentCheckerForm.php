@@ -183,30 +183,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $data = $this->cwpLookup($postcode_district);
 
-    // Check we have data back from the API.
-    if (is_null($data) || $data['has_error']) {
-      $error = [
-        '#prefix' => '<p class="info-notice info-notice--error">',
-        '#markup' => $this->t('Sorry, there was a problem checking for Cold Weather Payments.'),
-        '#suffix' => '</p>',
-      ];
-
-      if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
-        $error['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
-      }
-
-      $output = $this->renderer->render($error);
-    }
-    else {
-      $renderable = [
-        '#theme' => 'cwp_search_result',
-        '#postcode' => $data['postcode'],
-        '#period_start' => $data['payments_period']['date_start'],
-        '#period_end' => $data['payments_period']['date_end'],
-        '#payments' => $data['payments'],
-      ];
-      $output = $this->renderer->render($renderable);
-    }
+    $output = $this->resultsRender($data);
 
     $response->addCommand(
       new HtmlCommand('#cwp-results', $output)
@@ -237,26 +214,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
       $data = $this->cwpLookup($postcode_district);
 
-      // Check we have data back from the API.
-      if (is_null($data) || $data['has_error']) {
-        $error['#markup'] = $this->t('Sorry, there was a problem checking for Cold Weather Payments.');
-
-        if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
-          $error['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
-        }
-
-        $output = $this->renderer->render($error);
-      }
-      else {
-        $renderable = [
-          '#theme' => 'cwp_search_result',
-          '#postcode' => $data['postcode'],
-          '#period_start' => $data['payments_period']['date_start'],
-          '#period_end' => $data['payments_period']['date_end'],
-          '#payments' => $data['payments'],
-        ];
-        $output = $this->renderer->render($renderable);
-      }
+      $output = $this->resultsRender($data);
     }
 
     $form_state->set('message', $output);
@@ -324,6 +282,35 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     }
 
     return $postcode_district;
+  }
+
+  /**
+   * Provides formatted rendered output for CWP results.
+   */
+  private function resultsRender($data) {
+    // If the data results contains an error wrap in error element, otherwise
+    // return a cwp result render array.
+    if (is_null($data) || $data['has_error']) {
+      $output['#markup'] = $this->t('Sorry, there was a problem checking for Cold Weather Payments.');
+
+      if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+        $output['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
+      }
+
+      $output['#prefix'] = '<p class="info-notice info-notice--error">';
+      $output['#suffix'] = '</p>';
+    }
+    else {
+      $output = [
+        '#theme' => 'cwp_search_result',
+        '#postcode' => $data['postcode'],
+        '#period_start' => $data['payments_period']['date_start'],
+        '#period_end' => $data['payments_period']['date_end'],
+        '#payments' => $data['payments'],
+      ];
+    }
+
+    return $this->renderer->render($output);
   }
 
 }

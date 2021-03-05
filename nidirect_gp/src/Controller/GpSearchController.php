@@ -197,6 +197,17 @@ class GpSearchController extends ControllerBase {
 
       // Set Postcode search arguments.
       if ($search_type['type'] === 'POSTCODE') {
+        // Ensure that the geocoder provider api key is correct (as the api key
+        // cannot be held in config, it may be necessary to update it here with
+        // the api key that is held in the environment variable).
+        $googlemap_config = \Drupal::configFactory()->getEditable('geocoder.geocoder_provider.googlemaps')->get('configuration');
+        if (!empty($googlemap_config) &&
+          isset($googlemap_config['apiKey']) &&
+          ($googlemap_config['apiKey'] != getenv('GOOGLE_MAP_API_SERVER_KEY'))) {
+          // Overwrite the google map api key.
+          $googlemap_config['apiKey'] = getenv('GOOGLE_MAP_API_SERVER_KEY');
+          \Drupal::configFactory()->getEditable('geocoder.geocoder_provider.googlemaps')->set('configuration', $googlemap_config)->save();
+        }
         // Geocode the first postcode (only accept single values for search).
         $provider = $this->entityTypeManager->getStorage('geocoder_provider')->loadMultiple([$this->geocodingServiceId]);
         $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], $provider);

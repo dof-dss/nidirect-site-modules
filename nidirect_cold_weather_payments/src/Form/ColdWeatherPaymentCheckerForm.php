@@ -143,7 +143,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   }
 
   /**
-   * Validates that a postcode is a valid NI postcode or outward code (first half of the postcode).
+   * Validates that a postcode is a valid NI postcode or outward code.
+   *
+   * Validates BT area and outward part (first half of the postcode).
    */
   protected function isValidNiPostcode(array &$form, FormStateInterface $form_state) {
     return preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'));
@@ -178,7 +180,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       );
     }
 
-    // At this stage we have a valid NI postcode - get the postcode district and look it up for CWP payments.
+    // At this stage we have a valid NI postcode - get the postcode district and
+    // look it up for CWP payments.
     $postcode = $form_state->getValue('postcode');
     $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $data = $this->cwpLookup($postcode_district);
@@ -197,8 +200,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
 
-    // Since validation is handled by ajax callback, in the unlikely event that JS is disabled,
-    // validation will not have been performed. So do some basic validation here before processing the form submission.
+    // Since validation is handled by ajax callback, in the unlikely event that
+    // JS is disabled, validation will not have been performed. So do some basic
+    // validation here before processing the form submission.
     $error = [
       '#prefix' => '<p class="info-notice info-notice--error">',
       '#markup' => $this->t('An error has occurred.'),
@@ -270,7 +274,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // If postcode is a full NI postcode, or just the first part
     // (outward code - e.g. BT1) ...
-
     if (strlen($postcode) > 4) {
       // Full postcode - remove first 2 and last 3 characters plus any
       // trailing spaces to get the district number.

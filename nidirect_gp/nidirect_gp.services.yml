@@ -9,4 +9,4 @@ parameters:
 
   # Regex sourced/tweaked from https://andrewwburns.com/2018/04/10/uk-postcode-validation-regex/.
   # Accepts formats such as: SW1, SW1A, SW1A1AA, SW1A 1AA
-  postcode_matches.uk: '^(([A-Z][0-9]{1,2})|(([A-Z][A-HJ-Y][0-9]{1,2})|(([A-Z][0-9][A-Z])|([A-Z][A-HJ-Y][0-9]?[A-Z]))))((\s?)([0-9][A-Z]{2})?)$'
+  postcode_matches.uk: '^(([A-Z][0-9]{1,2})|(([A-Z][A-HJ-Y][0-9]{1,2})|(([A-Z][0-9][A-Z])|([A-Z][A-HJ-Y][0-9]?[A-Z]))))((\s+)([0-9][A-Z]{2})?)$'

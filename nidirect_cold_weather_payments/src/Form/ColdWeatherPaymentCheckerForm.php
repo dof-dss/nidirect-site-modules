@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
+use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -100,7 +101,10 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         'class' => ['form-submit'],
       ],
       '#ajax' => [
-        'callback' => '::cwpCheck',
+        'callback' => '::submitAjax',
+        'wrapper' => 'cwp-results-container',
+        'effect' => 'fade',
+        'method' => 'replace',
       ],
     ];
 
@@ -131,16 +135,23 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   }
 
   /**
+   * Validates that a postcode is a valid NI postcode or outward code.
+   *
+   * Validates BT area and outward part (first half of the postcode).
+   */
+  protected function isValidNiPostcode(array &$form, FormStateInterface $form_state) {
+    return preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $form_state->getValue('postcode'));
+  }
+
+  /**
    * AJAX callback function.
    */
-  public function cwpCheck(array $form, FormStateInterface $form_state) {
+  public function submitAjax(array $form, FormStateInterface $form_state) {
 
-    $postcode = $form_state->getValue('postcode');
-    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $response = new AjaxResponse();
 
-    // Postcode district validation - must be 1-99.
-    if (!$postcode_district || $postcode_district < 0 || $postcode_district > 99) {
+    // Set error message if postcode does not validate.
+    if (!$this->isValidNiPostcode($form, $form_state)) {
       $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
         new HtmlCommand('#edit-postcode-error-message', $content)
@@ -148,29 +159,26 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $response->addCommand(
         new InvokeCommand('#edit-postcode', 'addClass', ['error'])
       );
-      $response->addCommand(
-        new InvokeCommand('#edit-postcode', 'focus')
-      );
 
       return $response;
     }
+    else {
+      // Remove any errors set in previous ajax callbacks.
+      $response->addCommand(
+        new InvokeCommand('#edit-postcode', 'removeClass', ['error'])
+      );
+      $response->addCommand(
+        new RemoveCommand('#edit-postcode-error-message .error')
+      );
+    }
 
+    // At this stage we have a valid NI postcode - get the postcode district and
+    // look it up for CWP payments.
+    $postcode = $form_state->getValue('postcode');
+    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $data = $this->cwpLookup($postcode_district);
 
-    // Check we have data back from the API.
-    if (is_null($data)) {
-      $output = $this->t('Sorry, we were unable to process this request.');
-    }
-    else {
-      $renderable = [
-        '#theme' => 'cwp_search_result',
-        '#postcode' => $data['postcode'],
-        '#period_start' => $data['payments_period']['date_start'],
-        '#period_end' => $data['payments_period']['date_end'],
-        '#payments' => $data['payments'],
-      ];
-      $output = $this->renderer->render($renderable);
-    }
+    $output = $this->resultsRender($data);
 
     $response->addCommand(
       new HtmlCommand('#cwp-results', $output)
@@ -182,42 +190,27 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * {@inheritdoc}
    */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-
-    // Adding this validation to take care of older browsers.
-    $postcode = $form_state->getValue('postcode');
-
-    if (!empty($postcode)) {
-      $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
-
-      if (!is_numeric($postcode_district) || $postcode_district < 1 || $postcode_district > 99) {
-        $form_state->setErrorByName('postcode', $this->t('Postcode must be a valid Northern Ireland postcode.'));
-      }
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $postcode = $form_state->getValue('postcode');
-    $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
-    $data = $this->cwpLookup($postcode_district);
 
-    // Check we have data back from the API.
-    if (is_null($data)) {
-      $output = $this->t('Sorry, we were unable to process this request.');
+    // Since validation is handled by ajax callback, in the unlikely event that
+    // JS is disabled, validation will not have been performed. So do some basic
+    // validation here before processing the form submission.
+    $error = [
+      '#prefix' => '<p class="info-notice info-notice--error">',
+      '#markup' => $this->t('An error has occurred.'),
+      '#suffix' => '</p>',
+    ];
+
+    if (!$this->isValidNiPostcode($form, $form_state)) {
+      $error['#markup'] = $this->t('Postcode must be a valid Northern Ireland postcode');
+      $output = $this->renderer->render($error);
     }
     else {
-      $renderable = [
-        '#theme' => 'cwp_search_result',
-        '#postcode' => $data['postcode'],
-        '#period_start' => $data['payments_period']['date_start'],
-        '#period_end' => $data['payments_period']['date_end'],
-        '#payments' => $data['payments'],
-      ];
-      $output = $this->renderer->render($renderable);
+      $postcode = $form_state->getValue('postcode');
+      $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
+      $data = $this->cwpLookup($postcode_district);
+
+      $output = $this->resultsRender($data);
     }
 
     $form_state->set('message', $output);
@@ -252,6 +245,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $data['payments'] = $payments;
     }
     catch (\Exception $e) {
+      $data['has_error'] = TRUE;
+      $data['response'] = $e->getResponse();
       \Drupal::logger('type')->error($e->getMessage());
     }
     finally {
@@ -271,20 +266,46 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // If postcode is a full NI postcode, or just the first part
     // (outward code - e.g. BT1) ...
-    if (preg_match('/^BT[0-9]{1,2}( ?[0-9][A-Z]{2})?$/i', $postcode)) {
-      if (strlen($postcode) > 4) {
-        // Full postcode - remove first 2 and last 3 characters plus any
-        // trailing spaces to get the district number.
-        $postcode_district = rtrim(substr($postcode, 2, -3));
-      }
-      else {
-        // Postcode outward code - just strip of first two 'BT' characters.
-        $postcode_district = substr($postcode, 2);
-      }
-
+    if (strlen($postcode) > 4) {
+      // Full postcode - remove first 2 and last 3 characters plus any
+      // trailing spaces to get the district number.
+      $postcode_district = rtrim(substr($postcode, 2, -3));
+    }
+    else {
+      // Postcode outward code - just strip of first two 'BT' characters.
+      $postcode_district = substr($postcode, 2);
     }
 
     return $postcode_district;
+  }
+
+  /**
+   * Provides formatted rendered output for CWP results.
+   */
+  private function resultsRender($data) {
+    // If the data results contains an error wrap in error element, otherwise
+    // return a cwp result render array.
+    if (is_null($data) || $data['has_error']) {
+      $output['#markup'] = $this->t('Sorry, there was a problem checking for Cold Weather Payments.');
+
+      if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
+        $output['#markup'] .= '<br>' . $this->t('This was due to an authentication (401) error.');
+      }
+
+      $output['#prefix'] = '<p class="info-notice info-notice--error">';
+      $output['#suffix'] = '</p>';
+    }
+    else {
+      $output = [
+        '#theme' => 'cwp_search_result',
+        '#postcode' => $data['postcode'],
+        '#period_start' => $data['payments_period']['date_start'],
+        '#period_end' => $data['payments_period']['date_end'],
+        '#payments' => $data['payments'],
+      ];
+    }
+
+    return $this->renderer->render($output);
   }
 
 }

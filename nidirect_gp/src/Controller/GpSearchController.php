@@ -99,6 +99,8 @@ class GpSearchController extends ControllerBase {
    *   Geocoding service ID.
    * @param \Drupal\core\Form\FormBuilder $form_builder
    *   Form builder.
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   *   Entity type manager.
    */
   public function __construct(
     RequestStack $request_stack,

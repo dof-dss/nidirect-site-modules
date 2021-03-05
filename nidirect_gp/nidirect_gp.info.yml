@@ -7,4 +7,3 @@ dependencies:
   - drupal:help
   - geocoder
   - geolocation
-  - config_ignore

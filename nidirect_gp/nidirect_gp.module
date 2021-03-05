@@ -307,27 +307,3 @@ function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $qu
     }
   }
 }
-
-/**
- * Implements hook_config_ignore_settings_alter().
- */
-function nidirect_gp_config_ignore_settings_alter(array &$settings) {
-  // Every time that config is imported, overwrite the google map
-  // api key placeholder with the one that is stored in the
-  // GOOGLE_MAP_API_SERVER_KEY environment variable. (This avoids
-  // storing an api key in config).
-  $config_factory = \Drupal::configFactory();
-
-  // Retrieve the geocoder provider settings.
-  $googlemap_config = $config_factory->getEditable('geocoder.geocoder_provider.googlemaps')->get('configuration');
-
-  if (!empty($googlemap_config) && isset($googlemap_config['apiKey'])) {
-    // Overwrite the google map api key.
-    \Drupal::logger('nidirect_gp')->notice(t("Successfully overwrote Googlemap api key"));
-    $googlemap_config['apiKey'] = getenv('GOOGLE_MAP_API_SERVER_KEY');
-    $config_factory->getEditable('geocoder.geocoder_provider.googlemaps')->set('configuration', $googlemap_config)->save();
-  } else {
-    $message = "Googlemap Geocoder provider not found at /admin/config/system/geocoder/geocoder-provider";
-    \Drupal::logger('nidirect_gp')->error(t($message));
-  }
-}

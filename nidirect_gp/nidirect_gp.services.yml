@@ -2,11 +2,6 @@ services:
   nidirect.postcode_extractor:
     class: Drupal\nidirect_gp\PostcodeExtractor
     arguments: ['%postcode_matches.uk%', '@request_stack', '@form_builder']
-  geocoder.api.key.event_subscriber:
-    class: Drupal\nidirect_gp\GeocoderApiKeyUpdate
-    arguments: ['@plugin.manager.block']
-    tags:
-      - { name: event_subscriber }
 
 parameters:
   nidirect_gp.geocoding_service: googlemaps

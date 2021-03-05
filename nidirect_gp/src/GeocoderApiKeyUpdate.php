@@ -2,7 +2,6 @@
 
 namespace Drupal\nidirect_gp;
 
-use Drupal\Core\Config\ConfigCrudEvent;
 use Drupal\Core\Config\ConfigEvents;
 use Drupal\Core\Config\ConfigImporterEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -19,10 +18,11 @@ class GeocoderApiKeyUpdate implements EventSubscriberInterface {
    *   The Event to process.
    */
   public function onProviderChange(ConfigImporterEvent $event) {
-    // We need to set up a Geocoder provider in config but we can't store a Google Maps API key
-    // in config so we just put a placeholder in. When the geocoder config is imported or
-    // updated code has been added here to overwrite the API key with the one stored in
-    // the environment variable.
+    // We need to set up a Geocoder provider in config but we can't store a
+    // Google Maps API key in config so we just put a placeholder in.
+    // When the geocoder config is imported or updated code has been added
+    // here to overwrite the API key with the one stored in the environment
+    // variable.
     $change_list = $event->getChangelist();
     if (!empty($change_list)) {
       if ((isset($change_list['update']) && ($change_list['update'][0] == 'geocoder.geocoder_provider.googlemaps')) ||
@@ -36,9 +36,6 @@ class GeocoderApiKeyUpdate implements EventSubscriberInterface {
           // Overwrite the google map api key.
           $googlemap_config['apiKey'] = getenv('GOOGLE_MAP_API_SERVER_KEY');
           $config_factory->getEditable('geocoder.geocoder_provider.googlemaps')->set('configuration', $googlemap_config)->save();
-        } else {
-          $message = "Googlemap Geocoder provider not found at /admin/config/system/geocoder/geocoder-provider";
-          \Drupal::logger('nidirect_gp')->error(t($message));
         }
       }
     }

@@ -135,14 +135,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function validateForm(array &$form, FormStateInterface $form_state) {
-    parent::validateForm($form, $form_state);
-    // Validation is handled by ajax callback - or if no JS, by submitForm().
-  }
-
-  /**
    * Validates that a postcode is a valid NI postcode or outward code.
    *
    * Validates BT area and outward part (first half of the postcode).

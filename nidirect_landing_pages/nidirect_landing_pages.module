@@ -102,7 +102,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
    *   $form['settings']['label_display']['#default_value'] = TRUE;
    *   $form['settings']['label_display']['#access'] = FALSE;
    * }
-  */
+   */
 
   // Hide the listing fields as they may now only be edited in layout builder.
   if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {

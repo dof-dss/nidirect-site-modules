@@ -2,7 +2,6 @@
 
 namespace Drupal\nidirect_gp\Controller;
 
-use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBuilder;
@@ -86,13 +85,6 @@ class GpSearchController extends ControllerBase {
   protected $entityTypeManager;
 
   /**
-   * The configuration factory.
-   *
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
-   */
-  protected $configFactory;
-
-  /**
    * GpSearchController constructor.
    *
    * @param \Symfony\Component\HttpFoundation\RequestStack $request_stack
@@ -109,8 +101,6 @@ class GpSearchController extends ControllerBase {
    *   Form builder.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
-   *   The configuration factory.
    */
   public function __construct(
     RequestStack $request_stack,
@@ -119,8 +109,7 @@ class GpSearchController extends ControllerBase {
     int $proximity_max_distance,
     string $geocoding_service_id,
     FormBuilder $form_builder,
-    EntityTypeManagerInterface $entity_type_manager,
-    ConfigFactoryInterface $config_factory
+    EntityTypeManagerInterface $entity_type_manager
   ) {
 
     $this->requestStack = $request_stack;
@@ -130,7 +119,6 @@ class GpSearchController extends ControllerBase {
     $this->geocodingServiceId = $geocoding_service_id;
     $this->formBuilder = $form_builder;
     $this->entityTypeManager = $entity_type_manager;
-    $this->configFactory = $config_factory;
   }
 
   /**
@@ -144,8 +132,7 @@ class GpSearchController extends ControllerBase {
       $container->getParameter('nidirect_gp.proximity_max_distance'),
       $container->getParameter('nidirect_gp.geocoding_service'),
       $container->get('form_builder'),
-      $container->get('entity_type.manager'),
-      $container->get('config.factory')
+      $container->get('entity_type.manager')
     );
   }
 
@@ -212,9 +199,14 @@ class GpSearchController extends ControllerBase {
 
       // Set Postcode search arguments.
       if ($search_type['type'] === 'POSTCODE') {
-        // Geocode the first postcode (only accept single values for search).
-        $this->updateApiKey();
+        // Ensure that the geocoder provider api key is correct (as the api key
+        // cannot be held in config, it may be necessary to update it here with
+        // the api key that is held in the environment variable).
+        $config_update_service = \Drupal::service('nidirect_common.update_config_from_environment');
+        $config_update_service->updateApiKey('geocoder.geocoder_provider.googlemaps', 'apiKey', 'GOOGLE_MAP_API_SERVER_KEY');
+        // Retrieve geocode provider.
         $provider = $this->entityTypeManager->getStorage('geocoder_provider')->loadMultiple([$this->geocodingServiceId]);
+        // Geocode the first postcode (only accept single values for search).
         $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], $provider);
 
         if (!empty(($geocode_task_results))) {
@@ -259,23 +251,6 @@ class GpSearchController extends ControllerBase {
 
     return $build;
 
-  }
-
-  /**
-   * Update the Google maps api key if necessary.
-   */
-  private function updateApiKey() {
-    // Ensure that the geocoder provider api key is correct (as the api key
-    // cannot be held in config, it may be necessary to update it here with
-    // the api key that is held in the environment variable).
-    $googlemap_config = $this->configFactory->getEditable('geocoder.geocoder_provider.googlemaps')->get('configuration');
-    if (!empty($googlemap_config) &&
-      isset($googlemap_config['apiKey']) &&
-      ($googlemap_config['apiKey'] != getenv('GOOGLE_MAP_API_SERVER_KEY'))) {
-      // Overwrite the google map api key.
-      $googlemap_config['apiKey'] = getenv('GOOGLE_MAP_API_SERVER_KEY');
-      $this->configFactory->getEditable('geocoder.geocoder_provider.googlemaps')->set('configuration', $googlemap_config)->save();
-    }
   }
 
   /**

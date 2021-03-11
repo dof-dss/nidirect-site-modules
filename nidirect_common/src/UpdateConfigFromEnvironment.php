@@ -44,5 +44,5 @@ class UpdateConfigFromEnvironment {
       $this->configFactory->getEditable($config_key)->set('configuration', $config)->save();
     }
   }
-}
 
+}

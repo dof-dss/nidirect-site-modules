@@ -94,10 +94,15 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
   }
 
   // Hide the display title checkbox on the inline block form.
-  if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
-    $form['settings']['label_display']['#default_value'] = TRUE;
-    $form['settings']['label_display']['#access'] = FALSE;
-  }
+  // Commenting this out for now - there are some blocks where users need control over title display.
+  // Unfortunately it is not easy to target specific custom block types where we do want to hide this checkbox.
+  // See https://www.drupal.org/project/drupal/issues/3028391.
+  /*
+   * if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
+   *   $form['settings']['label_display']['#default_value'] = TRUE;
+   *   $form['settings']['label_display']['#access'] = FALSE;
+   * }
+   */
 
   // Hide the listing fields as they may now only be edited in layout builder.
   if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {

@@ -455,11 +455,15 @@ function nidirect_common_block_build_alter(array &$build, BlockPluginInterface $
 function nidirect_common_toolbar_alter(&$items) {
   if (\Drupal::currentUser()->hasPermission('administer blocks') === FALSE) {
     // Hide the toolbar for users without the 'administer blocks' permission
-    // except if we're looking at a landing page node so editors can use the
-    // contextual layout builder tools.
+    // except for the frontpage or layout builder for landing pages where
+    // editors can use the contextual links to edit content.
+    $is_front = \Drupal::service('path.matcher')->isFrontPage();
+    $current_path = \Drupal::service('path.current')->getPath();
+    $current_alias = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
+    $is_layout_builder = \Drupal::service('path.matcher')->matchPath($current_alias, '*/layout');
     $node = \Drupal::routeMatch()->getParameter('node');
 
-    if ($node instanceof NodeInterface && $node->bundle() == 'landing_page') {
+    if ($is_front || ($node instanceof NodeInterface && $node->bundle() == 'landing_page' && $is_layout_builder)) {
       return;
     }
 

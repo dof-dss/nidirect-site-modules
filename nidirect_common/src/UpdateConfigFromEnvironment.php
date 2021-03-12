@@ -34,7 +34,9 @@ class UpdateConfigFromEnvironment {
    */
   public function updateApiKey($config_key, $config_subkey, $environment_key) {
     // Update the specified config with the contents of the
-    // supplied environment variable.
+    // supplied environment variable. This can be useful if we don't
+    // want to store sensitive data like API keys in config, but
+    // we can store them in environment variables instead.
     $config = $this->configFactory->getEditable($config_key)->get('configuration');
     if (!empty($config) &&
       isset($config[$config_subkey]) &&

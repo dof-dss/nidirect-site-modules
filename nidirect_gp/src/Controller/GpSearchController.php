@@ -4,7 +4,7 @@ namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Form\FormBuilder;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
@@ -73,7 +73,7 @@ class GpSearchController extends ControllerBase {
   /**
    * Drupal Form Builder.
    *
-   * @var \Drupal\core\Form\FormBuilder
+   * @var \Drupal\core\Form\FormBuilderInterface
    */
   protected $formBuilder;
 
@@ -97,7 +97,7 @@ class GpSearchController extends ControllerBase {
    *   Max distance in miles for geocoding radius.
    * @param string $geocoding_service_id
    *   Geocoding service ID.
-   * @param \Drupal\core\Form\FormBuilder $form_builder
+   * @param \Drupal\core\Form\FormBuilderInterface $form_builder
    *   Form builder.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
@@ -108,7 +108,7 @@ class GpSearchController extends ControllerBase {
     GeocoderInterface $geocoder,
     int $proximity_max_distance,
     string $geocoding_service_id,
-    FormBuilder $form_builder,
+    FormBuilderInterface $form_builder,
     EntityTypeManagerInterface $entity_type_manager
   ) {
 

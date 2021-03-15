@@ -459,7 +459,7 @@ function nidirect_common_toolbar_alter(&$items) {
     // editors can use the contextual links to edit content.
     $is_front = \Drupal::service('path.matcher')->isFrontPage();
     $current_path = \Drupal::service('path.current')->getPath();
-    $current_alias = \Drupal::service('path.alias_manager')->getAliasByPath($current_path);
+    $current_alias = \Drupal::service('path_alias.manager')->getAliasByPath($current_path);
     $is_layout_builder = \Drupal::service('path.matcher')->matchPath($current_alias, '*/layout');
     $node = \Drupal::routeMatch()->getParameter('node');
 

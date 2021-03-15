@@ -37,7 +37,7 @@ class LinkitSuggestionManager extends SuggestionManager {
   /**
    * {@inheritdoc}
    */
-  public function getSuggestions(ProfileInterface $linkitProfile, string $search_string) {
+  public function getSuggestions(ProfileInterface $linkitProfile, $search_string) {
 
     $suggestions = new SuggestionCollection();
 

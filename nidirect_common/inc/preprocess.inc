@@ -129,3 +129,11 @@ function nidirect_common_preprocess_taxonomy_term(array &$variables) {
 
   $variables['information_services_output'] = $content;
 }
+
+/**
+ * Implements hook_preprocess_webform_actions.
+ */
+function nidirect_common_preprocess_webform_actions(array &$variables) {
+  unset($variables['wizard_prev']);
+  unset($variables['element']['wizard_prev']);
+}

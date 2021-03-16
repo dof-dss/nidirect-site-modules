@@ -131,17 +131,18 @@ function nidirect_common_preprocess_taxonomy_term(array &$variables) {
 }
 
 /**
- * Implements hook_preprocess_webform_actions.
+ * Implements hook_preprocess_webform_actions().
  */
 function nidirect_common_preprocess_webform_actions(array &$variables) {
-
   $route_match = \Drupal::routeMatch();
 
-  if ($route_match->getRouteName() == 'entity.node.canonical'); {
+  if ($route_match->getRouteName() == 'entity.node.canonical') {
     $node = \Drupal::routeMatch()->getParameter('node');
 
+    // If the node has a Webform attached, extract the id for comparison.
     if ($node->hasField('webform') && !$node->get('webform')->isEmpty()) {
       $webform_id = $node->get('webform')->first()->get('target_id')->getValue();
+      // Remove the wizard previous page link for taxi driver theory tests only.
       if (substr($webform_id, 0, 27) === 'taxi_driver_theory_practice') {
         unset($variables['wizard_prev']);
         unset($variables['element']['wizard_prev']);

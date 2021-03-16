@@ -4,9 +4,10 @@ namespace Drupal\nidirect_homepage\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
-use Drupal\taxonomy\Entity\Term;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use function t;
 
 /**
  * Provides a block to show a single featured content list.
@@ -59,28 +60,59 @@ class FeaturedContentBlock extends BlockBase implements ContainerFactoryPluginIn
    */
   public function build() {
     $build = [];
+    $config = $this->getConfiguration();
 
-    // Our featured content list will be tagged with the "Homepage" term,
-    // so load that term object.
-    $homepage_tag = $this->entityTypeManager
-      ->getStorage('taxonomy_term')
-      ->loadByProperties(['name' => 'Homepage']);
-    $homepage_tag = reset($homepage_tag);
+    $featured_items = $config['featured_items'];
 
-    if ($homepage_tag instanceof Term) {
+    if (!empty($featured_items)) {
       // Load the first featured content list node.
-      $fcl_nodes = $this->entityTypeManager->getStorage('node')->loadByProperties([
-        'type' => 'featured_content_list',
-        'field_tags' => $homepage_tag->id(),
-      ]);
+      $fcl_nodes = $this->entityTypeManager->getStorage('node')->loadMultiple([$featured_items]);
 
-      if (!empty($fcl_nodes)) {
-        $node_render = $this->entityTypeManager->getViewBuilder('node')->view(reset($fcl_nodes));
-        $build['featured_content'] = $node_render;
+      foreach ($fcl_nodes as $nid) {
+        $node_render = $this->entityTypeManager->getViewBuilder('node')->view($nid);
+        // Add some metadata so we can hide the teaser field when preprocessing feature nodes.
+        $node_render['#hide_feature_fields'] = ['field_teaser'];
+        $build['featured_content'][] = $node_render;
       }
     }
 
     return $build;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function blockForm($form, FormStateInterface $form_state) {
+    $form = parent::blockForm($form, $form_state);
+    $config = $this->getConfiguration();
+
+    $fcl_query = $this->entityTypeManager->getStorage('node')->loadByProperties(
+      ['type' => 'featured_content_list'],
+    );
+
+    $fcl_nodes = [];
+
+    foreach ($fcl_query as $fcl_node) {
+      $fcl_nodes[$fcl_node->id()] = $fcl_node->label();
+    }
+
+    $form['featured_items'] = [
+      '#title' => t('Featured items'),
+      '#type' => 'select',
+      '#options' => $fcl_nodes,
+      '#default_value' => !empty($config['featured_items']) ? $config['featured_items'] : '',
+    ];
+
+    return $form;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function blockSubmit($form, FormStateInterface $form_state) {
+    parent::blockSubmit($form, $form_state);
+    $values = $form_state->getValues();
+    $this->configuration['featured_items'] = $values['featured_items'];
   }
 
 }

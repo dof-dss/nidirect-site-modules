@@ -137,7 +137,7 @@ function nidirect_common_preprocess_webform_actions(array &$variables) {
   $route_match = \Drupal::routeMatch();
 
   if ($route_match->getRouteName() == 'entity.node.canonical') {
-    $node = \Drupal::routeMatch()->getParameter('node');
+    $node = $route_match->getParameter('node');
 
     // If the node has a Webform attached, extract the id for comparison.
     if ($node->hasField('webform') && !$node->get('webform')->isEmpty()) {

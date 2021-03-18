@@ -502,3 +502,17 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
     $response->send();
   }
 }
+
+/**
+ * Implements hook_page_attachments().
+ */
+function nidirect_common_page_attachments(array &$page) {
+
+  // Add translation help library to the translation help page.
+
+  if (\Drupal::service('path.current')->getPath() !== '/node/13488') {
+    return;
+  }
+
+  $page['#attached']['library'][] = 'nidirect_common/translation_help';
+}

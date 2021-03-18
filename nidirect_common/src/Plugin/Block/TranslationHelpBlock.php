@@ -34,7 +34,10 @@ class TranslationHelpBlock extends BlockBase {
       'translation-help-link' => [
         '#type' => 'link',
         '#title' => $this->t('How to translate this page'),
-        '#url' => Url::fromRoute('entity.node.canonical', ['node' => 13488, $query]),
+        '#url' => Url::fromRoute(
+          'entity.node.canonical',
+          ['node' => 13488, $query]
+        ),
         '#attributes' => [
           'class' => ['section-translation-help__link'],
         ]
@@ -42,6 +45,9 @@ class TranslationHelpBlock extends BlockBase {
     ];
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getCacheMaxAge() {
     // The output for this block differs on every page - so don't cache it.
     return 0;

@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_common\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Url;
 
 /**
@@ -21,15 +22,29 @@ class TranslationHelpBlock extends BlockBase {
    */
   public function build() {
 
+    $uri = \Drupal::request()->getRequestUri();
+    $query = [
+      'uri' => $uri,
+    ];
+
     return [
-      '#type' => 'link',
-      '#title' => $this->t('How to translate this page'),
-      '#url' => Url::fromRoute('entity.node.canonical', ['node' => 13488]),
       '#attributes' => [
-        'class' => ['translation-help'],
+        'class' => ['section-translation-help'],
+      ],
+      'translation-help-link' => [
+        '#type' => 'link',
+        '#title' => $this->t('How to translate this page'),
+        '#url' => Url::fromRoute('entity.node.canonical', ['node' => 13488, $query]),
+        '#attributes' => [
+          'class' => ['section-translation-help__link'],
+        ]
       ],
     ];
   }
 
-}
+  public function getCacheMaxAge() {
+    // The output for this block differs on every page - so don't cache it.
+    return 0;
+  }
 
+}

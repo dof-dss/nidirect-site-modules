@@ -102,7 +102,7 @@ class TranslationHelpBlock extends BlockBase implements ContainerFactoryPluginIn
       ];
     }
 
-   return $block_content;
+    return $block_content;
 
   }
 

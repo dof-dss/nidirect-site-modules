@@ -22,3 +22,8 @@ translation_help:
     js/translation-help.js: {}
   dependencies:
     - core/jquery
+application_links:
+  js:
+    js/application-links-notranslate.js: {}
+  dependencies:
+    - core/jquery

@@ -516,3 +516,20 @@ function nidirect_common_page_attachments(array &$page) {
 
   $page['#attached']['library'][] = 'nidirect_common/translation_help';
 }
+
+/**
+ * Implements hook_preprocess_node().
+ */
+function nidirect_common_preprocess_node(array &$variables) {
+
+  $node = $variables['node'];
+
+  if (isset($node) && method_exists($node, 'bundle')) {
+    // Fix for application pages to prevent Google Translate altering the green button link URL.
+    // (We don't want applications opening in Google Translate).
+    if ($node->bundle() === 'application') {
+      $variables['#attached']['library'][] = 'nidirect_common/application_links';
+    }
+  }
+
+}

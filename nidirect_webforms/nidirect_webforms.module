@@ -87,5 +87,3 @@ function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $f
   }
 }
 
-
-

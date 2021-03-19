@@ -5,6 +5,7 @@
  * Contains nidirect_webforms.module.
  */
 
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 
 /**
@@ -71,3 +72,20 @@ function nidirect_webforms_page_attachments(array &$attachments) {
   // Add js to look for multiple webforms on a page.
   $attachments['#attached']['library'][] = 'nidirect_webforms/multiple_webform_submit.js';
 }
+
+/**
+ * Implements hook_form_alter().
+ */
+function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (preg_match('/webform/', $form_id)) {
+    // Add in a hidden honeypot field to all webforms.
+    honeypot_add_form_protection(
+      $form,
+      $form_state,
+      ['honeypot', 'time_restriction']
+    );
+  }
+}
+
+
+

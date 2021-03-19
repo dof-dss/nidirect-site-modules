@@ -513,12 +513,13 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
 function nidirect_common_page_attachments(array &$page) {
 
   // Add translation help library to the translation help page.
+  $path_current = \Drupal::service('path.current')->getPath();
+  $translation_help_path = \Drupal::service('path_alias.manager')->getPathByAlias('/articles/translation-help');
 
-  if (\Drupal::service('path.current')->getPath() !== '/node/13488') {
-    return;
+  if ($path_current === $translation_help_path) {
+    $page['#attached']['library'][] = 'nidirect_common/translation_help';
   }
 
-  $page['#attached']['library'][] = 'nidirect_common/translation_help';
 }
 
 /**

@@ -89,12 +89,27 @@ class TaxonomyNavigatorForm extends FormBase {
       '#value' => $vocabulary->id(),
     ];
 
-    $form['term'] = [
+    $form['term_search'] = [
+      '#type' => 'fieldset',
+      '#title' => $this
+        ->t('Term search'),
+      '#attributes' => [
+        'class' => 'container-inline',
+      ],
+    ];
+
+    $form['term_search']['term'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Search for term'),
+      '#title_display' => 'invisible',
       '#autocomplete_route_name' => 'nidirect_taxonomy_navigator.nidirect_taxonomy_navigator_search.autocomplete',
       '#autocomplete_route_parameters' => ['vocabulary' => $vocabulary->id()],
       '#description' => $this->t('Start typing to bring up a list of terms, select a term and press Enter to display.'),
+    ];
+
+    $form['term_search']['term_search_submit'] = [
+      '#type' => 'submit',
+      '#value' => $this->t('Search'),
     ];
 
     $breadcrumb = new Breadcrumb();

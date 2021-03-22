@@ -17,3 +17,13 @@ related_info:
     - core/jquery
     - core/jquery.ui
     - core/drupal
+translation_help:
+  js:
+    js/translation-help.js: {}
+  dependencies:
+    - core/jquery
+application_links:
+  js:
+    js/application-links-notranslate.js: {}
+  dependencies:
+    - core/jquery

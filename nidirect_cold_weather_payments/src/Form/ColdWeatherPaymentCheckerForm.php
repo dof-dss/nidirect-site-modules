@@ -92,6 +92,11 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
         'autocomplete' => 'postal-code',
       ],
       '#default_value' => $form_state->getValue('postcode', ''),
+      '#ajax' => [
+        'callback' => '::clearErrors',
+        'event' => 'focus',
+        'progress' => ['type' => 'none'],
+      ],
     ];
 
     $form['submit'] = [
@@ -113,7 +118,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       '#type' => 'container',
       '#attributes' => [
         'role' => 'alert',
-        'class' => ['cwp-error-container', 'form-item--error-message'],
+        'class' => ['cwp-error-container'],
       ],
     ];
 
@@ -144,7 +149,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   }
 
   /**
-   * AJAX callback function.
+   * AJAX callback to process form submission.
    */
   public function submitAjax(array $form, FormStateInterface $form_state) {
 
@@ -152,7 +157,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     // Set error message if postcode does not validate.
     if (!$this->isValidNiPostcode($form, $form_state)) {
-      $content = '<strong class="error">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
+      $content = '<strong class="error form-item--error-message">' . t('Postcode must be a valid Northern Ireland postcode.') . '</strong>';
       $response->addCommand(
         new HtmlCommand('#edit-postcode-error-message', $content)
       );
@@ -161,15 +166,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       );
 
       return $response;
-    }
-    else {
-      // Remove any errors set in previous ajax callbacks.
-      $response->addCommand(
-        new InvokeCommand('#edit-postcode', 'removeClass', ['error'])
-      );
-      $response->addCommand(
-        new RemoveCommand('#edit-postcode-error-message .error')
-      );
     }
 
     // At this stage we have a valid NI postcode - get the postcode district and
@@ -182,6 +178,25 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     $response->addCommand(
       new HtmlCommand('#cwp-results', $output)
+    );
+
+    return $response;
+  }
+
+  /**
+   * AJAX callback to clear errors.
+   */
+  public function clearErrors(): AjaxResponse
+  {
+
+    $response = new AjaxResponse();
+
+    // Remove any errors set in previous ajax callbacks.
+    $response->addCommand(
+      new InvokeCommand('#edit-postcode', 'removeClass', ['error'])
+    );
+    $response->addCommand(
+      new RemoveCommand('#edit-postcode-error-message .error')
     );
 
     return $response;

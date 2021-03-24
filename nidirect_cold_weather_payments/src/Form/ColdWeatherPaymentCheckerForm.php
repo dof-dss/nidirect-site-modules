@@ -186,8 +186,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   /**
    * AJAX callback to clear errors.
    */
-  public function clearErrors(): AjaxResponse
-  {
+  public function clearErrors() {
 
     $response = new AjaxResponse();
 

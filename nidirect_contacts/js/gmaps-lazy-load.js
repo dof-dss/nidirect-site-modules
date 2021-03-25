@@ -18,6 +18,19 @@
       let callback = (entries, observer) => {
           entries.forEach(entry => {
             if (entry.isIntersecting) {
+
+              // If EU Cookie Compliance module is installed then check the
+              // user has given consent to load Google maps.
+              if (Drupal.eu_cookie_compliance != undefined) {
+
+                if (Drupal.eu_cookie_compliance.hasAgreed() == false) {
+                  console.log('No Google maps consent');
+                }
+
+              }
+
+
+
               entry.target.classList.add('gmap-loaded');
 
               // Define map latitude and longitude coordinates.

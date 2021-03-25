@@ -19,18 +19,6 @@
           entries.forEach(entry => {
             if (entry.isIntersecting) {
 
-              // If EU Cookie Compliance module is installed then check the
-              // user has given consent to load Google maps.
-              if (Drupal.eu_cookie_compliance != undefined) {
-
-                if (Drupal.eu_cookie_compliance.hasAgreed() == false) {
-                  console.log('No Google maps consent');
-                }
-
-              }
-
-
-
               entry.target.classList.add('gmap-loaded');
 
               // Define map latitude and longitude coordinates.
@@ -45,6 +33,20 @@
                 zoom: parseInt(entry.target.dataset.zoom),
                 center: mapLatLng,
               };
+
+              // If EU Cookie Compliance module is installed then check the
+              // user has given consent to load Google maps.
+              if (Drupal.eu_cookie_compliance != undefined) {
+
+                if (Drupal.eu_cookie_compliance.hasAgreed() == false) {
+                  let url = 'https://www.google.com/maps/@' + mapLatLng.lat + ',' + mapLatLng.lng + ',' + mapSettings.zoom + 'z';
+                  $('.' + entry.target.id).html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps</a>')
+                  observer.unobserve(entry.target);
+                  return;
+                }
+
+              }
+
 
               // Create a new google map targeting the observed target element.
               let map = new google.maps.Map(document.getElementById(entry.target.id), mapSettings);

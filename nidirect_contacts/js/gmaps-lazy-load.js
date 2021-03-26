@@ -40,8 +40,11 @@
               if (Drupal.eu_cookie_compliance != undefined && Drupal.eu_cookie_compliance.hasAgreed() == false) {
                   let url = 'https://www.google.com/maps/@' + mapLatLng.lat + ',' + mapLatLng.lng + ',' + mapSettings.zoom + 'z';
                   let map = $('.' + entry.target.id);
-                  // Replace map div contents with a text link to Google maps
-                  map.html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps</a>');
+                  // Replace map div contents with a text link to Google maps.
+                  map.html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps' +
+                    '<span class="visually-hidden">(external link opens in a new window / tab)</span>' +
+                    '<svg aria-hidden="true" class="ico ico-elink"><title>external link opens in a new window / tab</title>' +
+                    '<use xlink:href="#elink"></use></svg></a>');
                   // Override the gmap class which sets the height of the map div to 400px.
                   map.css('height', 'auto');q
 

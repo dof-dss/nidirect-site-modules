@@ -35,17 +35,21 @@
               };
 
               // If EU Cookie Compliance module is installed then check the
-              // user has given consent to load Google maps.
+              // user has given consent to load Google maps, if they haven't
+              // prevent lazy loading of the map and replace with a text link.
               if (Drupal.eu_cookie_compliance != undefined) {
 
                 if (Drupal.eu_cookie_compliance.hasAgreed() == false) {
                   let url = 'https://www.google.com/maps/@' + mapLatLng.lat + ',' + mapLatLng.lng + ',' + mapSettings.zoom + 'z';
                   let map = $('.' + entry.target.id);
-
+                  // Replace map div contents with a text link to Google maps
                   map.html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps</a>')
+                  // Override the gmap class which sets the height of the map div to 400px.
                   map.css('height', 'auto');
 
+                  // Unsubscribe this target from the observer.
                   observer.unobserve(entry.target);
+
                   return;
                 }
               }

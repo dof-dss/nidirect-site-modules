@@ -40,13 +40,15 @@
 
                 if (Drupal.eu_cookie_compliance.hasAgreed() == false) {
                   let url = 'https://www.google.com/maps/@' + mapLatLng.lat + ',' + mapLatLng.lng + ',' + mapSettings.zoom + 'z';
-                  $('.' + entry.target.id).html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps</a>')
+                  let map = $('.' + entry.target.id);
+
+                  map.html('<a href="' + url + '" target="_blank" rel="noopener noreferrer">View this location on Google Maps</a>')
+                  map.css('height', 'auto');
+
                   observer.unobserve(entry.target);
                   return;
                 }
-
               }
-
 
               // Create a new google map targeting the observed target element.
               let map = new google.maps.Map(document.getElementById(entry.target.id), mapSettings);

@@ -78,6 +78,20 @@ function nidirect_webforms_page_attachments(array &$attachments) {
  */
 function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (preg_match('/webform/', $form_id)) {
+    // Site feedback form has an issue where conditional visibility
+    // of the action buttons based on selections in the second stage of
+    // the wizard also hides the first page's Continue/Next button.
+    // Carefully pruning the class that controls this acts as an acceptable
+    // workaround until this is fixed in webform itself.
+    if ($form['#webform_id'] === 'site_feedback' && !empty($form['elements']['actions']['#attributes']['class'])) {
+      $classes = &$form['elements']['actions']['#attributes']['class'];
+      foreach ($classes as $key => &$value) {
+        if ($value === 'js-webform-states-hidden') {
+          unset($classes[$key]);
+        }
+      }
+    }
+
     // Add in a hidden honeypot field to all webforms.
     if (\Drupal::service('module_handler')->moduleExists('honeypot')) {
       honeypot_add_form_protection(

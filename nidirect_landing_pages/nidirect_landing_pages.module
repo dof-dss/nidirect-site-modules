@@ -99,25 +99,26 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     $form['settings']['block_form']['#process'][] = '_nidirect_landing_pages_block_form_alter';
 
     // Depending on block name, set the title and hide it or prevent authors hiding it.
-    $block_name = $form['settings']['block_form']['#block']->bundle();
+    if (!empty($form['settings']['block_form']['#block'])) {
+      $block_name = $form['settings']['block_form']['#block']->bundle();
+      switch ($block_name) {
+        case 'banner_deep':
+        case 'card_contact':
+          // The title defaults to the block type name and is not displayed.
+          $form['settings']['label']['#default_value'] = $block_name;
+          $form['settings']['label']['#type'] = 'hidden';
+          $form['settings']['label_display']['#default_value'] = FALSE;
+          $form['settings']['label_display']['#access'] = FALSE;
+          break;
 
-    switch ($form['settings']['block_form']['#block']->bundle()) {
-      case 'banner_deep':
-      case 'card_contact':
-        // The title defaults to the block type name and is not displayed.
-        $form['settings']['label']['#default_value'] = $block_name;
-        $form['settings']['label']['#type'] = 'hidden';
-        $form['settings']['label_display']['#default_value'] = FALSE;
-        $form['settings']['label_display']['#access'] = FALSE;
-        break;
-
-      case 'card_standard':
-      case 'card_wide':
-      case 'card_plain':
-        // The title must be displayed.
-        $form['settings']['label_display']['#default_value'] = TRUE;
-        $form['settings']['label_display']['#access'] = FALSE;
-        break;
+        case 'card_standard':
+        case 'card_wide':
+        case 'card_plain':
+          // The title must be displayed.
+          $form['settings']['label_display']['#default_value'] = TRUE;
+          $form['settings']['label_display']['#access'] = FALSE;
+          break;
+      }
     }
   }
 
@@ -133,7 +134,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
  */
 function _nidirect_landing_pages_block_form_alter(array $element, FormStateInterface $form_state) {
 
-  if ($element['#block']->bundle() === 'card_contact') {
+  if (!empty($element['#block']) && $element['#block']->bundle() === 'card_contact') {
     // Remove container-inline class from the telephone plus fieldsets.
     if (!empty($element['field_telephone']) && !empty($element['field_telephone']['widget'])) {
       $classes = &$element['field_telephone']['widget'][0]['#attributes']['class'];

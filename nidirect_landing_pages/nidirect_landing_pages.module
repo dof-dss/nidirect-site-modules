@@ -93,22 +93,57 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
     $form['#validate'][] = 'nidirect_landing_pages_form_validate';
   }
 
-  // Hide the display title checkbox on the inline block form.
-  // Commenting this out for now - there are some blocks where users need control over title display.
-  // Unfortunately it is not easy to target specific custom block types where we do want to hide this checkbox.
-  // See https://www.drupal.org/project/drupal/issues/3028391.
-  /*
-   * if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
-   *   $form['settings']['label_display']['#default_value'] = TRUE;
-   *   $form['settings']['label_display']['#access'] = FALSE;
-   * }
-   */
+  if ($form_id === 'layout_builder_add_block' || $form_id === 'layout_builder_update_block') {
+
+    // Add process callback that will allow us to alter block form element rendering.
+    $form['settings']['block_form']['#process'][] = '_nidirect_landing_pages_block_form_alter';
+
+    // Depending on block name, set the title and hide it or prevent authors hiding it.
+    $block_name = $form['settings']['block_form']['#block']->bundle();
+
+    switch ($form['settings']['block_form']['#block']->bundle()) {
+      case 'banner_deep':
+      case 'card_contact':
+        // The title defaults to the block type name and is not displayed.
+        $form['settings']['label']['#default_value'] = $block_name;
+        $form['settings']['label']['#type'] = 'hidden';
+        $form['settings']['label_display']['#default_value'] = FALSE;
+        $form['settings']['label_display']['#access'] = FALSE;
+        break;
+
+      case 'card_standard':
+      case 'card_wide':
+      case 'card_plain':
+        // The title must be displayed.
+        $form['settings']['label_display']['#default_value'] = TRUE;
+        $form['settings']['label_display']['#access'] = FALSE;
+        break;
+    }
+  }
 
   // Hide the listing fields as they may now only be edited in layout builder.
   if (($form_id == 'node_landing_page_form') || ($form_id == 'node_landing_page_edit_form')) {
     $form['field_manually_control_listing']['#access'] = FALSE;
     $form['field_listing']['#access'] = FALSE;
   }
+}
+
+/**
+ * Process callback for landing page custom block forms.
+ */
+function _nidirect_landing_pages_block_form_alter(array $element, FormStateInterface $form_state) {
+
+  if ($element['#block']->bundle() === 'card_contact') {
+    // Remove container-inline class from the telephone plus fieldsets.
+    if (!empty($element['field_telephone']) && !empty($element['field_telephone']['widget'])) {
+      $classes = &$element['field_telephone']['widget'][0]['#attributes']['class'];
+      $classes = array_filter($classes, function ($e) {
+        return $e != 'container-inline';
+      });
+    }
+  }
+
+  return $element;
 }
 
 /**

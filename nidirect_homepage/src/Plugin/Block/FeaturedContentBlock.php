@@ -77,6 +77,7 @@ class FeaturedContentBlock extends BlockBase implements ContainerFactoryPluginIn
     }
 
     $build['#attributes']['class'] = ['section--featured-highlights'];
+
     return $build;
   }
 

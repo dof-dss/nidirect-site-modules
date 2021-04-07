@@ -92,13 +92,19 @@ function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $f
       }
     }
 
-    // Add in a hidden honeypot field to all webforms.
+    // Add in a hidden honeypot field to all webforms that aren't on the first step of a wizard.
     if (\Drupal::service('module_handler')->moduleExists('honeypot')) {
-      honeypot_add_form_protection(
-        $form,
-        $form_state,
-        ['honeypot', 'time_restriction']
-      );
+      // If the wizard prev button is there, we're past the first step.
+      if (empty($form['actions']['wizard_next']) ||
+        (!empty($form['actions']['wizard_next']) && !empty($form['actions']['wizard_prev']))
+      ) {
+
+        honeypot_add_form_protection(
+          $form,
+          $form_state,
+          ['honeypot', 'time_restriction']
+        );
+      }
     }
   }
 }

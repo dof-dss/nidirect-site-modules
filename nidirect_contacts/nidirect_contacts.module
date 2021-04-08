@@ -236,6 +236,7 @@ function nidirect_contacts_preprocess_node(&$variables) {
   // hide the location field.
   $has_value = FALSE;
   foreach ($required_fields as $field_id) {
+    $field_id = _camel_to_underscore($field_id, '_');
     if (!empty($field_address[0][$field_id]['#value'])) {
       $has_value = TRUE;
     }
@@ -272,4 +273,21 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
     array_multisort(array_column($results, 'node_field_data_title'), SORT_ASC, $results);
     $view->result = $results;
   }
+}
+
+/**
+ * Convenience function to juggle camel case ids from AddressFormat.php
+ * to snake case ids which match up with field ids.
+ *
+ * Reference: https://stackoverflow.com/questions/40514051/using-preg-replace-to-convert-camelcase-to-snake-case.
+ * @param string $input_string
+ *   The input string.
+ * @param string $separator
+ *   Underscore character (defaults to '-').
+ * @return string
+ *   A parsed/replaced string.
+ */
+function _camel_to_underscore(string $input_string, string $separator = "-") {
+  return strtolower(preg_replace(
+    '/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/', $separator, $input_string));
 }

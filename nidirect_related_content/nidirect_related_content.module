@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Block\BlockPluginInterface;
+use Drupal\taxonomy\TermInterface;
 use Drupal\views\ViewExecutable;
 
 /**
@@ -128,13 +129,21 @@ function nidirect_related_content_preprocess_views_view_field(&$variables) {
  * Implements hook_block_view_alter().
  */
 function nidirect_related_content_block_view_alter(array &$build, BlockPluginInterface $block) {
-  if ($block->getPluginId() === 'nidirect_related_content_block') {
+  // A few early break conditions to reduce conditional indentation/improve legibility
+  // further down the function.
+  if ($block->getPluginId() != 'nidirect_related_content_block') {
+    return;
+  }
+  if (\Drupal::routeMatch()->getRouteName() != 'entity.node.canonical') {
+    return;
+  }
 
-    if (\Drupal::routeMatch()->getRouteName() === 'entity.node.canonical') {
-      $node = \Drupal::routeMatch()->getParameter('node');
-      if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
-        $build['#configuration']['label'] = $node->get('field_subtheme')->entity->getName();
-      }
+  $node = \Drupal::routeMatch()->getParameter('node');
+  if ($node->hasField('field_subtheme') && !$node->get('field_subtheme')->isEmpty()) {
+    $term = $node->get('field_subtheme')->entity;
+
+    if ($term instanceof TermInterface) {
+      $build['#configuration']['label'] = $term->label() ?? '';
     }
   }
 }

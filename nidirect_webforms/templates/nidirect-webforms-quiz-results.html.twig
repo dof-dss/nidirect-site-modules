@@ -1,10 +1,10 @@
 {% set result_classes = [
-  passed ? 'info-notice info-notice--success' : 'info-notice info-notice--error'
+  passed ? 'info-notice info-notice--large info-notice--success' : 'info-notice info-notice--large info-notice--error'
 ]
 %}
 <div >
   {% if introduction %}
-  <div class="quiz-introduction">
+  <div class="quiz-introduction page-summary">
     {{ introduction }}
   </div>
   {% endif %}

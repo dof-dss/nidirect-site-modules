@@ -333,7 +333,7 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
           else {
             $user_answer = [
               '#type' => 'html_tag',
-              '#tag' => 'p',
+              '#tag' => 'span',
               '#value' => $elements[$id]['#options'][$user_responses[$id]],
               '#attributes' => ['class' => 'user-answer'],
             ];

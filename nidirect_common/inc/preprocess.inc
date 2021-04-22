@@ -51,9 +51,8 @@ function nidirect_common_preprocess_page(&$variables) {
     $entity = $variables['term'];
   }
 
-  // If the entity has a banner image field, fetch and display the node or
-  // theme banner image and footer text.
-  if (!empty($entity) && $entity->hasField('field_banner_image')) {
+  // Fetch and display the node or theme banner image and footer text.
+  if (!empty($entity)) {
     $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {

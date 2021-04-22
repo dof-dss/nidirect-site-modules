@@ -20,6 +20,7 @@ function nidirect_common_preprocess_views_view(&$variables) {
  * Implements hook_preprocess_page().
  */
 function nidirect_common_preprocess_page(&$variables) {
+  $route = \Drupal::routeMatch();
 
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
     $variables['#attached']['library'][] = 'nidirect_common/admin_theme';
@@ -28,8 +29,8 @@ function nidirect_common_preprocess_page(&$variables) {
 
   // Similar to how core adds the node object to $variables, we will add
   // the term if we are on a taxonomy page.
-  if ($route_name == 'entity.taxonomy_term.canonical') {
-    $tid = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+  if ($route->getRouteName() === 'entity.taxonomy_term.canonical') {
+    $tid = $route->getRawParameter('taxonomy_term');
     $variables['term'] = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
   }
 

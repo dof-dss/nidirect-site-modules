@@ -333,10 +333,11 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
   }
 
   // If banner is empty and we are dealing with a node, load the theme term
-  // for that node. Otherwise if we're dealing with a term, assign directly.
+  // for that node. Exclude landing page nodes because they display their
+  // own banner. If we're dealing with a term, assign directly.
   // Finally try to extract a banner image from the term.
   if (empty($field_value)) {
-    if ($entity instanceof Node && $entity->hasField('field_subtheme')) {
+    if ($entity instanceof Node && $entity->hasField('field_subtheme') && $entity->bundle() !== 'landing_page') {
       $term = $entity->get('field_subtheme')->entity;
 
       if (empty($term)) {

@@ -20,14 +20,17 @@ function nidirect_common_preprocess_views_view(&$variables) {
  * Implements hook_preprocess_page().
  */
 function nidirect_common_preprocess_page(&$variables) {
+  $route = \Drupal::routeMatch();
+
   if (\Drupal::service('router.admin_context')->isAdminRoute()) {
+    $variables['#attached']['library'][] = 'nidirect_common/admin_theme';
     return;
   }
 
   // Similar to how core adds the node object to $variables, we will add
   // the term if we are on a taxonomy page.
-  if (\Drupal::routeMatch()->getRouteName() == 'entity.taxonomy_term.canonical') {
-    $tid = \Drupal::routeMatch()->getRawParameter('taxonomy_term');
+  if ($route->getRouteName() === 'entity.taxonomy_term.canonical') {
+    $tid = $route->getRawParameter('taxonomy_term');
     $variables['term'] = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($tid);
   }
 
@@ -48,9 +51,8 @@ function nidirect_common_preprocess_page(&$variables) {
     $entity = $variables['term'];
   }
 
-  // If the entity has a banner image field, fetch and display the node or
-  // theme banner image and footer text.
-  if (!empty($entity) && $entity->hasField('field_banner_image')) {
+  // Fetch and display the node or theme banner image and footer text.
+  if (!empty($entity)) {
     $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {

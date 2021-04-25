@@ -201,6 +201,65 @@ function nidirect_common_update_8001() {
 }
 
 /**
+ * Update paragraph and term teaser max length.
+ */
+function nidirect_common_update_8002() {
+  $original_data = [];
+  $database = \Drupal::database();
+
+  $tables = [
+    'paragraph__field_teaser',
+    'paragraph_revision__field_teaser',
+    'taxonomy_term__field_teaser',
+    'taxonomy_term_revision__field_teaser',
+    'node__field_teaser',
+    'node_revision__field_teaser',
+  ];
+
+  $fields = [
+    'paragraph.field_teaser',
+    'taxonomy_term.field_teaser',
+    'node.field_teaser',
+  ];
+
+  // Store the original data for each table so we can restore it
+  // after updating the field definition.
+  foreach ($tables as $table) {
+    $original_data[$table] = $database->select($table)->fields($table)
+      ->execute()
+      ->fetchAll(PDO::FETCH_ASSOC);
+
+    $database->truncate($table)->execute();
+  }
+
+  // Fetch the existing field definition, update with the new config and update
+  // the existing field storage.
+  foreach ($fields as $field) {
+    $teaser_field = \Drupal::entityTypeManager()->getStorage('field_storage_config')->load($field);
+
+    $new_teaser_field = $teaser_field->toArray();
+    $new_teaser_field['settings']['max_length'] = 255;
+
+    $new_teaser_field = FieldStorageConfig::create($new_teaser_field);
+    $new_teaser_field->original = $new_teaser_field;
+    $new_teaser_field->enforceIsNew(FALSE);
+
+    $new_teaser_field->save();
+  }
+
+  // Restore the original data.
+  foreach ($tables as $table) {
+    $insert_query = $database
+      ->insert($table)
+      ->fields(array_keys(end($original_data[$table])));
+    foreach ($original_data[$table] as $row) {
+      $insert_query->values(array_values($row));
+    }
+    $insert_query->execute();
+  }
+}
+
+/**
  * Return a list of nids with problematic telephone numbers.
  */
 function _check_telephone_field_values() {

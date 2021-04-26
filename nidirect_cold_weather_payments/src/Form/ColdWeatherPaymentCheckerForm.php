@@ -137,7 +137,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       ],
     ];
 
-
     return $form;
   }
 
@@ -154,7 +153,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * AJAX callback to process form submission.
    */
   public function submitAjax(array $form, FormStateInterface $form_state) {
-
     $response = new CacheableAjaxResponse();
 
     // Set error message if postcode does not validate.
@@ -170,8 +168,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       return $response;
     }
 
-    // At this stage we have a valid NI postcode - get the postcode district and
-    // look it up for CWP payments.
+    // At this stage we have a valid NI postcode - get the postcode district
+    // and look it up for CWP payments.
     $postcode = $form_state->getValue('postcode');
     $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $data = $this->cwpLookup($postcode_district);
@@ -212,7 +210,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     // Since validation is handled by ajax callback, in the unlikely event that
     // JS is disabled, validation will not have been performed. So do some basic
     // validation here before processing the form submission.

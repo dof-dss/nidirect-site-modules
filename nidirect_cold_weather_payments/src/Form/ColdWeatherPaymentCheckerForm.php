@@ -2,13 +2,14 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\RemoveCommand;
+use Drupal\Core\Cache\CacheableAjaxResponse;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Component\Serialization\Json;
@@ -136,6 +137,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       ],
     ];
 
+
     return $form;
   }
 
@@ -153,7 +155,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    */
   public function submitAjax(array $form, FormStateInterface $form_state) {
 
-    $response = new AjaxResponse();
+    $response = new CacheableAjaxResponse();
 
     // Set error message if postcode does not validate.
     if (!$this->isValidNiPostcode($form, $form_state)) {
@@ -175,6 +177,8 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
     $data = $this->cwpLookup($postcode_district);
 
     $output = $this->resultsRender($data);
+
+    $response->getCacheableMetadata()->addCacheTags(['node:' . $data['id']]);
 
     $response->addCommand(
       new HtmlCommand('#cwp-results', $output)

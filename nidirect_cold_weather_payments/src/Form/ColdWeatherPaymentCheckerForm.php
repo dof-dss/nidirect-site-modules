@@ -178,6 +178,9 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
     $output = $this->resultsRender($data);
 
+    // Although this doesn't currently work when updating the CWP node, I'm
+    // leaving this here so we can come back at a later date and re-evaluate
+    // clearing the CWP ajax response cache.
     $response->getCacheableMetadata()->addCacheTags(['node:' . $data['id']]);
 
     $response->addCommand(

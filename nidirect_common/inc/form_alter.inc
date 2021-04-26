@@ -22,10 +22,10 @@ function nidirect_common_form_editor_link_dialog_alter(array &$form, FormStateIn
   $form['linkit_attributes']['target']['#access'] = FALSE;
 
   // Provide additional guidance information.
-  $form['attributes']['href']['#description'] .= '<p>'
+  $form['#suffix'] .= '<p>'
     . t('To reference an external URL type the full address, eg: https://www.nidirect.gov.uk') . '</p>'
     . '<p>' . t('To reference an e-mail address type the address and select the "E-mail" option from the dropdown list.')
-    . '</p>';
+    . '</p></div>';
 }
 
 /**

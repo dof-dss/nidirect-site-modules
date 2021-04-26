@@ -49,6 +49,7 @@ class ColdWeatherPaymentsService {
 
     // Payment period covered.
     $period = $node->get('field_cwp_payments_period')->getValue();
+    $response['id'] = $node->id();
     $response['payments_period']['date_start'] = $period[0]['value'];
     $response['payments_period']['date_end'] = $period[0]['end_value'];
 

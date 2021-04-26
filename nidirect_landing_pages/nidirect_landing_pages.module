@@ -106,6 +106,8 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
       switch ($block_name) {
         case 'banner_deep':
         case 'card_contact':
+        case 'card_deck_plain':
+        case 'video':
           // The title defaults to the block type name and is not displayed.
           $form['settings']['label']['#default_value'] = $block_name;
           $form['settings']['label']['#type'] = 'hidden';
@@ -147,7 +149,27 @@ function _nidirect_landing_pages_block_form_alter(array $element, FormStateInter
     }
   }
 
+  // Change teaser fields to a textarea.
+  if (!empty($element['field_teaser']) && !empty($element['field_teaser']['widget'])) {
+    $element['field_teaser']['widget'][0]['value']['#type'] = 'textarea';
+    $element['field_teaser']['widget'][0]['value']['#attributes']['rows'] = 3;
+    $element['field_teaser']['widget'][0]['value']['#attributes']['cols'] = 60;
+  }
+
   return $element;
+}
+
+/**
+ * Implements hook_field_widget_multivalue_form_alter().
+ */
+function nidirect_landing_pages_field_widget_multivalue_form_alter(array &$elements, $form_state, array $context) {
+  // Change field_teaser in card_plain to use a textarea.
+  $field_definition = $context['items']->getFieldDefinition();
+  if ($field_definition->getTargetBundle() == "card_plain" && $field_definition->getName() == 'field_teaser') {
+    $elements[0]['value']['#type'] = 'textarea';
+    $elements[0]['value']['#attributes']['rows'] = 3;
+    $elements[0]['value']['#attributes']['cols'] = 60;
+  }
 }
 
 /**

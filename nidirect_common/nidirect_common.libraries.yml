@@ -27,7 +27,3 @@ application_links:
     js/application-links-notranslate.js: {}
   dependencies:
     - core/jquery
-admin_theme:
-  css:
-    theme:
-      css/admin.css: {}

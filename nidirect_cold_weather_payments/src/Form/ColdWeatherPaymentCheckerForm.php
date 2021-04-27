@@ -2,13 +2,14 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Form;
 
+use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\RemoveCommand;
+use Drupal\Core\Cache\CacheableAjaxResponse;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Render\Renderer;
-use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\HtmlCommand;
 use Drupal\Core\Ajax\InvokeCommand;
 use Drupal\Component\Serialization\Json;
@@ -152,8 +153,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * AJAX callback to process form submission.
    */
   public function submitAjax(array $form, FormStateInterface $form_state) {
-
-    $response = new AjaxResponse();
+    $response = new CacheableAjaxResponse();
 
     // Set error message if postcode does not validate.
     if (!$this->isValidNiPostcode($form, $form_state)) {
@@ -168,13 +168,18 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       return $response;
     }
 
-    // At this stage we have a valid NI postcode - get the postcode district and
-    // look it up for CWP payments.
+    // At this stage we have a valid NI postcode - get the postcode district
+    // and look it up for CWP payments.
     $postcode = $form_state->getValue('postcode');
     $postcode_district = $this->cwpGetPostcodeDistrict($postcode);
     $data = $this->cwpLookup($postcode_district);
 
     $output = $this->resultsRender($data);
+
+    // Although this doesn't currently work when updating the CWP node, I'm
+    // leaving this here so we can come back at a later date and re-evaluate
+    // clearing the CWP ajax response cache.
+    $response->getCacheableMetadata()->addCacheTags(['node:' . $data['id']]);
 
     $response->addCommand(
       new HtmlCommand('#cwp-results', $output)
@@ -205,7 +210,6 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-
     // Since validation is handled by ajax callback, in the unlikely event that
     // JS is disabled, validation will not have been performed. So do some basic
     // validation here before processing the form submission.

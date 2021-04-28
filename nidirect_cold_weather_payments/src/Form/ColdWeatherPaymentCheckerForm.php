@@ -314,13 +314,20 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $output['#suffix'] = '</p>';
     }
     else {
-      $output = [
-        '#theme' => 'cwp_search_result',
-        '#postcode' => $data['postcode'],
-        '#period_start' => $data['payments_period']['date_start'],
-        '#period_end' => $data['payments_period']['date_end'],
-        '#payments' => $data['payments'],
-      ];
+
+      if ($data['published_content'] === 'none') {
+        $output = [
+          '#markup' => t('There are currently no published Cold Weather Payments'),
+        ];
+      } else {
+        $output = [
+          '#theme' => 'cwp_search_result',
+          '#postcode' => $data['postcode'],
+          '#period_start' => $data['payments_period']['date_start'],
+          '#period_end' => $data['payments_period']['date_end'],
+          '#payments' => $data['payments'],
+        ];
+      }
     }
 
     return $this->renderer->render($output);

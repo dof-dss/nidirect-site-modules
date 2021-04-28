@@ -173,6 +173,38 @@ function nidirect_landing_pages_field_widget_multivalue_form_alter(array &$eleme
 }
 
 /**
+ * Implements hook_element_info_alter().
+ */
+function nidirect_landing_pages_element_info_alter(array &$info) {
+  if (!empty($info['text_format'])) {
+    $info['text_format']['#process'][] = 'nidirect_landing_pages_process_format';
+  }
+}
+
+/**
+ * Callback for processing text format element.
+ */
+function nidirect_landing_pages_process_format($element) {
+  // If we're on the layout builder custom block config route
+  // and we don't possess high level administrator permission
+  // then hide the basic_html option in favour of the landing_page_html
+  // format which is a slightly tailored text format.
+  $lb_routes = [
+    'layout_builder.update_block',
+    'layout_builder.add_block',
+  ];
+
+  if (in_array(\Drupal::routeMatch()->getRouteName(), $lb_routes) &&
+    \Drupal::currentUser()->hasPermission('use text format full_html') === FALSE) {
+
+    unset($element['format']['format']['#options']['basic_html']);
+    $element['format']['format']['#default_value'] = 'layout_builder_html';
+  }
+
+  return $element;
+}
+
+/**
  * Implements hook_entity_presave().
  */
 function nidirect_landing_pages_entity_presave(EntityInterface $entity) {

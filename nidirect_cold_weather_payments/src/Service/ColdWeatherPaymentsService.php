@@ -39,6 +39,7 @@ class ColdWeatherPaymentsService {
     // Fetch the latest Payment period node.
     $query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'cold_weather_payment')
+      ->condition('status', '1')
       ->sort('created', 'DESC')
       ->range(0, 1);
 

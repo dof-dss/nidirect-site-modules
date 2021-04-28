@@ -39,10 +39,18 @@ class ColdWeatherPaymentsService {
     // Fetch the latest Payment period node.
     $query = $this->entityTypeManager->getStorage('node')->getQuery()
       ->condition('type', 'cold_weather_payment')
+      ->condition('status', '1')
       ->sort('created', 'DESC')
       ->range(0, 1);
 
     $vid_keys = array_keys($query->execute());
+
+    // Set a data key if we have no published CWP data.
+    if (empty($vid_keys)) {
+      $response['published_content'] = 'none';
+      return $response;
+    }
+
     // Fetch the last revision.
     $vid = array_pop($vid_keys);
     $node = $this->entityTypeManager->getStorage('node')->loadRevision($vid);

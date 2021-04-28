@@ -44,6 +44,13 @@ class ColdWeatherPaymentsService {
       ->range(0, 1);
 
     $vid_keys = array_keys($query->execute());
+
+    // Set a data key if we have no published CWP data.
+    if (empty($vid_keys)) {
+      $response['published_content'] = 'none';
+      return $response;
+    }
+
     // Fetch the last revision.
     $vid = array_pop($vid_keys);
     $node = $this->entityTypeManager->getStorage('node')->loadRevision($vid);

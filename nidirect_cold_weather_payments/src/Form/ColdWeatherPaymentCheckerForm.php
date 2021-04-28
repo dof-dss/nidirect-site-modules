@@ -314,12 +314,12 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $output['#suffix'] = '</p>';
     }
     else {
-
       if ($data['published_content'] === 'none') {
         $output = [
           '#markup' => t('There are currently no published Cold Weather Payments'),
         ];
-      } else {
+      }
+      else {
         $output = [
           '#theme' => 'cwp_search_result',
           '#postcode' => $data['postcode'],

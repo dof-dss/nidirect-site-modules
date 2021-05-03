@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_landing_pages\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Cache\CacheableDependencyInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -20,9 +21,9 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * The plugin.manager.block service.
+   * The block manager service.
    *
-   * @var \Drupal\Core\Cache\CacheableDependencyInterface
+   * @var \Drupal\Core\Block\BlockManagerInterface
    */
   protected $pluginManagerBlock;
 
@@ -38,10 +39,10 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
    *   The plugin_id for the plugin instance.
    * @param mixed $plugin_definition
    *   The plugin implementation definition.
-   * @param \Drupal\Core\Cache\CacheableDependencyInterface $plugin_manager_block
+   * @param \Drupal\Core\Block\BlockManagerInterface $plugin_manager_block
    *   The plugin.manager.block service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CacheableDependencyInterface $plugin_manager_block) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, BlockManagerInterface $plugin_manager_block) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginManagerBlock = $plugin_manager_block;
   }
@@ -61,38 +62,12 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
   /**
    * {@inheritdoc}
    */
-  public function defaultConfiguration() {
-    return [
-      'foo' => $this->t('Hello world!'),
-    ];
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function blockForm($form, FormStateInterface $form_state) {
-    $form['foo'] = [
-      '#type' => 'textarea',
-      '#title' => $this->t('Foo'),
-      '#default_value' => $this->configuration['foo'],
-    ];
-    return $form;
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function blockSubmit($form, FormStateInterface $form_state) {
-    $this->configuration['foo'] = $form_state->getValue('foo');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
   public function build() {
-    $build['content'] = [
-      '#markup' => $this->t('It works!'),
-    ];
+
+    $health_condition_search = $this->pluginManagerBlock->createInstance('healthconditions_az_block', []);
+
+    $build = $health_condition_search->build();
+
     return $build;
   }
 

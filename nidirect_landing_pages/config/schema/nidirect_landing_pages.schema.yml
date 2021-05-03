@@ -1,0 +1,7 @@
+block.settings.nidirect_landing_pages_health_conditions_search_and_a_z:
+  type: block_settings
+  label: 'Health Conditions Search and A-Z block'
+  mapping:
+    foo:
+      type: string
+      label: Foo

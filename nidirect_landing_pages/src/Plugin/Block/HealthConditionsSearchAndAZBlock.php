@@ -82,11 +82,10 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
     $form_state->set('rerender', NULL);
     $form = \Drupal::formBuilder()->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
 
-    $health_condition_search = $this->pluginManagerBlock->createInstance('views_exposed_filter_block:health_conditions', []);
     $health_condition_atoz = $this->pluginManagerBlock->createInstance('healthconditions_az_block', []);
 
-    $build[] = $form;
-    $build[] = $health_condition_atoz->build();
+    $build['search'] = $form;
+    $build['atoz'] = $health_condition_atoz->build();
 
     return $build;
   }

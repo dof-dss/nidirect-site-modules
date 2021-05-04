@@ -44,12 +44,12 @@ function nidirect_contacts_views_query_alter(ViewExecutable $view, QueryPluginBa
     $letter = $query->where[0]['conditions'][0]['value'];
 
     // Alter the SQL query on the node title field.
+    $query->where[1]['conditions'][0]['value'] = $letter . '%';
+    $query->where[1]['conditions'][0]['operator'] = 'LIKE';
+
+    // And apply the same for the supplementary title field.
     $query->where[2]['conditions'][0]['value'] = $letter . '%';
     $query->where[2]['conditions'][0]['operator'] = 'LIKE';
-
-    // Copy the altered title SQL to the supplementary title query.
-    $query->where[2]['conditions'][1]['value'] = $query->where[2]['conditions'][0]['value'];
-    $query->where[2]['conditions'][1]['operator'] = $query->where[2]['conditions'][0]['operator'];
 
     // Remove the contextual argument to prevent the creation of an 'AND' clause
     // in the final SQL.
@@ -269,8 +269,6 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
       }
     }
 
-    // Alphabetically sort the updated results on the node_field_data_title.
-    array_multisort(array_column($results, 'node_field_data_title'), SORT_ASC, $results);
     $view->result = $results;
   }
 }

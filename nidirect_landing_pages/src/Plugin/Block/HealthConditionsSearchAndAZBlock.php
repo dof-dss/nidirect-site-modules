@@ -4,9 +4,8 @@ namespace Drupal\nidirect_landing_pages\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockManagerInterface;
-use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Form\FormBuilderInterface;
 use Drupal\Core\Form\FormState;
-use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -30,6 +29,13 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
   protected $pluginManagerBlock;
 
   /**
+   * The form builder service.
+   *
+   * @var \Drupal\Core\Form\FormBuilderInterface
+   */
+  protected $formBuilder;
+
+  /**
    * Constructs a new HealthConditionsSearchAndAZBlock instance.
    *
    * @param array $configuration
@@ -43,10 +49,13 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
    *   The plugin implementation definition.
    * @param \Drupal\Core\Block\BlockManagerInterface $plugin_manager_block
    *   The plugin.manager.block service.
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
+   *   The form builder service.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, BlockManagerInterface $plugin_manager_block) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, BlockManagerInterface $plugin_manager_block, FormBuilderInterface $form_builder) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->pluginManagerBlock = $plugin_manager_block;
+    $this->formBuilder = $form_builder;
   }
 
   /**
@@ -57,7 +66,8 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
       $configuration,
       $plugin_id,
       $plugin_definition,
-      $container->get('plugin.manager.block')
+      $container->get('plugin.manager.block'),
+      $container->get('form_builder')
     );
   }
 
@@ -80,11 +90,11 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
       ->setAlwaysProcess()
       ->disableRedirect();
     $form_state->set('rerender', NULL);
-    $form = \Drupal::formBuilder()->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
+    $search_form = $this->formBuilder->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
 
     $health_condition_atoz = $this->pluginManagerBlock->createInstance('healthconditions_az_block', []);
 
-    $build['search'] = $form;
+    $build['search'] = $search_form;
     $build['atoz'] = $health_condition_atoz->build();
 
     return $build;

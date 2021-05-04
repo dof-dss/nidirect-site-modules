@@ -5,8 +5,10 @@ namespace Drupal\nidirect_landing_pages\Plugin\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Cache\CacheableDependencyInterface;
+use Drupal\Core\Form\FormState;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
+use Drupal\views\Views;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -63,10 +65,28 @@ class HealthConditionsSearchAndAZBlock extends BlockBase implements ContainerFac
    * {@inheritdoc}
    */
   public function build() {
+    $build = [];
 
-    $health_condition_search = $this->pluginManagerBlock->createInstance('healthconditions_az_block', []);
+    $view = Views::getView('health_conditions');
+    $view->setDisplay('search_page');
+    $view->initHandlers();
+    $form_state = (new FormState())
+      ->setStorage([
+        'view' => $view,
+        'display' => &$view->display_handler->display,
+        'rerender' => TRUE,
+      ])
+      ->setMethod('get')
+      ->setAlwaysProcess()
+      ->disableRedirect();
+    $form_state->set('rerender', NULL);
+    $form = \Drupal::formBuilder()->buildForm('\Drupal\views\Form\ViewsExposedForm', $form_state);
 
-    $build = $health_condition_search->build();
+    $health_condition_search = $this->pluginManagerBlock->createInstance('views_exposed_filter_block:health_conditions', []);
+    $health_condition_atoz = $this->pluginManagerBlock->createInstance('healthconditions_az_block', []);
+
+    $build[] = $form;
+    $build[] = $health_condition_atoz->build();
 
     return $build;
   }

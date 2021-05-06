@@ -477,12 +477,10 @@ function nidirect_landing_pages_theme_suggestions_block_alter(array &$suggestion
 
     // Theme suggestion for custom nested card types.
     if ($bundle === 'card_nested_standard' || $bundle === 'card_nested_wide') {
-      array_unshift($suggestions,  'block__inline_block__nested_card');
+      array_unshift($suggestions, 'block__inline_block__nested_card');
     }
   }
 }
-
-
 
 /**
  * Utility function to render article teasers block.

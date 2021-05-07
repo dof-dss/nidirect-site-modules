@@ -469,6 +469,20 @@ function nidirect_landing_pages_preprocess_block(array &$variables) {
 }
 
 /**
+ * Implements hook_theme_suggestions_HOOK_alter().
+ */
+function nidirect_landing_pages_theme_suggestions_block_alter(array &$suggestions, array $variables) {
+  if (!empty($variables['elements']['content']['#block_content'])) {
+    $bundle = $variables['elements']['content']['#block_content']->bundle();
+
+    // Theme suggestion for custom nested card types.
+    if ($bundle === 'card_nested_standard' || $bundle === 'card_nested_wide') {
+      array_unshift($suggestions, 'block__inline_block__nested_card');
+    }
+  }
+}
+
+/**
  * Utility function to render article teasers block.
  */
 function _render_article_teasers_block(array &$variables) {

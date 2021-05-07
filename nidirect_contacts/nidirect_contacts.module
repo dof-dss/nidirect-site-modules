@@ -44,12 +44,12 @@ function nidirect_contacts_views_query_alter(ViewExecutable $view, QueryPluginBa
     $letter = $query->where[0]['conditions'][0]['value'];
 
     // Alter the SQL query on the node title field.
+    $query->where[1]['conditions'][0]['value'] = $letter . '%';
+    $query->where[1]['conditions'][0]['operator'] = 'LIKE';
+
+    // And apply the same for the supplementary title field.
     $query->where[2]['conditions'][0]['value'] = $letter . '%';
     $query->where[2]['conditions'][0]['operator'] = 'LIKE';
-
-    // Copy the altered title SQL to the supplementary title query.
-    $query->where[2]['conditions'][1]['value'] = $query->where[2]['conditions'][0]['value'];
-    $query->where[2]['conditions'][1]['operator'] = $query->where[2]['conditions'][0]['operator'];
 
     // Remove the contextual argument to prevent the creation of an 'AND' clause
     // in the final SQL.
@@ -256,7 +256,7 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
     $search_letter = $view->args[0];
 
     $results = &$view->result;
-    foreach ($results as $key => $result) {
+    foreach ($results as $key => &$result) {
       // If the current result doesn't start with the search letter it's been
       // added to the results because we have a match with the Supplementary
       // contact. Extract that Supplementary title and replace the entity
@@ -270,7 +270,21 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
     }
 
     // Alphabetically sort the updated results on the node_field_data_title.
-    array_multisort(array_column($results, 'node_field_data_title'), SORT_ASC, $results);
+    // SORT_ASC is case sensitive to we need to normalise the result array
+    // before sorting to get the desired effect.
+    $results_lowercase = array_map('strtolower', array_column($results, 'node_field_data_title'));
+    array_multisort($results_lowercase, SORT_ASC, $results);
+
+    // Views also needs the ResultRow index property updated to assist with
+    // rendering. Unclear why it can't rely on the natural array order but
+    // without this you see nodes with supplementary titles use their
+    // entity title in the sort sequence, which we don't want here.
+    // Updating that index property gets the sequence in step with the
+    // preprocessed title values above.
+    foreach ($results as $key => &$result) {
+      $result->index = $key;
+    }
+
     $view->result = $results;
   }
 }

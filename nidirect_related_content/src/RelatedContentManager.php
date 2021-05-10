@@ -8,6 +8,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\flag\FlagService;
 use Drupal\taxonomy\TermInterface;
+use Drupal\views\Views;
 
 /**
  * Provides methods for managing related content display.
@@ -72,6 +73,8 @@ class RelatedContentManager {
    */
   protected $cacheTags;
 
+  protected $content;
+
   /**
    * Constructor.
    *
@@ -89,6 +92,7 @@ class RelatedContentManager {
     $this->routeMatch = $route_match;
     $this->renderer = $renderer;
     $this->flagService = $flag;
+    $this->content = [];
   }
 
   /**
@@ -279,16 +283,20 @@ class RelatedContentManager {
    */
   protected function getThemeNodes() {
     // Fetch nodes by parent term.
-    $content_view = views_embed_view('related_content_manager__content', 'by_parent_term', $this->termId);
-    $this->renderer->renderRoot($content_view);
+    $content_view = Views::getView('related_content_manager__content');
+    $content_view->setDisplay('by_parent_term');
+    $content_view->setArguments([$this->termId]);
+    $content_view->execute();
 
-    $parent_rows = $content_view['view_build']['#view']->result;
+    $parent_rows = $content_view->result;
 
     // Fetch nodes by supplementary term.
-    $content_view = views_embed_view('related_content_manager__content', 'by_supplementary_term', $this->termId);
-    $this->renderer->renderRoot($content_view);
+    $content_view = Views::getView('related_content_manager__content');
+    $content_view->setDisplay('by_supplementary_term');
+    $content_view->setArguments([$this->termId]);
+    $content_view->execute();
 
-    $supplementary_rows = $content_view['view_build']['#view']->result;
+    $supplementary_rows = $content_view->result;
 
     $rows = array_merge($parent_rows, $supplementary_rows);
 
@@ -325,15 +333,19 @@ class RelatedContentManager {
   protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_parent_term', $this->termId);
-    $this->renderer->renderRoot($subtopics_view);
+    $subtopics_view = Views::getView('related_content_manager__terms');
+    $subtopics_view->setDisplay('by_parent_term');
+    $subtopics_view->setArguments([$this->termId]);
+    $subtopics_view->execute();
 
-    $parent_rows = $subtopics_view['view_build']['#view']->result;
+    $parent_rows = $subtopics_view->result;
 
-    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_supplementary_term', $this->termId);
-    $this->renderer->renderRoot($subtopics_view);
+    $subtopics_view = Views::getView('related_content_manager__terms');
+    $subtopics_view->setDisplay('by_supplementary_term');
+    $subtopics_view->setArguments([$this->termId]);
+    $subtopics_view->execute();
 
-    $supplementary_rows = $subtopics_view['view_build']['#view']->result;
+    $supplementary_rows = $subtopics_view->result;
 
     $rows = array_merge($parent_rows, $supplementary_rows);
 

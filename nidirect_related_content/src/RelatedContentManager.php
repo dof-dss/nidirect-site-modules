@@ -336,14 +336,17 @@ class RelatedContentManager {
   protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = Views::getView('related_content_manager__terms');
+    $related_content_manager_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__terms');
+
+    $subtopics_view = $related_content_manager_view->getExecutable();
     $subtopics_view->setDisplay('by_parent_term');
     $subtopics_view->setArguments([$this->termId]);
     $subtopics_view->execute();
 
     $parent_rows = $subtopics_view->result;
+    $subtopics_view->destroy();
 
-    $subtopics_view = Views::getView('related_content_manager__terms');
+    $subtopics_view = $related_content_manager_view->getExecutable();
     $subtopics_view->setDisplay('by_supplementary_term');
     $subtopics_view->setArguments([$this->termId]);
     $subtopics_view->execute();

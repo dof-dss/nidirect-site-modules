@@ -631,36 +631,37 @@ function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
 function _render_article_teasers_by_term(int $tid, int $current_nid, array &$cache_tags) {
   // Render the 'articles by term' view and process the results.
   $results = [];
-  $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
-  \Drupal::service('renderer')->renderPlain($articles_view);
-  foreach ($articles_view['view_build']['#view']->result as $row) {
+
+  $related_content_manager = \Drupal::service('nidirect_related_content.manager');
+
+  $content = $related_content_manager->getNodes()->forTheme($tid)->excludingCurrentTheme()->asArray();
+
+  foreach ($content as $row) {
     $this_result = [];
-    // Exclude the current page from the list.
-    if ($row->nid == $current_nid) {
-      continue;
-    }
+
     // This will be a link to an article.
     $this_result['title_link'] = [
       '#type' => 'link',
-      '#title' => $row->_entity->getTitle(),
-      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+      '#title' => $row['title'],
+      '#url' => $row['url'],
     ];
     $this_result['more_link'] = [
       '#type' => 'link',
       '#title' => '... ' . t('more'),
-      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $row->nid]),
+      '#url' => $row['url'],
     ];
-    $this_result['summary_text'] = ['#markup' => $row->_entity->field_summary->value];
-    $this_result['key'] = 'a:' . $row->nid;
+
+    $this_result['summary_text'] = ['#markup' => $row->entity->field_summary->value];
+    $this_result['key'] = 'a:' . $row['entity']->id();
     // Place in an array keyed by lower case title (for sorting).
-    $title = strtolower($row->_entity->getTitle());
+    $title = strtolower($row['title']);
     // Remove HTML.
     $title = strip_tags($title);
     // Now remove non-alpha chars.
     $title = preg_replace('/[^a-z0-9 ]/i', '', $title);
     $results[$title] = $this_result;
     // Add cache tag for each article.
-    $cache_tags[] = 'node:' . $row->nid;
+    $cache_tags[] = 'node:' . $row['entity']->id();
   }
   return $results;
 }

@@ -16,6 +16,7 @@ use Drupal\Tests\node\Traits\NodeCreationTrait;
  * @coversDefaultClass Drupal\nidirect_related_content\RelatedContentManager
  *
  * @group nidirect
+ * @group nidirect_related_content
  */
 class RelatedContentTest extends KernelTestBase {
   use NodeCreationTrait;
@@ -62,8 +63,6 @@ class RelatedContentTest extends KernelTestBase {
     $this->installEntitySchema('node');
     $this->installEntitySchema('taxonomy_term');
 
-    $this->createContentType(['type' => 'article']);
-
     $this->relatedContentManager = \Drupal::service('nidirect_related_content.manager');
   }
 
@@ -73,6 +72,26 @@ class RelatedContentTest extends KernelTestBase {
   public function testSubThemeRelated() {
     $this->_createThemeVocab();
     $this->_createNodeType();
+
+    $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+
+    $term = $taxonomy_storage->loadByProperties(['name' => 'Motoring']);
+
+    $node1 = Node::create([
+      'type' => 'article',
+      'title' => 'Motoring article 1',
+      'field_subtheme' => [$term->id()],
+    ]);
+    $node1->save();
+
+    $node2 = Node::create([
+      'type' => 'article',
+      'title' => 'Motoring article 2',
+      'field_subtheme' => [$term->id()],
+    ]);
+    $node2->save();
+
+    self::assertEquals($term->id(), $node1->get('field_subtheme')->getValue());
 
   }
 

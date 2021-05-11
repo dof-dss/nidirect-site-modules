@@ -72,7 +72,100 @@ class RelatedContentTest extends KernelTestBase {
    */
   public function testSubThemeRelated() {
 
+  }
 
+  /**
+   * Create a Theme vocabulary and terms.
+   */
+  private function _createThemeVocab() {
+    $vocabulary = Vocabulary::create([
+      'name' => 'Site themes',
+      'vid' => 'site_themes',
+    ]);
+    $vocabulary->save();
+
+    $term_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
+    $root = $term_storage->create([
+      'name' => 'Motoring',
+      'vid' => $vocabulary->id()
+    ]);
+    $root->save();
+
+    $parent1 = $term_storage->create([
+      'name' => 'MOT and vehicle testing',
+      'vid' => $vocabulary->id(),
+      'parent' => $root->id(),
+    ]);
+    $parent1->save();
+
+    $parent2 = $term_storage->create([
+      'name' => 'Road safety',
+      'vid' => $vocabulary->id(),
+      'parent' => $root->id(),
+    ]);
+    $parent2->save();
+
+    /**
+     * Motoring child terms.
+     */
+    $parent1_child1 = $term_storage->create([
+      'name' => 'About the MOT scheme',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent1->id(),
+    ]);
+    $parent1_child1->save();
+
+    $parent1_child2 = $term_storage->create([
+      'name' => 'Other tests DVA carries out',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent1->id(),
+    ]);
+    $parent1_child2->save();
+
+    $parent1_child3 = $term_storage->create([
+      'name' => 'Types of vehicles which require a test',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent1->id(),
+    ]);
+    $parent1_child3->save();
+
+    $parent1_child4 = $term_storage->create([
+      'name' => 'The test centre',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent1->id(),
+    ]);
+    $parent1_child4->save();
+
+    /**
+     * Road safety child terms.
+     */
+    $parent2_child1 = $term_storage->create([
+      'name' => 'Drink and drugs',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent2->id(),
+    ]);
+    $parent2_child1->save();
+
+    $parent2_child2 = $term_storage->create([
+      'name' => 'Road safety education resources',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent2->id(),
+    ]);
+    $parent2_child2->save();
+
+    $parent3_child2_child1 = $term_storage->create([
+      'name' => 'Road safety for post primary school children',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent2_child2->id(),
+    ]);
+    $parent3_child2_child1->save();
+
+    $parent3_child2_child2 = $term_storage->create([
+      'name' => 'Road safety for primary school children',
+      'vid' => $vocabulary->id(),
+      'parent' => $parent2_child2->id(),
+    ]);
+    $parent3_child2_child2->save();
 
   }
 

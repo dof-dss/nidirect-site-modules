@@ -50,6 +50,7 @@ class RelatedContentTest extends KernelTestBase {
     'text',
     'field',
     'system',
+    'flag'
   ];
 
   /**
@@ -59,6 +60,7 @@ class RelatedContentTest extends KernelTestBase {
     parent::setUp();
 
     $this->installConfig(['nidirect_related_content']);
+    $this->installConfig(['flag']);
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('taxonomy_term');
@@ -77,6 +79,8 @@ class RelatedContentTest extends KernelTestBase {
 
     $term = $taxonomy_storage->loadByProperties(['name' => 'Motoring']);
 
+    $term = current($term);
+
     $node1 = Node::create([
       'type' => 'article',
       'title' => 'Motoring article 1',
@@ -91,8 +95,7 @@ class RelatedContentTest extends KernelTestBase {
     ]);
     $node2->save();
 
-    self::assertEquals($term->id(), $node1->get('field_subtheme')->getValue());
-
+    self::assertEquals($term->id(), $node1->get('field_subtheme')->getString());
   }
 
   /**

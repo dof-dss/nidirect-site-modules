@@ -285,16 +285,19 @@ class RelatedContentManager {
    * Fetches node content for the term ids.
    */
   protected function getThemeNodes() {
+
+    $related_content_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__content');
+    $content_view = $related_content_view->getExecutable();
+
     // Fetch nodes by parent term.
-    $content_view = Views::getView('related_content_manager__content');
     $content_view->setDisplay('by_parent_term');
     $content_view->setArguments([$this->termId]);
     $content_view->execute();
 
     $parent_rows = $content_view->result;
+    $content_view->destroy();
 
     // Fetch nodes by supplementary term.
-    $content_view = Views::getView('related_content_manager__content');
     $content_view->setDisplay('by_supplementary_term');
     $content_view->setArguments([$this->termId]);
     $content_view->execute();
@@ -336,9 +339,9 @@ class RelatedContentManager {
   protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $related_content_manager_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__terms');
+    $related_content_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__terms');
+    $subtopics_view = $related_content_view->getExecutable();
 
-    $subtopics_view = $related_content_manager_view->getExecutable();
     $subtopics_view->setDisplay('by_parent_term');
     $subtopics_view->setArguments([$this->termId]);
     $subtopics_view->execute();
@@ -346,7 +349,6 @@ class RelatedContentManager {
     $parent_rows = $subtopics_view->result;
     $subtopics_view->destroy();
 
-    $subtopics_view = $related_content_manager_view->getExecutable();
     $subtopics_view->setDisplay('by_supplementary_term');
     $subtopics_view->setArguments([$this->termId]);
     $subtopics_view->execute();

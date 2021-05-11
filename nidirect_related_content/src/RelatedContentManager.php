@@ -138,6 +138,9 @@ class RelatedContentManager {
     if ($term_id === NULL && $this->routeMatch->getRouteName() === 'entity.taxonomy_term.canonical') {
       $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
     }
+    else {
+      $this->termId = $term_id;
+    }
 
     $this->getContent();
     return $this;

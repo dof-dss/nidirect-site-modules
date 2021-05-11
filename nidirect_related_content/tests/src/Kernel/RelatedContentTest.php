@@ -71,6 +71,8 @@ class RelatedContentTest extends KernelTestBase {
    * Test related content manager service.
    */
   public function testSubThemeRelated() {
+    $this->_createThemeVocab();
+    $this->_createNodeType();
 
   }
 
@@ -166,6 +168,31 @@ class RelatedContentTest extends KernelTestBase {
       'parent' => $parent2_child2->id(),
     ]);
     $parent3_child2_child2->save();
+
+  }
+
+  /**
+   * Create Article bundle and site themes field.
+   */
+  private function _createNodeType() {
+    NodeType::create([
+      'type' => 'article',
+    ])->save();
+
+    FieldStorageConfig::create([
+      'entity_type' => 'node',
+      'field_name' => 'field_subtheme',
+      'type' => 'entity_reference',
+      'settings' => [
+        'target_type' => 'taxonomy_term',
+      ],
+    ])->save();
+
+    FieldConfig::create([
+      'field_name' => 'field_subtheme',
+      'entity_type' => 'node',
+      'bundle' => 'article',
+    ])->save();
 
   }
 

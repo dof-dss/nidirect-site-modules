@@ -11,6 +11,7 @@ use Drupal\node\Entity\NodeType;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\user\Traits\UserCreationTrait;
 use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
 use Drupal\views\Views;
 
@@ -23,6 +24,7 @@ use Drupal\views\Views;
 class RelatedContentTest extends ViewsKernelTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
+  use UserCreationTrait;
 
   /**
    * Set Strict config Schema status.
@@ -73,6 +75,10 @@ class RelatedContentTest extends ViewsKernelTestBase {
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('taxonomy_term');
+    $this->installEntitySchema('flagging');
+    $this->installSchema('user', 'users_data');
+    $this->installSchema('flag', ['flag_counts']);
+    $this->installSchema('book', ['book']);
 
     $this->relatedContentManager = \Drupal::service('nidirect_related_content.manager');
   }
@@ -83,6 +89,8 @@ class RelatedContentTest extends ViewsKernelTestBase {
   public function testSubThemeRelated() {
     $this->_createThemeVocab();
     $this->_createNodeType();
+
+    $this->createUser([],'admin', TRUE);
 
     $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 
@@ -104,7 +112,10 @@ class RelatedContentTest extends ViewsKernelTestBase {
     ]);
     $node2->save();
 
-    var_dump($this->relatedContentManager->getSubThemes()->forTheme($term->id())->asArray());
+//    $view = Views::getView('related_content_manager__terms');
+//    $view->setDisplay('by_supplementary_term');
+//    $view->setArguments([$term->id()]);
+//    $view->execute();
 
     self::assertEquals($term->id(), $node1->get('field_subtheme')->getString());
   }

@@ -5,7 +5,6 @@ namespace Drupal\Tests\nidirect_related_content\Kernel;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\flag\Entity\Flag;
-use Drupal\nidirect_related_content\RelatedContentManager;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\taxonomy\Entity\Vocabulary;
@@ -17,6 +16,11 @@ use Drupal\views\Views;
 
 /**
  * @coversDefaultClass Drupal\nidirect_related_content\RelatedContentManager
+ *
+ * This test currently doesn't work but has been included to pick up at a later
+ * point. Main sticking point is getting with the Views inside the Related
+ * Content service working. The same Views are loaded and able to run from
+ * within this test.
  *
  * @group nidirect
  * @group nidirect_related_content
@@ -43,7 +47,10 @@ class RelatedContentTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public static $testViews = ['related_content_manager__content', 'related_content_manager__terms'];
+  public static $testViews = [
+    'related_content_manager__content',
+    'related_content_manager__terms'
+  ];
 
   /**
    * Module machine name.
@@ -64,7 +71,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
   ];
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
   public function setUp($import_test_views = TRUE) {
     parent::setUp($import_test_views);
@@ -87,10 +94,10 @@ class RelatedContentTest extends ViewsKernelTestBase {
    * Test related content manager service.
    */
   public function testSubThemeRelated() {
-    $this->_createThemeVocab();
-    $this->_createNodeType();
+    $this->createThemeVocab();
+    $this->createNodeTypes();
 
-    $this->createUser([],'admin', TRUE);
+    $this->createUser([], 'admin', TRUE);
 
     $taxonomy_storage = \Drupal::entityTypeManager()->getStorage('taxonomy_term');
 
@@ -112,11 +119,11 @@ class RelatedContentTest extends ViewsKernelTestBase {
     ]);
     $node2->save();
 
-//    // For dev/testing purposes
-//    $view = Views::getView('related_content_manager__content');
-//    $view->setDisplay('by_supplementary_term');
-//    $view->setArguments([$term->id()]);
-//    $view->execute();
+    // For dev/testing purposes
+    // $view = Views::getView('related_content_manager__content');
+    // $view->setDisplay('by_supplementary_term');
+    // $view->setArguments([$term->id()]);
+    // $view->execute();
 
     $results = $this->relatedContentManager->getSubThemes()->forTheme($term->id())->asArray();
 
@@ -126,7 +133,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
   /**
    * Create a Theme vocabulary and terms.
    */
-  private function _createThemeVocab() {
+  private function createThemeVocab() {
     $vocabulary = Vocabulary::create([
       'name' => 'Site themes',
       'vid' => 'site_themes',
@@ -154,9 +161,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
     ]);
     $parent2->save();
 
-    /**
-     * Motoring child terms.
-     */
+    // Motoring child terms.
     $parent1_child1 = $term_storage->create([
       'name' => 'About the MOT scheme',
       'vid' => $vocabulary->id(),
@@ -185,9 +190,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
     ]);
     $parent1_child4->save();
 
-    /**
-     * Road safety child terms.
-     */
+    // Road safety child terms.
     $parent2_child1 = $term_storage->create([
       'name' => 'Drink and drugs',
       'vid' => $vocabulary->id(),
@@ -221,7 +224,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
   /**
    * Create Article bundle and site themes field.
    */
-  private function _createNodeType() {
+  private function createNodeTypes() {
 
     $bundles = [
       'application',
@@ -294,7 +297,5 @@ class RelatedContentTest extends ViewsKernelTestBase {
     $flag_display_on_landing_pages->save();
 
   }
-
-
 
 }

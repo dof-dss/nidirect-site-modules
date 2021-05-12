@@ -73,6 +73,12 @@ class RelatedContentManager {
    */
   protected $cacheTags;
 
+  /**
+   * Content array.
+   *
+   * @var array
+   *   Array of related content.
+   */
   protected $content;
 
   /**

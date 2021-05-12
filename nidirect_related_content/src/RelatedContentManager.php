@@ -8,6 +8,7 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\flag\FlagService;
 use Drupal\taxonomy\TermInterface;
+use Drupal\views\Views;
 
 /**
  * Provides methods for managing related content display.
@@ -73,6 +74,14 @@ class RelatedContentManager {
   protected $cacheTags;
 
   /**
+   * Content array.
+   *
+   * @var array
+   *   Array of related content.
+   */
+  protected $content;
+
+  /**
    * Constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
@@ -89,6 +98,7 @@ class RelatedContentManager {
     $this->routeMatch = $route_match;
     $this->renderer = $renderer;
     $this->flagService = $flag;
+    $this->content = [];
   }
 
   /**
@@ -133,6 +143,9 @@ class RelatedContentManager {
     // If term_id isn't passed in try and extract from the current request.
     if ($term_id === NULL && $this->routeMatch->getRouteName() === 'entity.taxonomy_term.canonical') {
       $this->termId = (int) $this->routeMatch->getRawParameter('taxonomy_term');
+    }
+    else {
+      $this->termId = $term_id;
     }
 
     $this->getContent();
@@ -278,17 +291,24 @@ class RelatedContentManager {
    * Fetches node content for the term ids.
    */
   protected function getThemeNodes() {
-    // Fetch nodes by parent term.
-    $content_view = views_embed_view('related_content_manager__content', 'by_parent_term', $this->termId);
-    $this->renderer->renderRoot($content_view);
 
-    $parent_rows = $content_view['view_build']['#view']->result;
+    $related_content_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__content');
+    $content_view = $related_content_view->getExecutable();
+
+    // Fetch nodes by parent term.
+    $content_view->setDisplay('by_parent_term');
+    $content_view->setArguments([$this->termId]);
+    $content_view->execute();
+
+    $parent_rows = $content_view->result;
+    $content_view->destroy();
 
     // Fetch nodes by supplementary term.
-    $content_view = views_embed_view('related_content_manager__content', 'by_supplementary_term', $this->termId);
-    $this->renderer->renderRoot($content_view);
+    $content_view->setDisplay('by_supplementary_term');
+    $content_view->setArguments([$this->termId]);
+    $content_view->execute();
 
-    $supplementary_rows = $content_view['view_build']['#view']->result;
+    $supplementary_rows = $content_view->result;
 
     $rows = array_merge($parent_rows, $supplementary_rows);
 
@@ -325,15 +345,21 @@ class RelatedContentManager {
   protected function getThemeSubThemes() {
     $campaign_terms = $this->getTermsWithCampaignPages();
 
-    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_parent_term', $this->termId);
-    $this->renderer->renderRoot($subtopics_view);
+    $related_content_view = $this->entityTypeManager->getStorage('view')->load('related_content_manager__terms');
+    $subtopics_view = $related_content_view->getExecutable();
 
-    $parent_rows = $subtopics_view['view_build']['#view']->result;
+    $subtopics_view->setDisplay('by_parent_term');
+    $subtopics_view->setArguments([$this->termId]);
+    $subtopics_view->execute();
 
-    $subtopics_view = views_embed_view('related_content_manager__terms', 'by_supplementary_term', $this->termId);
-    $this->renderer->renderRoot($subtopics_view);
+    $parent_rows = $subtopics_view->result;
+    $subtopics_view->destroy();
 
-    $supplementary_rows = $subtopics_view['view_build']['#view']->result;
+    $subtopics_view->setDisplay('by_supplementary_term');
+    $subtopics_view->setArguments([$this->termId]);
+    $subtopics_view->execute();
+
+    $supplementary_rows = $subtopics_view->result;
 
     $rows = array_merge($parent_rows, $supplementary_rows);
 

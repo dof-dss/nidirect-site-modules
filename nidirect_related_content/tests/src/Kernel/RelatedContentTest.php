@@ -5,12 +5,13 @@ namespace Drupal\Tests\nidirect_related_content\Kernel;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\nidirect_related_content\RelatedContentManager;
-use Drupal\KernelTests\KernelTestBase;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
 use Drupal\taxonomy\Entity\Vocabulary;
 use Drupal\Tests\node\Traits\ContentTypeCreationTrait;
 use Drupal\Tests\node\Traits\NodeCreationTrait;
+use Drupal\Tests\views\Kernel\ViewsKernelTestBase;
+use Drupal\views\Views;
 
 /**
  * @coversDefaultClass Drupal\nidirect_related_content\RelatedContentManager
@@ -18,7 +19,7 @@ use Drupal\Tests\node\Traits\NodeCreationTrait;
  * @group nidirect
  * @group nidirect_related_content
  */
-class RelatedContentTest extends KernelTestBase {
+class RelatedContentTest extends ViewsKernelTestBase {
   use NodeCreationTrait;
   use ContentTypeCreationTrait;
 
@@ -37,6 +38,11 @@ class RelatedContentTest extends KernelTestBase {
   protected $relatedContentManager;
 
   /**
+   * {@inheritdoc}
+   */
+  public static $testViews = ['related_content_manager__content', 'related_content_manager__terms'];
+
+  /**
    * Module machine name.
    *
    * @var array
@@ -50,17 +56,19 @@ class RelatedContentTest extends KernelTestBase {
     'text',
     'field',
     'system',
-    'flag'
+    'flag',
+    'book'
   ];
 
   /**
    * Test setup function.
    */
-  public function setUp() {
-    parent::setUp();
+  public function setUp($import_test_views = TRUE) {
+    parent::setUp($import_test_views);
 
     $this->installConfig(['nidirect_related_content']);
     $this->installConfig(['flag']);
+    $this->installConfig(['book']);
     $this->installEntitySchema('user');
     $this->installEntitySchema('node');
     $this->installEntitySchema('taxonomy_term');
@@ -94,6 +102,8 @@ class RelatedContentTest extends KernelTestBase {
       'field_subtheme' => [$term->id()],
     ]);
     $node2->save();
+
+    var_dump($this->relatedContentManager->getSubThemes()->forTheme($term->id())->asArray());
 
     self::assertEquals($term->id(), $node1->get('field_subtheme')->getString());
   }
@@ -197,9 +207,16 @@ class RelatedContentTest extends KernelTestBase {
    * Create Article bundle and site themes field.
    */
   private function _createNodeType() {
-    NodeType::create([
-      'type' => 'article',
-    ])->save();
+
+    $bundles = [
+      'application',
+      'article',
+      'external_link',
+      'health_condition',
+      'landing_page',
+      'publication',
+      'webform',
+    ];
 
     FieldStorageConfig::create([
       'entity_type' => 'node',
@@ -210,11 +227,19 @@ class RelatedContentTest extends KernelTestBase {
       ],
     ])->save();
 
-    FieldConfig::create([
-      'field_name' => 'field_subtheme',
-      'entity_type' => 'node',
-      'bundle' => 'article',
-    ])->save();
+    foreach ($bundles as $type) {
+      NodeType::create([
+        'type' => $type,
+      ])->save();
+
+      FieldConfig::create([
+        'field_name' => 'field_subtheme',
+        'entity_type' => 'node',
+        'bundle' => $type,
+      ])->save();
+
+    }
+
 
   }
 

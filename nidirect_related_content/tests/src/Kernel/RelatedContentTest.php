@@ -4,6 +4,7 @@ namespace Drupal\Tests\nidirect_related_content\Kernel;
 
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
+use Drupal\flag\Entity\Flag;
 use Drupal\nidirect_related_content\RelatedContentManager;
 use Drupal\node\Entity\Node;
 use Drupal\node\Entity\NodeType;
@@ -237,9 +238,31 @@ class RelatedContentTest extends ViewsKernelTestBase {
         'entity_type' => 'node',
         'bundle' => $type,
       ])->save();
-
     }
 
+    $flag_hide_content = Flag::create([
+      'id' => 'hide_content',
+      'label' => 'Hide content',
+      'entity_type' => 'node',
+      'bundles' => $bundles,
+      'flag_type' => 'entity:node',
+      'link_type' => 'ajax_link',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag_hide_content->save();
+
+    $flag_display_on_landing_pages = Flag::create([
+      'id' => 'display_on_landing_pages',
+      'label' => 'Show link on landing pages and menus',
+      'entity_type' => 'node',
+      'bundles' => ['publication'],
+      'flag_type' => 'entity:node',
+      'link_type' => 'ajax_link',
+      'flagTypeConfig' => [],
+      'linkTypeConfig' => [],
+    ]);
+    $flag_display_on_landing_pages->save();
 
   }
 

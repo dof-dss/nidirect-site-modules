@@ -112,10 +112,13 @@ class RelatedContentTest extends ViewsKernelTestBase {
     ]);
     $node2->save();
 
-//    $view = Views::getView('related_content_manager__terms');
+//    // For dev/testing purposes
+//    $view = Views::getView('related_content_manager__content');
 //    $view->setDisplay('by_supplementary_term');
 //    $view->setArguments([$term->id()]);
 //    $view->execute();
+
+    $results = $this->relatedContentManager->getSubThemes()->forTheme($term->id())->asArray();
 
     self::assertEquals($term->id(), $node1->get('field_subtheme')->getString());
   }
@@ -239,6 +242,15 @@ class RelatedContentTest extends ViewsKernelTestBase {
       ],
     ])->save();
 
+    FieldStorageConfig::create([
+      'entity_type' => 'node',
+      'field_name' => 'field_site_themes',
+      'type' => 'entity_reference',
+      'settings' => [
+        'target_type' => 'taxonomy_term',
+      ],
+    ])->save();
+
     foreach ($bundles as $type) {
       NodeType::create([
         'type' => $type,
@@ -246,6 +258,12 @@ class RelatedContentTest extends ViewsKernelTestBase {
 
       FieldConfig::create([
         'field_name' => 'field_subtheme',
+        'entity_type' => 'node',
+        'bundle' => $type,
+      ])->save();
+
+      FieldConfig::create([
+        'field_name' => 'field_site_themes',
         'entity_type' => 'node',
         'bundle' => $type,
       ])->save();

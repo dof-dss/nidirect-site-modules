@@ -108,6 +108,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
         case 'card_contact':
         case 'card_deck_plain':
         case 'video':
+        case 'text':
           // The title defaults to the block type name and is not displayed.
           $form['settings']['label']['#default_value'] = $block_name;
           $form['settings']['label']['#type'] = 'hidden';

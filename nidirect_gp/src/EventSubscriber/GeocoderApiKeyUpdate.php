@@ -21,9 +21,9 @@ class GeocoderApiKeyUpdate implements EventSubscriberInterface {
    *   An array of event listener definitions.
    */
   public static function getSubscribedEvents() {
-    return array(
-      ConfigEvents::IMPORT => array('onConfigImport'),
-    );
+    return [
+      ConfigEvents::IMPORT => ['onConfigImport']
+    ];
   }
 
   /**
@@ -47,4 +47,5 @@ class GeocoderApiKeyUpdate implements EventSubscriberInterface {
       }
     }
   }
+
 }

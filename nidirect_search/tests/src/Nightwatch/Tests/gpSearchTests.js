@@ -46,7 +46,7 @@ module.exports = {
       browser
         .drupalRelativeURL('/services/gp-practices?search_api_views_fulltext=' + term)
         .waitForElementVisible('body', 1000)
-        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.match(regex);
+        .expect.element('.search-results--gp-practice .card h3 > a').text.to.match(regex);
     }
 
   },
@@ -69,7 +69,7 @@ module.exports = {
       browser
         .drupalRelativeURL('/services/gp-practices?search_api_views_fulltext=' + term.replace(' ', '+'))
         .waitForElementVisible('body', 1000)
-        .expect.element('.search-results--gp-practice article.card h3 > a').text.to.match(regex);
+        .expect.element('.search-results--gp-practice .card h3 > a').text.to.match(regex);
     }
 
   },
@@ -100,8 +100,8 @@ module.exports = {
     browser
       .drupalRelativeURL('/services/gp-practices?search_api_views_fulltext=' + searchTerm)
       .waitForElementVisible('body', 1000)
-      .expect.element('.search-results--gp-practice article.card').text.to.contain(surgeryName);
-    browser.expect.element('.search-results--gp-practice article.card:nth-child(2) > h3 > small').text.to.contain(knownDistance);
+      .expect.element('.search-results--gp-practice .card').text.to.contain(surgeryName);
+    browser.expect.element('.search-results--gp-practice .card:nth-child(1) > h3 > small').text.to.contain(knownDistance);
 
   },
 

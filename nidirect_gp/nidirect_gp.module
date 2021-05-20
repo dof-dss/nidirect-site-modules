@@ -307,3 +307,16 @@ function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $qu
     }
   }
 }
+
+/**
+ * Implements hook_config_ignore_settings_alter().
+ */
+function nidirect_gp_config_ignore_settings_alter(array &$settings) {
+  // This hook is called just before config is imported (as long as this module
+  // and the 'config import' module are installed) and is even invoked when there
+  // are no config changes to import.
+  // The code in GeocoderApiKeyUpdate will then ensure that the Google Maps
+  // API key is overwritten during config import.
+  $config_update_service = \Drupal::service('nidirect_common.update_config_from_environment');
+  $config_update_service->updateApiKey('geocoder.geocoder_provider.googlemaps', 'apiKey', 'GOOGLE_MAP_API_SERVER_KEY');
+}

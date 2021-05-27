@@ -349,7 +349,9 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
     }
 
     if (!empty($term)) {
-      $field_value = $term->get($field)->first();
+      if ($term->hasField($field) && !$term->get($field)->isEmpty()) {
+        $field_value = $term->get($field)->first();
+      }
     }
   }
 

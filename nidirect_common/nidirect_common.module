@@ -374,10 +374,12 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
       // Navigate to 2 ancestor terms.
       for ($i = 0; $i < 2; $i++) {
         if (array_key_exists($i, $ancestors)) {
-          $field_value = $ancestors[$i]->get($field)->first();
+          if ($ancestors[$i]->hasField($field) && !$ancestors[$i]->get($field)->isEmpty()) {
+            $field_value = $ancestors[$i]->get($field)->first();
 
-          if ($field_value) {
-            break;
+            if ($field_value) {
+              break;
+            }
           }
         }
       }

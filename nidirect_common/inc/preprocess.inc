@@ -62,11 +62,6 @@ function nidirect_common_preprocess_page(&$variables) {
         ],
       ]);
     }
-
-    $footer_text = _retrieve_hierarchical_field($entity, 'field_additional_info');
-    if (!empty($footer_text)) {
-      $variables['page']['sidebar_second']['footer_text'] = $footer_text->view();
-    }
   }
 }
 

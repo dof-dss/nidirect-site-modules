@@ -32,6 +32,7 @@ require_once __DIR__ . '/inc/preprocess.inc';
  * Implements hook_help().
  */
 function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
+  // no change here
   switch ($route_name) {
     // Main module help for the nidirect_common module.
     case 'help.page.nidirect_common':

@@ -149,3 +149,24 @@ function nidirect_common_preprocess_webform_actions(array &$variables) {
     }
   }
 }
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function nidirect_common_preprocess_field(&$variables) {
+  if ($variables['field_type'] === 'telephone_plus_field') {
+    // giggsey/libphonenumber-for-php doesn't handle international freephone numbers
+    // well when parsing. At present it strips out the leading 00800 as it cannot
+    // detect the type of number. The underlying library is very complex so this
+    // is considered a fix from the pre-rendering side of things for this very specific
+    // condition. Ideally, this would go in as a feature/fix for the library itself.
+    foreach ($variables['items'] as $key => &$item) {
+      // Look at the underlying raw value and see if it's an 00800 international freephone number.
+      $raw_value = $variables['element']['#items']->getValue()[$key]['telephone_number'];
+      if (preg_match('/^00800/', str_replace(' ', '', $raw_value))) {
+        // Make sure we render the 00 prefix on these which the library parser strips out.
+        $item['content']['number']['#value'] = $raw_value;
+      }
+    }
+  }
+}

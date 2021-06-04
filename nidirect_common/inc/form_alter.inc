@@ -114,6 +114,39 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
     }
   }
 
+  // Restrict the ability for users to make changes to nodes flagged with
+  // the 'locked content' flag. Eg: money advice service (MAS) content.
+  if (\Drupal::currentUser()->hasPermission('flag locked_content') === FALSE) {
+    // $node is an upcast, full object from the routing service.
+    $node = \Drupal::routeMatch()->getParameter('node');
+    // Check the underlying node flag value to see if we need to alter the form any further.
+    $flags = \Drupal::service('flag')->getAllFlags('node', $node->bundle());
+
+    // NB: flag value is on the node, not a given revision. So an admin could create
+    // a new draft and set the locked value, and this would immediately become active.
+    // Equally, unlocking does not need a new published revision, only a change to
+    // the flag value itself.
+    if (!empty($flags['locked_content']) && $flags['locked_content']->isFlagged($node)) {
+      foreach ($form['actions'] as $key => &$item) {
+        if (preg_match('/^#/', $key)) {
+          // Skip over attributes of the render array.
+          continue;
+        }
+
+        // Disable buttons, hide anything else.
+        if ($item['#type'] === 'submit') {
+          $item['#attributes']['disabled'] = 'disabled';
+        }
+        else {
+          $item['#access'] = FALSE;
+        }
+      }
+
+      $message = t('This content has been locked to prevent further changes');
+      \Drupal::messenger()->addWarning($message);
+    }
+  }
+
   // Update description for Hide Content flag.
   if (NestedArray::keyExists($form, ['flag', 'hide_content'])) {
     $hide_content_description =& $form['flag']['hide_content']['#description'];

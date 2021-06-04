@@ -27,6 +27,7 @@ function nidirect_money_advice_articles_help($route_name, RouteMatchInterface $r
 
 /**
  * Cron callback to start migration import.
+ * @throws \Drupal\migrate\MigrateException
  */
 function nidirect_money_advice_articles_import() {
   $migration = \Drupal::service('plugin.manager.migration')->createInstance('money_advice_service_rss_articles');

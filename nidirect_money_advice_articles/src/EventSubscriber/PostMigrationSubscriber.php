@@ -50,7 +50,7 @@ class PostMigrationSubscriber implements EventSubscriberInterface {
   public function __construct(EntityTypeManagerInterface $entity_type_manager,
                               LoggerChannelFactory $logger) {
     $this->entityTypeManager = $entity_type_manager;
-    $this->logger = $logger->get('migrate_nidirect_node');
+    $this->logger = $logger->get('nidirect_money_advice_articles');
     $this->dbConnDrupal8 = Database::getConnection('default', 'default');
   }
 

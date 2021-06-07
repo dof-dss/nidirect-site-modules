@@ -86,8 +86,8 @@ class PostMigrationSubscriber implements EventSubscriberInterface {
    */
   protected function processFlags() {
     // Clear out the flag_counts table so we can reinsert new values.
-    $this->dbConnDrupal8->query("DELETE FROM {flag_counts} WHERE flag_id = 'locked_content'")->execute();
-    $this->dbConnDrupal8->query("DELETE FROM {flagging} WHERE flag_id = 'locked_content'")->execute();
+    $this->dbConnDrupal8->query("DELETE fc.* FROM {flag_counts} fc JOIN {migrate_map_money_advice_service_rss_articles} mm ON mm.destid1 = fc.entity_id WHERE fc.flag_id = 'locked_content'")->execute();
+    $this->dbConnDrupal8->query("DELETE f.* FROM {flagging} f JOIN {migrate_map_money_advice_service_rss_articles} mm ON mm.destid1 = f.entity_id WHERE f.flag_id = 'locked_content'")->execute();
 
     // Get list of known ids from the migrate map table.
     $query = $this->dbConnDrupal8->query("SELECT destid1 from {migrate_map_money_advice_service_rss_articles}");

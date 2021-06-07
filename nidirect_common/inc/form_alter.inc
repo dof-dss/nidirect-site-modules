@@ -116,7 +116,9 @@ function nidirect_common_form_node_form_alter(&$form, FormStateInterface $form_s
 
   // Restrict the ability for users to make changes to nodes flagged with
   // the 'locked content' flag. Eg: money advice service (MAS) content.
-  if (\Drupal::currentUser()->hasPermission('flag locked_content') === FALSE) {
+  if (\Drupal::currentUser()->hasPermission('flag locked_content') === FALSE &&
+    \Drupal::routeMatch()->getRouteName() === 'entity.node.edit_form') {
+
     // $node is an upcast, full object from the routing service.
     $node = \Drupal::routeMatch()->getParameter('node');
     // Check the underlying node flag value to see if we need to alter the form any further.

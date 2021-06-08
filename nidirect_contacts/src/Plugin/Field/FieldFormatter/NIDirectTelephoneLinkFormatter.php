@@ -10,6 +10,10 @@ use Drupal\telephone_plus\TelephonePlusValidator;
 /**
  * Plugin extending the 'telephone_plus_link' formatter.
  *
+ * This plugin calls the parent viewElements method of the telephone_plus module
+ * and checks for the existence of numbers that require reformatting of the
+ * output from the libphonenumber-for-php library used in that module.
+ *
  * @FieldFormatter(
  *   id = "nidirect_telephone_link",
  *   label = @Translation("NIDirect telephone link"),
@@ -30,7 +34,7 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
     foreach ($items as $item) {
       $matches = [];
 
-      // Check for international freephone numbers and reformat the output
+      // Check for international freephone numbers and reformat the output.
       if (preg_match('/^00\s?800\s?(.+)/m', $item->getValue('telephone_number')['telephone_number'], $matches)) {
         foreach ($elements as &$element) {
           if (strpos($element['number']['#value'], $matches[1]) !== FALSE) {
@@ -40,7 +44,7 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
         continue;
       }
 
-      // Check for textphone numbers and reformat the output
+      // Check for textphone numbers and reformat the output.
       if (preg_match('/^18001\s?(.+)/m', $item->getValue('telephone_number')['telephone_number'], $matches)) {
         foreach ($elements as &$element) {
           if (str_replace(' ', '', $item->getValue('telephone_number')['telephone_number']) === $element['number']['#value']) {

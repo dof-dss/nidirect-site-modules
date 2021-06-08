@@ -57,6 +57,11 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
         $telephone_text = $item->getValue('telephone_number')['telephone_number'];
       }
 
+      // Check for international freephone numbers and reformat the output
+      if (substr($item->getValue('telephone_number')['telephone_number'], 0, 6 ) === "00 800") {
+        $telephone_text = $item->getValue('telephone_number')['telephone_number'];
+      }
+
       if (!empty($item->telephone_title)) {
         $title = [
           '#type' => 'html_tag',

@@ -37,6 +37,16 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
             $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
           }
         }
+        continue;
+      }
+
+      // Check for textphone numbers and reformat the output
+      if (preg_match('/^18001\s?(.+)/m', $item->getValue('telephone_number')['telephone_number'], $matches)) {
+        foreach ($elements as &$element) {
+          if (str_replace(' ', '', $item->getValue('telephone_number')['telephone_number']) === $element['number']['#value']) {
+            $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
+          }
+        }
       }
     }
 

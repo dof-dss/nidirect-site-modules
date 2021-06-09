@@ -284,7 +284,7 @@ class RelatedContentManager {
     }
 
     // Sort the content list by title alphabetically.
-    array_multisort(array_column($this->content, 'title'), SORT_ASC, $this->content);
+    array_multisort(array_column($this->content, 'title_sort'), SORT_ASC, $this->content);
   }
 
   /**
@@ -333,6 +333,7 @@ class RelatedContentManager {
       $this->content[] = [
         'entity' => $row->_entity,
         'title' => $title,
+        'title_sort' => strtolower($title),
         'url' => $url,
       ];
     }
@@ -372,6 +373,7 @@ class RelatedContentManager {
         $this->content[] = [
           'entity' => $campaign_terms[$row->tid],
           'title' => $campaign_terms[$row->tid]->getTitle(),
+          'title_sort' => strtolower($campaign_terms[$row->tid]->getTitle()),
           'url' => Url::fromRoute('entity.node.canonical', ['node' => $campaign_terms[$row->tid]->id()]),
         ];
         continue;
@@ -392,6 +394,7 @@ class RelatedContentManager {
       $this->content[] = [
         'entity' => $term,
         'title' => $term->getName(),
+        'title_sort' => strtolower($term->getName()),
         'url' => Url::fromRoute('entity.taxonomy_term.canonical', ['taxonomy_term' => $term->id()]),
       ];
     }

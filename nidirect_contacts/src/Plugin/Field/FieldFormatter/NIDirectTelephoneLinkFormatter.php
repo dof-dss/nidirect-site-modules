@@ -28,14 +28,17 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = parent::viewElements($items, $langcode);
+    // Array of characters to be removed from the number formatting to allow for
+    // value comparisons.
+    $formatting_chars = [' ', '+'];
 
     foreach ($items as $item) {
-      $unformatted_field_number = str_replace([' ','+'],'', $item->getValue('telephone_number')['telephone_number']);
-
+      $unformatted_field_number = str_replace($formatting_chars, '', $item->getValue('telephone_number')['telephone_number']);
+      // Match international and textphone numbers to replace the default
+      // formatting provided by the libphonenumber library.
       if (strpos($unformatted_field_number, '00800') !== FALSE || strpos($unformatted_field_number, '18001') !== FALSE) {
         foreach ($elements as &$element) {
-
-          if (strpos($unformatted_field_number, str_replace([' ','+'],'', $element['number']['#value'])) !== FALSE) {
+          if (strpos($unformatted_field_number, str_replace($formatting_chars, '', $element['number']['#value'])) !== FALSE) {
             $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
           }
         }

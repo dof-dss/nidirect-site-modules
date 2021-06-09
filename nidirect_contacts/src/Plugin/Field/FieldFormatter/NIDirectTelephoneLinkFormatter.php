@@ -4,8 +4,6 @@ namespace Drupal\nidirect_contacts\Plugin\Field\FieldFormatter;
 
 use Drupal\Core\Field\FieldItemListInterface;
 use Drupal\telephone_plus\Plugin\Field\FieldFormatter\TelephonePlusLinkFormatter;
-use Drupal\telephone_plus\TelephonePlusFormatter;
-use Drupal\telephone_plus\TelephonePlusValidator;
 
 /**
  * Plugin extending the 'telephone_plus_link' formatter.

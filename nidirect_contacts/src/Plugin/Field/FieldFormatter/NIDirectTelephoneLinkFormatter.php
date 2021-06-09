@@ -30,22 +30,12 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
     $elements = parent::viewElements($items, $langcode);
 
     foreach ($items as $item) {
-      $matches = [];
+      $unformatted_field_number = str_replace([' ','+'],'', $item->getValue('telephone_number')['telephone_number']);
 
-      // Check for international freephone numbers and reformat the output.
-      if (preg_match('/^00\s?800\s?(.+)/m', $item->getValue('telephone_number')['telephone_number'], $matches)) {
+      if (strpos($unformatted_field_number, '00800') !== FALSE || strpos($unformatted_field_number, '18001') !== FALSE) {
         foreach ($elements as &$element) {
-          if (strpos($element['number']['#value'], $matches[1]) !== FALSE) {
-            $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
-          }
-        }
-        continue;
-      }
 
-      // Check for textphone numbers and reformat the output.
-      if (preg_match('/^18001\s?(.+)/m', $item->getValue('telephone_number')['telephone_number'], $matches)) {
-        foreach ($elements as &$element) {
-          if (str_replace(' ', '', $item->getValue('telephone_number')['telephone_number']) === $element['number']['#value']) {
+          if (strpos($unformatted_field_number, str_replace([' ','+'],'', $element['number']['#value'])) !== FALSE) {
             $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
           }
         }

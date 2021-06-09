@@ -143,7 +143,7 @@ function nidirect_contacts_preprocess_views_view(&$variables) {
 
     // Determine which sort is currently active.
     // Default is to set to relevance.
-    $active_sort = $q['sort_by'] ? $q['sort_by'] : 'search_api_relevance';
+    $active_sort = $q['sort_by'] ?? 'search_api_relevance';
 
     // Set the sort options render array.
     $sort_options = [

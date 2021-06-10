@@ -47,7 +47,7 @@ jobs:
           name: Download dependent contrib modules.
           command: |
             cd /home/circleci/project
-            composer require drupal/webform drupal/linkit:^6.0 mglaman/drupal-check --no-interaction
+            composer require drupal/telephone_plus drupal/webform drupal/linkit:^6.0 mglaman/drupal-check --no-interaction
       - run:
           name: Move custom code into position
           command: mv /home/circleci/nidirect-site-modules /home/circleci/project/web/modules/custom

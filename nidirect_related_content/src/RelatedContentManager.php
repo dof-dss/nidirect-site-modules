@@ -330,7 +330,7 @@ class RelatedContentManager {
         $url = Url::fromRoute('entity.node.canonical', ['node' => $row->nid]);
       }
 
-      $this->content[] = [
+      $this->content[$row->_entity->id()] = [
         'entity' => $row->_entity,
         'title' => $title,
         'title_sort' => strtolower($title),
@@ -370,7 +370,7 @@ class RelatedContentManager {
       // node and skip adding the term entry.
       if (array_key_exists($row->tid, $campaign_terms)) {
         // This will be a link to a campaign (landing page).
-        $this->content[] = [
+        $this->content[$campaign_terms[$row->tid]->id()] = [
           'entity' => $campaign_terms[$row->tid],
           'title' => $campaign_terms[$row->tid]->getTitle(),
           'title_sort' => strtolower($campaign_terms[$row->tid]->getTitle()),
@@ -391,7 +391,7 @@ class RelatedContentManager {
         }
       }
 
-      $this->content[] = [
+      $this->content[$term->id()] = [
         'entity' => $term,
         'title' => $term->getName(),
         'title_sort' => strtolower($term->getName()),

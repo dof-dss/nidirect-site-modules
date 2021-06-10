@@ -320,3 +320,21 @@ function nidirect_gp_config_ignore_settings_alter(array &$settings) {
   $config_update_service = \Drupal::service('nidirect_common.update_config_from_environment');
   $config_update_service->updateApiKey('geocoder.geocoder_provider.googlemaps', 'apiKey', 'GOOGLE_MAP_API_SERVER_KEY');
 }
+
+/**
+ * Implements hook_geocode_address_string_alter().
+ */
+function nidirect_gp_geocode_address_string_alter(&$address_string) {
+  // Our geocoder config has a general region restriction set to 'eu' which
+  // allows us to geocode address strings in IE as well as UK. However,
+  // partial postcodes can be too ambiguous to geocode to the UK so sometimes
+  // return null. If we used a 'uk' specific geocoding region in config this doesn't happen.
+  // However, we can't do that as that would exclude IE addresses... but what we can do
+  // is use our postcode extractor service to detect a full or partial UK postcode and if
+  // we get a match, add a regional hint to the end of the address string to give it the
+  // extra context needed to successfully geocode.
+  $matches = \Drupal::service('nidirect.postcode_extractor')->getPostCode($address_string);
+  if (!empty($matches)) {
+    $address_string .= ', uk';
+  }
+}

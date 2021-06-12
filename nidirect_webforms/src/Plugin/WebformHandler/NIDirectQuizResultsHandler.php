@@ -345,7 +345,9 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
             '#question' => $elements[$id]['#title'],
             '#user_answer' => $user_answer,
             '#feedback' => [
-              '#markup' => $feedback,
+              '#type' => 'processed_text',
+              '#text' => $feedback,
+              '#format' => 'full_html',
             ],
             '#passed' => $passed,
           ];

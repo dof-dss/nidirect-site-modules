@@ -97,7 +97,7 @@ class NewsListingController extends ControllerBase {
         '#attributes' => [
           'class' => 'hr-above',
         ],
-        '#value' => t('Older news items'),
+        '#value' => t('Other news items'),
       ];
     }
 

@@ -7,6 +7,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\webform\WebformSubmissionInterface;
 
 /**
  * Implements hook_help().
@@ -71,6 +72,30 @@ function nidirect_webforms_theme() {
 function nidirect_webforms_page_attachments(array &$attachments) {
   // Add js to look for multiple webforms on a page.
   $attachments['#attached']['library'][] = 'nidirect_webforms/multiple_webform_submit.js';
+}
+
+/**
+ * Implements hook_ENTITY_TYPE_presave().
+ */
+function nidirect_webforms_webform_submission_presave(WebformSubmissionInterface $submission) {
+  $webform_id = $submission->getWebform()->id();
+
+  if (in_array($webform_id, ['your_comments', 'site_feedback'])) {
+    $component_ids = [
+      'provide_details_of_technical_problems_or_make_a_comment_about_th',
+      'enter_your_feedback',
+      'question_details',
+    ];
+
+    foreach ($component_ids as $textarea_element_id) {
+      $raw_element_value = $submission->getElementData($textarea_element_id);
+
+      if (!empty($raw_element_value)) {
+        $filtered_value = strip_tags($raw_element_value);
+        $submission->setElementData($textarea_element_id, $filtered_value);
+      }
+    }
+  }
 }
 
 /**

@@ -36,10 +36,16 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
       $unformatted_field_number = str_replace($formatting_chars, '', $item->getValue('telephone_number')['telephone_number']);
       // Match international and textphone numbers to replace the default
       // formatting provided by the libphonenumber library.
-      if (strpos($unformatted_field_number, '00800') !== FALSE || strpos($unformatted_field_number, '18001') !== FALSE) {
+      if (strpos($unformatted_field_number, '00800') === 0 || strpos($unformatted_field_number, '18001') === 0) {
+        // Iterate each render element to find the number to update.
         foreach ($elements as &$element) {
+          // Does the current render element contain the unformatted number.
           if (strpos($unformatted_field_number, str_replace($formatting_chars, '', $element['number']['#value'])) !== FALSE) {
-            $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
+            // Check the source value contains the prefix as some contacts use
+            // the same number for phone and text phone.
+            if (strpos($element['number']['#value'], '00800') === 0 || strpos($element['number']['#value'], '18001') === 0) {
+              $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
+            }
           }
         }
       }

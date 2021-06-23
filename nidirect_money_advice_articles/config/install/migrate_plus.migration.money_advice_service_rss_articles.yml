@@ -33,6 +33,7 @@ source:
     - https://webfeeds.moneyadviceservice.org.uk/feeds/169.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/170.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/172.rss
+    - https://webfeeds.moneyadviceservice.org.uk/feeds/173.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/174.rss
     - https://webfeeds.moneyadviceservice.org.uk/feeds/175.rss
   item_selector: /rss/channel/item

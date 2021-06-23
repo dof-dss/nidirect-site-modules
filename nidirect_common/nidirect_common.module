@@ -52,8 +52,8 @@ function nidirect_common_cron() {
   // populated by the NidirectMigratePostAuditCommand.
   $queue = \Drupal::service('queue')->get('audit_date_updates');
   $today = date('Y-m-d', \Drupal::time()->getCurrentTime());
-  // Only process one item from queue to avoid swamping.
-  if ($item = $queue->claimItem()) {
+  // Process the whole queue.
+  while ($item = $queue->claimItem()) {
     \Drupal::logger('nidirect-common')->notice(
       'Found @count audit updates to process', ['@count' => $queue->numberOfItems()]
     );

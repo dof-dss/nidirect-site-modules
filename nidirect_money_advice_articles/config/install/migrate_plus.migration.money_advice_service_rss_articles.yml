@@ -80,10 +80,6 @@ process:
     -
       plugin: default_value
       default_value: 1
-  field_toc_enable:
-    -
-      plugin: default_value
-      default_value: 0
   field_summary:
     -
       plugin: callback

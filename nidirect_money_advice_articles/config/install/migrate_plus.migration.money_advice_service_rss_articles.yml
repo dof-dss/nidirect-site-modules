@@ -62,14 +62,10 @@ process:
     -
       plugin: get
       source: title
-  body:
-    -
-      plugin: get
-      source: body
-  body/0/format:
-    -
+  body/format:
       plugin: default_value
-      default_value: 'basic_html'
+      default_value: basic_html
+  body/value: body
   created:
     -
       plugin: format_date

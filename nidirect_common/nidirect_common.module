@@ -49,7 +49,7 @@ function nidirect_common_help($route_name, RouteMatchInterface $route_match) {
  */
 function nidirect_common_cron() {
   // Process anything in the 'audit_date_updates' queue which was
-  // populated by the NidirectMigratePostAuditCommand.
+  // populated by the PostMigrationCommands::updateAuditDates command.
   $queue = \Drupal::service('queue')->get('audit_date_updates');
   $today = date('Y-m-d', \Drupal::time()->getCurrentTime());
   // Process the whole queue.

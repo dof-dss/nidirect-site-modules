@@ -260,6 +260,17 @@ function nidirect_common_update_8002() {
 }
 
 /**
+ * Remove Telephone lookup entity.
+ */
+function nidirect_common_update_8003() {
+  $telephone_lookup_bundle = \Drupal::entityTypeManager()->getStorage('node_type')->load('telephone_lookup');
+
+  if ($telephone_lookup_bundle) {
+    $telephone_lookup_bundle->delete();
+  }
+}
+
+/**
  * Return a list of nids with problematic telephone numbers.
  */
 function _check_telephone_field_values() {

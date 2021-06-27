@@ -3,7 +3,7 @@
 namespace Drupal\nidirect_gp;
 
 use Drupal\Component\Utility\Html;
-use \Drupal\Core\Entity\EntityAutocompleteMatcher;
+use Drupal\Core\Entity\EntityAutocompleteMatcher;
 use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
 use Drupal\Core\Entity\EntityTypeManager;
 

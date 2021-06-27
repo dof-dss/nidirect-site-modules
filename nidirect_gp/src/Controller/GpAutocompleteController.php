@@ -7,10 +7,15 @@ use Drupal\nidirect_gp\GpAutocompleteMatcher;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use \Drupal\system\Controller\EntityAutocompleteController;
 
+/**
+ * Controller for handing GP Autocomplete requests.
+ */
 class GpAutocompleteController extends EntityAutocompleteController {
 
   /**
    * Autocomplete matcher for GP entities.
+   *
+   * @var \Drupal\Core\Entity\EntityAutocompleteMatcherInterface
    */
   protected $matcher;
 

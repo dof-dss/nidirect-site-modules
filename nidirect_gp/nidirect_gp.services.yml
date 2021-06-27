@@ -7,6 +7,13 @@ services:
   nidirect.postcode_extractor:
     class: Drupal\nidirect_gp\PostcodeExtractor
     arguments: ['%postcode_matches.uk%', '@request_stack', '@form_builder']
+  nidirect_gp.gp_route_subscriber:
+    class: Drupal\nidirect_gp\Routing\GpAutocompleteRouteSubscriber
+    tags:
+      - { name: event_subscriber }
+  nidirect_gp.gp_autocomplete_matcher:
+    class: Drupal\nidirect_gp\GpAutocompleteMatcher
+    arguments: [ '@plugin.manager.entity_reference_selection' ]
 
 parameters:
   nidirect_gp.geocoding_service: googlemaps

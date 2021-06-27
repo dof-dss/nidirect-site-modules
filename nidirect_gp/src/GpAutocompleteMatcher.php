@@ -2,6 +2,8 @@
 
 namespace Drupal\nidirect_gp;
 
+use Drupal\Component\Utility\Html;
+
 /**
  * Autocomplete matcher for GP's.
  */
@@ -36,6 +38,7 @@ class GpAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMatche
 
           $key = $label . ' (' . $id . ')';
           $label .= ' [GP cypher: ' . $entity->getCypher() . '] (' . $id . ')';
+          $key = Html::decodeEntities($key);
           $matches[] = ['value' => $key, 'label' => $label];
         }
       }

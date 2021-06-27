@@ -3,11 +3,34 @@
 namespace Drupal\nidirect_gp;
 
 use Drupal\Component\Utility\Html;
+use \Drupal\Core\Entity\EntityAutocompleteMatcher;
+use Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface;
+use Drupal\Core\Entity\EntityTypeManager;
 
 /**
  * Autocomplete matcher for GP's.
  */
-class GpAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMatcher {
+class GpAutocompleteMatcher extends EntityAutocompleteMatcher {
+
+  /**
+   * The entity type manager.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManager
+   */
+  protected $entityTypeManager;
+
+  /**
+   * Constructs a EntityAutocompleteMatcher object.
+   *
+   * @param \Drupal\Core\Entity\EntityReferenceSelection\SelectionPluginManagerInterface $selection_manager
+   *   The entity reference selection handler plugin manager.
+   * @param \Drupal\Core\Entity\EntityTypeManager $entity_type_manager
+   *   The entity reference selection handler plugin manager.
+   */
+  public function __construct(SelectionPluginManagerInterface $selection_manager, EntityTypeManager $entity_type_manager) {
+    parent::__construct($selection_manager);
+    $this->entityTypeManager = $entity_type_manager;
+  }
 
   /**
    * Matches GP's to the autocomplete search string.
@@ -34,7 +57,7 @@ class GpAutocompleteMatcher extends \Drupal\Core\Entity\EntityAutocompleteMatche
 
       foreach ($entity_labels as $values) {
         foreach ($values as $id => $label) {
-          $entity = \Drupal::entityTypeManager()->getStorage($target_type)->load($id);
+          $entity = $this->entityTypeManager->getStorage($target_type)->load($id);
 
           $key = $label . ' (' . $id . ')';
           $label .= ' [GP cypher: ' . $entity->getCypher() . '] (' . $id . ')';

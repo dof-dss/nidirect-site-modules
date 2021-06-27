@@ -13,7 +13,7 @@ services:
       - { name: event_subscriber }
   nidirect_gp.gp_autocomplete_matcher:
     class: Drupal\nidirect_gp\GpAutocompleteMatcher
-    arguments: [ '@plugin.manager.entity_reference_selection' ]
+    arguments: [ '@plugin.manager.entity_reference_selection', '@entity_type.manager']
 
 parameters:
   nidirect_gp.geocoding_service: googlemaps

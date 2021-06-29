@@ -130,6 +130,53 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     // Prepend a submit callback.
     array_unshift($form['#submit'], 'nidirect_gp_gp_practice_form_submit');
   }
+
+  $form['cypher']['widget'][0]['value']['#ajax'] = [
+    'callback' => 'nidirect_gp_unique_cypher',
+    'event' => 'change',
+    'wrapper' => 'cypher-unique',
+    'progress' => [
+      'type' => 'throbber',
+      'message' => t('Checking a GP with that cypher exists') . '...',
+    ],
+  ];
+
+  $form['cypher_unique'] = [
+    '#type' => 'html_tag',
+    '#tag' => 'div',
+    '#attributes' => [
+      'id' => 'cypher-unique'
+    ],
+    '#weight' => $form['cypher']['#weight'],
+  ];
+
+}
+
+/**
+ * AJAX callback for checking unique GP cypher.
+ */
+function nidirect_gp_unique_cypher(array &$form, FormStateInterface $form_state) {
+  $cypher = $form_state->getValue('cypher')[0]['value'];
+  $excludes = [];
+
+  if (\Drupal::routeMatch()->getRouteName() !== 'entity.gp.add_form') {
+    $excludes[] = \Drupal::routeMatch()->getParameter('gp')->id();
+  }
+
+  if (!empty($cypher) &&
+    \Drupal::service('nidirect_gp.unique_cypher')->isCypherUnique($cypher, $excludes) == FALSE) {
+
+    $message = t("A GP with the cypher '@cypher' already exists.", ['@cypher' => $cypher,]);
+
+    $render = $form['cypher_unique'];
+    $render['#attributes']['class'] = 'form-item--error-message';
+    $render['#value'] = '<strong>' . $message . '</strong>';
+  }
+  else {
+    $render = $form['cypher_unique'];
+  }
+
+  return $render;
 }
 
 /**

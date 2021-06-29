@@ -21,7 +21,7 @@ class GpUniqueCypherConstraintValidator extends ConstraintValidator {
     $is_unique = \Drupal::service('nidirect_gp.unique_cypher')->isCypherUnique($cypher, [$entity->id()]);
 
     if ($is_unique === FALSE) {
-      $this->context->addViolation($constraint->message);
+      $this->context->addViolation($constraint->message, ['@cypher' => $cypher]);
     }
   }
 

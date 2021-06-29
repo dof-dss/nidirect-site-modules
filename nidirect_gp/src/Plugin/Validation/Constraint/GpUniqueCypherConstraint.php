@@ -20,6 +20,6 @@ class GpUniqueCypherConstraint extends Constraint {
    *
    * @var string
    */
-  public $message = 'A GP must have a unique cypher.';
+  public $message = "A GP entry with the cypher '@cypher' exists. A GP must have a unique cypher.";
 
 }

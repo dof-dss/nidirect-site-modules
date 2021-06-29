@@ -69,7 +69,8 @@ use Drupal\user\UserInterface;
  *     "translation_revert" = "/gp/{gp}/revisions/{gp_revision}/revert/{langcode}",
  *     "collection" = "/admin/content/gp",
  *   },
- *   field_ui_base_route = "gp.settings"
+ *   field_ui_base_route = "gp.settings",
+ *   constraints = {"GpUniqueCypher" = {}}
  * )
  */
 class Gp extends RevisionableContentEntityBase implements GpInterface {

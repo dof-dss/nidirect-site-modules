@@ -14,6 +14,9 @@ services:
   nidirect_gp.gp_autocomplete_matcher:
     class: Drupal\nidirect_gp\GpAutocompleteMatcher
     arguments: [ '@plugin.manager.entity_reference_selection', '@entity_type.manager']
+  nidirect_gp.unique_cypher:
+    class: Drupal\nidirect_gp\GpUniqueCypher
+    arguments: [ '@entity_type.manager' ]
 
 parameters:
   nidirect_gp.geocoding_service: googlemaps

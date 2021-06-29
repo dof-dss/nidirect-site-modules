@@ -2,13 +2,43 @@
 
 namespace Drupal\nidirect_gp\Plugin\Validation\Constraint;
 
+use Drupal\Core\DependencyInjection\ContainerInjectionInterface;
+use Drupal\nidirect_gp\GpUniqueCypher;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 
 /**
  * Validates that a GP has a unique cypher.
  */
-class GpUniqueCypherConstraintValidator extends ConstraintValidator {
+class GpUniqueCypherConstraintValidator extends ConstraintValidator implements ContainerInjectionInterface {
+
+
+  /**
+   * The GP unique cypher service.
+   *
+   * @var \Drupal\nidirect_gp\GpUniqueCypher
+   */
+  protected $uniqueCypherService;
+
+  /**
+   * Class constructor.
+   *
+   * @param \Drupal\nidirect_gp\GpUniqueCypher $gp_unique_cypher_service
+   *   The GP unique cypher service.
+   */
+  public function __construct(GpUniqueCypher $gp_unique_cypher_service) {
+    $this->uniqueCypherService = $gp_unique_cypher_service;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('nidirect_gp.unique_cypher')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -18,9 +48,7 @@ class GpUniqueCypherConstraintValidator extends ConstraintValidator {
       return;
     }
 
-    $is_unique = \Drupal::service('nidirect_gp.unique_cypher')->isCypherUnique($cypher, [$entity->id()]);
-
-    if ($is_unique === FALSE) {
+    if ($this->uniqueCypherService->isCypherUnique($cypher, [$entity->id()]) === FALSE) {
       $this->context->addViolation($constraint->message, ['@cypher' => $cypher]);
     }
   }

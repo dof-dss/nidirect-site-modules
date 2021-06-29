@@ -166,7 +166,7 @@ function nidirect_gp_unique_cypher(array &$form, FormStateInterface $form_state)
   if (!empty($cypher) &&
     \Drupal::service('nidirect_gp.unique_cypher')->isCypherUnique($cypher, $excludes) == FALSE) {
 
-    $message = t("A GP with the cypher '@cypher' already exists.", ['@cypher' => $cypher,]);
+    $message = t("A GP entry with the cypher '@cypher' exists. A GP must have a unique cypher.", ['@cypher' => $cypher,]);
 
     $render = $form['cypher_unique'];
     $render['#attributes']['class'] = 'form-item--error-message';

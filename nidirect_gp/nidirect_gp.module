@@ -130,8 +130,14 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     // Prepend a submit callback.
     array_unshift($form['#submit'], 'nidirect_gp_gp_practice_form_submit');
   }
+}
 
-  // Ajax callback to check if the GP cypher is unique.
+/**
+ * Implements hook_form_BASE_FORM_ID_alter().
+ */
+function nidirect_gp_form_gp_form_alter(&$form, &$form_state, $form_id) {
+
+  // Add ajax callback to check for unique GP cypher value.
   $form['cypher']['widget'][0]['value']['#ajax'] = [
     'callback' => 'nidirect_gp_unique_cypher',
     'event' => 'change',
@@ -150,7 +156,6 @@ function nidirect_gp_form_alter(&$form, FormStateInterface $form_state, $form_id
     ],
     '#weight' => $form['cypher']['#weight'],
   ];
-
 }
 
 /**

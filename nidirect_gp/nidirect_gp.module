@@ -272,19 +272,19 @@ function nidirect_gp_views_pre_render(ViewExecutable $view) {
  */
 function nidirect_gp_preprocess_views_view_field(&$variables) {
   if ($variables['view']->id() === 'gp_practice_list' && $variables['field']->field === 'field_gp_practice_member') {
-   $gp_ids = $variables['field']->getValue($variables['row']);
-   $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
+    $gp_ids = $variables['field']->getValue($variables['row']);
+    $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
 
-   foreach ($gps as $gp) {
-     $list_items[$gp->id()]['#markup'] = $gp->getDisplayName()  . " [" . $gp->getCypher() . "] " . $gp->toLink('Edit')->toString();
-   }
+    foreach ($gps as $gp) {
+      $list_items[$gp->id()]['#markup'] = $gp->getDisplayName() . " [" . $gp->getCypher() . "] " . $gp->toLink('Edit')->toString();
+    }
 
-   $item_list = [
-    '#theme' => 'item_list',
-    '#items' => $list_items,
+    $item_list = [
+      '#theme' => 'item_list',
+      '#items' => $list_items,
     ];
 
-   $variables['output'] = render($item_list);
+    $variables['output'] = render($item_list);
   }
 }
 

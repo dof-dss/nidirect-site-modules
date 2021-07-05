@@ -276,7 +276,7 @@ function nidirect_gp_preprocess_views_view_field(&$variables) {
    $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
 
    foreach ($gps as $gp) {
-     $list_items[$gp->id()] = $gp->getDisplayName();
+     $list_items[[$gp->id()]['#markup']] = $gp->getDisplayName() . " " . $gp->toLink('Edit');
    }
 
    $item_list = [

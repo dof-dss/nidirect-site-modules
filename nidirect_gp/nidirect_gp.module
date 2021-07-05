@@ -273,7 +273,7 @@ function nidirect_gp_views_pre_render(ViewExecutable $view) {
 function nidirect_gp_preprocess_views_view_field(&$variables) {
   // Override the field output for GP Practice List view. We do this so we can
   // lookup and inject the GP cypher into the practice members list.
-  if ($variables['view']->id() === 'gp_practice_list' && $variables['field']->field === 'field_gp_practice_member') {
+  if ($variables['view']->id() === 'gp_practice_list' && $variables['view']->current_display === 'gp_practice_list_page' && $variables['field']->field === 'field_gp_practice_member') {
     $gp_ids = $variables['field']->getValue($variables['row']);
     $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
 

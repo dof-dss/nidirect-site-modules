@@ -38,7 +38,7 @@ class GpAutocompleteMatcher extends EntityAutocompleteMatcher {
   public function getMatches($target_type, $selection_handler, $selection_settings, $string = '') {
 
     if ($target_type !== 'gp') {
-      return;
+      return parent::getMatches($target_type, $selection_handler, $selection_settings, $string);
     }
 
     $matches = [];

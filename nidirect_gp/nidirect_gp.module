@@ -268,6 +268,27 @@ function nidirect_gp_views_pre_render(ViewExecutable $view) {
 }
 
 /**
+ * Implements hook_preprocess_views_view_field().
+ */
+function nidirect_gp_preprocess_views_view_field(&$variables) {
+  if ($variables['view']->id() === 'gp_practice_list' && $variables['field']->field === 'field_gp_practice_member') {
+   $gp_ids = $variables['field']->getValue($variables['row']);
+   $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
+
+   foreach ($gps as $gp) {
+     $list_items[$gp->id()] = $gp->getDisplayName();
+   }
+
+   $item_list = [
+    '#theme' => 'item_list',
+    '#items' => $list_items,
+    ];
+
+   $variables['output'] = render($item_list);
+  }
+}
+
+/**
  * Utility function to handle GP Practice submit.
  */
 function _build_gp_practice_title($practiceName = '', $surgeryName = '') {

@@ -390,3 +390,14 @@ function nidirect_common_form_editor_media_dialog_alter(array &$form, FormStateI
     ]
   )->toString();
 }
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ *
+ */
+function nidirect_common_form_fastly_settings_alter(&$form, FormStateInterface $form_state) {
+  // Always disable VCL upload in Fastly as the deliver.vcl that comes with the
+  // Fastly module messes up the cache control headers.
+  $form['vcl']['vcl_snippets']['#disabled'] = TRUE;
+  unset($form['vcl']['vcl_snippets']['#ajax']);
+}

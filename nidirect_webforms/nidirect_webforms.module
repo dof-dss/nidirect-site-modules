@@ -129,7 +129,15 @@ function nidirect_webforms_html_detect_submission_validate(&$form, FormStateInte
   // there's no HTML in the submitted value. If it doesn't match, strip_tags has
   // removed something so we can set a form error for it.
   if ($details_element['#value'] != $stripped_value) {
-    $form_state->setError($details_element, t('HTML is not permitted here.'));
+    $form_state->setError($details_element, t('HTML is not permitted in this field.'));
+  }
+
+  // It's also important to check for URLs pasted in that might escape the HTML validator.
+  $matches = [];
+  preg_match_all('~[a-z]+://\S+~i', $stripped_value, $matches);
+
+  if (!empty($matches[0])) {
+    $form_state->setError($details_element, t('URLs are not permitted in this field.'));
   }
 }
 

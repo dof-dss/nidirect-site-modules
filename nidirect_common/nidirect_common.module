@@ -543,3 +543,33 @@ function nidirect_common_preprocess_node(array &$variables) {
   }
 
 }
+
+/**
+ * Implements hook_entity_delete().
+ *
+ * Log redirect deletion to watchdog.
+ */
+function nidirect_common_entity_delete(EntityInterface $entity) {
+  // Are we deleting a redirect entity ?
+  if ($entity->bundle() == 'redirect') {
+    // Extract the redirect destination details from the
+    // string in the format 'internal:/node/nnnn'.
+    $destination = $entity->getRedirect()['uri'];
+    $destination = str_replace("internal:", "", $destination);
+    $nid = str_replace("/node/", "", $destination);
+    // Get the node alias for extra info.
+    $alias = \Drupal::service('path.alias_manager')->getAliasByPath($destination);
+    // Get the redirect source.
+    $source = $entity->get('redirect_source')->get(0)->getUrl()->toString();
+    // Track the current user.
+    $username = \Drupal::currentUser()->getAccountName();
+    $message = t("Redirect from @source to @alias (nid @nid) deleted by @username",
+      [
+        '@source' => $source,
+        '@alias' => $alias,
+        '@nid' => $nid,
+        '@username' => $username
+      ]);
+    \Drupal::logger('redirect')->notice($message);
+  }
+}

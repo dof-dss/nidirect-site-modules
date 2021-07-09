@@ -1,6 +1,6 @@
 <?php
 
-namespace Drupal\migrate_common\Commands;
+namespace Drupal\nidirect_common\Commands;
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Driver\mysql\Connection;
@@ -22,27 +22,44 @@ class ReplaceNodeLinks extends DrushCommands {
   protected $dbConn;
 
   /**
+   * Core EntityTypeManager instance.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   */
+  protected $entityTypeManager;
+
+  /**
    * {@inheritdoc}
    */
   public function __construct() {
     $this->dbConn = Database::getConnection('default', 'default');
+    $this->entityTypeManager = \Drupal::entityTypeManager();
   }
 
   /**
-   * Update links
+   * Replace links containing /node/XXX to the path alias for that NID.
    *
-   * @command node-links-to-aliases
+   * @command nidirect:node-to-alias
    *
    * @param string $node_type
-   *   Node bundle to perform the operation on. Defaults to 'all'.
+   *   Node bundle to perform the operation on.
    * @param string $field
    *   Node field to search and replace links. Must be the full machine name
-   *   (e.g. field_summary) defaults to 'body'.
-   *
-   * @option Process revision links.
+   *   (e.g. field_summary).
    */
-  public function updatePublishStatus($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
+  public function updateNodeFieldLinks($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
 
+    if ($node_type === 'all') {
+      $bundles = $this->entityTypeManager->getStorage('node_type')->loadMultiple();
+    }
+
+    $query = $this->dbConn->select('node__' . $field, 'f');
+    $query->fields('f', ['entity_id', $field . '_value']);
+
+    if ($node_type !== 'all') {
+      $query->condition('f.bundle', $node_type, '=');
+    }
+    $results = $query->execute();
 
   }
 

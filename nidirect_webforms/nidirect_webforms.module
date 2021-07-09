@@ -99,58 +99,10 @@ function nidirect_webforms_webform_submission_presave(WebformSubmissionInterface
 }
 
 /**
- * Webform validation callback.
- *
- * Detects unwanted markup in the form contents and flags an error
- * when it does detect content with HTML.
- */
-function nidirect_webforms_html_detect_submission_validate(&$form, FormStateInterface $form_state) {
-  $submitted_form = $form_state->getCompleteForm();
-  $webform_id = $form['#webform_id'] ?? '';
-
-  if ($webform_id === 'site_feedback') {
-    $details_element = $submitted_form['elements']['page_feedback']['your_comments']['provide_details_of_technical_problems_or_make_a_comment_about_th'];
-  }
-  if ($webform_id === 'your_comments') {
-    $details_element = $submitted_form['elements']['your_feedback']['enter_your_feedback'];
-    // Could also be material in the question details on this form, so check that too.
-    if (empty($details_element['#value'])) {
-      $details_element = $submitted_form['elements']['your_feedback']['question_details'];
-    }
-  }
-
-  if (empty($details_element)) {
-    return;
-  }
-
-  $stripped_value = strip_tags($details_element['#value']);
-
-  // If the stripped value matches the submitted value, we can be relatively sure
-  // there's no HTML in the submitted value. If it doesn't match, strip_tags has
-  // removed something so we can set a form error for it.
-  if ($details_element['#value'] != $stripped_value) {
-    $form_state->setError($details_element, t('HTML is not permitted in this field.'));
-  }
-
-  // It's also important to check for URLs pasted in that might escape the HTML validator.
-  $matches = [];
-  preg_match_all('~[a-z]+://\S+~i', $stripped_value, $matches);
-
-  if (!empty($matches[0])) {
-    $form_state->setError($details_element, t('URLs are not permitted in this field.'));
-  }
-}
-
-/**
  * Implements hook_form_alter().
  */
 function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (preg_match('/webform/', $form_id)) {
-    // Add a validation callback to some known webforms to prevent submission of HTML.
-    if (in_array($form['#webform_id'], ['your_comments', 'site_feedback'])) {
-      array_unshift($form['#validate'], 'nidirect_webforms_html_detect_submission_validate');
-    }
-
     // Site feedback form has an issue where conditional visibility
     // of the action buttons based on selections in the second stage of
     // the wizard also hides the first page's Continue/Next button.

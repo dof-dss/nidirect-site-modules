@@ -6,7 +6,9 @@ use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Driver\mysql\Connection;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
+use Drupal\path_alias\AliasManager;
 use Drush\Commands\DrushCommands;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Replaces references to node/xxx within content with the path alias.
@@ -22,18 +24,18 @@ class ReplaceNodeLinks extends DrushCommands {
   protected $dbConn;
 
   /**
-   * Core EntityTypeManager instance.
+   * Path alias manager.
    *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\path_alias\AliasManager
    */
-  protected $entityTypeManager;
+  protected $pathAliasManager;
 
   /**
    * {@inheritdoc}
    */
-  public function __construct() {
+  public function __construct(AliasManager $alias_manager) {
     $this->dbConn = Database::getConnection('default', 'default');
-    $this->entityTypeManager = \Drupal::entityTypeManager();
+    $this->pathAliasManager = $alias_manager;
   }
 
   /**
@@ -49,10 +51,6 @@ class ReplaceNodeLinks extends DrushCommands {
    */
   public function updateNodeFieldLinks($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
 
-    if ($node_type === 'all') {
-      $bundles = $this->entityTypeManager->getStorage('node_type')->loadMultiple();
-    }
-
     $query = $this->dbConn->select('node__' . $field, 'f');
     $query->fields('f', ['entity_id', $field . '_value']);
     $query->where("body_value REGEXP '\/node\/\[0-9]*'");
@@ -62,6 +60,23 @@ class ReplaceNodeLinks extends DrushCommands {
     }
     $results = $query->execute()->fetchAllAssoc('entity_id');
 
+    foreach ($results as $result) {
+      preg_replace_callback(
+        '/\/node\/\d+/m',
+        'self::nid_to_alias',
+        $result->body_value);
+    }
+  }
+
+  /**
+   * Match node ID to path alias.
+   *
+   * @param $matches
+   */
+  public function nid_to_alias($matches) {
+    foreach ($matches as $match) {
+      $alias = $this->pathAliasManager->getAliasByPath($match);
+    }
   }
 
 }

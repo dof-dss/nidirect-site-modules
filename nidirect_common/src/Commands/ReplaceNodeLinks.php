@@ -48,9 +48,9 @@ class ReplaceNodeLinks extends DrushCommands {
    * @param array $options
    *   Option argument to exclude node revisions.
    *
-   * @command nidirect:node-to-alias
+   * @command nidirect:node-path-to-alias
    */
-  public function updateNodeFieldLinks($node_type = 'all', $field = 'body', array $options = ['revisions' => TRUE]) {
+  public function nodePathToAlias($node_type = 'all', $field = 'body', array $options = ['revisions' => TRUE]) {
     $tables = ['node__', 'node_revision__'];
 
     if ($options['revisions'] !== TRUE) {

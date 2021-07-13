@@ -11,8 +11,7 @@ use Drush\Commands\DrushCommands;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Replaces references to node/xxx within content with the path alias.
- *
+ * Replaces references to node/xxx within fields with the path alias.
  */
 class ReplaceNodeLinks extends DrushCommands {
 
@@ -41,15 +40,17 @@ class ReplaceNodeLinks extends DrushCommands {
   /**
    * Replace links containing /node/XXX to the path alias for that NID.
    *
-   * @command nidirect:node-to-alias
-   *
    * @param string $node_type
    *   Node bundle to perform the operation on.
    * @param string $field
    *   Node field to search and replace links. Must be the full machine name
    *   (e.g. field_summary).
+   * @param array $options
+   *   Option argument to exclude node revisions.
+   *
+   * @command nidirect:node-to-alias
    */
-  public function updateNodeFieldLinks($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
+  public function updateNodeFieldLinks($node_type = 'all', $field = 'body', array $options = ['revisions' => TRUE]) {
     $tables = ['node__', 'node_revision__'];
 
     if ($options['revisions'] !== TRUE) {
@@ -59,6 +60,7 @@ class ReplaceNodeLinks extends DrushCommands {
     foreach ($tables as $table) {
       $updated_count = 0;
 
+      // Select any field values that contain '/node/XXXX'.
       $query = $this->dbConn->select($table . $field, 'f');
       $query->fields('f', ['entity_id', $field . '_value']);
       $query->where($field . "_value REGEXP '\/node\/\[0-9]*'");
@@ -68,12 +70,14 @@ class ReplaceNodeLinks extends DrushCommands {
       }
       $results = $query->execute()->fetchAllAssoc('entity_id');
 
+      // Replace each node/xxx value with the path alias if found.
       foreach ($results as $result) {
         $updated_value = preg_replace_callback(
           '/\/node\/\d+/m',
-          'self::nid_to_alias',
+          'self::nidToAlias',
           $result->body_value);
 
+        // Update the field value contents with new path aliases.
         $updated_count += $this->dbConn->update($table . $field)
           ->fields([$field . '_value' => $updated_value])
           ->condition('entity_id', $result->entity_id, '=')
@@ -86,11 +90,12 @@ class ReplaceNodeLinks extends DrushCommands {
   }
 
   /**
-   * Match node ID to path alias.
+   * Return the path alias for the matching node paths.
    *
-   * @param $matches
+   * @param array $matches
+   *   Array of '/node/XXX' paths to find aliases for.
    */
-  public function nid_to_alias($matches) {
+  public function nidToAlias(array $matches) {
     foreach ($matches as $match) {
       $alias = $this->pathAliasManager->getAliasByPath($match);
 

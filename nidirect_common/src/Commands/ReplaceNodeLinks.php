@@ -50,37 +50,16 @@ class ReplaceNodeLinks extends DrushCommands {
    *   (e.g. field_summary).
    */
   public function updateNodeFieldLinks($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
-    $updated_count = 0;
+    $tables = ['node__', 'node_revision__'];
 
-    $query = $this->dbConn->select('node__' . $field, 'f');
-    $query->fields('f', ['entity_id', $field . '_value']);
-    $query->where($field . "_value REGEXP '\/node\/\[0-9]*'");
-
-    if ($node_type !== 'all') {
-      $query->condition('f.bundle', $node_type, '=');
-    }
-    $results = $query->execute()->fetchAllAssoc('entity_id');
-
-    foreach ($results as $result) {
-      $updated_value = preg_replace_callback(
-        '/\/node\/\d+/m',
-        'self::nid_to_alias',
-        $result->body_value);
-
-      $updated_count += $this->dbConn->update('node__' . $field)
-        ->fields([$field . '_value' => $updated_value])
-        ->condition('entity_id', $result->entity_id, '=')
-        ->execute();
+    if ($options['revisions'] !== TRUE) {
+      array_pop($tables);
     }
 
-    $this->output()->writeln('Updated content aliases for ' . $updated_count . ' nodes');
-
-
-    // Update revisions.
-    if ($options['revisions'] === TRUE) {
+    foreach ($tables as $table) {
       $updated_count = 0;
 
-      $query = $this->dbConn->select('node_revision__' . $field, 'f');
+      $query = $this->dbConn->select($table . $field, 'f');
       $query->fields('f', ['entity_id', $field . '_value']);
       $query->where($field . "_value REGEXP '\/node\/\[0-9]*'");
 
@@ -95,14 +74,15 @@ class ReplaceNodeLinks extends DrushCommands {
           'self::nid_to_alias',
           $result->body_value);
 
-        $updated_count += $this->dbConn->update('node_revision__' . $field)
+        $updated_count += $this->dbConn->update($table . $field)
           ->fields([$field . '_value' => $updated_value])
           ->condition('entity_id', $result->entity_id, '=')
           ->execute();
       }
 
-      $this->output()->writeln('Updated content aliases for ' . $updated_count . ' revisions');
+      $this->output()->writeln('Updated content aliases for ' . str_replace('_', ' ', $table) . ': ' . $updated_count);
     }
+
   }
 
   /**

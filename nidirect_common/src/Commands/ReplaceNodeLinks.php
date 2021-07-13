@@ -54,7 +54,7 @@ class ReplaceNodeLinks extends DrushCommands {
 
     $query = $this->dbConn->select('node__' . $field, 'f');
     $query->fields('f', ['entity_id', $field . '_value']);
-    $query->where("body_value REGEXP '\/node\/\[0-9]*'");
+    $query->where($field . "_value REGEXP '\/node\/\[0-9]*'");
 
     if ($node_type !== 'all') {
       $query->condition('f.bundle', $node_type, '=');

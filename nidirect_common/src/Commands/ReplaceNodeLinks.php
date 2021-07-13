@@ -50,6 +50,7 @@ class ReplaceNodeLinks extends DrushCommands {
    *   (e.g. field_summary).
    */
   public function updateNodeFieldLinks($node_type = 'all', $field = 'body', $options = ['revisions' => TRUE]) {
+    $updated_count = 0;
 
     $query = $this->dbConn->select('node__' . $field, 'f');
     $query->fields('f', ['entity_id', $field . '_value']);
@@ -66,11 +67,13 @@ class ReplaceNodeLinks extends DrushCommands {
         'self::nid_to_alias',
         $result->body_value);
 
-      $this->dbConn->update('node__' . $field)
+      $updated_count += $this->dbConn->update('node__' . $field)
         ->fields([$field . '_value' => $updated_value])
         ->condition('entity_id', $result->entity_id, '=')
         ->execute();
     }
+
+    $this->output()->writeln('Updated content aliases for ' . $updated_count . ' nodes');
   }
 
   /**
@@ -82,7 +85,9 @@ class ReplaceNodeLinks extends DrushCommands {
     foreach ($matches as $match) {
       $alias = $this->pathAliasManager->getAliasByPath($match);
 
-      return $alias;
+      if ($alias !== $match) {
+        return $alias;
+      }
     }
   }
 

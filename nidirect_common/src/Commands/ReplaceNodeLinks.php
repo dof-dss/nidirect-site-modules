@@ -61,10 +61,15 @@ class ReplaceNodeLinks extends DrushCommands {
     $results = $query->execute()->fetchAllAssoc('entity_id');
 
     foreach ($results as $result) {
-      preg_replace_callback(
+      $updated_value = preg_replace_callback(
         '/\/node\/\d+/m',
         'self::nid_to_alias',
         $result->body_value);
+
+      $this->dbConn->update('node__' . $field)
+        ->fields([$field . '_value' => $updated_value])
+        ->condition('entity_id', $result->entity_id, '=')
+        ->execute();
     }
   }
 
@@ -76,6 +81,8 @@ class ReplaceNodeLinks extends DrushCommands {
   public function nid_to_alias($matches) {
     foreach ($matches as $match) {
       $alias = $this->pathAliasManager->getAliasByPath($match);
+
+      return $alias;
     }
   }
 

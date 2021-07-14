@@ -7,6 +7,8 @@
  * Contains dblog overrides.
  */
 
+use Drupal\Core\Entity\EntityInterface;
+
 /**
  * Implements hook_entity_delete().
  *
@@ -58,10 +60,14 @@ function nidirect_dblog_cron() {
       ->range($row_limit - 1, 1)
       ->execute()->fetchField();
 
-    // Delete all table entries older than the nth row, if nth row was found.
+    // Delete all table entries older than the nth row, if nth row was found,
+    // but never delete 'content' or 'redirect_deletion' entries as we need
+    // to keep a track of these.
     if ($min_row) {
       $connection->delete('watchdog')
         ->condition('wid', $min_row, '<')
+        ->condition('type', 'redirect_deletion', '<>' )
+        ->condition('type', 'content', '<>' )
         ->execute();
     }
   }

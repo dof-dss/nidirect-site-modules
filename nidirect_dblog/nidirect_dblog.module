@@ -37,3 +37,33 @@ function nidirect_dblog_entity_delete(EntityInterface $entity) {
   }
 }
 
+/**
+ * Implements hook_cron().
+ *
+ * Controls the size of the log table, paring it to 'dblog_row_limit' messages,
+ * (this overrides the dblog_cron processing).
+ */
+function nidirect_dblog_cron() {
+  // Cleanup the watchdog table.
+  $row_limit = \Drupal::config('dblog.settings')->get('row_limit');
+
+  // For row limit n, get the wid of the nth row in descending wid order.
+  // Counting the most recent n rows avoids issues with wid number sequences,
+  // e.g. auto_increment value > 1 or rows deleted directly from the table.
+  if ($row_limit > 0) {
+    $connection = \Drupal::database();
+    $min_row = $connection->select('watchdog', 'w')
+      ->fields('w', ['wid'])
+      ->orderBy('wid', 'DESC')
+      ->range($row_limit - 1, 1)
+      ->execute()->fetchField();
+
+    // Delete all table entries older than the nth row, if nth row was found.
+    if ($min_row) {
+      $connection->delete('watchdog')
+        ->condition('wid', $min_row, '<')
+        ->execute();
+    }
+  }
+}
+

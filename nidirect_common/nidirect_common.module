@@ -570,6 +570,6 @@ function nidirect_common_entity_delete(EntityInterface $entity) {
         '@nid' => $nid,
         '@username' => $username
       ]);
-    \Drupal::logger('redirect')->notice($message);
+    \Drupal::logger('redirect_deletion')->notice($message);
   }
 }

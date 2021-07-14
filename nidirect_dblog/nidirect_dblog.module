@@ -66,10 +66,9 @@ function nidirect_dblog_cron() {
     if ($min_row) {
       $connection->delete('watchdog')
         ->condition('wid', $min_row, '<')
-        ->condition('type', 'redirect_deletion', '<>' )
-        ->condition('type', 'content', '<>' )
+        ->condition('type', 'redirect_deletion', '<>')
+        ->condition('type', 'content', '<>')
         ->execute();
     }
   }
 }
-

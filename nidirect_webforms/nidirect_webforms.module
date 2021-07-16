@@ -103,6 +103,8 @@ function nidirect_webforms_webform_submission_presave(WebformSubmissionInterface
  */
 function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $form_id) {
   if (preg_match('/webform/', $form_id)) {
+    $form['#cache']['contexts'] = ['url.path'];
+
     // Site feedback form has an issue where conditional visibility
     // of the action buttons based on selections in the second stage of
     // the wizard also hides the first page's Continue/Next button.

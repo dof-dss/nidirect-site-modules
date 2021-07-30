@@ -31,6 +31,13 @@ use Drupal\nidirect_search\SolrElevatedIdEntityInterface;
  *     "edit-form" = "/admin/config/search/solr-elevated-id/{solr_elevated_id}",
  *     "delete-form" = "/admin/config/search/solr-elevated-id/{solr_elevated_id}/delete",
  *     "collection" = "/admin/config/search/solr-elevated-id/"
+ *   },
+ *   config_export = {
+ *    "id",
+ *    "label",
+ *    "index",
+ *    "nodes",
+ *    "status"
  *   }
  * )
  */

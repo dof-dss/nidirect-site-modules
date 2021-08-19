@@ -8,9 +8,13 @@
   <span class="subtitle">{{ question }}</span>
 </h3>
 <details{{ attributes.addClass(quiz_feedback_classes) }} open="open">
-  <summary aria-label="Your answer">
+  <summary>
+    <span class="visually-hidden">Your answer: </span>
     {{ user_answer }}
-    <span class="{{ passed ? 'success' : 'error' }}" aria-label="is">{{ passed ? 'correct' : 'wrong' }}</span>
+    <span class="{{ passed ? 'success' : 'error' }}">
+      <span class="visually-hidden"> is </span>
+      {{ passed ? 'correct' : 'wrong' }}
+    </span>
   </summary>
   {{ feedback }}
 </details>

@@ -236,8 +236,8 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
         '#attributes' => [
           'class' => ['gmap', 'gmap-lazy-load'],
           'id' => Html::getUniqueId('gmap-lazy-load'),
-          'title' => t('Google Map'),
           'role' => 'application',
+          'aria-roledescription' => t('Google Map'),
           'data-lat' => $map_settings['lat'],
           'data-lng' => $map_settings['lng'],
           'data-maptype' => $map_settings['map_type'],

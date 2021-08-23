@@ -64,8 +64,10 @@
         // Display 'Use my location' if the browser supports the Geolocation API.
         if('geolocation' in navigator) {
           $searchForm.prepend('<div class="find-by-location">' +
-            '<label for="use_location" aria-label="Use your location to find GP practice near you">'
-            + Drupal.t('Search for a GP practice near you') + '</label>' +
+            '<label for="use_location">'
+            + '<span class="visually-hidden">' + Drupal.t('Use your location to') + '</span>'
+            + Drupal.t('Search for a GP practice near you') +
+            '</label>' +
             '<input type="button" class="button button--primary button--medium" id="use_location" name="use_location" value="' + Drupal.t(locationButtonTxt) + '" />' +
             '<div id="find-by-location-status" role="alert" aria-live="assertive"></div>' +
             '</div>');

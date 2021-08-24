@@ -62,7 +62,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
     $links = [];
     $skip_link = '';
 
-    $title = $this->t('Find contacts beginning with...');
+    $title = $this->t('Find contacts beginning with<span class="visually-hidden"> A to Z</span>...');
 
     if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');
@@ -74,8 +74,10 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
       ];
     }
     else {
+      $skip_link = '<a href="#section--translation-help" class="skip-link visually-hidden focusable">';
+      $skip_link .= t('Skip A to Z') . '</a>';
       $build['title'] = [
-        '#markup' => '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
+        '#markup' => $skip_link . '<h2 class="label" id="contacts-az--title">' . $title . '</h2>',
       ];
     }
 

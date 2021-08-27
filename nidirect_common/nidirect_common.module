@@ -113,12 +113,13 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
 function nidirect_common_views_pre_render(ViewExecutable $view) {
   if ($view->id() == 'publications' && $view->current_display == 'search_page') {
     if (!empty($view->header['area'])) {
+      $item_count = $view->pager->total_items ?? 0;
       // Generate the header content to show N publication(s).
       $view->header['area']->options['content']['value'] = \Drupal::translation()->formatPlural(
-        $view->pager->total_items,
+        $item_count,
         '@count publication',
         '@count publications',
-        ['@count' => $view->pager->total_items]
+        ['@count' => $item_count]
       );
     }
   }

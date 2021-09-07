@@ -394,9 +394,11 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
  * Implements hook_clientside_validation_should_validate().
  */
 function nidirect_common_clientside_validation_should_validate($element, FormStateInterface $form_state, $form_id) {
-  // Turn off clientside validation jquery functionality on anything that isn't a webform form.
-  // Also see: nidirect_common_page_attachments_alter. nidirect_common_form_BASE_FORM_ID_alter hooks
-  // where similar adjustments have been needed to work around clientside_validation module.
+  // Turn off clientside validation jquery functionality on anything that isn't
+  // a webform form.
+  // Also see: nidirect_common_page_attachments_alter.
+  // nidirect_common_form_BASE_FORM_ID_alter hooks where similar adjustments
+  // have been needed to work around clientside_validation module.
   if (!preg_match('/^webform_/', $form_id)) {
     return FALSE;
   }
@@ -536,8 +538,8 @@ function nidirect_common_preprocess_node(array &$variables) {
   $node = $variables['node'];
 
   if (isset($node) && method_exists($node, 'bundle')) {
-    // Fix for application pages to prevent Google Translate altering the green button link URL.
-    // (We don't want applications opening in Google Translate).
+    // Fix for application pages to prevent Google Translate altering the green
+    // button link URL (We don't want applications opening in Google Translate).
     if ($node->bundle() === 'application') {
       $variables['#attached']['library'][] = 'nidirect_common/application_links';
     }

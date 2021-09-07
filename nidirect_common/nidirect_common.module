@@ -544,3 +544,16 @@ function nidirect_common_preprocess_node(array &$variables) {
   }
 
 }
+
+/**
+ * Implements hook_easy_google_analytics_counter_query_alter().
+ */
+function nidirect_common_easy_google_analytics_counter_query_alter(array &$query) {
+  $query['dimensionFilterClauses'] = [
+    'filters' => [
+      'dimension_name' => 'ga:pagepath',
+      'operator' => 'REGEXP',
+      'expressions' => '^\/(articles|campaigns|services|news|conditions)\/.*',
+    ],
+  ];
+}

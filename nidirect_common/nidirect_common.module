@@ -9,6 +9,7 @@
  * include (inc/) files and required in this file.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -517,7 +518,6 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
  * Implements hook_page_attachments().
  */
 function nidirect_common_page_attachments(array &$page) {
-
   // Add translation help library to the translation help page.
   $path_current = \Drupal::service('path.current')->getPath();
   $translation_help_path = \Drupal::service('path_alias.manager')->getPathByAlias('/articles/translation-help');
@@ -526,6 +526,24 @@ function nidirect_common_page_attachments(array &$page) {
     $page['#attached']['library'][] = 'nidirect_common/translation_help';
   }
 
+  $route_params = \Drupal::routeMatch()->getParameters()->all();
+
+  if (isset($route_params['taxonomy_term'])) {
+    $term = $route_params['taxonomy_term'];
+
+    if ($term->bundle() === 'site_themes') {
+      $datalayer_values['theme'] =  $term->getName();
+
+      $page['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#value' => 'window.dataLayer = window.dataLayer || []; window.dataLayer.push(' . Json::encode($datalayer_values) . ');',
+        ],
+        'datalayer-js',
+        ];
+    }
+  }
 }
 
 /**

@@ -528,11 +528,24 @@ function nidirect_common_page_attachments(array &$page) {
 
   $route_params = \Drupal::routeMatch()->getParameters()->all();
 
-  if (isset($route_params['taxonomy_term'])) {
-    $term = $route_params['taxonomy_term'];
+  if (isset($route_params['node'])) {
+    $node = $route_params['node'];
 
-    if ($term->bundle() === 'site_themes') {
+    if ($node->hasField('field_subtheme')) {
+      $term = $node->field_subtheme->entity;
+    }
+
+    if (!empty($term) && $term->bundle() === 'site_themes') {
       $datalayer_values['theme'] =  $term->getName();
+
+      $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
+      foreach ($ancestors as $term) {
+        $all_themes[] = $term->label();
+      }
+
+      if (!empty($all_themes)) {
+        $datalayer_values['all-themes'] = implode(',', $all_themes);
+      }
 
       $page['#attached']['html_head'][] = [
         [

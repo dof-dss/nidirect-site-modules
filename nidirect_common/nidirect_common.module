@@ -528,34 +528,40 @@ function nidirect_common_page_attachments(array &$page) {
 
   $route_params = \Drupal::routeMatch()->getParameters()->all();
 
-  // Create a datalayer object containing 'subtheme' custom directives for GTM.
-  if (isset($route_params['node'])) {
-    $node = $route_params['node'];
+  // Create a datalayer object containing 'theme' custom directives for GTM.
+  if (isset($route_params['node']) || isset($route_params['taxonomy_term'])) {
 
-    if ($node->hasField('field_subtheme')) {
-      $term = $node->field_subtheme->entity;
+    // Fetch a term from a node subtheme field or taxonomy entity.
+    if (!empty($route_params['node']) && $route_params['node']->hasField('field_subtheme')) {
+      $term = $route_params['node']->field_subtheme->entity;
+    }
+    elseif (!empty($route_params['taxonomy_term'])) {
+      $term = $route_params['taxonomy_term'];
+    }
+    else {
+      return;
+    }
 
-      if (!empty($term) && $term->bundle() === 'site_themes') {
-        $datalayer_values['theme'] = $term->getName();
+    if (!empty($term) && $term->bundle() === 'site_themes') {
+      $datalayer_values['theme'] = $term->getName();
 
-        $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
-        foreach ($ancestors as $term) {
-          $all_themes[] = $term->label();
-        }
-
-        if (!empty($all_themes)) {
-          $datalayer_values['all-themes'] = implode(',', $all_themes);
-        }
-
-        $page['#attached']['html_head'][] = [
-          [
-            '#type' => 'html_tag',
-            '#tag' => 'script',
-            '#value' => 'window.dataLayer = window.dataLayer || []; window.dataLayer.push(' . Json::encode($datalayer_values) . ');',
-          ],
-          'datalayer-js',
-        ];
+      $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
+      foreach ($ancestors as $term) {
+        $all_themes[] = $term->label();
       }
+
+      if (!empty($all_themes)) {
+        $datalayer_values['all-themes'] = implode(',', $all_themes);
+      }
+
+      $page['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#value' => 'window.dataLayer = window.dataLayer || []; window.dataLayer.push(' . Json::encode($datalayer_values) . ');',
+        ],
+        'datalayer-js',
+      ];
     }
   }
 }

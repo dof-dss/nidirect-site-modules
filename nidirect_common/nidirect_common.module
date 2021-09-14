@@ -543,8 +543,10 @@ function nidirect_common_page_attachments(array &$page) {
     }
 
     if (!empty($term) && $term->bundle() === 'site_themes') {
+      // Add the individual term name.
       $datalayer_values['theme'] = $term->getName();
 
+      // Add all ancestors for the current term.
       $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
       foreach ($ancestors as $term) {
         $all_themes[] = $term->label();
@@ -554,6 +556,7 @@ function nidirect_common_page_attachments(array &$page) {
         $datalayer_values['all-themes'] = implode(',', $all_themes);
       }
 
+      // Inject the datalayer script before the Google Tag Manager script.
       $page['#attached']['html_head'][] = [
         [
           '#type' => 'html_tag',

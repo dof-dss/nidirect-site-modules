@@ -26,7 +26,6 @@ source:
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/161.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/168.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/169.rss'
-    - 'https://webfeeds.moneyadviceservice.org.uk/feeds/170.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/172.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/175.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2024.rss'
@@ -46,6 +45,10 @@ source:
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2047.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2048.rss'
     - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2049.rss'
+    - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2050.rss'
+    - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2051.rss'
+    - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2052.rss'
+    - 'https://webfeeds.moneyadviceservice.org.uk/feeds/2053.rss'
   item_selector: /rss/channel/item
   fields:
     -

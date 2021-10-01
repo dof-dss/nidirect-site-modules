@@ -543,16 +543,23 @@ function nidirect_common_page_attachments(array &$page) {
     }
 
     if (!empty($term) && $term->bundle() === 'site_themes') {
-      // Add the individual term name.
-      $datalayer_values['theme'] = $term->getName();
 
-      // Add all ancestors for the current term.
+      // Get all ancestors for the current term.
       $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
+
+      // Get the term labels.
       foreach ($ancestors as $term) {
         $all_themes[] = $term->label();
       }
 
       if (!empty($all_themes)) {
+        // Reverse order of themes.
+        $all_themes = array_reverse($all_themes);
+
+        // Set dimension1 to be the top-level parent theme - e.g. "Motoring".
+        $datalayer_values['theme'] = array_shift($all_themes);
+
+        // Set dimension2 to contain all the remaining sub-themes.
         $datalayer_values['all-themes'] = implode(',', $all_themes);
       }
 

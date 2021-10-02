@@ -532,7 +532,7 @@ function nidirect_common_page_attachments(array &$page) {
   if (isset($route_params['node']) || isset($route_params['taxonomy_term'])) {
 
     // Fetch a term from a node subtheme field or taxonomy entity.
-    if (!empty($route_params['node']) && $route_params['node']->hasField('field_subtheme')) {
+    if (!empty($route_params['node']) && is_object($route_params['node']) && $route_params['node']->hasField('field_subtheme')) {
       $term = $route_params['node']->field_subtheme->entity;
     }
     elseif (!empty($route_params['taxonomy_term'])) {

@@ -23,7 +23,7 @@ function nidirect_dblog_entity_delete(EntityInterface $entity) {
     $destination = str_replace("internal:", "", $destination);
     $nid = str_replace("/node/", "", $destination);
     // Get the node alias for extra info.
-    $alias = \Drupal::service('path.alias_manager')->getAliasByPath($destination);
+    $alias = \Drupal::service('path_alias.manager')->getAliasByPath($destination);
     // Get the redirect source.
     $source = $entity->get('redirect_source')->get(0)->getUrl()->toString();
     // Track the current user.

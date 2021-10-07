@@ -30,6 +30,8 @@ class RouteSubscriber extends RouteSubscriberBase {
     if ($route = $collection->get('editor.media_dialog')) {
       $route->setDefault('_title', 'Override media properties');
     }
+    // Nobody should be able to access the user registration page.
+    $collection->remove('user.register');
   }
 
 }

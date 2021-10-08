@@ -500,7 +500,7 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
   // 'not found' page. This code corrects that problem.
   $alias = \Drupal::request()->getRequestUri();
   // Get the true Drupal path for the current alias.
-  $path = \Drupal::service('path.alias_manager')->getPathByAlias($alias);
+  $path = \Drupal::service('path_alias.manager')->getPathByAlias($alias);
   // If the Drupal path does not lead us to a node and is in the
   // format '/publications/....' then it cannot be related to
   // the publications search and we should return a

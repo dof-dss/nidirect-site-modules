@@ -302,13 +302,16 @@ class GpSearchController extends ControllerBase {
   private function searchType() {
 
     $request = $this->requestStack->getCurrentRequest();
-    $output = [];
+    // Set a default.
+    $output = [
+      'type' => '',
+      'querytext' => '',
+    ];
 
     // Text search.
     $query_term = $request->get('search_api_views_fulltext');
 
     if (!empty($query_term)) {
-
       $output = [
         'type' => 'FULLTEXT',
         'querytext' => $query_term,

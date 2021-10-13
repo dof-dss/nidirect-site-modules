@@ -419,7 +419,7 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
     // Just check that the redirect is not for the current node.
     $current_node = \Drupal::routeMatch()->getParameter('node');
     if (!empty($current_node)) {
-      $this_alias = \Drupal::service('path.alias_manager')->getAliasByPath('/node/' . $current_node->id());
+      $this_alias = \Drupal::service('path_alias.manager')->getAliasByPath('/node/' . $current_node->id());
       if ($this_alias == $redirect_url) {
         // Redirect is for the current node, do not error.
         return;

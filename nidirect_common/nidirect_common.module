@@ -9,6 +9,7 @@
  * include (inc/) files and required in this file.
  */
 
+use Drupal\Component\Serialization\Json;
 use Drupal\Core\Block\BlockPluginInterface;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -501,7 +502,7 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
   // 'not found' page. This code corrects that problem.
   $alias = \Drupal::request()->getRequestUri();
   // Get the true Drupal path for the current alias.
-  $path = \Drupal::service('path.alias_manager')->getPathByAlias($alias);
+  $path = \Drupal::service('path_alias.manager')->getPathByAlias($alias);
   // If the Drupal path does not lead us to a node and is in the
   // format '/publications/....' then it cannot be related to
   // the publications search and we should return a
@@ -519,7 +520,6 @@ function nidirect_common_views_pre_view(ViewExecutable $view) {
  * Implements hook_page_attachments().
  */
 function nidirect_common_page_attachments(array &$page) {
-
   // Add translation help library to the translation help page.
   $path_current = \Drupal::service('path.current')->getPath();
   $translation_help_path = \Drupal::service('path_alias.manager')->getPathByAlias('/articles/translation-help');
@@ -528,6 +528,54 @@ function nidirect_common_page_attachments(array &$page) {
     $page['#attached']['library'][] = 'nidirect_common/translation_help';
   }
 
+  $route_params = \Drupal::routeMatch()->getParameters()->all();
+
+  // Create a datalayer object containing 'theme' custom directives for GTM.
+  if (isset($route_params['node']) || isset($route_params['taxonomy_term'])) {
+
+    // Fetch a term from a node subtheme field or taxonomy entity.
+    if (!empty($route_params['node']) && is_object($route_params['node']) && $route_params['node']->hasField('field_subtheme')) {
+      $term = $route_params['node']->field_subtheme->entity;
+    }
+    elseif (!empty($route_params['taxonomy_term'])) {
+      $term = $route_params['taxonomy_term'];
+    }
+    else {
+      return;
+    }
+
+    if (!empty($term) && $term->bundle() === 'site_themes') {
+
+      // Get all ancestors for the current term.
+      $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());
+
+      // Get the term labels.
+      foreach ($ancestors as $term) {
+        $all_themes[] = $term->label();
+      }
+
+      if (!empty($all_themes)) {
+        // Reverse order of themes.
+        $all_themes = array_reverse($all_themes);
+
+        // Set dimension1 to be the top-level parent theme - e.g. "Motoring".
+        $datalayer_values['theme'] = array_shift($all_themes);
+
+        // Set dimension2 to contain all the remaining sub-themes.
+        $datalayer_values['all-themes'] = implode(',', $all_themes);
+      }
+
+      // Inject the datalayer script before the Google Tag Manager script.
+      $page['#attached']['html_head'][] = [
+        [
+          '#type' => 'html_tag',
+          '#tag' => 'script',
+          '#value' => 'window.dataLayer = window.dataLayer || []; window.dataLayer.push(' . Json::encode($datalayer_values) . ');',
+        ],
+        'datalayer-js',
+      ];
+    }
+  }
 }
 
 /**

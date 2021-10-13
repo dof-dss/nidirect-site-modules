@@ -21,6 +21,15 @@ class GPPracticeTest extends BrowserTestBase {
   public static $modules = ['nidirect_common', 'node'];
 
   /**
+   * Drupal\Tests\BrowserTestBase::$defaultTheme is required. See
+   * https://www.drupal.org/node/3083055, which includes recommendations
+   * on which theme to use.
+   *
+   * @var string
+   */
+  protected $defaultTheme = 'classy';
+
+  /**
    * Use install profile so that we have all content types, modules etc.
    *
    * @var installprofile

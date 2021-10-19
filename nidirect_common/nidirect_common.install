@@ -280,7 +280,7 @@ function nidirect_common_update_8004() {
 
   if (!$schema->fieldExists('node_field_data', 'page_views')) {
     $page_views_column = [
-      'type' => 'integer',
+      'type' => 'int',
       'description' => "The google analytics page views of node.",
     ];
     $schema->addField(

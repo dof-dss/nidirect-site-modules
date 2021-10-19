@@ -276,16 +276,19 @@ function nidirect_common_update_8003() {
  * Create the Easy Google Analytics Counter Page_Views column if not present.
  */
 function nidirect_common_update_8004() {
-  $page_views_column = [
-    'type' => 'integer',
-    'description' => "The google analytics page views of node.",
-  ];
   $schema = Database::getConnection()->schema();
-  $schema->addField(
-    'node_field_data',
-    'page_views',
-    $page_views_column
-  );
+
+  if (!$schema->fieldExists('node_field_data', 'page_views')) {
+    $page_views_column = [
+      'type' => 'integer',
+      'description' => "The google analytics page views of node.",
+    ];
+    $schema->addField(
+      'node_field_data',
+      'page_views',
+      $page_views_column
+    );
+  }
 }
 
 /**

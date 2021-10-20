@@ -114,7 +114,7 @@ function nidirect_common_preprocess_form_element(&$variables) {
  * Implements hook_preprocess_taxonomy_term().
  */
 function nidirect_common_preprocess_taxonomy_term(array &$variables) {
-  if ($variables['term']->getVocabularyId() != 'site_themes') {
+  if ($variables['term']->bundle() != 'site_themes') {
     // We are only interested in the 'site themes' vocab.
     return;
   }

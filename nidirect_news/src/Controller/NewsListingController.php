@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\metatag\MetatagTagPluginManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Block\BlockManagerInterface;
@@ -33,15 +34,24 @@ class NewsListingController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * Metatag plugin manager for tags.
+   *
+   * @var \Drupal\metatag\MetatagTagPluginManager
+   */
+  protected $metatagTagPluginManager;
+
+  /**
    * Constructs a new NewsListingController object.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager,
                               BlockManagerInterface $plugin_manager_block,
-                              RequestStack $request_stack) {
+                              RequestStack $request_stack,
+                              MetatagTagPluginManager $metatag_tag_plugin_manager) {
 
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManagerBlock = $plugin_manager_block;
     $this->requestStack = $request_stack;
+    $this->metatagTagPluginManager = $metatag_tag_plugin_manager;
   }
 
   /**
@@ -51,7 +61,8 @@ class NewsListingController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.block'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('plugin.manager.metatag.tag')
     );
   }
 
@@ -78,6 +89,29 @@ class NewsListingController extends ControllerBase {
       // flag ability to pin important items to the list of top four items.
       $display_id = 'latest_news';
       $view = $this->getNewsView($display_id);
+
+      // Append any configured metatags for the page header.
+      // We're borrowing the 'latest_news' display as a vehicle
+      // for making these tags configurable, rather than bake them
+      // into the source code here.
+      $tags = metatag_get_view_tags($view, $display_id);
+
+      if (!empty($tags)) {
+        foreach ($tags as $name => $value) {
+          $tag_plugin = $this->metatagTagPluginManager->getDefinition($name);
+
+          $tag = [
+            '#type' => 'html_tag',
+            '#tag' => 'meta',
+            '#attributes' => [
+              'name' => $tag_plugin['name'],
+              'content' => $value,
+            ],
+          ];
+
+          $content['#attached']['html_head'][] = [$tag, $tag_plugin['name']];
+        }
+      }
 
       if (!empty($view->result)) {
         // Latest news.

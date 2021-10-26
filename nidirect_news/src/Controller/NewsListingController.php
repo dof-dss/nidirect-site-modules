@@ -4,6 +4,7 @@ namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\metatag\MetatagTagPluginManager;
+use Drupal\nidirect_common\ViewsMetatagManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Block\BlockManagerInterface;
@@ -34,11 +35,11 @@ class NewsListingController extends ControllerBase {
   protected $requestStack;
 
   /**
-   * Metatag plugin manager for tags.
+   * ViewMetatagManager service.
    *
-   * @var \Drupal\metatag\MetatagTagPluginManager
+   * @var \Drupal\nidirect_common\ViewsMetatagManager
    */
-  protected $metatagTagPluginManager;
+  protected $viewsMetaTagManager;
 
   /**
    * Constructs a new NewsListingController object.
@@ -46,12 +47,12 @@ class NewsListingController extends ControllerBase {
   public function __construct(EntityTypeManagerInterface $entity_type_manager,
                               BlockManagerInterface $plugin_manager_block,
                               RequestStack $request_stack,
-                              MetatagTagPluginManager $metatag_tag_plugin_manager) {
+                              ViewsMetatagManager $views_metatag_manager) {
 
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManagerBlock = $plugin_manager_block;
     $this->requestStack = $request_stack;
-    $this->metatagTagPluginManager = $metatag_tag_plugin_manager;
+    $this->viewsMetaTagManager = $views_metatag_manager;
   }
 
   /**
@@ -62,7 +63,7 @@ class NewsListingController extends ControllerBase {
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.block'),
       $container->get('request_stack'),
-      $container->get('plugin.manager.metatag.tag')
+      $container->get('nidirect_common.views_metatags_manager')
     );
   }
 
@@ -89,29 +90,6 @@ class NewsListingController extends ControllerBase {
       // flag ability to pin important items to the list of top four items.
       $display_id = 'latest_news';
       $view = $this->getNewsView($display_id);
-
-      // Append any configured metatags for the page header.
-      // We're borrowing the 'latest_news' display as a vehicle
-      // for making these tags configurable, rather than bake them
-      // into the source code here.
-      $tags = metatag_get_view_tags($view, $display_id);
-
-      if (!empty($tags)) {
-        foreach ($tags as $name => $value) {
-          $tag_plugin = $this->metatagTagPluginManager->getDefinition($name);
-
-          $tag = [
-            '#type' => 'html_tag',
-            '#tag' => 'meta',
-            '#attributes' => [
-              'name' => $tag_plugin['name'],
-              'content' => $value,
-            ],
-          ];
-
-          $content['#attached']['html_head'][] = [$tag, $tag_plugin['name']];
-        }
-      }
 
       if (!empty($view->result)) {
         // Latest news.
@@ -145,6 +123,13 @@ class NewsListingController extends ControllerBase {
     if (!empty($latest_news_nids)) {
       $content['older_news']['#arguments'] = [implode(',', $latest_news_nids)];
     }
+
+    // Append any configured metatags for the page header.
+    // We're borrowing the 'latest_news' display as a vehicle
+    // for making these tags configurable, rather than bake them
+    // into the source code here.
+    $tags = $this->viewsMetaTagManager->getMetatagsForView('news', 'latest_news');
+    $content = $this->viewsMetaTagManager->addTagsToPageRender($content, $tags);
 
     return $content;
   }

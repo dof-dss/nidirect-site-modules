@@ -3,6 +3,8 @@
 namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\metatag\MetatagTagPluginManager;
+use Drupal\nidirect_common\ViewsMetatagManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Block\BlockManagerInterface;
@@ -33,15 +35,24 @@ class NewsListingController extends ControllerBase {
   protected $requestStack;
 
   /**
+   * ViewMetatagManager service.
+   *
+   * @var \Drupal\nidirect_common\ViewsMetatagManager
+   */
+  protected $viewsMetaTagManager;
+
+  /**
    * Constructs a new NewsListingController object.
    */
   public function __construct(EntityTypeManagerInterface $entity_type_manager,
                               BlockManagerInterface $plugin_manager_block,
-                              RequestStack $request_stack) {
+                              RequestStack $request_stack,
+                              ViewsMetatagManager $views_metatag_manager) {
 
     $this->entityTypeManager = $entity_type_manager;
     $this->pluginManagerBlock = $plugin_manager_block;
     $this->requestStack = $request_stack;
+    $this->viewsMetaTagManager = $views_metatag_manager;
   }
 
   /**
@@ -51,7 +62,8 @@ class NewsListingController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.block'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('nidirect_common.views_metatags_manager')
     );
   }
 
@@ -111,6 +123,13 @@ class NewsListingController extends ControllerBase {
     if (!empty($latest_news_nids)) {
       $content['older_news']['#arguments'] = [implode(',', $latest_news_nids)];
     }
+
+    // Append any configured metatags for the page header.
+    // We're borrowing the 'latest_news' display as a vehicle
+    // for making these tags configurable, rather than bake them
+    // into the source code here.
+    $tags = $this->viewsMetaTagManager->getMetatagsForView('news', 'latest_news');
+    $content = $this->viewsMetaTagManager->addTagsToPageRender($content, $tags);
 
     return $content;
   }

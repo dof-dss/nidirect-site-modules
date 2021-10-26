@@ -12,3 +12,6 @@ services:
     class: Drupal\nidirect_common\Routing\RouteSubscriber
     tags:
       - { name: event_subscriber }
+  nidirect_common.views_metatags_manager:
+    class: Drupal\nidirect_common\ViewsMetatagManager
+    arguments: ['@entity_type.manager', '@plugin.manager.metatag.tag']

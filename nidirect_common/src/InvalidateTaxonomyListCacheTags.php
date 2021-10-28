@@ -51,7 +51,9 @@ class InvalidateTaxonomyListCacheTags {
     foreach ($field_list as $thisfield) {
       if ($entity->hasField($thisfield)) {
         $tid = $entity->get($thisfield)->target_id;
-        // If landing page, get parent.
+        $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
+
+        // If landing page, get parent as well.
         if (!empty($tid)) {
           $tid = $this->checkLandingPageParent($entity, $tid);
           $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
@@ -67,6 +69,7 @@ class InvalidateTaxonomyListCacheTags {
         }
       }
     }
+
     if (count($taxonomy_tags) > 0) {
       $this->cacheTagsInvalidator->invalidateTags($taxonomy_tags);
     }

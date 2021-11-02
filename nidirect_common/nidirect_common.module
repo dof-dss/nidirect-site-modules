@@ -23,6 +23,7 @@ use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
 use Drupal\taxonomy\Entity\Term;
+use Drupal\taxonomy\TermInterface;
 use Drupal\views\ViewExecutable;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 
@@ -544,7 +545,7 @@ function nidirect_common_page_attachments(array &$page) {
       return;
     }
 
-    if (!empty($term) && $term->bundle() === 'site_themes') {
+    if ($term instanceof TermInterface && $term->bundle() === 'site_themes') {
 
       // Get all ancestors for the current term.
       $ancestors = \Drupal::service('entity_type.manager')->getStorage("taxonomy_term")->loadAllParents($term->id());

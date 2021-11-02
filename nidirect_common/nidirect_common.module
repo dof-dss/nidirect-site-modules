@@ -562,7 +562,8 @@ function nidirect_common_page_attachments(array &$page) {
         $datalayer_values['theme'] = array_shift($all_themes);
 
         // Set dimension2 to contain all the remaining sub-themes.
-        $datalayer_values['all-themes'] = implode(',', $all_themes);
+        // We trim the dimension value to 150 chars to prevent issues with GTM.
+        $datalayer_values['all-themes'] = substr(implode(',', $all_themes), 0, 150);
       }
 
       // Inject the datalayer script before the Google Tag Manager script.

@@ -403,6 +403,9 @@ function nidirect_landing_pages_get_redirect_url(string $source_path) {
  *   The landing page node entity.
  */
 function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $entity) {
+  // Purge any existing redirect for this entity before we create a new one.
+  nidirect_landing_pages_delete_landing_page_redirect($entity);
+
   $subtheme_tid = $entity->get('field_subtheme')->getString();
   $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
   $redirect_url = nidirect_landing_pages_get_redirect_url($taxonomy_term_path);

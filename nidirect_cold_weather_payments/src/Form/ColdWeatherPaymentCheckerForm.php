@@ -303,7 +303,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
   private function resultsRender($data) {
     // If the data results contains an error wrap in error element, otherwise
     // return a cwp result render array.
-    if (is_null($data) || $data['has_error']) {
+    if (is_null($data) || isset($data['has_error'])) {
       $output['#markup'] = $this->t('Sorry, there was a problem checking for Cold Weather Payments.');
 
       if (!empty($data['response']) && $data['response']->getStatusCode() == '401') {
@@ -314,7 +314,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $output['#suffix'] = '</p>';
     }
     else {
-      if ($data['published_content'] === 'none') {
+      if (isset($data['published_content']) && $data['published_content'] === 'none') {
         $output = [
           '#markup' => t('There are currently no published Cold Weather Payments'),
         ];

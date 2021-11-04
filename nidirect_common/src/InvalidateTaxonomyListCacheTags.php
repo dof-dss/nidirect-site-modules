@@ -5,6 +5,7 @@ namespace Drupal\nidirect_common;
 use Drupal\Core\Cache\CacheTagsInvalidatorInterface;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Utility class to invalidates theme taxonomy cache tags.
@@ -51,22 +52,29 @@ class InvalidateTaxonomyListCacheTags {
     foreach ($field_list as $thisfield) {
       if ($entity->hasField($thisfield)) {
         $tid = $entity->get($thisfield)->target_id;
-        // If landing page, get parent.
+        $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
+
+        // If landing page, get parent as well.
         if (!empty($tid)) {
           $tid = $this->checkLandingPageParent($entity, $tid);
           $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
         }
         // If this is an update, invalidate cache tag for
         // original taxonomy term as well.
-        if (isset($entity->original)) {
+        if ($entity->original instanceof NodeInterface) {
           $tid = $entity->original->get($thisfield)->target_id;
           if (!empty($tid)) {
-            $tid = $this->checkLandingPageParent($entity, $tid);
             $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
+            $parent_tid = $this->checkLandingPageParent($entity, $tid);
+
+            if (!empty($parent_tid)) {
+              $taxonomy_tags[] = 'taxonomy_term_list:' . $parent_tid;
+            }
           }
         }
       }
     }
+
     if (count($taxonomy_tags) > 0) {
       $this->cacheTagsInvalidator->invalidateTags($taxonomy_tags);
     }

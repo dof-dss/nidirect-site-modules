@@ -9,3 +9,4 @@ dependencies:
   - search_api_solr
   - search_api_autocomplete
   - search_api
+  - nidirect_common

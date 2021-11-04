@@ -7,6 +7,7 @@ use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Drupal\nidirect_common\ViewsMetatagManager;
 
 /**
  * Controller for display Contact A-Z block and View.
@@ -35,12 +36,24 @@ class ContactListingController extends ControllerBase {
   protected $request;
 
   /**
+   * ViewMetatagManager service.
+   *
+   * @var \Drupal\nidirect_common\ViewsMetatagManager
+   */
+  protected $viewsMetaTagManager;
+
+  /**
    * Constructs a new ContactListingController object.
    */
-  public function __construct(EntityTypeManagerInterface $entity_type_manager, BlockManagerInterface $block_manager, RequestStack $request) {
+  public function __construct(EntityTypeManagerInterface $entity_type_manager,
+                              BlockManagerInterface $block_manager,
+                              RequestStack $request,
+                              ViewsMetatagManager $views_metatag_manager) {
+
     $this->entityTypeManager = $entity_type_manager;
     $this->blockManager = $block_manager;
     $this->request = $request;
+    $this->viewsMetaTagManager = $views_metatag_manager;
   }
 
   /**
@@ -50,7 +63,8 @@ class ContactListingController extends ControllerBase {
     return new static(
       $container->get('entity_type.manager'),
       $container->get('plugin.manager.block'),
-      $container->get('request_stack')
+      $container->get('request_stack'),
+      $container->get('nidirect_common.views_metatags_manager')
     );
   }
 
@@ -106,6 +120,10 @@ class ContactListingController extends ControllerBase {
       $content['contact_az_block'] = $az_block->build();
     }
 
+    // Append any configured metatags for the page head element.
+    $tags = $this->viewsMetaTagManager->getMetatagsForView('contacts', 'contact_search');
+    $content = $this->viewsMetaTagManager->addTagsToPageRender($content, $tags);
+
     return $content;
   }
 
@@ -127,6 +145,10 @@ class ContactListingController extends ControllerBase {
       '#display_id' => 'contacts_by_letter',
       '#arguments' => [$letter],
     ];
+
+    // Append any configured metatags for the page head element.
+    $tags = $this->viewsMetaTagManager->getMetatagsForView('contacts_a_z', 'contacts_by_letter');
+    $content = $this->viewsMetaTagManager->addTagsToPageRender($content, $tags);
 
     return $content;
   }

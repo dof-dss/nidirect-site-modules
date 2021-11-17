@@ -43,7 +43,7 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
     else {
       // Delete any URL redirects associated with this node when in an
       // unpublished(draft, archive) state.
-      nidirect_landing_pages_delete_landing_page_redirect($entity);
+      nidirect_landing_pages_delete_landing_page_redirect($entity->original);
     }
   }
 }
@@ -403,8 +403,8 @@ function nidirect_landing_pages_get_redirect_url(string $source_path) {
  *   The landing page node entity.
  */
 function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $entity) {
-  // Purge any existing redirect for this entity before we create a new one.
-  nidirect_landing_pages_delete_landing_page_redirect($entity);
+  // Delete any existing redirect for this entity before we create a new one.
+  nidirect_landing_pages_delete_landing_page_redirect($entity->original);
 
   $subtheme_tid = $entity->get('field_subtheme')->getString();
   $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
@@ -447,18 +447,28 @@ function nidirect_landing_pages_create_landing_page_redirect(EntityInterface $en
 }
 
 /**
- * Deletes a landing page redirect.
+ * Deletes a theme to landing page redirect.
  *
  * @param \Drupal\Core\Entity\EntityInterface $entity
  *   The landing page node.
  */
 function nidirect_landing_pages_delete_landing_page_redirect(EntityInterface $entity) {
   $redirect_repository = \Drupal::service('redirect.repository');
+
+  // The redirect to delete must have a source path that matches
+  // the path of the theme taxonomy term for the landing page and
+  // a destination path that matches the landing page node path.
+  $subtheme_tid = $entity->get('field_subtheme')->getString();
+  $source_path = '/taxonomy/term/' . $subtheme_tid;
   $destination_path[] = 'internal:/node/' . $entity->id();
 
+  // Get all redirects whose destination is the landing page.
   $redirects = $redirect_repository->findByDestinationUri($destination_path);
   foreach ($redirects as $redirect) {
-    $redirect->delete();
+    // Delete the redirect if its source is landing page theme path.
+    if ($redirect->getSourceUrl() == $source_path) {
+      $redirect->delete();
+    }
   }
 }
 

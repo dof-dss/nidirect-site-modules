@@ -41,7 +41,7 @@ function nidirect_landing_pages_entity_update(EntityInterface $entity) {
       nidirect_landing_pages_delete_theme_to_landing_page_redirect($entity->original);
       nidirect_landing_pages_create_theme_to_landing_page_redirect($entity);
     }
-    else if ($entity->isDefaultRevision()) {
+    elseif ($entity->isDefaultRevision()) {
       // Un-published default revision - remove theme redirect.
       nidirect_landing_pages_delete_theme_to_landing_page_redirect($entity->original);
     }

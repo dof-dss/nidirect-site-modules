@@ -169,6 +169,9 @@ function nidirect_webforms_honeypot_form_protections_alter(&$options, $form) {
   }
 }
 
+/**
+ * Implements hook_preprocess_form_element().
+ */
 function nidirect_webforms_preprocess_form_element(&$variables) {
 
   if (!WebformElementHelper::isWebformElement($variables['element'])) {

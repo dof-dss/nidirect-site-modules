@@ -7,6 +7,7 @@
 
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\webform\Utility\WebformElementHelper;
 use Drupal\webform\WebformSubmissionInterface;
 
 /**
@@ -165,5 +166,38 @@ function nidirect_webforms_honeypot_form_protections_alter(&$options, $form) {
         break;
       }
     }
+  }
+}
+
+/**
+ * Implements hook_preprocess_form_element().
+ */
+function nidirect_webforms_preprocess_form_element(&$variables) {
+
+  if (!WebformElementHelper::isWebformElement($variables['element'])) {
+    return;
+  }
+
+  $element = $variables['element'];
+
+  // Fix a11y issue with webform_select_other element labels.
+  // @TODO: create issue on webform issue queue.
+
+  // The wrapping webform_select_other element has a visible label that IS NOT
+  // associated with the select element it contains. So we stop that one being
+  // displayed.
+  if ($element['#type'] === 'webform_select_other') {
+    $element['#title_display'] = 'none';
+    $variables['label_display'] = 'none';
+    $variables['label']['#title_display'] = 'none';
+  }
+
+  // The select element inside the webform_select_other element has a label
+  // that IS associated with the select (via a for attribute) is visually
+  // hidden.  We want that to be visible.
+  if (!empty($element['#webform_other'])) {
+    $element['#title_display'] = 'before';
+    $variables['label_display'] = 'before';
+    $variables['label']['#title_display'] = 'before';
   }
 }

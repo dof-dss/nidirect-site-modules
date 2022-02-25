@@ -62,7 +62,7 @@ class HttpHeadersSubscriber implements EventSubscriberInterface {
       $cache_duration = $this->configFactory->get('nidirect_school_closures.settings')->get('cache_duration') ?? 10;
 
       // Convert minutes from config into seconds for surrogate-control TTL.
-      $response->headers->set('surrogate-control', ($cache_duration * 60));
+      $response->headers->set('surrogate-control', 'max-age=' . ($cache_duration * 60));
     }
   }
 

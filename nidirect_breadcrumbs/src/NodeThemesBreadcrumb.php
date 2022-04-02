@@ -102,6 +102,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
         $applies_to_types = [
           'application',
           'article',
+          'embargoed_publication',
           'external_link',
           'feature',
           'featured_content_list',

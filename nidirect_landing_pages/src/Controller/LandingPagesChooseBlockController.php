@@ -52,7 +52,7 @@ class LandingPagesChooseBlockController extends ChooseBlockController {
    */
   public function inlineBlockList(SectionStorageInterface $section_storage, $delta, $region) {
     $build = parent::inlineBlockList($section_storage, $delta, $region);
-    $module_path_rel = drupal_get_path('module', 'nidirect_landing_pages');
+    $module_path_rel = $this->moduleHandler->getModule('nidirect_landing_pages')->getPath();
     $module_path_abs = $this->fileSystem->realpath($module_path_rel);
 
     // Support for Layout Builder Restrictions.

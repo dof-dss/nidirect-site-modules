@@ -167,6 +167,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
 
         $nid_published = $query->condition('nid', $node->book[$p], '=')
           ->condition('status', NodeInterface::PUBLISHED)
+          ->accessCheck(TRUE)
           ->execute();
 
         if ($nid_published && $parent = $this->bookManager->loadBookLink($node->book[$p])) {

@@ -2,14 +2,25 @@
 
 namespace Drupal\nidirect_gp\Form;
 
-use Drupal\Core\Entity\ContentEntityDeleteForm;
+use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+use Drupal\Core\Url;
 
 /**
  * Provides a form for deleting GP entities.
  *
  * @ingroup nidirect_gp
  */
-class GpDeleteForm extends ContentEntityDeleteForm {
+class GpDeleteForm extends ContentEntityConfirmFormBase {
 
+  public function getQuestion() {
+    return $this->t('Are you sure you want to remove the @entity-type %label?', [
+      '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
+      '%label' => $this->getEntity()->label(),
+    ]);
+  }
+
+  public function getCancelUrl() {
+    return new Url('entity.gp.collection');
+  }
 
 }

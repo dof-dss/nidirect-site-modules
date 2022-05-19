@@ -151,6 +151,7 @@ class TaxonomyNavigatorController extends ControllerBase {
       ->condition('vid', $vocabulary->id())
       ->condition('name', $input, 'CONTAINS')
       ->sort('name', 'DESC')
+      ->accessCheck(TRUE)
       ->range(0, 25);
 
     $ids = $query->execute();

@@ -412,6 +412,7 @@ class RelatedContentManager {
 
     // Fetch every published campaign page.
     $query = $this->entityTypeManager->getStorage('node')->getQuery()
+      ->accessCheck(TRUE)
       ->condition('type', 'landing_page')
       ->condition('status', 1);
     $nids = $query->execute();

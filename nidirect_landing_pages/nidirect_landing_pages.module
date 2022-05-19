@@ -336,7 +336,7 @@ function nidirect_landing_pages_form_validate(array &$form, FormStateInterface $
   $query->condition('field_subtheme', $theme_selected, '=');
   // We are only worried about published nodes.
   $query->condition('status', 1);
-  $result = $query->execute();
+  $result = $query->accessCheck(TRUE)->execute();
 
   if (!empty($result)) {
     $term = \Drupal::entityTypeManager()->getStorage('taxonomy_term')->load($theme_selected);

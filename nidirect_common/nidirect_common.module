@@ -22,6 +22,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
 use Drupal\node\NodeInterface;
+use Drupal\redirect\Entity\Redirect;
 use Drupal\taxonomy\Entity\Term;
 use Drupal\taxonomy\TermInterface;
 use Drupal\views\ViewExecutable;
@@ -608,4 +609,80 @@ function nidirect_common_easy_google_analytics_counter_query_alter(array &$query
       'expressions' => '^\/(articles|campaigns|services|news|conditions)\/.*',
     ],
   ];
+}
+
+/**
+ * Implements hook_whatlinkshere_report_alter().
+ */
+function nidirect_common_whatlinkshere_report_alter(array &$data) {
+  $data['content_heading'] = [
+    '#type' => 'html_tag',
+    '#tag' => 'h2',
+    '#value' => t('Content linking here'),
+    '#weight' => -1,
+  ];
+
+  // Gather list of redirects pointing to this path.
+  $entity_type = 'node';
+  $entity_id = \Drupal::routeMatch()->getParameter($entity_type);
+  $destination_uri = 'internal:/' . $entity_type . '/' . $entity_id;
+
+  // Try other entity types if there's no node id parameter.
+  if (empty($entity_id)) {
+    $entity_type = 'taxonomy_term';
+    $entity_id = \Drupal::routeMatch()->getParameter($entity_type);
+    $destination_uri = 'internal:/taxonomy/term/' . $entity_id;
+  }
+  if (empty($entity_id)) {
+    $entity_type = 'media';
+    $entity_id = \Drupal::routeMatch()->getParameter($entity_type);
+  }
+
+  if (empty($entity_id)) {
+    // Unrecognised entity type, exit safely.
+    return;
+  }
+
+  $redirects = \Drupal::service('redirect.repository')->findByDestinationUri([$destination_uri]);
+
+  if (!empty($redirects)) {
+    $redirects_elements = [
+      'redirects_heading' => [
+        '#type' => 'html_tag',
+        '#tag' => 'h2',
+        '#value' => t('Redirects linking here'),
+      ],
+    ];
+
+    $rows = [];
+
+    foreach ($redirects as $id => $redirect) {
+      if ($redirect instanceof Redirect === FALSE) {
+        continue;
+      }
+
+      $rows[$id]['source'] = $redirect->getSourceUrl();
+      $rows[$id]['tasks'] = Link::createFromRoute(
+        t('Edit'),
+        'entity.redirect.edit_form',
+        ['redirect' => $id]
+      );
+    }
+
+    $redirects_data = [
+      '#type' => 'table',
+      '#header' => [
+        'source' => [
+          'data' => t('Source'),
+        ],
+        'tasks' => [
+          'data' => t('Tasks'),
+        ],
+      ],
+      '#rows' => $rows,
+    ];
+
+    $redirects_elements['redirects'] = $redirects_data;
+    $data += $redirects_elements;
+  }
 }

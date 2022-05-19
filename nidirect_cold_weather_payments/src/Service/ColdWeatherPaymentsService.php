@@ -41,6 +41,7 @@ class ColdWeatherPaymentsService {
       ->condition('type', 'cold_weather_payment')
       ->condition('status', '1')
       ->sort('created', 'DESC')
+      ->accessCheck(TRUE)
       ->range(0, 1);
 
     $vid_keys = array_keys($query->execute());

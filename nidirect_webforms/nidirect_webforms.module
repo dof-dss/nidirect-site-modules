@@ -127,7 +127,9 @@ function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $f
         (!empty($form['actions']['wizard_next']) && !empty($form['actions']['wizard_prev']))
       ) {
 
-        \Drupal::service('honeypot')->addFormProtection($form, $form_state, ['honeypot', 'time_restriction']);
+        $options = ['honeypot', 'time_restriction'];
+        \Drupal::service('honeypot')
+          ->addFormProtection($form, $form_state, $options);
       }
     }
   }

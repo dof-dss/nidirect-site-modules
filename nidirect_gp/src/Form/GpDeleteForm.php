@@ -12,6 +12,9 @@ use Drupal\Core\Url;
  */
 class GpDeleteForm extends ContentEntityConfirmFormBase {
 
+  /**
+   * {@inheritdoc}
+   */
   public function getQuestion() {
     return $this->t('Are you sure you want to remove the @entity-type %label?', [
       '@entity-type' => $this->getEntity()->getEntityType()->getSingularLabel(),
@@ -19,6 +22,9 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
     ]);
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public function getCancelUrl() {
     return new Url('entity.gp.collection');
   }

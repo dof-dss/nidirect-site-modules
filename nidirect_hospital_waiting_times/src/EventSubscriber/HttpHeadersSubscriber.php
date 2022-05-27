@@ -46,7 +46,7 @@ class HttpHeadersSubscriber implements EventSubscriberInterface {
 
     // Is there emergency-department-average-waiting-times render markup in
     // the response string?
-    if (preg_match('id="emergency-department-average-waiting-times"', $content)) {
+    if (preg_match('/id="emergency-department-average-waiting-times"/', $content)) {
       $response->headers->remove('surrogate-control');
       // Replace with config value for cache expiration.
       $cache_duration = $this->configFactory->get('nidirect_hospital_waiting_times.settings')->get('cache_duration') ?? 10;

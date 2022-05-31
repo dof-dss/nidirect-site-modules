@@ -5,6 +5,7 @@
  * Contains nidirect_hospital_waiting_times.module.
  */
 
+use Drupal\Core\Cache\Cache;
 use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Cache\CacheBackendInterface;
@@ -105,6 +106,11 @@ function nidirect_hospital_waiting_times_render_times($attempts = 0) {
     '#theme' => 'nidirect_hospital_waiting_times',
     '#hospitals' => $data,
     '#updated' => $updated,
+    '#cache' => [
+      'tags' => [
+        'hospital_waiting_times'
+      ],
+    ],
   ];
 }
 
@@ -153,6 +159,7 @@ function nidirect_hospital_waiting_times_update_cache() {
 
   if (!is_null($data)) {
     $cache = \Drupal::cache();
+    Cache::invalidateTags(['hospital_waiting_times']);
     $cache->set('hospital_emergency_waiting_times', $data, CacheBackendInterface::CACHE_PERMANENT);
   }
 }

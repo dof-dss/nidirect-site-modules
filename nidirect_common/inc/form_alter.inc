@@ -11,6 +11,22 @@ use Drupal\media\MediaInterface;
 use Nette\Utils\Arrays;
 
 /**
+ * Implements hook_form_alter().
+ *
+ * Hide the 'revert to defaults' button for layout builder
+ * to prevent loss of layout between content revisions.
+ *
+ * Related: https://www.drupal.org/project/drupal/issues/3051920
+ */
+function nidirect_common_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+  if (preg_match('/layout_builder_form$/', $form_id) && !empty($form['actions']['revert'])) {
+    if (\Drupal::currentUser()->hasPermission('configure any layout') === FALSE) {
+      $form['actions']['revert']['#type'] = 'hidden';
+    }
+  }
+}
+
+/**
  * Implements hook_form_FORM_ID_alter().
  *
  * Form alter hook for the LinkIt dialogue box

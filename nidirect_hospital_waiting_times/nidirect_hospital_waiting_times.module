@@ -54,7 +54,7 @@ function nidirect_hospital_waiting_times_tokens($type, $tokens, array $data, arr
       switch ($name) {
         case 'hospital_emergency_waiting_times':
           $output = nidirect_hospital_waiting_times_render_times();
-          $replacements[$original] = render($output);
+          $replacements[$original] = Drupal::service('renderer')->render($output);
           break;
       }
     }

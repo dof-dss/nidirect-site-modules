@@ -71,7 +71,7 @@ function nidirect_school_closures_tokens($type, $tokens, array $data, array $opt
       switch ($name) {
         case 'school_closures':
           $output = nidirect_school_closures_render();
-          $replacements[$original] = Drupal::service('renderer')->render($output);
+          $replacements[$original] = \Drupal::service('renderer')->render($output);
           break;
       }
     }

@@ -55,7 +55,7 @@ function nidirect_cold_weather_payments_tokens($type, $tokens, array $data, arra
       switch ($name) {
         case 'cwp_checker':
           $output = \Drupal::formBuilder()->getForm(ColdWeatherPaymentCheckerForm::class);
-          $replacements[$original] = render($output);
+          $replacements[$original] = \Drupal::service('renderer')->render($output);
           break;
       }
     }

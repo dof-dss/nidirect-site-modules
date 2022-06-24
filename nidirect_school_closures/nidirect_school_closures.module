@@ -64,33 +64,24 @@ function nidirect_school_closures_token_info() {
  * Implements hook_tokens().
  */
 function nidirect_school_closures_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $service = \Drupal::service('nidirect_school_closures.source.default');
   $replacements = [];
 
   if ($type == 'nidirect') {
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'school_closures':
-          $output = nidirect_school_closures_render();
+          $output = [
+            '#theme' => 'nidirect_school_closures',
+            '#closures' => $service->getClosures(),
+            '#error' => $service->hasErrors(),
+            '#updated' => $service->getUpdated(),
+            '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
+          ];
           $replacements[$original] = \Drupal::service('renderer')->render($output);
           break;
       }
     }
   }
   return $replacements;
-}
-
-/**
- * Returns school closure render array.
- */
-function nidirect_school_closures_render() {
-  $service = \Drupal::service('nidirect_school_closures.source.default');
-  $data = $service->getClosures();
-
-  return [
-    '#theme' => 'nidirect_school_closures',
-    '#closures' => $data,
-    '#error' => $service->hasErrors(),
-    '#updated' => $service->getUpdated(),
-    '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
-  ];
 }

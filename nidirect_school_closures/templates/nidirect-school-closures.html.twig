@@ -1,6 +1,6 @@
 <div id="school-closure-results">
 
-  <p>{% trans %}Last updated{% endtrans %}: {{ updated|date('g.ia') }} on {{ updated|date('jS F Y') }}.</p>
+  <p>{% trans %}Last updated{% endtrans %}: {{ updated|date('g.i a') }} on {{ updated|date('j F Y') }}.</p>
 
   {% if closures|length > 0 %}
     {% for closure in closures %}

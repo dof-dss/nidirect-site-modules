@@ -35,6 +35,7 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $gpid =$this->getEntity()->id();
+    $removed_from = [];
 
     // Fetch all GP Practices so we can check for references to this GP.
     $gp_practices = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(
@@ -46,6 +47,7 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
       if ($gp_practice->get('field_gp_practice_lead')->getString() == $gpid) {
         $gp_practice->get('field_gp_practice_lead')->removeItem(0);
         $gp_practice->save();
+        $removed_from[] = $gp_practice->label();
       }
 
       // Remove GP from practice members list.
@@ -55,17 +57,25 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
         if ($member->id() == $gpid) {
           $gp_practice->get('field_gp_practice_member')->removeItem($index);
           $gp_practice->save();
+          $removed_from[] = $gp_practice->label();
         }
       }
     }
 
     $this->entity->delete();
 
-    $this->messenger()->addMessage(
-      $this->t('Deleted GP @label', [
+    if (count($removed_from) > 0 ) {
+      $message = $this->t('Deleted GP @label and removed from the following GP practice(s): @practices', [
         '@label' => $this->entity->label(),
-      ])
-    );
+        '@practices' => implode(', ', $removed_from),
+      ]);
+    } else {
+      $message = $this->t('Deleted GP @label', [
+        '@label' => $this->entity->label(),
+      ]);
+    }
+
+    $this->messenger()->addMessage($message);
 
     $form_state->setRedirectUrl($this->getCancelUrl());
   }

@@ -64,46 +64,24 @@ function nidirect_school_closures_token_info() {
  * Implements hook_tokens().
  */
 function nidirect_school_closures_tokens($type, $tokens, array $data, array $options, BubbleableMetadata $bubbleable_metadata) {
+  $service = \Drupal::service('nidirect_school_closures.source.default');
   $replacements = [];
 
   if ($type == 'nidirect') {
     foreach ($tokens as $name => $original) {
       switch ($name) {
         case 'school_closures':
-          $output = nidirect_school_closures_render();
+          $output = [
+            '#theme' => 'nidirect_school_closures',
+            '#closures' => $service->getClosures(),
+            '#error' => $service->hasErrors(),
+            '#updated' => $service->getUpdated(),
+            '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
+          ];
           $replacements[$original] = \Drupal::service('renderer')->render($output);
           break;
       }
     }
   }
   return $replacements;
-}
-
-/**
- * Returns school closure render array.
- */
-function nidirect_school_closures_render() {
-  $service = \Drupal::service('nidirect_school_closures.source.default');
-  $data = $service->getClosures();
-
-  return [
-    '#theme' => 'nidirect_school_closures',
-    '#closures' => $data,
-    '#error' => $service->hasErrors(),
-    '#updated' => $service->getUpdated(),
-    '#attached' => ['library' => 'nidirect_school_closures/school_closures'],
-  ];
-}
-
-/**
- * Implements hook_entity_view().
- */
-function nidirect_school_closures_entity_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-  $current_path = \Drupal::request()->getPathInfo();
-  $closures_paths = \Drupal::getContainer()->getParameter('breadcrumb.schoolclosures.matches');
-
-  if (in_array($current_path, $closures_paths) && ($entity instanceof NodeInterface && $view_mode == 'full')) {
-    // Append the school closures info to the render array for this page.
-    $build['closures_info'] = nidirect_school_closures_render();
-  }
 }

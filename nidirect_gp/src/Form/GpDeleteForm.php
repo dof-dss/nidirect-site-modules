@@ -3,6 +3,7 @@
 namespace Drupal\nidirect_gp\Form;
 
 use Drupal\Core\Entity\ContentEntityConfirmFormBase;
+use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 
 /**
@@ -27,6 +28,21 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
    */
   public function getCancelUrl() {
     return new Url('entity.gp.collection');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function submitForm(array &$form, FormStateInterface $form_state) {
+    $this->entity->delete();
+
+    $this->messenger()->addMessage(
+      $this->t('Deleted GP @label', [
+        '@label' => $this->entity->label(),
+      ])
+    );
+
+    $form_state->setRedirectUrl($this->getCancelUrl());
   }
 
 }

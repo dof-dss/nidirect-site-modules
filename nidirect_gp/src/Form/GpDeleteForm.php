@@ -34,6 +34,27 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+
+    // Fetch all GP Practices so we can check for references to this GP.
+    $gp_practices = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(
+      ['type' => 'gp_practice'
+      ]);
+
+    foreach ($gp_practices as $gp_practice) {
+
+      // TODO: Deal with lead GP reference (waiting on ticket clarification)
+
+      // Remove GP from practice members list.
+      $members = $gp_practice->get('field_gp_practice_member')->referencedEntities();
+
+      foreach ($members as $index => $member) {
+        if ($member->id() == $this->getEntity()->id()) {
+          $gp_practice->get('field_gp_practice_member')->removeItem($index);
+          $gp_practice->save();
+        }
+      }
+    }
+
     $this->entity->delete();
 
     $this->messenger()->addMessage(

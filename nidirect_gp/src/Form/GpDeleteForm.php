@@ -34,13 +34,13 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $gpid =$this->getEntity()->id();
+    $gpid = $this->getEntity()->id();
     $removed_from = [];
 
     // Fetch all GP Practices so we can check for references to this GP.
-    $gp_practices = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties(
-      ['type' => 'gp_practice'
-      ]);
+    $gp_practices = \Drupal::entityTypeManager()->getStorage('node')->loadByProperties([
+      'type' => 'gp_practice'
+    ]);
 
     foreach ($gp_practices as $gp_practice) {
       // Remove if lead GP for a practice.
@@ -64,12 +64,13 @@ class GpDeleteForm extends ContentEntityConfirmFormBase {
 
     $this->entity->delete();
 
-    if (count($removed_from) > 0 ) {
+    if (count($removed_from) > 0) {
       $message = $this->t('Deleted GP @label and removed from the following GP practice(s): @practices', [
         '@label' => $this->entity->label(),
         '@practices' => implode(', ', $removed_from),
       ]);
-    } else {
+    }
+    else {
       $message = $this->t('Deleted GP @label', [
         '@label' => $this->entity->label(),
       ]);

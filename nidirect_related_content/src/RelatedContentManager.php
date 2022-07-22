@@ -318,7 +318,7 @@ class RelatedContentManager {
 
       // If we are dealing with a book entry and it's lower than the first page,
       // don't add to the list of articles for the taxonomy term.
-      if (!empty($entity->book) && $entity->book['depth'] > 1) {
+      if (!empty($entity->book) && ($entity->book['depth'] ?? 0) > 1) {
         continue;
       }
 

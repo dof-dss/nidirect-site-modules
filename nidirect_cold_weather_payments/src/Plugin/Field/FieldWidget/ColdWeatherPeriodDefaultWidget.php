@@ -58,6 +58,9 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
    */
   public function formElement(FieldItemListInterface $items, $delta, array $element, array &$form, FormStateInterface $form_state) {
     $item =& $items[$delta];
+    $date_start = $item->date_start ?? '';
+    $date_end = $item->date_end ?? '';
+    $item_stations = $item->stations ?? [];
 
     $element += [
       '#type' => 'fieldset',
@@ -68,13 +71,13 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $element['date_start'] = [
       '#type' => 'date',
       '#title' => t('Start date'),
-      '#default_value' => $item->date_start ?? '',
+      '#default_value' => $date_start,
     ];
 
     $element['date_end'] = [
       '#type' => 'date',
       '#title' => t('End date'),
-      '#default_value' => $item->date_end ?? '',
+      '#default_value' => $date_end,
     ];
 
     $stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple();
@@ -87,7 +90,7 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
       '#type' => 'checkboxes',
       '#title' => t('Weather stations'),
       '#options' => $weather_stations ?? [],
-      '#default_value' => explode(',', $item->stations),
+      '#default_value' => explode(',', $item_stations),
       '#description' => t('Tick the boxes for the weather stations where a cold weather payment was triggered.'),
     ];
 

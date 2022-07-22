@@ -73,7 +73,7 @@ class RelatedContentTest extends ViewsKernelTestBase {
   /**
    * {@inheritdoc}
    */
-  public function setUp($import_test_views = TRUE) {
+  public function setUp($import_test_views = TRUE): void {
     parent::setUp($import_test_views);
 
     $this->installConfig(['nidirect_related_content']);

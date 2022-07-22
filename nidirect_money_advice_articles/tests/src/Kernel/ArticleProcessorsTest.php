@@ -37,9 +37,9 @@ class ArticleProcessorsTest extends KernelTestBase {
   ];
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installConfig(['nidirect_money_advice_articles']);

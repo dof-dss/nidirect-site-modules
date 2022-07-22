@@ -3,7 +3,6 @@
 namespace Drupal\nidirect_news\Controller;
 
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\metatag\MetatagTagPluginManager;
 use Drupal\nidirect_common\ViewsMetatagManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
@@ -97,7 +96,9 @@ class NewsListingController extends ControllerBase {
 
         // Extract row node ids for exclusion in 'older news' embed display below.
         foreach ($view->result as $index => $row) {
-          $latest_news_nids[] = $row->nid;
+          if (!empty($row->nid)) {
+            $latest_news_nids[] = $row->nid;
+          }
         }
       }
 
@@ -166,7 +167,9 @@ class NewsListingController extends ControllerBase {
     $nids = [];
 
     foreach ($view->result as $row) {
-      $nids[] = $row->nid;
+      if (!empty($row->nid)) {
+        $nids[] = $row->nid;
+      }
     }
 
     return $nids;

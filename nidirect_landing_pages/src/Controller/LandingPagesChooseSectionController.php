@@ -67,6 +67,8 @@ class LandingPagesChooseSectionController implements ContainerInjectionInterface
     $items = [];
     $definitions = $this->layoutManager->getFilteredDefinitions('layout_builder', $this->getPopulatedContexts($section_storage), ['section_storage' => $section_storage]);
     foreach ($definitions as $plugin_id => $definition) {
+      /** @var \Drupal\Core\Layout\LayoutDefinition $definition */
+
       $layout = $this->layoutManager->createInstance($plugin_id);
       $item = [
         '#type' => 'link',

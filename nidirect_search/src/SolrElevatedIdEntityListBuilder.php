@@ -40,6 +40,7 @@ class SolrElevatedIdEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\nidirect_search\Entity\SolrElevatedIdEntity $entity */
     $row['label'] = $entity->label();
     $row['id'] = $entity->index();
     $row['status'] = $entity->status() ? $this->t('Enabled') : $this->t('Disabled');

@@ -60,21 +60,19 @@ function nidirect_common_cron() {
     \Drupal::logger('nidirect-common')->notice(
       'Found @count audit updates to process', ['@count' => $queue->numberOfItems()]
     );
-    if (isset($item) && is_object($item)) {
-      $nid_list_obj = $item->data;
-      if (isset($nid_list_obj) && is_object($nid_list_obj)) {
-        // Convert comma separated list of nids into an array.
-        $nids = explode(",", $nid_list_obj->nids);
-        // Load all nodes at once.
-        $nodes = Node::loadMultiple($nids);
-        foreach ($nodes as $node) {
-          // Double check that auditing is enabled for this content type.
-          if ($node->hasField('field_next_audit_due')) {
-            // Just set next audit date to today as will show in 'needs audit'
-            // report if next audit date is today or earlier.
-            $node->set('field_next_audit_due', $today);
-            $node->save();
-          }
+    $nid_list_obj = $item->data ?? NULL;
+    if (!empty($nid_list_obj) && !empty($nid_list_obj->nids)) {
+      // Convert comma separated list of nids into an array.
+      $nids = explode(",", $nid_list_obj->nids);
+      // Load all nodes at once.
+      $nodes = Node::loadMultiple($nids);
+      foreach ($nodes as $node) {
+        // Double check that auditing is enabled for this content type.
+        if ($node->hasField('field_next_audit_due')) {
+          // Just set next audit date to today as will show in 'needs audit'
+          // report if next audit date is today or earlier.
+          $node->set('field_next_audit_due', $today);
+          $node->save();
         }
       }
     }
@@ -90,7 +88,7 @@ function nidirect_common_cron() {
  */
 function nidirect_common_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'node') {
+  if ($entity instanceof NodeInterface) {
     /*
      * Programmatically sets the field_top_level_theme based on
      * the parent taxonomy tids of the field_subtheme value.
@@ -114,7 +112,7 @@ function nidirect_common_entity_presave(EntityInterface $entity) {
  * Implements hook_views_pre_render().
  */
 function nidirect_common_views_pre_render(ViewExecutable $view) {
-  if ($view->id() == 'publications' && $view->current_display == 'search_page') {
+  if ($view->id() === 'publications' && $view->current_display === 'search_page') {
     if (!empty($view->header['area'])) {
       $item_count = $view->pager->total_items ?? 0;
       // Generate the header content to show N publication(s).
@@ -132,9 +130,9 @@ function nidirect_common_views_pre_render(ViewExecutable $view) {
  * Implements hook_ENTITY_TYPE_view().
  */
 function nidirect_common_node_view(array &$build, EntityInterface $entity, EntityViewDisplayInterface $display, $view_mode) {
-
+  /** @var \Drupal\node\NodeInterface $entity */
   // Override misleading layout builder notice.
-  if ($entity->bundle() == 'landing_page') {
+  if ($entity->bundle() === 'landing_page') {
     // (Layout builder is only used on landing pages for now, this
     // may be expanded to other content types later.)
     $messages = \Drupal::messenger()->messagesByType('status');
@@ -179,6 +177,7 @@ function nidirect_common_node_view(array &$build, EntityInterface $entity, Entit
  * Invalidate taxonomy cache tags after node save.
  */
 function nidirect_common_node_presave(EntityInterface $entity) {
+  /** @var \Drupal\node\NodeInterface $entity */
   // Check that the node is published.
   if ($entity->get('status')->value) {
     $cache_service = \Drupal::service('nidirect_common.invalidate_taxonomy_list_cache_tags');
@@ -200,9 +199,10 @@ function nidirect_common_node_delete(EntityInterface $entity) {
  * Implements hook_ENTITY_TYPE_presave() for taxonomy_term entities.
  */
 function nidirect_common_taxonomy_term_presave(EntityInterface $entity) {
+  /** @var \Drupal\taxonomy\TermInterface $entity */
   // Invalidate 'taxonomy_term_list' custom cache tag for the
   // parent when a new taxonomy term is created.
-  if ($entity->get('vid')->target_id == 'site_themes') {
+  if ($entity->get('vid')->target_id ?? '' === 'site_themes') {
     if ($entity->isNewRevision()) {
       $parent = $entity->get('parent')->target_id;
       if ($parent) {
@@ -328,7 +328,7 @@ function nidirect_common_shs_js_settings_alter(&$settings_shs, $bundle, $field_n
  *   Value for the field, it there is one.
  */
 function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
-
+  /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
   $field_value = NULL;
 
   // Fetch the image banner if the current entity has one.
@@ -341,18 +341,20 @@ function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
   // own banner. If we're dealing with a term, assign directly.
   // Finally try to extract a banner image from the term.
   if (empty($field_value)) {
+    $term = NULL;
+
     if ($entity instanceof Node && $entity->hasField('field_subtheme') && $entity->bundle() !== 'landing_page') {
-      $term = $entity->get('field_subtheme')->entity;
+      $term = $entity->get('field_subtheme')->entity ?? NULL;
 
       if (empty($term)) {
-        return;
+        return NULL;
       }
     }
     elseif ($entity instanceof Term) {
       $term = $entity;
     }
 
-    if (!empty($term)) {
+    if ($term instanceof TermInterface) {
       if ($term->hasField($field) && !$term->get($field)->isEmpty()) {
         $field_value = $term->get($field)->first();
       }
@@ -556,6 +558,7 @@ function nidirect_common_page_attachments(array &$page) {
         $all_themes[] = $term->label();
       }
 
+      $datalayer_values = [];
       if (!empty($all_themes)) {
         // Reverse order of themes.
         $all_themes = array_reverse($all_themes);

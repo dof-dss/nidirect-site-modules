@@ -10,6 +10,7 @@ use Drupal\Core\Link;
 use Drupal\field\Entity\FieldConfig;
 use Drupal\field\Entity\FieldStorageConfig;
 use Drupal\user\Entity\User;
+use Drupal\user\UserInterface;
 
 /**
  * Implements hook_install().
@@ -75,8 +76,9 @@ function nidirect_common_uninstall() {
     // Add prefix from environment var.
     $prefix = getenv('NW_TEST_USER_PREFIX');
     $name = $prefix . $name;
+    /** @var \Drupal\user\UserInterface $user */
     $user = user_load_by_name($name);
-    if (!empty($user)) {
+    if (!$user instanceof UserInterface) {
       \Drupal::logger('nidirect_common')->notice(t('Deleting user @name', ['@name' => $name]));
       $user->delete();
     }
@@ -149,7 +151,12 @@ function nidirect_common_update_8001() {
   // Retrieve and update summary field config for each node type.
   foreach ($field_storage->getBundles() as $id => $label) {
     $field = FieldConfig::loadByName('node', $id, 'field_summary');
-    $field_config = $field->toArray();
+    /** @var \Drupal\field\FieldConfigInterface $field */
+    $field_config = $field->toArray() ?? [];
+
+    if (empty($field_config['field_type'])) {
+      continue;
+    }
 
     if ($field_config['field_type'] === 'text_long') {
       // Change the field type from text_long to string_long.
@@ -242,10 +249,12 @@ function nidirect_common_update_8002() {
     $new_teaser_field['settings']['max_length'] = 255;
 
     $new_teaser_field = FieldStorageConfig::create($new_teaser_field);
-    $new_teaser_field->original = $new_teaser_field;
-    $new_teaser_field->enforceIsNew(FALSE);
+    if (!empty($new_teaser_field->original)) {
+      $new_teaser_field->original = $new_teaser_field;
+      $new_teaser_field->enforceIsNew(FALSE);
 
-    $new_teaser_field->save();
+      $new_teaser_field->save();
+    }
   }
 
   // Restore the original data.

@@ -58,6 +58,7 @@ class SetParentTermForm extends FormBase {
     $term_tree = $this->entityTypeManager->getStorage('taxonomy_term')->loadTree($term->bundle());
 
     // Build our select options array vid => name.
+    $terms = [];
     foreach ($term_tree as $tree_term) {
       $terms[$tree_term->tid] = $tree_term->name;
     }

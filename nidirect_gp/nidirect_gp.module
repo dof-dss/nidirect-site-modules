@@ -5,6 +5,7 @@
  * Contains nidirect_gp.module.
  */
 
+use Drupal\node\NodeInterface;
 use Drupal\views\Views;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
@@ -49,15 +50,16 @@ function nidirect_gp_node_view(array &$build, EntityInterface $entity, LayoutBui
   if (array_key_exists('gp_names', $display->getComponents())) {
     $gp_names = [];
 
+    /** @var \Drupal\node\NodeInterface $entity */
     // Lead GP.
-    if (!empty($entity->field_gp_practice_lead->referencedEntities())) {
-      $gp = $entity->field_gp_practice_lead->referencedEntities()[0];
+    if (!empty($entity->get('field_gp_practice_lead')->referencedEntities())) {
+      $gp = $entity->get('field_gp_practice_lead')->referencedEntities()[0];
       $gp_names[] = $gp->label();
     }
 
     // Member GPs.
-    if (!empty($entity->field_gp_practice_member->referencedEntities())) {
-      foreach ($entity->field_gp_practice_member->referencedEntities() as $index => $gp) {
+    if (!empty($entity->get('field_gp_practice_member')->referencedEntities())) {
+      foreach ($entity->get('field_gp_practice_member')->referencedEntities() as $index => $gp) {
         $gp_names[] = $gp->label();
       }
     }
@@ -235,21 +237,13 @@ function nidirect_gp_gp_practice_form_submit(&$form, FormStateInterface $form_st
  */
 function nidirect_gp_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() != 'node') {
-    return;
+  if ($entity instanceof NodeInterface && $entity->bundle() === 'gp_practice') {
+    // Construct the title.
+    $practice = Xss::filter($entity->get('field_gp_practice_name')->value);
+    $surgery = Xss::filter($entity->get('field_gp_surgery_name')->value);
+    $title = _build_gp_practice_title($practice, $surgery);
+    $entity->setTitle($title);
   }
-
-  if ($entity->bundle() != 'gp_practice') {
-    return;
-  }
-
-  // Construct the title.
-  $practice = Xss::filter($entity->get('field_gp_practice_name')->value);
-  $surgery = Xss::filter($entity->get('field_gp_surgery_name')->value);
-
-  $title = _build_gp_practice_title($practice, $surgery);
-
-  $entity->setTitle($title);
 }
 
 /**
@@ -278,7 +272,10 @@ function nidirect_gp_preprocess_views_view_field(&$variables) {
     $gp_ids = $variables['field']->getValue($variables['row']);
     $gps = \Drupal::entityTypeManager()->getStorage('gp')->loadMultiple($gp_ids);
 
+    $list_items = [];
+
     foreach ($gps as $gp) {
+      /** @var \Drupal\nidirect_gp\Entity\GpInterface $gp */
       $list_items[$gp->id()]['#markup'] = $gp->getDisplayName() . " [" . $gp->getCypher() . "] " . $gp->toLink('Edit')->toString();
     }
 
@@ -308,6 +305,7 @@ function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
   4. Neither provided
    */
 
+  $title = '';
   // 1. Both provided.
   if ($practiceName != '' && $surgeryName != '') {
     $title = $surgeryName . ' - ' . $practiceName;
@@ -338,16 +336,15 @@ function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $qu
   // of sorting on a 'link' field as it does not build the join correctly
   // and just errors on the 'unknown' field that appears in the 'orderby'.
   if ($view->id() == 'gp_practice_list') {
-    if (isset($query->orderby)
-      && is_array($query->orderby)
-      && isset($query->orderby[0])
-      && isset($query->orderby[0]['field'])) {
-      if ($query->orderby[0]['field'] == 'unknown') {
+    $query_order = $query->orderby ?? NULL;
+
+    if (!empty($query_order) && !empty($query_order[0]) && !empty($query_order[0]['field'])) {
+      if ($query_order[0]['field'] === 'unknown') {
         // Decide whether we are sorting by the 'Online appointments' column or
         // by 'Online precriptions'.
         $join_table = NULL;
         $view_input = $view->getExposedInput();
-        if (isset($view_input) && isset($view_input['order'])) {
+        if (!empty($view_input['order'])) {
           if ($view_input['order'] == 'nothing') {
             // We are sorting by 'Online appointments'.
             $join_table = 'node__field_gp_appointments';
@@ -373,7 +370,9 @@ function nidirect_gp_views_query_alter(ViewExecutable $view, QueryPluginBase $qu
         // is an entry in the joined table for each practice.
         $join_obj = Views::pluginManager('join')
           ->createInstance('standard', $configuration);
-        $rel = $query->addRelationship($join_table, $join_obj, 'node_field_data');
+
+        /** @var \Drupal\views\Plugin\views\query\Sql $query */
+        $query->addRelationship($join_table, $join_obj, 'node_field_data');
         // Replace the 'unknown' field in the query 'orderby' with the
         // correct field.
         if ($join_table == 'node__field_gp_appointments') {

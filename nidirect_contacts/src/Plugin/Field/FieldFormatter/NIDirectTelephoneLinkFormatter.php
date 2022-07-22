@@ -33,7 +33,9 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
     $formatting_chars = [' ', '+'];
 
     foreach ($items as $item) {
-      $unformatted_field_number = str_replace($formatting_chars, '', $item->getValue('telephone_number')['telephone_number']);
+      /** @var \Drupal\Core\Field\FieldItemList $item */
+      $telephone_value = $item->getValue('telephone_number');
+      $unformatted_field_number = str_replace($formatting_chars, '', $telephone_value['telephone_number']);
       // Match international and textphone numbers to replace the default
       // formatting provided by the libphonenumber library.
       if (strpos($unformatted_field_number, '00800') === 0 || strpos($unformatted_field_number, '18001') === 0) {
@@ -44,7 +46,7 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
             // Check the source value contains the prefix as some contacts use
             // the same number for phone and text phone.
             if (strpos($element['number']['#value'], '00800') === 0 || strpos($element['number']['#value'], '18001') === 0) {
-              $element['number']['#value'] = $item->getValue('telephone_number')['telephone_number'];
+              $element['number']['#value'] = $telephone_value['telephone_number'];
             }
           }
         }

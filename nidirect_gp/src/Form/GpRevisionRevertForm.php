@@ -41,16 +41,26 @@ class GpRevisionRevertForm extends ConfirmFormBase {
   protected $dateFormatter;
 
   /**
+   * Messenger service object.
+   *
+   * @var \Drupal\Core\Messenger\MessengerInterface
+   */
+  protected $messenger;
+
+  /**
    * Constructs a new GpRevisionRevertForm.
    *
    * @param \Drupal\Core\Entity\EntityStorageInterface $entity_storage
    *   The GP storage.
    * @param \Drupal\Core\Datetime\DateFormatterInterface $date_formatter
    *   The date formatter service.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messenger service object.
    */
-  public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter) {
+  public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter, MessengerInterface $messenger) {
     $this->gpStorage = $entity_storage;
     $this->dateFormatter = $date_formatter;
+    $this->messenger = $messenger;
   }
 
   /**
@@ -59,7 +69,8 @@ class GpRevisionRevertForm extends ConfirmFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('entity_type.manager')->getStorage('gp'),
-      $container->get('date.formatter')
+      $container->get('date.formatter'),
+      $container->get('messenger')
     );
   }
 
@@ -124,7 +135,7 @@ class GpRevisionRevertForm extends ConfirmFormBase {
       '%title' => $this->revision->label(),
       '%revision' => $this->revision->getRevisionId(),
     ]);
-    MessengerInterface::addMessage(t('GP %title has been reverted to the revision from %revision-date.', [
+    $this->messenger->addMessage(t('GP %title has been reverted to the revision from %revision-date.', [
       '%title' => $this->revision->label(),
       '%revision-date' => $this->dateFormatter->format($original_revision_timestamp),
     ]));

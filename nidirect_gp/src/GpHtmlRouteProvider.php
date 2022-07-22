@@ -69,8 +69,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ->setRequirement('_permission', 'access gp revisions')
         ->setOption('_admin_route', TRUE);
 
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
   /**
@@ -92,9 +93,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_permission', 'access gp revisions')
         ->setOption('_admin_route', TRUE);
-
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
   /**
@@ -116,9 +117,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_permission', 'revert all gp revisions')
         ->setOption('_admin_route', TRUE);
-
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
   /**
@@ -140,9 +141,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_permission', 'delete all gp revisions')
         ->setOption('_admin_route', TRUE);
-
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
   /**
@@ -164,9 +165,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_permission', 'revert all gp revisions')
         ->setOption('_admin_route', TRUE);
-
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
   /**
@@ -188,9 +189,9 @@ class GpHtmlRouteProvider extends AdminHtmlRouteProvider {
         ])
         ->setRequirement('_permission', $entity_type->getAdminPermission())
         ->setOption('_admin_route', TRUE);
-
-      return $route;
     }
+
+    return $route ?? NULL;
   }
 
 }

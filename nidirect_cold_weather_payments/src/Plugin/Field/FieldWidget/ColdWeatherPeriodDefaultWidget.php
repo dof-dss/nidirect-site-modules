@@ -27,7 +27,7 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
   /**
    * EntityTypeManager.
    *
-   * @var Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 

@@ -48,12 +48,11 @@ class GpForm extends ContentEntityForm {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-    /**
-     * @var \Drupal\nidirect_gp\Entity\Gp $entity
-     */
     $form = parent::buildForm($form, $form_state);
 
-    if (!$this->entity->isNew()) {
+    /** @var \Drupal\nidirect_gp\Entity\Gp $entity */
+    $entity = $this->entity;
+    if (!$entity->isNew()) {
       $form['new_revision'] = [
         '#type' => 'checkbox',
         '#title' => $this->t('Create new revision'),
@@ -61,8 +60,6 @@ class GpForm extends ContentEntityForm {
         '#weight' => 10,
       ];
     }
-
-    $entity = $this->entity;
 
     return $form;
   }
@@ -99,8 +96,10 @@ class GpForm extends ContentEntityForm {
           '%label' => $entity->label(),
         ]));
     }
-    // $form_state->setRedirect('entity.gp.canonical', ['gp' => $entity->id()]);
+
     $form_state->setRedirect('entity.gp.collection');
+
+    return $status;
   }
 
 }

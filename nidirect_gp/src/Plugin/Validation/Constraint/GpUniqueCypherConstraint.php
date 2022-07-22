@@ -20,6 +20,16 @@ class GpUniqueCypherConstraint extends Constraint {
    *
    * @var string
    */
-  public $message = "A GP entry with the cypher '@cypher' exists. A GP must have a unique cypher.";
+  protected $message = "A GP entry with the cypher '@cypher' exists. A GP must have a unique cypher.";
+
+  /**
+   * Returns the constraint message.
+   *
+   * @return string
+   *   The contraint message.
+   */
+  public function getMessage() :string {
+    return $this->message;
+  }
 
 }

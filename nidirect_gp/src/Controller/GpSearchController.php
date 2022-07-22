@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormState;
 use Drupal\geocoder\GeocoderInterface;
 use Drupal\nidirect_gp\PostcodeExtractor;
 use Drupal\views\ViewExecutable;
+use Geocoder\Model\AddressCollection;
 use maxh\Nominatim\Exceptions\NominatimException;
 use maxh\Nominatim\Nominatim;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -73,7 +74,7 @@ class GpSearchController extends ControllerBase {
   /**
    * Drupal Form Builder.
    *
-   * @var \Drupal\core\Form\FormBuilderInterface
+   * @var \Drupal\Core\Form\FormBuilderInterface
    */
   protected $formBuilder;
 
@@ -97,7 +98,7 @@ class GpSearchController extends ControllerBase {
    *   Max distance in miles for geocoding radius.
    * @param string $geocoding_service_id
    *   Geocoding service ID.
-   * @param \Drupal\core\Form\FormBuilderInterface $form_builder
+   * @param \Drupal\Core\Form\FormBuilderInterface $form_builder
    *   Form builder.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager.
@@ -209,7 +210,7 @@ class GpSearchController extends ControllerBase {
         // Geocode the first postcode (only accept single values for search).
         $geocode_task_results = $this->geocoder->geocode($search_type['postcode'][0], $provider);
 
-        if (!empty(($geocode_task_results))) {
+        if ($geocode_task_results instanceof AddressCollection) {
           $geocode_coordinates = $geocode_task_results->first()->getCoordinates();
           $this->latitude = $geocode_coordinates->getLatitude();
           $this->longitude = $geocode_coordinates->getLongitude();
@@ -367,7 +368,7 @@ class GpSearchController extends ControllerBase {
       $result = $nominatim->find($reverse);
     }
     catch (NominatimException $e) {
-      $this->getLogger()->error($e);
+      $this->getLogger('nidirect_gp')->error($e);
       return $locality;
     }
 

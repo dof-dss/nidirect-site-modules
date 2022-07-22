@@ -23,6 +23,7 @@ class WeatherStationEntityListBuilder extends ConfigEntityListBuilder {
    * {@inheritdoc}
    */
   public function buildRow(EntityInterface $entity) {
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
     $row['label'] = $entity->label();
     $row['id'] = $entity->get('postcodes');
     return $row + parent::buildRow($entity);

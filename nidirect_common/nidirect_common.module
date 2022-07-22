@@ -324,7 +324,7 @@ function nidirect_common_shs_js_settings_alter(&$settings_shs, $bundle, $field_n
  * @param string $field
  *   Machine name of the field to lookup.
  *
- * @return string|null
+ * @return \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem|null
  *   Value for the field, it there is one.
  */
 function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {

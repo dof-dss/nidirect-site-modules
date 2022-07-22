@@ -265,11 +265,17 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
       // result title. We also update the node_field_data_title so we can
       // extract an array of titles for sorting the results.
       if (strtolower(substr($result->node_field_data_title ?? '', 0, 1)) !== $search_letter) {
-        /** @var \Drupal\node\NodeInterface $supplementary_contact */
-        $supplementary_contact = $result->_entity->get('field_supplementary_contact');
-        $node_title = $supplementary_contact->label();
+        /** @var \Drupal\node\NodeInterface $entity */
+        $entity = $result->_entity;
+        $supplementary_contact = $entity->get('field_supplementary_contact');
+        $node_title = $supplementary_contact->getString();
 
+        // Ignore next phpstan error; no appropriate setting function
+        // on the public properties the ResultRow object contains.
+
+        // @phpstan-ignore-next-line.
         $result->node_field_data_title = $node_title;
+
         /** @var \Drupal\node\NodeInterface $node */
         $node = $result->_entity;
         $node->setTitle($node_title);

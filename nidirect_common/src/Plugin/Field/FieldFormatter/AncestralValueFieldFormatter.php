@@ -156,7 +156,12 @@ class AncestralValueFieldFormatter extends FormatterBase implements ContainerFac
         // Navigate the configured depth of ancestor terms.
         for ($i = 0; $i < $settings['ancestor_depth']; $i++) {
           if (array_key_exists($i, $ancestors)) {
+            /** @var \Drupal\Core\Field\FieldItemListInterface $field */
             $field = $ancestors[$i]->get('field_additional_info');
+            // Ignore below phpstan issue: unclear what specific class
+            // or interface should be set to access a field iterator.
+            // Call to an undefined method Drupal\Core\Field\FieldItemListInterface::getIterator().
+            // @phpstan-ignore-next-line.
             $items = $field->getIterator();
 
             if ($items->count()) {

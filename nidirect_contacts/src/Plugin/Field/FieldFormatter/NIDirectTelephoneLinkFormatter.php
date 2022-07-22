@@ -25,6 +25,7 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
 
   /**
    * {@inheritdoc}
+   * @throws \Drupal\Core\TypedData\Exception\MissingDataException
    */
   public function viewElements(FieldItemListInterface $items, $langcode) {
     $elements = parent::viewElements($items, $langcode);
@@ -33,9 +34,9 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
     $formatting_chars = [' ', '+'];
 
     foreach ($items as $item) {
-      /** @var \Drupal\Core\Field\FieldItemList $item */
-      $telephone_value = $item->getValue('telephone_number');
-      $unformatted_field_number = str_replace($formatting_chars, '', $telephone_value['telephone_number']);
+      /** @var \Drupal\Core\Field\Plugin\Field\FieldType\StringItem $item */
+      $telephone_value = $item->telephone_number ?? '';
+      $unformatted_field_number = str_replace($formatting_chars, '', $telephone_value);
       // Match international and textphone numbers to replace the default
       // formatting provided by the libphonenumber library.
       if (strpos($unformatted_field_number, '00800') === 0 || strpos($unformatted_field_number, '18001') === 0) {
@@ -46,7 +47,7 @@ class NIDirectTelephoneLinkFormatter extends TelephonePlusLinkFormatter {
             // Check the source value contains the prefix as some contacts use
             // the same number for phone and text phone.
             if (strpos($element['number']['#value'], '00800') === 0 || strpos($element['number']['#value'], '18001') === 0) {
-              $element['number']['#value'] = $telephone_value['telephone_number'];
+              $element['number']['#value'] = $telephone_value;
             }
           }
         }

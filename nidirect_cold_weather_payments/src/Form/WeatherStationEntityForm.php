@@ -16,14 +16,14 @@ class WeatherStationEntityForm extends EntityForm {
   /**
    * EntityTypeManager.
    *
-   * @var Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * Messenger service.
    *
-   * @var Drupal\Core\Messenger\MessengerInterface
+   * @var \Drupal\Core\Messenger\MessengerInterface
    */
   protected $messenger;
 
@@ -51,6 +51,7 @@ class WeatherStationEntityForm extends EntityForm {
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
 
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $weather_station */
     $weather_station = $this->entity;
     $form['label'] = [
       '#type' => 'textfield',
@@ -99,6 +100,7 @@ class WeatherStationEntityForm extends EntityForm {
     $stations = $this->entityTypeManager->getStorage('weather_station')->loadMultiple($ids);
 
     foreach ($stations as $station) {
+      /** @var \Drupal\Core\Entity\FieldableEntityInterface $station */
       $existing_postcodes = array_merge($existing_postcodes, explode(',', $station->get('postcodes')));
     }
 
@@ -115,6 +117,7 @@ class WeatherStationEntityForm extends EntityForm {
    * {@inheritdoc}
    */
   public function save(array $form, FormStateInterface $form_state) {
+    /** @var \Drupal\Core\Entity\FieldableEntityInterface $weather_station */
     $weather_station = $this->entity;
     $status = $weather_station->save();
 
@@ -131,6 +134,8 @@ class WeatherStationEntityForm extends EntityForm {
         ]));
     }
     $form_state->setRedirectUrl($weather_station->toUrl('collection'));
+
+    return $status;
   }
 
 }

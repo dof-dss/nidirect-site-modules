@@ -17,9 +17,9 @@ use Drupal\Core\Logger\LoggerChannelFactory;
 class PostMigrationSubscriber implements EventSubscriberInterface {
 
   /**
-   * Drupal\Core\Logger\LoggerChannelFactory definition.
+   * Drupal\Core\Logger\LoggerChannel definition.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\Core\Logger\LoggerChannel
    */
   protected $logger;
 

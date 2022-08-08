@@ -94,7 +94,13 @@ class NIDirectQuizResultsHandler extends WebformHandlerBase {
       '#min' => 0,
     ];
 
-    $webform_elements = $form_state->getFormObject()->getWebform()->getElementsDecodedAndFlattened();
+    /** @var \Drupal\Core\Form\FormStateInterface $form_object */
+    $form_object = $form_state->getFormObject();
+    /** @var \Drupal\webform_ui\Form\WebformUiElementFormInterface $form_object */
+    $webform = $form_object->getWebform();
+    /** @var \Drupal\webform\WebformInterface $webform */
+    $webform_elements = $webform->getElementsDecodedAndFlattened();
+
     $webform_questions = [];
     $multiple_answers = FALSE;
 

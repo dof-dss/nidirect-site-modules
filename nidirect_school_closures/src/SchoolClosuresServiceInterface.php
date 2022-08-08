@@ -27,7 +27,7 @@ interface SchoolClosuresServiceInterface {
   /**
    * Returns last updated date.
    *
-   * @return DateTime
+   * @return \DateTime
    *   A DateTime of when the closures data was last updated.
    */
   public function getUpdated();

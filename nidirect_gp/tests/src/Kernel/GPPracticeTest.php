@@ -21,9 +21,9 @@ class GPPracticeTest extends EntityKernelTestBase {
   public static $modules = ['node', 'nidirect_gp', 'nidirect_common'];
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installConfig('nidirect_gp');

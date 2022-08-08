@@ -21,7 +21,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
   /**
    * Drupal\Core\Routing\CurrentRouteMatch definition.
    *
-   * @var Drupal\Core\Routing\CurrentRouteMatch
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
   protected $routeMatch;
 
@@ -34,7 +34,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
    *   The plugin id.
    * @param mixed $plugin_definition
    *   Plugin definition.
-   * @param Drupal\Core\Routing\CurrentRouteMatch $route_match
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
    *   Route match object.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match) {
@@ -64,7 +64,7 @@ class ContactAzBlock extends BlockBase implements ContainerFactoryPluginInterfac
 
     $title = $this->t('Find contacts beginning with<span class="visually-hidden"> A to Z</span>...');
 
-    if ($this->routeMatch->getRouteName() == 'nidirect_contacts.letter') {
+    if ($this->routeMatch->getRouteName() === 'nidirect_contacts.letter') {
       $letter = $this->routeMatch->getParameter('letter');
       $title = $this->t('Showing entries for :letter', [':letter' => strtoupper($letter)]);
       $skip_link = '<a href="#contact-links" class="skip-link visually-hidden focusable">';

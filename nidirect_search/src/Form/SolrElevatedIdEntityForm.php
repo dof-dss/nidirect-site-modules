@@ -57,26 +57,29 @@ class SolrElevatedIdEntityForm extends EntityForm {
    */
   public function form(array $form, FormStateInterface $form_state) {
     $form = parent::form($form, $form_state);
+    /** @var \Drupal\nidirect_search\Entity\SolrElevatedIdEntity $entity */
+    $entity = $this->entity;
 
     $form['label'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Search term'),
       '#maxlength' => 255,
-      '#default_value' => $this->entity->label(),
+      '#default_value' => $entity->label(),
       '#description' => $this->t('Search term to define elevations for.'),
       '#required' => TRUE,
     ];
 
     $form['id'] = [
       '#type' => 'machine_name',
-      '#default_value' => $this->entity->id(),
+      '#default_value' => $entity->id(),
       '#machine_name' => [
         'exists' => '\Drupal\nidirect_search\Entity\SolrElevatedIdEntity::load',
       ],
-      '#disabled' => !$this->entity->isNew(),
+      '#disabled' => !$entity->isNew(),
     ];
 
     // Construct the index options by fetching the current Solr server indexes.
+    $index_options = [];
     foreach ($this->solrServer->getIndexes() as $id => $index) {
       $index_options[$id] = $index->label();
     }
@@ -85,7 +88,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#type' => 'select',
       '#title' => $this->t('Search index'),
       '#options' => $index_options,
-      '#default_value' => $this->entity->index(),
+      '#default_value' => $entity->index(),
       '#description' => $this->t('Solr search index to elevate against.'),
       '#required' => TRUE,
     ];
@@ -94,7 +97,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
       '#type' => 'textfield',
       '#title' => $this->t('Nodes'),
       '#maxlength' => 255,
-      '#default_value' => $this->entity->nodes(),
+      '#default_value' => $entity->nodes(),
       '#description' => $this->t('Comma separated node ids to elevate for this search term'),
       '#placeholder' => 'e.g. 1, 1021, 67',
       '#required' => TRUE,
@@ -103,7 +106,7 @@ class SolrElevatedIdEntityForm extends EntityForm {
     $form['status'] = [
       '#type' => 'checkbox',
       '#title' => $this->t('Enabled'),
-      '#default_value' => ($this->entity->isNew()) ? TRUE : $this->entity->status(),
+      '#default_value' => ($entity->isNew()) ? TRUE : $entity->status(),
     ];
 
     return $form;
@@ -150,6 +153,9 @@ class SolrElevatedIdEntityForm extends EntityForm {
    */
   public function save(array $form, FormStateInterface $form_state) {
     $result = parent::save($form, $form_state);
+    $index = '';
+    $label = '';
+
     extract($form_state->getValues());
 
     $message = $result === SAVED_NEW

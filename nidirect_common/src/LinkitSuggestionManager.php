@@ -44,7 +44,7 @@ class LinkitSuggestionManager extends SuggestionManager {
     // Display for empty searches.
     if (empty(trim($search_string))) {
       $suggestion = new DescriptionSuggestion();
-      $suggestion->setLabek($this->t('No content results'));
+      $suggestion->setLabel($this->t('No content results'));
       $suggestion->setDescription($this->t('Please enter search terms'));
 
       $suggestions->addSuggestion($suggestion);

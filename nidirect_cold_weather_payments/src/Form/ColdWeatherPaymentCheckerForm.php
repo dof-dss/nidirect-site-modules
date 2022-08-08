@@ -7,6 +7,7 @@ use Drupal\Core\Ajax\RemoveCommand;
 use Drupal\Core\Cache\CacheableAjaxResponse;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use GuzzleHttp\Exception\RequestException;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\Core\Http\ClientFactory;
 use Drupal\Core\Render\Renderer;
@@ -262,7 +263,7 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
 
       $data['payments'] = $payments;
     }
-    catch (\Exception $e) {
+    catch (RequestException $e) {
       $data['has_error'] = TRUE;
       $data['response'] = $e->getResponse();
       \Drupal::logger('type')->error($e->getMessage());

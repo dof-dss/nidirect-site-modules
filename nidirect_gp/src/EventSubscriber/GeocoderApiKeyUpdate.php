@@ -18,14 +18,14 @@ class GeocoderApiKeyUpdate implements EventSubscriberInterface {
   /**
    * The upadte config from env service.
    *
-   * @var Drupal\nidirect_common\UpdateConfigFromEnvironment
+   * @var \Drupal\nidirect_common\UpdateConfigFromEnvironment
    */
   protected $updateEnvService;
 
   /**
    * Constructs a new GeocoderApiKeyUpdate instance.
    *
-   * @param Drupal\nidirect_common\UpdateConfigFromEnvironment $update_service
+   * @param \Drupal\nidirect_common\UpdateConfigFromEnvironment $update_service
    *   The entity type manager.
    */
   public function __construct(UpdateConfigFromEnvironment $update_service) {

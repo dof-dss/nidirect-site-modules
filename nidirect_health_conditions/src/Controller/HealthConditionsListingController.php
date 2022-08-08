@@ -5,7 +5,6 @@ namespace Drupal\nidirect_health_conditions\Controller;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Tests\rest\Functional\ResourceTest;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
@@ -31,7 +30,7 @@ class HealthConditionsListingController extends ControllerBase {
   /**
    * Symfony\Component\HttpFoundation\RequestStack definition.
    *
-   * @var Symfony\Component\HttpFoundation\RequestStack
+   * @var \Symfony\Component\HttpFoundation\RequestStack
    */
   protected $request;
 

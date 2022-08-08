@@ -2,7 +2,7 @@
 
 namespace Drupal\nidirect_school_closures\Service;
 
-use GuzzleHttp\ClientInterface;
+use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Exception\ClientException;
 use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
 use Drupal\nidirect_school_closures\SchoolClosure;
@@ -46,7 +46,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   /**
    * Parsed XML response from the service call.
    *
-   * @var SimpleXMLElement
+   * @var \SimpleXMLElement
    */
   protected $xml = NULL;
 
@@ -74,14 +74,14 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   /**
    * When the data was retrived.
    *
-   * @var DateTime
+   * @var \DateTime
    */
   protected $updated;
 
   /**
-   * GuzzleHttp\ClientInterface definition.
+   * GuzzleHttp\Client definition.
    *
-   * @var \GuzzleHttp\ClientInterface
+   * @var \GuzzleHttp\Client
    */
   protected $httpClient;
 
@@ -93,16 +93,16 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
   protected $cacheService;
 
   /**
-   * Drupal\Core\Logger\LoggerChannelFactory definition.
+   * Logger channel service object.
    *
-   * @var \Drupal\Core\Logger\LoggerChannelFactory
+   * @var \Drupal\Core\Logger\LoggerChannelInterface
    */
   protected $logger;
 
   /**
    * Constructs a new C2kschoolsSchoolClosuresService object.
    */
-  public function __construct(ClientInterface $http_client, CacheBackendInterface $cache, ConfigFactory $config_service, LoggerChannelFactory $logger) {
+  public function __construct(HttpClient $http_client, CacheBackendInterface $cache, ConfigFactory $config_service, LoggerChannelFactory $logger) {
     $this->httpClient = $http_client;
     $this->cacheService = $cache;
     $this->logger = $logger->get('nidirect_school_closures');
@@ -110,17 +110,17 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
     // Fetch the config settings.
     $config = $config_service->get('nidirect_school_closures.settings');
     $this->url = $config->get('data_source_url') ?? $this->url;
-    $this->cacheDuration = $config->get('cache_duration') ?? $this->cacheDurarion;
+    $this->cacheDuration = $config->get('cache_duration') ?? $this->cacheDuration;
     $this->maxAttempts = $config->get('max_attempts') ?? $this->maxAttempts;
   }
 
   /**
    * Last updated date.
    *
-   * @return date
+   * @return \DateTime
    *   Returns dataset last updated date.
    */
-  public function getUpdated() {
+  public function getUpdated(): \DateTime {
     return $this->updated;
   }
 
@@ -130,7 +130,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
    * @return array
    *   Returns closures dataset array.
    */
-  public function getData() {
+  public function getData(): array {
     return $this->data;
   }
 
@@ -140,7 +140,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
    * @param \SimpleXMLElement $xml
    *   XML Element containing school closure data.
    */
-  public function setXml(\SimpleXMLElement $xml) {
+  public function setXml(\SimpleXMLElement $xml): void {
     $this->xml = $xml;
   }
 
@@ -150,7 +150,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
    * @return bool
    *   Returns the current error state.
    */
-  public function hasErrors() {
+  public function hasErrors(): bool {
     return $this->error;
   }
 
@@ -160,7 +160,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
    * @return array
    *   closures array.
    */
-  public function getClosures() {
+  public function getClosures(): array {
     // Reset error state.
     $this->error = FALSE;
 
@@ -186,7 +186,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
       // Fetch data from the web endpoint.
       $this->fetchData();
 
-      // Process recieved data or attempt again.
+      // Process received data or attempt again.
       if (!empty($this->xml)) {
         $this->processData();
         $this->updated = date('Y-m-d H:i:s');
@@ -214,7 +214,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
             $this->getClosures();
           }
           else {
-            // Warn if we can't retrive data from the service or the cache.
+            // Warn if we can't retrieve data from the service or the cache.
             $this->logger->alert('Unable to update school closure data or revert to cached data.');
             $this->error = TRUE;
           }
@@ -240,9 +240,6 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
         }
       }
       catch (ClientException $e) {
-        $this->logger->warning('Failed to fetch school closure data. ' . $e->getMessage());
-      }
-      catch (Exception $e) {
         $this->logger->warning('Failed to fetch school closure data. ' . $e->getMessage());
       }
     }

@@ -44,6 +44,7 @@ class InvalidateTaxonomyListCacheTags {
    * Invalidate custom cache tags for this entity.
    */
   public function invalidateForEntity(EntityInterface $entity) {
+    /** @var \Drupal\taxonomy\TermInterface $entity */
     // If a node references any point in the 'site themes'
     // vocabulary, make sure that the appropriate taxonomy
     // cache tags are invalidated.
@@ -61,8 +62,10 @@ class InvalidateTaxonomyListCacheTags {
         }
         // If this is an update, invalidate cache tag for
         // original taxonomy term as well.
-        if ($entity->original instanceof NodeInterface) {
-          $tid = $entity->original->get($thisfield)->target_id;
+        /** @var \Drupal\Core\Entity\ContentEntityInterface $original */
+        $original = $entity->original ?? '';
+        if ($original instanceof NodeInterface) {
+          $tid = $original->get($thisfield)->target_id ?? 0;
           if (!empty($tid)) {
             $taxonomy_tags[] = 'taxonomy_term_list:' . $tid;
             $parent_tid = $this->checkLandingPageParent($entity, $tid);
@@ -84,8 +87,9 @@ class InvalidateTaxonomyListCacheTags {
    * Get parent taxonomy term for landing pages.
    */
   private function checkLandingPageParent(EntityInterface $entity, int $tid) {
+    /** @var \Drupal\taxonomy\TermInterface $entity */
     // Landing page is a special case.
-    if ($entity->type->target_id == 'landing_page') {
+    if ($entity->get('type')->target_id === 'landing_page') {
       // In this case we want to invalidate the cache tag for
       // the parent of the current term.
       $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);

@@ -6,6 +6,7 @@ use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Language\LanguageManagerInterface;
+use Drupal\Core\Messenger\MessengerInterface;
 use Drupal\nidirect_gp\Entity\GpInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -40,9 +41,11 @@ class GpRevisionRevertTranslationForm extends GpRevisionRevertForm {
    *   The date formatter service.
    * @param \Drupal\Core\Language\LanguageManagerInterface $language_manager
    *   The language manager.
+   * @param \Drupal\Core\Messenger\MessengerInterface $messenger
+   *   Messenger service object.
    */
-  public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter, LanguageManagerInterface $language_manager) {
-    parent::__construct($entity_storage, $date_formatter);
+  public function __construct(EntityStorageInterface $entity_storage, DateFormatterInterface $date_formatter, LanguageManagerInterface $language_manager, MessengerInterface $messenger) {
+    parent::__construct($entity_storage, $date_formatter, $messenger);
     $this->languageManager = $language_manager;
   }
 
@@ -53,7 +56,8 @@ class GpRevisionRevertTranslationForm extends GpRevisionRevertForm {
     return new static(
       $container->get('entity_type.manager')->getStorage('gp'),
       $container->get('date.formatter'),
-      $container->get('language_manager')
+      $container->get('language_manager'),
+      $container->get('messenger')
     );
   }
 
@@ -96,7 +100,7 @@ class GpRevisionRevertTranslationForm extends GpRevisionRevertForm {
   protected function prepareRevertedRevision(GpInterface $revision, FormStateInterface $form_state) {
     $revert_untranslated_fields = $form_state->getValue('revert_untranslated_fields');
 
-    /** @var \Drupal\nidirect_gp\Entity\GpInterface $default_revision */
+    /** @var \Drupal\nidirect_gp\Entity\GpInterface $latest_revision */
     $latest_revision = $this->gpStorage->load($revision->id());
     $latest_revision_translation = $latest_revision->getTranslation($this->langcode);
 

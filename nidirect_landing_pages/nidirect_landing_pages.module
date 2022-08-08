@@ -12,6 +12,7 @@ use Drupal\Core\Link;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\Core\Url;
 use Drupal\node\Entity\Node;
+use Drupal\node\NodeInterface;
 use Drupal\paragraphs\Entity\Paragraph;
 use Drupal\redirect\Entity\Redirect;
 use Drupal\taxonomy\Entity\Term;
@@ -210,14 +211,17 @@ function nidirect_landing_pages_process_format($element) {
  */
 function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'block_content') {
+  if ($entity->getEntityTypeId() === 'block_content') {
+    /** @var \Drupal\block_content\BlockContentInterface $entity */
     if ($entity->hasField('field_manually_control_listing')) {
       $manual_field = $entity->get('field_manually_control_listing');
       if ($manual_field->getValue()[0]['value'] == 0) {
         // Update the list of teasers on every save if manual
         // control has not been selected.
+        $results = [];
+
         $node = \Drupal::routeMatch()->getParameter('node');
-        if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+        if ($node instanceof NodeInterface && !empty($node->field_subtheme->target_id)) {
           // Get a list of article teasers by term.
           if (!empty($node->id())) {
             $results = _retrieve_article_teasers_by_term($node->field_subtheme->target_id, $node->id());
@@ -403,7 +407,7 @@ function nidirect_landing_pages_get_redirect_url(string $source_path) {
  *   The landing page node entity.
  */
 function nidirect_landing_pages_create_theme_to_landing_page_redirect(EntityInterface $entity) {
-
+  /** @var \Drupal\node\NodeInterface $entity */
   // Determine the theme path that will be the redirect source.
   $subtheme_tid = $entity->get('field_subtheme')->getString();
   $taxonomy_term_path = 'taxonomy/term/' . $subtheme_tid;
@@ -454,6 +458,8 @@ function nidirect_landing_pages_create_theme_to_landing_page_redirect(EntityInte
  *   The landing page node.
  */
 function nidirect_landing_pages_delete_theme_to_landing_page_redirect(EntityInterface $entity) {
+  /** @var \Drupal\node\NodeInterface $entity */
+
   $redirect_repository = \Drupal::service('redirect.repository');
 
   // The redirect to delete must have a source path that matches
@@ -533,7 +539,7 @@ function _render_article_teasers_auto(array &$variables) {
       }
     }
   }
-  if (is_object($node) && !empty($node->field_subtheme->target_id)) {
+  if ($node instanceof NodeInterface && !empty($node->field_subtheme->target_id)) {
     // Add custom cache tag for taxonomy term listing.
     $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
     // Get a list of article teasers by term.
@@ -589,26 +595,24 @@ function _render_article_teasers_manual_control(array &$variables) {
 function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
   $this_teaser = [];
   $article = $paragraph->get('field_article');
-  if (!empty($article)) {
-    $nid = $article->getValue()[0]['target_id'];
-    // Add cache tag for this article.
-    $cache_tags[] = 'node:' . $nid;
-    $node = Node::load($nid);
-    if (!empty($node)) {
-      $this_teaser['title_link'] = [
-        '#type' => 'link',
-        '#title' => $node->getTitle(),
-        '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
-      ];
-      $this_teaser['more_link'] = [
-        '#type' => 'link',
-        '#title' => '... ' . t('more'),
-        '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
-      ];
-      $this_teaser['summary_text'] = '';
-      if ($node->hasField('field_summary')) {
-        $this_teaser['summary_text'] = ['#markup' => $node->get('field_summary')->getValue()[0]['value']];
-      }
+  $nid = $article->getValue()[0]['target_id'];
+  // Add cache tag for this article.
+  $cache_tags[] = 'node:' . $nid;
+  $node = Node::load($nid);
+  if (!empty($node)) {
+    $this_teaser['title_link'] = [
+      '#type' => 'link',
+      '#title' => $node->getTitle(),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
+    ];
+    $this_teaser['more_link'] = [
+      '#type' => 'link',
+      '#title' => '... ' . t('more'),
+      '#url' => Url::fromRoute('entity.node.canonical', ['node' => $nid]),
+    ];
+    $this_teaser['summary_text'] = '';
+    if ($node->hasField('field_summary')) {
+      $this_teaser['summary_text'] = ['#markup' => $node->get('field_summary')->getValue()[0]['value']];
     }
   }
   return $this_teaser;

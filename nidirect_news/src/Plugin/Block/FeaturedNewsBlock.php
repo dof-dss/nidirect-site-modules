@@ -21,7 +21,7 @@ class FeaturedNewsBlock extends BlockBase implements ContainerFactoryPluginInter
   /**
    * The news controller service.
    *
-   * @var Drupal\nidirect_news\Controller\NewsListingController
+   * @var \Drupal\nidirect_news\Controller\NewsListingController
    */
   protected $newsService;
 

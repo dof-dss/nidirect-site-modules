@@ -157,6 +157,7 @@ class TaxonomyNavigatorController extends ControllerBase {
     $ids = $query->execute();
     $terms = $ids ? $termStorage->loadMultiple($ids) : [];
 
+    $results = [];
     foreach ($terms as $term) {
 
       $results[] = [

@@ -8,7 +8,6 @@ use Drupal\Core\Routing\CurrentRouteMatch;
 use Drupal\Core\Url;
 use Drupal\flag\FlagService;
 use Drupal\taxonomy\TermInterface;
-use Drupal\views\Views;
 
 /**
  * Provides methods for managing related content display.
@@ -313,25 +312,34 @@ class RelatedContentManager {
     $rows = array_merge($parent_rows, $supplementary_rows);
 
     foreach ($rows as $row) {
+
+      /** @var \Drupal\node\NodeInterface $entity */
+      $entity = $row->_entity;
+
       // If we are dealing with a book entry and it's lower than the first page,
       // don't add to the list of articles for the taxonomy term.
-      if (!empty($row->_entity->book) && $row->_entity->book['depth'] > 1) {
+      if (!empty($entity->book) && ($entity->book['depth'] ?? 0) > 1) {
         continue;
       }
 
       // External link nodes' titles should be replaced with the link value
       // they contain.
-      if ($row->_entity->bundle() === 'external_link') {
-        $title = $row->_entity->field_link->title;
-        $url = Url::fromUri($row->_entity->field_link->uri);
+
+      if ($entity->bundle() === 'external_link') {
+        /** @var \Drupal\link\Plugin\Field\FieldType\LinkItem $field_link */
+        $field_link = $entity->get('field_link')->first();
+
+        $link_values = $field_link->getValue();
+        $title = $link_values['title'];
+        $url = Url::fromUri($link_values['uri']);
       }
       else {
-        $title = $row->_entity->getTitle();
-        $url = Url::fromRoute('entity.node.canonical', ['node' => $row->nid]);
+        $title = $entity->getTitle();
+        $url = Url::fromRoute('entity.node.canonical', ['node' => $entity->id()]);
       }
 
-      $this->content[$row->_entity->id()] = [
-        'entity' => $row->_entity,
+      $this->content[$entity->id()] = [
+        'entity' => $entity,
         'title' => $title,
         'title_sort' => strtolower($title),
         'url' => $url,
@@ -365,21 +373,25 @@ class RelatedContentManager {
     $rows = array_merge($parent_rows, $supplementary_rows);
 
     foreach ($rows as $row) {
+      /** @var \Drupal\taxonomy\TermInterface $entity */
+      $entity = $row->_entity;
+      $tid = $entity->id();
+
       // Lookup the list of landing/campaign pages for matches against the
       // current row tid. If we get a match, insert a entry for the landing page
       // node and skip adding the term entry.
-      if (array_key_exists($row->tid, $campaign_terms)) {
+      if (array_key_exists($tid, $campaign_terms)) {
         // This will be a link to a campaign (landing page).
-        $this->content[$campaign_terms[$row->tid]->id()] = [
-          'entity' => $campaign_terms[$row->tid],
-          'title' => $campaign_terms[$row->tid]->getTitle(),
-          'title_sort' => strtolower($campaign_terms[$row->tid]->getTitle()),
-          'url' => Url::fromRoute('entity.node.canonical', ['node' => $campaign_terms[$row->tid]->id()]),
+        $this->content[$campaign_terms[$tid]->id()] = [
+          'entity' => $campaign_terms[$tid],
+          'title' => $campaign_terms[$tid]->getTitle(),
+          'title_sort' => strtolower($campaign_terms[$tid]->getTitle()),
+          'url' => Url::fromRoute('entity.node.canonical', ['node' => $campaign_terms[$tid]->id()]),
         ];
         continue;
       }
 
-      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($row->tid);
+      $term = $this->entityTypeManager->getStorage('taxonomy_term')->load($tid);
       $flags = $this->flagService->getAllEntityFlaggings($term);
 
       if ($flags) {

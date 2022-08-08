@@ -27,6 +27,20 @@ class GovernmentContactBreadcrumb implements BreadcrumbBuilderInterface {
   protected $entityTypeManager;
 
   /**
+   * Route match parameters.
+   *
+   * @var array
+   */
+  protected $routeMatches;
+
+  /**
+   * Request stack service object.
+   *
+   * @var \Symfony\Component\HttpFoundation\RequestStack
+   */
+  protected $requestStack;
+
+  /**
    * Class constructor.
    *
    * @param array $route_matches

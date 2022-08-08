@@ -24,7 +24,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
   /**
    * Cold Weather Payments service.
    *
-   * @var Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService
+   * @var \Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService
    */
   protected $paymentsService;
 
@@ -41,7 +41,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
    *   The available serialization formats.
    * @param \Psr\Log\LoggerInterface $logger
    *   A logger instance.
-   * @param Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService $payments_service
+   * @param \Drupal\nidirect_cold_weather_payments\Service\ColdWeatherPaymentsService $payments_service
    *   Entity Type Manager instance.
    */
   public function __construct(
@@ -52,7 +52,7 @@ class ColdWeatherPaymentResource extends ResourceBase {
       LoggerInterface $logger,
       ColdWeatherPaymentsService $payments_service
   ) {
-    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger, $payments_service);
+    parent::__construct($configuration, $plugin_id, $plugin_definition, $serializer_formats, $logger);
     $this->paymentsService = $payments_service;
   }
 

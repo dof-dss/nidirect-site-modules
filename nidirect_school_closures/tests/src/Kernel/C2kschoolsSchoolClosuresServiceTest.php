@@ -36,13 +36,12 @@ class C2kschoolsSchoolClosuresServiceTest extends KernelTestBase {
   ];
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installConfig(['nidirect_school_closures']);
-
     $this->closureService = \Drupal::service('nidirect_school_closures.source.cskschools');
   }
 

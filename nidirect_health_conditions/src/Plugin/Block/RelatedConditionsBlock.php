@@ -29,23 +29,23 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-   * Drupal\Core\Routing\CurrentRouteMatch definition.
+   * \Drupal\Core\Routing\CurrentRouteMatch definition.
    *
-   * @var Drupal\Core\Routing\CurrentRouteMatch
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
    */
   protected $routeMatch;
 
   /**
    * Entity type manager service.
    *
-   * @var Drupal\Core\Entity\EntityTypeManagerInterface
+   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
   protected $entityTypeManager;
 
   /**
    * Node to use.
    *
-   * @var Drupal\node\NodeInterface
+   * @var \Drupal\node\NodeInterface
    */
   protected $node;
 
@@ -58,9 +58,9 @@ class RelatedConditionsBlock extends BlockBase implements ContainerFactoryPlugin
    *   The plugin id.
    * @param mixed $plugin_definition
    *   Plugin definition.
-   * @param Drupal\Core\Routing\CurrentRouteMatch $route_match
+   * @param \Drupal\Core\Routing\CurrentRouteMatch $route_match
    *   Route match object.
-   * @param Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   Entity type manager service.
    */
   public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $route_match, EntityTypeManagerInterface $entity_type_manager) {

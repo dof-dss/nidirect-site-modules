@@ -21,9 +21,9 @@ class SchoolClosuresTest extends KernelTestBase {
   protected $today;
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->today = new \DateTime('now', new \DateTimeZone('Europe/London'));

@@ -48,8 +48,9 @@ class GpUniqueCypherConstraintValidator extends ConstraintValidator implements C
       return;
     }
 
+    /** @var \Drupal\nidirect_gp\Plugin\Validation\Constraint\GpUniqueCypherConstraint $constraint */
     if ($this->uniqueCypherService->isCypherUnique($cypher, [$entity->id()]) === FALSE) {
-      $this->context->addViolation($constraint->message, ['@cypher' => $cypher]);
+      $this->context->addViolation($constraint->getMessage(), ['@cypher' => $cypher]);
     }
   }
 

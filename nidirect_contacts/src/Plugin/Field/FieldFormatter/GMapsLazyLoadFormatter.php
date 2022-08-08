@@ -58,7 +58,7 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
    *   The view mode.
    * @param array $third_party_settings
    *   Any third party settings.
-   * @param Drupal\geolocation\MapProviderInterface $map_provider
+   * @param \Drupal\geolocation\MapProviderInterface $map_provider
    *   The Geolocation map provider.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
    *   The Drupal configuration factory.
@@ -189,7 +189,8 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
    */
   public function settingsSummary() {
     $summary = [];
-    $summary[] = $this->t(
+
+    $summary_item = $this->t(
       'Map type: @maptype <br> Zoom: @zoom <br> Placeholder: @placeholder', [
         '@maptype' => $this->getSetting('map_type'),
         '@zoom' => $this->getSetting('zoom'),
@@ -199,13 +200,15 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
 
     // Additional summary information for the static map.
     if ($this->getSetting('placeholder') === 'static_map') {
-      $summary[] .= $this->t(
+      $summary_item .= $this->t(
         'Width: @widthpx Height: @heightpx', [
           '@width' => $this->getSetting('map_width'),
           '@height' => $this->getSetting('map_height'),
         ]
       );
     }
+
+    $summary[] = $summary_item;
 
     return $summary;
   }
@@ -218,12 +221,16 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
     $formatter_settings = $this->getSettings();
 
     foreach ($items as $delta => $item) {
+      /** @var \Drupal\Core\Field\FieldItemInterface $item */
       // Map settings for use with container data attributes and
       // placeholder rendering.
+      $lat = $item->get('lat')->getString() ?? 0;
+      $lng = $item->get('lng')->getString() ?? 0;
+
       $map_settings = [
-        'lat' => $item->get('lat')->getString(),
-        'lng' => $item->get('lng')->getString(),
-        'center' => $item->get('lat')->getString() . ',' . $item->get('lng')->getString(),
+        'lat' => $lat,
+        'lng' => $lng,
+        'center' => $lat . ',' . $lng,
         'map_type' => $formatter_settings['map_type'],
         'zoom' => $formatter_settings['zoom'],
         'api_key' => $this->gmapsConfiguration->get('google_map_api_key'),
@@ -248,7 +255,8 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
       // Render placeholder type.
       switch ($formatter_settings['placeholder']) {
         case 'static_map':
-          $static_url = Url::fromUri($this->gmapsProvider::$googleMapsApiUrlBase . '/maps/api/staticmap', [
+          $gmaps_provider_base = $this->gmapsProvider::$googleMapsApiUrlBase ?? '';
+          $static_url = Url::fromUri($gmaps_provider_base . '/maps/api/staticmap', [
             'query' => [
               'center' => $map_settings['center'],
               'zoom' => $map_settings['zoom'],
@@ -306,7 +314,7 @@ class GMapsLazyLoadFormatter extends FormatterBase implements ContainerFactoryPl
    *   The textual output generated.
    */
   protected function viewValue(FieldItemInterface $item) {
-    return nl2br(Html::escape($item->value));
+    return nl2br(Html::escape($item->value ?? ''));
   }
 
 }

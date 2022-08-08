@@ -123,6 +123,7 @@ class Gp extends RevisionableContentEntityBase implements GpInterface {
     parent::preSave($storage);
 
     foreach (array_keys($this->getTranslationLanguages()) as $langcode) {
+      /** @var \Drupal\nidirect_gp\Entity\Gp $translation */
       $translation = $this->getTranslation($langcode);
 
       // If no owner has been set explicitly, make the anonymous user the owner.

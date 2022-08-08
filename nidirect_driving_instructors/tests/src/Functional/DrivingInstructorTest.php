@@ -32,7 +32,7 @@ class DrivingInstructorTest extends BrowserTestBase {
   /**
    * Use install profile so that we have all content types, modules etc.
    *
-   * @var installprofile
+   * @var string
    */
   protected $profile = 'test_profile';
 

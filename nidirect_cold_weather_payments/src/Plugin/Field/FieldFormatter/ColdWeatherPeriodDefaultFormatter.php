@@ -26,6 +26,10 @@ class ColdWeatherPeriodDefaultFormatter extends FormatterBase {
     $build = [];
 
     foreach ($items as $delta => $item) {
+      $date_start = $item->date_start ?? '';
+      $date_end = $item->date_end ?? '';
+      $stations = $item->stations ?? '';
+
       $build['name'] = [
         '#type' => 'container',
         'label' => [
@@ -34,8 +38,8 @@ class ColdWeatherPeriodDefaultFormatter extends FormatterBase {
             'class' => ['field__label'],
           ],
           '#markup' => t('%start - %end', [
-            '%start' => $item->date_start,
-            '%end' => $item->date_end,
+            '%start' => $date_start,
+            '%end' => $date_end,
           ]),
         ],
         'value' => [
@@ -44,7 +48,7 @@ class ColdWeatherPeriodDefaultFormatter extends FormatterBase {
             'class' => ['field__item'],
           ],
           'stations' => [
-            '#markup' => str_replace(',', ', ', $item->stations),
+            '#markup' => str_replace(',', ', ', $stations),
           ],
         ],
       ];

@@ -197,9 +197,7 @@ class NodeThemesBreadcrumb implements BreadcrumbBuilderInterface {
       $cache_tags[] = 'node:' . $node->id();
     }
 
-    if (!empty($cache_tags)) {
-      $breadcrumb->addCacheTags($cache_tags);
-    }
+    $breadcrumb->addCacheTags($cache_tags);
 
     return $breadcrumb;
   }

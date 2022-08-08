@@ -60,7 +60,7 @@ class GpController extends ControllerBase {
   }
 
   /**
-   * Page title callback for a GP  revision.
+   * Page title callback for a GP revision.
    *
    * @param int $gp_revision
    *   The GP  revision ID.
@@ -68,8 +68,10 @@ class GpController extends ControllerBase {
    * @return string
    *   The page title.
    */
-  public function revisionPageTitle($gp_revision) {
+  public function revisionPageTitle(int $gp_revision) {
+    /** @var \Drupal\nidirect_gp\Entity\Gp $gp */
     $gp = $this->entityTypeManager()->getStorage('gp')->loadRevision($gp_revision);
+
     return $this->t('Revision of %title from %date', [
       '%title' => $gp->label(),
       '%date' => $this->dateFormatter->format($gp->getRevisionCreationTime()),
@@ -91,6 +93,8 @@ class GpController extends ControllerBase {
     $langname = $gp->language()->getName();
     $languages = $gp->getTranslationLanguages();
     $has_translations = (count($languages) > 1);
+
+    /** @var \Drupal\nidirect_gp\GpStorageInterface $gp_storage */
     $gp_storage = $this->entityTypeManager()->getStorage('gp');
 
     $build['#title'] = $has_translations ? $this->t('@langname revisions for %title', [
@@ -108,7 +112,7 @@ class GpController extends ControllerBase {
     $latest_revision = TRUE;
 
     foreach (array_reverse($vids) as $vid) {
-      /** @var \Drupal\nidirect_gp\GpInterface $revision */
+      /** @var \Drupal\nidirect_gp\Entity\Gp $revision */
       $revision = $gp_storage->loadRevision($vid);
       // Only show revisions that are affected by the language that is being
       // displayed.
@@ -118,7 +122,7 @@ class GpController extends ControllerBase {
           '#account' => $revision->getRevisionUser(),
         ];
 
-        // Use revision link to link to revisions that are not active.
+        // Use revision link to revisions that are not active.
         $date = $this->dateFormatter->format($revision->getRevisionCreationTime(), 'short');
         if ($vid != $gp->getRevisionId()) {
           $link = Link::fromTextAndUrl($date, new Url('entity.gp.revision', [

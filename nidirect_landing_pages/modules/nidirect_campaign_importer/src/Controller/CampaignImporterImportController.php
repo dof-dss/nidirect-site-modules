@@ -50,7 +50,7 @@ class CampaignImporterImportController extends ControllerBase {
   /**
    * The current request stack.
    *
-   * @var Symfony\Component\HttpFoundation\RequestStack
+   * @var \Symfony\Component\HttpFoundation\Request
    */
   protected $request;
 
@@ -64,7 +64,7 @@ class CampaignImporterImportController extends ControllerBase {
   /**
    * The UUID service.
    *
-   * @var string
+   * @var \Drupal\Component\Uuid\UuidInterface
    */
   protected $uuidService;
 
@@ -73,7 +73,7 @@ class CampaignImporterImportController extends ControllerBase {
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type_manager
    *   The entity type manager.
-   * @param Symfony\Component\HttpFoundation\RequestStack $request
+   * @param \Symfony\Component\HttpFoundation\RequestStack $request
    *   The current request stack.
    * @param \Drupal\Core\Database\Connection $connection
    *   The default database connection.
@@ -120,9 +120,10 @@ class CampaignImporterImportController extends ControllerBase {
       ];
     }
 
-    if (!empty($this->request->query->get('d8nid'))) {
+    $query_param = $this->request->query->get('d8nid');
+    if (!empty($query_param)) {
       $update_existing = TRUE;
-      $this->node = $this->entityTypeManager->getStorage('node')->load($this->request->query->get('d8nid'));
+      $this->node = $this->entityTypeManager->getStorage('node')->load($query_param);
     }
     else {
       // Create new landing page.
@@ -144,6 +145,7 @@ class CampaignImporterImportController extends ControllerBase {
 
     // If we have a banner image, fetch the current node layout.
     if (isset($d7_banner_fid[0])) {
+      /** @var \Drupal\Core\Entity\Plugin\DataType\EntityAdapter $layout */
       $layout = $this->node->layout_builder__layout->first();
       $layout_contents = $layout->getProperties();
 
@@ -155,10 +157,10 @@ class CampaignImporterImportController extends ControllerBase {
       // If we have layout sections and the first is a onecol layout,
       // fetch it and the update settings.
       $banner_section = current($layout_contents)->getValue();
-      if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
+      $has_page_banner = FALSE;
 
+      if (!empty($banner_section) && $banner_section->getLayoutId() === 'layout_onecol') {
         $components = $banner_section->getComponents();
-        $has_page_banner = FALSE;
 
         foreach ($components as $component) {
           if ($component->get('configuration')['label'] == 'Page banner') {
@@ -318,10 +320,13 @@ class CampaignImporterImportController extends ControllerBase {
     }
 
     if ($link->length > 0) {
-      $link = $link->item(0)->getAttribute('href');
+      /** @var \DOMNodeList $link */
+      $dom_element = $link->item(0);
+      /** @var \DOMElement $dom_element */
+      $link_href = $dom_element->getAttribute('href');
 
       $links[] = [
-        'uri' => (strpos($link, '/') === 0 ? 'internal:' . $link : $link),
+        'uri' => (strpos($link_href, '/') === 0 ? 'internal:' . $link_href : $link_href),
         'title' => '',
         'options' => [
           'attributes' => [],
@@ -371,6 +376,8 @@ class CampaignImporterImportController extends ControllerBase {
 
     // Block plugin configuration.
     // Reusable set to false to prevent creation of custom block library entry.
+    $block_config = [];
+
     switch ($type) {
       case 'card_standard':
         $block_config = [

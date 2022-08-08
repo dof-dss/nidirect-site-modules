@@ -28,9 +28,9 @@ class DrivingInstructorTest extends EntityKernelTestBase {
   ];
 
   /**
-   * Test setup function.
+   * {@inheritdoc}
    */
-  public function setUp() {
+  public function setUp(): void {
     parent::setUp();
 
     $this->installConfig('nidirect_driving_instructors');

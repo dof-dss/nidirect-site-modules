@@ -102,12 +102,14 @@ function nidirect_health_conditions_views_pre_render(ViewExecutable $view) {
  */
 function nidirect_health_conditions_views_query_alter(ViewExecutable $view, QueryPluginBase $query) {
   if ($view->id() == 'health_conditions_a_to_z' && $view->current_display == 'health_conditions_by_letter') {
-    // where[0] refers to the contextual filter, but the out-of-the-box options
-    // doesn't permit a 'LIKE' comparison. So we adjust it here to pass the
-    // controller's parameter for letter into the view and let it do the heavy
-    // lifting of the query.
-    $query->where[0]['conditions'][0]['value'] .= '%';
-    $query->where[0]['conditions'][0]['operator'] = 'LIKE';
+    if (!empty($query->where)) {
+      // where[0] refers to the contextual filter, but the out-of-the-box options
+      // doesn't permit a 'LIKE' comparison. So we adjust it here to pass the
+      // controller's parameter for letter into the view and let it do the heavy
+      // lifting of the query.
+      $query->where[0]['conditions'][0]['value'] .= '%';
+      $query->where[0]['conditions'][0]['operator'] = 'LIKE';
+    }
   }
 }
 
@@ -260,6 +262,7 @@ function nidirect_health_conditions_entity_prepare_form(EntityInterface $entity,
     $term = reset($result);
 
     if ($term instanceof TermInterface) {
+      /** @var \Drupal\node\NodeInterface $entity */
       $entity->set('field_subtheme', $term->id());
     }
   }

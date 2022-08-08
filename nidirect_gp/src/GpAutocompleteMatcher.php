@@ -51,7 +51,7 @@ class GpAutocompleteMatcher extends EntityAutocompleteMatcher {
 
     $handler = $this->selectionManager->getInstance($options);
 
-    if (isset($string)) {
+    if (!empty($string) && !empty($handler)) {
       $match_operator = !empty($selection_settings['match_operator']) ? $selection_settings['match_operator'] : 'CONTAINS';
       $entity_labels = $handler->getReferenceableEntities($string, $match_operator, 30);
 
@@ -60,6 +60,7 @@ class GpAutocompleteMatcher extends EntityAutocompleteMatcher {
           $entity = $this->entityTypeManager->getStorage($target_type)->load($id);
 
           $key = $label . ' (' . $id . ')';
+          /** @var \Drupal\nidirect_gp\Entity\Gp $entity */
           $label .= ' [GP cypher: ' . $entity->getCypher() . '] (' . $id . ')';
           $key = Html::decodeEntities($key);
           $matches[] = ['value' => $key, 'label' => $label];

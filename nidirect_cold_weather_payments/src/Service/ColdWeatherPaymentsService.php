@@ -14,7 +14,7 @@ class ColdWeatherPaymentsService {
    *
    * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * Cold Weather Payments Service constructor.
@@ -54,6 +54,7 @@ class ColdWeatherPaymentsService {
 
     // Fetch the last revision.
     $vid = array_pop($vid_keys);
+    /** @var \Drupal\node\NodeInterface $node */
     $node = $this->entityTypeManager->getStorage('node')->loadRevision($vid);
 
     // Payment period covered.
@@ -65,6 +66,8 @@ class ColdWeatherPaymentsService {
     // Payment triggers for the period.
     $payment_triggers = $node->get('field_cwp_payments_triggered');
     foreach ($payment_triggers as $trigger) {
+      /** @var \Drupal\Core\Entity\FieldableEntityInterface $trigger */
+
       $payment_granted = FALSE;
       // We need to load each station to extract the postcodes it covers.
       $station_ids = explode(',', $trigger->get('stations')->getValue());
@@ -72,7 +75,9 @@ class ColdWeatherPaymentsService {
 
       $postcodes = [];
       foreach ($stations as $station) {
-        $postcodes = array_merge($postcodes, explode(',', $station->get('postcodes')));
+        /** @var \Drupal\Core\Entity\FieldableEntityInterface $station */
+        $station_postcodes = $station->get('postcodes') ?? '';
+        $postcodes = array_merge($postcodes, explode(',', $station_postcodes));
       }
 
       // Postcodes for stations are stored as the first 2 digits, strip BT

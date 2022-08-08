@@ -9,6 +9,7 @@ use Drupal\Component\Utility\Html;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\Core\Url;
+use Drupal\node\NodeInterface;
 use Drupal\search_api\Query\QueryInterface;
 use Drupal\views\ViewExecutable;
 use Drupal\Component\Utility\Xss;
@@ -145,16 +146,14 @@ function nidirect_driving_instructors_after_build($form, &$form_state) {
  */
 function nidirect_driving_instructors_entity_presave(EntityInterface $entity) {
   // This will fire when nodes are created or edited.
-  if ($entity->getEntityTypeId() == 'node') {
+  if ($entity instanceof NodeInterface && $entity->bundle() === 'driving_instructor') {
     // Construct the node title for driving instructors based
     // on name and ADI number.
-    if ($entity->bundle() == 'driving_instructor') {
-      $forename = Xss::filter($entity->get('field_di_firstname')->value);
-      $surname = Xss::filter($entity->get('field_di_lastname')->value);
-      $adi = Xss::filter($entity->get('field_di_adi_no')->value);
-      $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
-      $entity->setTitle($title);
-    }
+    $forename = Xss::filter($entity->get('field_di_firstname')->value);
+    $surname = Xss::filter($entity->get('field_di_lastname')->value);
+    $adi = Xss::filter($entity->get('field_di_adi_no')->value);
+    $title = $forename . ' ' . $surname . ' (ADI No. ' . $adi . ')';
+    $entity->setTitle($title);
   }
 }
 

@@ -241,7 +241,7 @@ function nidirect_gp_entity_presave(EntityInterface $entity) {
     // Construct the title.
     $practice = Xss::filter($entity->get('field_gp_practice_name')->value);
     $surgery = Xss::filter($entity->get('field_gp_surgery_name')->value);
-    $title = _build_gp_practice_title($practice, $surgery);
+    $title = nidirect_gp_build_gp_practice_title($practice, $surgery);
     $entity->setTitle($title);
   }
 }
@@ -291,7 +291,7 @@ function nidirect_gp_preprocess_views_view_field(&$variables) {
 /**
  * Utility function to handle GP Practice submit.
  */
-function _build_gp_practice_title($practiceName = '', $surgeryName = '') {
+function nidirect_gp_build_gp_practice_title($practiceName = '', $surgeryName = '') {
   /*
   For GP Practice nodes, the node title is a combination of the
   practice name and the surgery

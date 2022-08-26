@@ -139,7 +139,7 @@ function nidirect_landing_pages_form_alter(&$form, FormStateInterface $form_stat
 /**
  * Process callback for landing page custom block forms.
  */
-function _nidirect_landing_pages_block_form_alter(array $element, FormStateInterface $form_state) {
+function nidirect_landing_pages_block_form_alter(array $element, FormStateInterface $form_state) {
 
   if (!empty($element['#block']) && $element['#block']->bundle() === 'card_contact') {
     // Remove container-inline class from the telephone plus fieldsets.
@@ -224,10 +224,10 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
         if ($node instanceof NodeInterface && !empty($node->field_subtheme->target_id)) {
           // Get a list of article teasers by term.
           if (!empty($node->id())) {
-            $results = _retrieve_article_teasers_by_term($node->field_subtheme->target_id, $node->id());
+            $results = nidirect_landing_pages_retrieve_article_teasers_by_term($node->field_subtheme->target_id, $node->id());
           }
           if (!empty(!empty($node->field_subtheme->target_id))) {
-            $results += _retrieve_article_teasers_by_topic($node->field_subtheme->target_id);
+            $results += nidirect_landing_pages_retrieve_article_teasers_by_topic($node->field_subtheme->target_id);
           }
         }
         // Sort entries alphabetically (regardless of type).
@@ -245,7 +245,7 @@ function nidirect_landing_pages_entity_presave(EntityInterface $entity) {
 /**
  * Utility function to retrieve 'articles by term' view.
  */
-function _retrieve_article_teasers_by_term(int $tid, int $current_nid) {
+function nidirect_landing_pages_retrieve_article_teasers_by_term(int $tid, int $current_nid) {
   // Render the 'articles by term' view and process the results.
   $results = [];
   $articles_view = views_embed_view('articles_by_term', 'article_teasers_by_term_embed', $tid, $tid);
@@ -282,7 +282,7 @@ function _retrieve_article_teasers_by_term(int $tid, int $current_nid) {
 /**
  * Utility function to retrieve 'site subtopics' view.
  */
-function _retrieve_article_teasers_by_topic(int $tid) {
+function nidirect_landing_pages_retrieve_article_teasers_by_topic(int $tid) {
   // Render the 'site subtopics' view and process the results.
   $results = [];
   $articles_view = views_embed_view('site_subtopics', 'subtopic_teasers_by_topic_embed', $tid, $tid);
@@ -485,7 +485,7 @@ function nidirect_landing_pages_delete_theme_to_landing_page_redirect(EntityInte
 function nidirect_landing_pages_preprocess_block(array &$variables) {
   // Preprocess the article teasers by topic block.
   if ($variables['plugin_id'] == 'inline_block:article_teasers_by_topic') {
-    _render_article_teasers_block($variables);
+    nidirect_landing_pages_render_article_teasers_block($variables);
   }
 }
 
@@ -506,23 +506,23 @@ function nidirect_landing_pages_theme_suggestions_block_alter(array &$suggestion
 /**
  * Utility function to render article teasers block.
  */
-function _render_article_teasers_block(array &$variables) {
+function nidirect_landing_pages_render_article_teasers_block(array &$variables) {
   $manual_control_field = $variables['content']['#block_content']->get('field_manually_control_listing');
   if (isset($manual_control_field) && $manual_control_field->getValue()[0]['value']) {
     // Manual control has been taken, so just render the
     // chosen teasers in the chosen order.
-    _render_article_teasers_manual_control($variables);
+    nidirect_landing_pages_render_article_teasers_manual_control($variables);
   }
   else {
     // No manual control, so re-generate the list of teasers here.
-    _render_article_teasers_auto($variables);
+    nidirect_landing_pages_render_article_teasers_auto($variables);
   }
 }
 
 /**
  * Utility function to render teasers automatically.
  */
-function _render_article_teasers_auto(array &$variables) {
+function nidirect_landing_pages_render_article_teasers_auto(array &$variables) {
   $cache_tags = [];
   $results = [];
   $node = \Drupal::routeMatch()->getParameter('node');
@@ -544,10 +544,10 @@ function _render_article_teasers_auto(array &$variables) {
     $cache_tags[] = 'taxonomy_term_list:' . $node->field_subtheme->target_id;
     // Get a list of article teasers by term.
     if (!empty($node->id())) {
-      $results = _render_article_teasers_by_term($node->field_subtheme->target_id, $node->id(), $cache_tags);
+      $results = nidirect_landing_pages_render_article_teasers_by_term($node->field_subtheme->target_id, $node->id(), $cache_tags);
     }
     // Add in a list of article teasers by topic.
-    $results += _render_article_teasers_by_topic($node->field_subtheme->target_id, $cache_tags);
+    $results += nidirect_landing_pages_render_article_teasers_by_topic($node->field_subtheme->target_id, $cache_tags);
     // Sort entries alphabetically (regardless of type).
     ksort($results);
     // Remove 'key' that was used internally.
@@ -564,7 +564,7 @@ function _render_article_teasers_auto(array &$variables) {
 /**
  * Utility function to render teasers under manual control.
  */
-function _render_article_teasers_manual_control(array &$variables) {
+function nidirect_landing_pages_render_article_teasers_manual_control(array &$variables) {
   $cache_tags = [];
   $teaser_list = $variables['content']['#block_content']->get('field_article_teasers');
   $teasers = [];
@@ -575,11 +575,11 @@ function _render_article_teasers_manual_control(array &$variables) {
     $paragraph_type = $paragraph->getType();
     if ($paragraph_type == 'article_teaser') {
       // Load up the article node and extract display details.
-      $this_teaser = _render_article_teaser($paragraph, $cache_tags);
+      $this_teaser = nidirect_landing_pages_render_article_teaser($paragraph, $cache_tags);
     }
     elseif ($paragraph_type == 'term_teaser') {
       // Load up the taxonomy term and extract display details.
-      $this_teaser = _render_term_teaser($paragraph, $cache_tags);
+      $this_teaser = nidirect_landing_pages_render_term_teaser($paragraph, $cache_tags);
     }
     $teasers[] = $this_teaser;
   }
@@ -592,7 +592,7 @@ function _render_article_teasers_manual_control(array &$variables) {
 /**
  * Utility function to render one article teaser.
  */
-function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
+function nidirect_landing_pages_render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
   $this_teaser = [];
   $article = $paragraph->get('field_article');
   $nid = $article->getValue()[0]['target_id'];
@@ -621,7 +621,7 @@ function _render_article_teaser(Paragraph $paragraph, array &$cache_tags) {
 /**
  * Utility function to render one term teaser.
  */
-function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
+function nidirect_landing_pages_render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
   $this_teaser = [];
   $term_field = $paragraph->get('field_term');
   $tid = $term_field->getValue()[0]['target_id'];
@@ -647,7 +647,7 @@ function _render_term_teaser(Paragraph $paragraph, array &$cache_tags) {
 /**
  * Utility function to render 'articles by term' view.
  */
-function _render_article_teasers_by_term(int $tid, int $current_nid, array &$cache_tags) {
+function nidirect_landing_pages_render_article_teasers_by_term(int $tid, int $current_nid, array &$cache_tags) {
   // Render the 'articles by term' view and process the results.
   $results = [];
 
@@ -688,7 +688,7 @@ function _render_article_teasers_by_term(int $tid, int $current_nid, array &$cac
 /**
  * Utility function to render 'site subtopics' view.
  */
-function _render_article_teasers_by_topic(int $tid, array &$cache_tags) {
+function nidirect_landing_pages_render_article_teasers_by_topic(int $tid, array &$cache_tags) {
   // Render the 'site subtopics' view and process the results.
   $results = [];
 

@@ -1,13 +1,17 @@
-# PHP CircleCI 2.0 configuration file
-#
-# Check https://circleci.com/docs/2.0/language-php/ for more details
-version: 2
+version: 2.1
+
+default_docker_image: &docker_image
+  docker:
+    - image: thecodingmachine/php:7.4-v4-apache-node14
+      environment:
+        PROJECT_ROOT: "/home/docker/project"
+        PHP_EXTENSION_GD: 1
+        PHP_INI_MEMORY_LIMIT: 1g
 
 jobs:
   # Test that coding standards fit drupal.org definitions.
   coding_standards:
-    docker:
-      - image: circleci/php:7.4.15-apache-browsers
+    <<: *docker_image
     steps:
       - checkout
       - run:
@@ -19,47 +23,39 @@ jobs:
       - run:
           name: Fetch phpcs convenience script
           command: |
-            curl https://raw.githubusercontent.com/dof-dss/nidirect-drupal/development/phpcs.sh -o /home/circleci/project/phpcs.sh
-            chmod +x /home/circleci/project/phpcs.sh
+            curl https://raw.githubusercontent.com/dof-dss/nidirect-drupal/development/phpcs.sh -o $PROJECT_ROOT/phpcs.sh
+            chmod +x $PROJECT_ROOT/phpcs.sh
       - run:
           name: PHPCS analysis
-          command: /home/circleci/project/phpcs.sh /home/circleci "/home/circleci/project"
+          command: $PROJECT_ROOT/phpcs.sh ~/ "${PROJECT_ROOT}"
 
   deprecated_code:
-    docker:
-      - image: circleci/php:7.4.15-apache-browsers
+    <<: *docker_image
     steps:
       - checkout:
-          path: /home/circleci/nidirect-site-modules
+          path: ~/nidirect-site-modules
       - run:
-          name: Add OS and PHP extensions/config
+          name: Fetch main project composer manifest and extend as required.
           command: |
-            sudo cp /home/circleci/nidirect-site-modules/.circleci/docker-php-circleci.ini /usr/local/etc/php/conf.d/
-            sudo apt --allow-releaseinfo-change update
-            sudo apt install -y libpng-dev
-            sudo docker-php-ext-install gd
-      - run:
-          name: Fetch latest Drupal version
-          command: |
-            cd /home/circleci
-            composer create-project drupal-composer/drupal-project:8.x-dev /home/circleci/project --no-interaction
-      - run:
-          name: Download dependent contrib modules and other dependencies.
-          command: |
-            cd /home/circleci/project
-            composer require drupal/telephone_plus drupal/webform drupal/linkit:^6.0 mglaman/drupal-check --no-interaction
+            cd $PROJECT_ROOT
+            wget https://raw.githubusercontent.com/dof-dss/nidirect-drupal/development/composer.json
+            # Remove dof-dss packages (from the requires section, not the scaffold).
+            sed -i -E '/dof-dss\/.+:/d' composer.json
+            # NB: no lock file fetched, and some packages aren't explicit dependencies/versions
+            # so we add them here to make sure they arrive with the rest listed in composer.json.
+            composer require -n mglaman/drupal-check drupal/clientside_validation:3.0.0-rc4 maxh/php-nominatim:^2.3
       - run:
           name: Move custom code into position
-          command: mv /home/circleci/nidirect-site-modules /home/circleci/project/web/modules/custom
+          command: mv ~/nidirect-site-modules $PROJECT_ROOT/web/modules/custom
       - run:
           name: Deprecated code check
           command: |
-            cd /home/circleci/project/web
-            ../vendor/bin/drupal-check modules/custom -e "*/tests/*"
+            cd $PROJECT_ROOT/web
+            ../vendor/bin/drupal-check modules/custom
 
 workflows:
   version: 2
   static-analysis:
     jobs:
       - coding_standards
- #     - deprecated_code
+      - deprecated_code

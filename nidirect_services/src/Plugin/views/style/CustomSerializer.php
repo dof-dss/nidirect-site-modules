@@ -6,7 +6,7 @@ use Drupal\rest\Plugin\views\style\Serializer;
 
 /**
  * Custom serializer for view generating services-catalogue.json.
- * Ensure relative URLs in content are convert to absolute URLs.
+ * Ensure relative URLs in content are converted to absolute URLs.
  *
  * @ingroup views_style_plugins
  *
@@ -23,16 +23,23 @@ class CustomSerializer extends Serializer {
    * {@inheritdoc}
    */
   public function render() {
-    // Replace relative URLs in certain fields with absolute URLs.
     $host = \Drupal::request()->getSchemeAndHttpHost();
-    $pattern = '/(?:src|href)=[\'"]\K\/(?!\/)[^\'"]*/';
+
+    // Pattern to match and replace relative paths found in fields
+    // containing HTML.
+    $html_pattern = '/(?:src|href)=[\'"]\K\/(?!\/)[^\'"]*/';
+
+    // Pattern to match and replace relative paths in the app_url
+    // field specifically.
+    $app_url_pattern = '/^\/(?!\/).*$/';
+
     $rows = [];
     foreach ($this->view->result as $row_index => $row) {
       $this->view->row_index = $row_index;
       $row_render = $this->view->rowPlugin->render($row);
-      if (isset($row_render['before_you_start'])) {
-        $content = preg_replace($pattern,"$host$0", $row_render['before_you_start']);
-        $row_render['before_you_start'] = $content;
+      $row_render = preg_replace($html_pattern,"$host$0", $row_render);
+      if (isset($row_render['app_url'])) {
+        $row_render['app_url'] = preg_replace($app_url_pattern,"$host$0", $row_render['app_url']);
       }
       $rows[] = $row_render;
     }

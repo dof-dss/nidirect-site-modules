@@ -50,7 +50,7 @@ function nidirect_common_preprocess_page(&$variables) {
 
   // Fetch and display the node or theme banner image and footer text.
   if (!empty($entity)) {
-    $banner_image = _retrieve_hierarchical_field($entity, 'field_banner_image');
+    $banner_image = nidirect_common_retrieve_hierarchical_field($entity, 'field_banner_image');
 
     if (!empty($banner_image)) {
       $variables['page']['top_banner']['banner_display'] = $banner_image->view([

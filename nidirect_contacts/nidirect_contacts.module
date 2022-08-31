@@ -237,7 +237,7 @@ function nidirect_contacts_preprocess_node(&$variables) {
   // hide the location field.
   $has_value = FALSE;
   foreach ($required_fields as $field_id) {
-    $field_id = _camel_to_underscore($field_id, '_');
+    $field_id = nidirect_contacts_camel_to_underscore($field_id, '_');
     if (!empty($field_address[0][$field_id]['#value'])) {
       $has_value = TRUE;
     }
@@ -314,7 +314,7 @@ function nidirect_contacts_views_pre_render(ViewExecutable $view) {
  * @return string
  *   A parsed/replaced string.
  */
-function _camel_to_underscore(string $input_string, string $separator = "-") {
+function nidirect_contacts_camel_to_underscore(string $input_string, string $separator = "-") {
   return strtolower(preg_replace(
     '/(?<=\d)(?=[A-Za-z])|(?<=[A-Za-z])(?=\d)|(?<=[a-z])(?=[A-Z])/', $separator, $input_string));
 }

@@ -37,9 +37,9 @@ class CustomSerializer extends Serializer {
     foreach ($this->view->result as $row_index => $row) {
       $this->view->row_index = $row_index;
       $row_render = $this->view->rowPlugin->render($row);
-      $row_render = preg_replace($html_pattern,"$host$0", $row_render);
+      $row_render = preg_replace($html_pattern, "$host$0", $row_render);
       if (isset($row_render['app_url'])) {
-        $row_render['app_url'] = preg_replace($app_url_pattern,"$host$0", $row_render['app_url']);
+        $row_render['app_url'] = preg_replace($app_url_pattern, "$host$0", $row_render['app_url']);
       }
       $rows[] = $row_render;
     }
@@ -55,4 +55,5 @@ class CustomSerializer extends Serializer {
     }
     return $this->serializer->serialize($rows, $content_type, ['views_style_plugin' => $this]);
   }
+  
 }

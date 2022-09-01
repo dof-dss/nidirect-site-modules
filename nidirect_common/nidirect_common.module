@@ -244,14 +244,14 @@ function nidirect_common_validate_publication_date(&$form, FormStateInterface $f
   }
 
   foreach ($date_fields as $date_field) {
-    validate_date_field($form_state, $date_field);
+    nidirect_common_validate_date_field($form_state, $date_field);
   }
 }
 
 /**
  * Utility function to validate dates.
  */
-function validate_date_field(&$form_state, $date_field) {
+function nidirect_common_validate_date_field(&$form_state, $date_field) {
   // Now validate the date and raise an error
   // if it is invalid.
   $dt = $form_state->getValue($date_field);
@@ -327,7 +327,7 @@ function nidirect_common_shs_js_settings_alter(&$settings_shs, $bundle, $field_n
  * @return \Drupal\Core\Field\Plugin\Field\FieldType\EntityReferenceItem|null
  *   Value for the field, it there is one.
  */
-function _retrieve_hierarchical_field(EntityInterface $entity, string $field) {
+function nidirect_common_retrieve_hierarchical_field(EntityInterface $entity, string $field) {
   /** @var \Drupal\Core\Entity\FieldableEntityInterface $entity */
   $field_value = NULL;
 

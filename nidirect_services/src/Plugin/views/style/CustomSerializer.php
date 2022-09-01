@@ -47,7 +47,7 @@ class CustomSerializer extends Serializer {
 
     // Get the content type configured in the display or fallback to the
     // default.
-    if ((empty($this->view->live_preview))) {
+    if ((empty($this->view->live_preview)) && method_exists($this->displayHandler, 'getContentType')) {
       $content_type = $this->displayHandler->getContentType();
     }
     else {

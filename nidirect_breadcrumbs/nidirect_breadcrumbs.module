@@ -50,17 +50,15 @@ function nidirect_breadcrumbs_preprocess_breadcrumb(&$variables) {
   // If a node is found to have a missing breadcrumb, log a warning and
   // prevent further checks being made.
 
-  if (\Drupal::state()->get('missing_breadcrumb_check') !== 1) {
+  if (empty($variables['breadcrumb']) && \Drupal::state()->get('missing_breadcrumb_check') !== 1) {
     $route_match = \Drupal::routeMatch();
-    if ($route_match->getRouteName() == 'entity.node.canonical') {
-      $node = $route_match->getParameter('node');
-      if (empty($variables['breadcrumb'])) {
-        \Drupal::logger('nidirect_breadcrumbs')
-          ->warning('Breadcrumb missing for node @node', ['@node' => $node->id()]);
-        \Drupal::state()->set('missing_breadcrumb_check', 1);
-
-        // @TODO add code to help debug why breadcrumb is missing for this node.
-      }
+    if ($route_match->getRouteName() === 'entity.node.canonical') {
+      \Drupal::logger('nidirect_breadcrumbs')
+        ->warning('nid @node missing breadcrumb: <br /><code>@variables</code>', [
+          '@node' => $route_match->getParameter('node')->id(),
+          '@variables' => serialize($variables),
+        ]);
+      \Drupal::state()->set('missing_breadcrumb_check', 1);
     }
   }
 }

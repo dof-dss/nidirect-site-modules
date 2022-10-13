@@ -60,7 +60,7 @@ class ColdWeatherPeriodDefaultWidget extends WidgetBase implements WidgetInterfa
     $item =& $items[$delta];
     $date_start = $item->date_start ?? '';
     $date_end = $item->date_end ?? '';
-    $item_stations = $item->stations ?? [];
+    $item_stations = $item->stations ?? '';
 
     $element += [
       '#type' => 'fieldset',

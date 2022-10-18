@@ -41,3 +41,24 @@ function nidirect_breadcrumbs_preview_cache_handler(array &$form, FormStateInter
   }
 
 }
+
+/**
+ * Implements hook_preprocess_breadcrumb().
+ */
+function nidirect_breadcrumbs_preprocess_breadcrumb(&$variables) {
+  // Check for missing breadcrumb on nodes.
+  // If a node is found to have a missing breadcrumb, log a warning and
+  // prevent further checks being made.
+
+  if (empty($variables['breadcrumb']) && \Drupal::state()->get('missing_breadcrumb_check') !== 1) {
+    $route_match = \Drupal::routeMatch();
+    if ($route_match->getRouteName() === 'entity.node.canonical') {
+      \Drupal::logger('nidirect_breadcrumbs')
+        ->warning('nid @node missing breadcrumb: <br /><code>@variables</code>', [
+          '@node' => $route_match->getParameter('node')->id(),
+          '@variables' => serialize($variables),
+        ]);
+      \Drupal::state()->set('missing_breadcrumb_check', 1);
+    }
+  }
+}

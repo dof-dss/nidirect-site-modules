@@ -252,12 +252,15 @@ class ColdWeatherPaymentCheckerForm extends FormBase {
       $data = Json::decode($json);
 
       $payments = [];
-      foreach ($data['payments_triggered'] as $trigger) {
-        if ($trigger['payment_granted']) {
-          $payments[] = [
-            'date_start' => $trigger['date_start'],
-            'date_end' => $trigger['date_end'],
-          ];
+
+      if (array_key_exists('payments_triggered', $data)) {
+        foreach ($data['payments_triggered'] as $trigger) {
+          if ($trigger['payment_granted']) {
+            $payments[] = [
+              'date_start' => $trigger['date_start'],
+              'date_end' => $trigger['date_end'],
+            ];
+          }
         }
       }
 

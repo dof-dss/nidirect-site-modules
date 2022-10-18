@@ -5,6 +5,7 @@ namespace Drupal\nidirect_taxonomy_navigator\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteObjectInterface;
+use Drupal\Core\Url;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -141,10 +142,9 @@ class SetParentTermForm extends FormBase {
     ];
 
     $form['actions']['cancel'] = [
-      '#type' => 'submit',
-      '#value' => $this->t('Cancel'),
-      '#submit' => ['cancel_submit'],
-      '#limit_validation_errors' => [],
+      '#type' => 'link',
+      '#title' => 'Cancel',
+      '#url' => Url::fromUri(\Drupal::request()->getSchemeAndHttpHost() . \Drupal::request()->query->get('destination')),
     ];
 
     return $form;

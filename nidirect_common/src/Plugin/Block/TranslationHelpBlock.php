@@ -81,10 +81,6 @@ class TranslationHelpBlock extends BlockBase implements ContainerFactoryPluginIn
     ];
 
     if ($translation_help_url) {
-      // Get the currently requested uri and add as query param to translation help url.
-      $uri = $this->requestStack->getCurrentRequest()->getRequestUri();
-      $translation_help_url->setOption('query', ['uri' => $uri]);
-
       // Add translation help link to block content.
       $block_content['translation-help-link'] = [
         '#type' => 'link',
@@ -104,14 +100,6 @@ class TranslationHelpBlock extends BlockBase implements ContainerFactoryPluginIn
 
     return $block_content;
 
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCacheMaxAge() {
-    // The output for this block differs on every page - so don't cache it.
-    return 0;
   }
 
 }

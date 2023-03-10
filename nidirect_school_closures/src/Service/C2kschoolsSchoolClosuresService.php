@@ -169,7 +169,8 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
     // If we have cached data, check the expiry.
     if (!empty($cache)) {
       $this->data = $cache->data;
-      // Round the cache up to an int as caching set uses microtime().
+      // Round the cache timestamp up to an int as cache->set() uses microtime()
+      // to generate a decimal timestamp, and we don't need that accuracy.
       $this->updated = date_timestamp_set(new \DateTime(), round($cache->created));
 
       $now = new \DateTime('now');

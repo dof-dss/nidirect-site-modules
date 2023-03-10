@@ -169,7 +169,8 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
     // If we have cached data, check the expiry.
     if (!empty($cache)) {
       $this->data = $cache->data;
-      $this->updated = date_timestamp_set(new \DateTime(), $cache->created);
+      // Round the cache up to an int as caching set uses microtime().
+      $this->updated = date_timestamp_set(new \DateTime(), round($cache->created));
 
       $now = new \DateTime('now');
       $interval = $now->diff($this->updated);
@@ -189,7 +190,7 @@ class C2kschoolsSchoolClosuresService implements SchoolClosuresServiceInterface 
       // Process received data or attempt again.
       if (!empty($this->xml)) {
         $this->processData();
-        $this->updated = date('Y-m-d H:i:s');
+        $this->updated = new \DateTime('now');
         // Cache the data indefinitely. The cache will be deleted based
         // on the cache duration setting in the config.
         $this->cacheService->set('school_closures', $this->data, CacheBackendInterface::CACHE_PERMANENT);

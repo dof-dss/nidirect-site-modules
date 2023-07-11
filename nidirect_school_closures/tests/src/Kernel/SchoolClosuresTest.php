@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\nidirect_school_closures\Kernel;
 
-use Drupal\nidirect_school_closures\SchoolClosure;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\nidirect_school_closures\SchoolClosure;
 
 /**
  * @coversDefaultClass Drupal\nidirect_school_closures\SchoolClosure

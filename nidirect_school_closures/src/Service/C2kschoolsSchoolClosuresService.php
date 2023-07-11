@@ -2,13 +2,13 @@
 
 namespace Drupal\nidirect_school_closures\Service;
 
-use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Exception\ClientException;
-use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
-use Drupal\nidirect_school_closures\SchoolClosure;
 use Drupal\Core\Cache\CacheBackendInterface;
 use Drupal\Core\Config\ConfigFactory;
 use Drupal\Core\Logger\LoggerChannelFactory;
+use Drupal\nidirect_school_closures\SchoolClosure;
+use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
+use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Exception\ClientException;
 
 /**
  * Implementation of SchoolClosuresService using C2k service.

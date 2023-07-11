@@ -4,8 +4,8 @@ namespace Drupal\nidirect_school_closures\Form;
 
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\nidirect_school_closures\SchoolClosuresServiceInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Configure example settings for this site.

@@ -2,8 +2,8 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Plugin\Block;
 
-use Drupal\nidirect_cold_weather_payments\Form\ColdWeatherPaymentCheckerForm;
 use Drupal\Core\Block\BlockBase;
+use Drupal\nidirect_cold_weather_payments\Form\ColdWeatherPaymentCheckerForm;
 
 /**
  * Provides a 'ColdWeatherPaymentCheckerBlock' block.

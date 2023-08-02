@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\nidirect_money_advice_articles\Kernel;
 
-use Drupal\nidirect_money_advice_articles\ArticleProcessors;
 use Drupal\KernelTests\KernelTestBase;
+use Drupal\nidirect_money_advice_articles\ArticleProcessors;
 
 /**
  * @coversDefaultClass Drupal\nidirect_money_advice_articles\ArticleProcessors

@@ -2,12 +2,12 @@
 
 namespace Drupal\nidirect_contacts\Controller;
 
-use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Block\BlockManagerInterface;
+use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\nidirect_common\ViewsMetatagManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\nidirect_common\ViewsMetatagManager;
 
 /**
  * Controller for display Contact A-Z block and View.

@@ -2,9 +2,9 @@
 
 namespace Drupal\nidirect_common\Plugin\Menu;
 
+use Drupal\Core\Menu\MenuLinkDefault;
 use Drupal\Core\Menu\StaticMenuLinkOverridesInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Menu\MenuLinkDefault;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**

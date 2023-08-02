@@ -2,8 +2,8 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Plugin\Field\FieldFormatter;
 
-use Drupal\Core\Field\FormatterBase;
 use Drupal\Core\Field\FieldItemListInterface;
+use Drupal\Core\Field\FormatterBase;
 
 /**
  * Field formatter "nidirect_cold_weather_period".

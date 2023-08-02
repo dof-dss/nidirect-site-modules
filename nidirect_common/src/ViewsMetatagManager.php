@@ -60,7 +60,7 @@ class ViewsMetatagManager {
       ->load($view_id)
       ->getExecutable();
 
-    $tags = metatag_get_view_tags($view, $display_id);
+    $tags = metatag_views_get_view_tags($view, $display_id);
     return $tags;
   }
 

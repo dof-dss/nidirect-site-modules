@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\nidirect_gp\Functional;
 
-use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests for GP practice.

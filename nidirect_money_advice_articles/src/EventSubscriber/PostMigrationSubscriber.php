@@ -4,10 +4,10 @@ namespace Drupal\nidirect_money_advice_articles\EventSubscriber;
 
 use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Logger\LoggerChannelFactory;
 use Drupal\migrate\Event\MigrateEvents;
 use Drupal\migrate\Event\MigrateImportEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
-use Drupal\Core\Logger\LoggerChannelFactory;
 
 /**
  * Class PostMigrationSubscriber.

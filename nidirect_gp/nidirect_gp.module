@@ -5,15 +5,15 @@
  * Contains nidirect_gp.module.
  */
 
-use Drupal\node\NodeInterface;
-use Drupal\views\Views;
 use Drupal\Component\Utility\Xss;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\layout_builder\Entity\LayoutBuilderEntityViewDisplay;
-use Drupal\views\ViewExecutable;
+use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\query\QueryPluginBase;
+use Drupal\views\ViewExecutable;
+use Drupal\views\Views;
 
 /**
  * Implements hook_help().

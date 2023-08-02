@@ -3,10 +3,10 @@
 namespace Drupal\nidirect_common\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
+use Drupal\Core\Path\PathValidatorInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
-use Drupal\Core\Path\PathValidatorInterface;
 
 /**
  * Provides the Translation Help Block.

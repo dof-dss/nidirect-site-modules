@@ -4,8 +4,8 @@ namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Core\KeyValueStore\KeyValueStoreInterface;
 use Drupal\nidirect_gp\GpAutocompleteMatcher;
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\system\Controller\EntityAutocompleteController;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Controller for handing GP Autocomplete requests.

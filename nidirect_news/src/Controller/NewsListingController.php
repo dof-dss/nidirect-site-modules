@@ -2,11 +2,11 @@
 
 namespace Drupal\nidirect_news\Controller;
 
+use Drupal\Core\Block\BlockManagerInterface;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\nidirect_common\ViewsMetatagManager;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
-use Drupal\Core\Block\BlockManagerInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
 
 /**

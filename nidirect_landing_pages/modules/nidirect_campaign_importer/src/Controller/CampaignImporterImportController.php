@@ -5,8 +5,8 @@ namespace Drupal\nidirect_campaign_importer\Controller;
 use Drupal\block_content\BlockContentInterface;
 use Drupal\Component\Uuid\UuidInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Drupal\Core\Database\Database;
 use Drupal\Core\Database\Connection;
+use Drupal\Core\Database\Database;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Url;
 use Drupal\layout_builder\Section;
@@ -196,8 +196,9 @@ class CampaignImporterImportController extends ControllerBase {
 
     // Iterate each section and create a layout builder section.
     foreach ($xpath->query('/html/body/div') as $domnode) {
-
+      // @phpstan-ignore-next-line
       if ($domnode->hasAttribute('class')) {
+        // @phpstan-ignore-next-line
         $section_class = $domnode->getAttribute('class');
 
         switch ($section_class) {

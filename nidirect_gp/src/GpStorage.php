@@ -3,8 +3,8 @@
 namespace Drupal\nidirect_gp;
 
 use Drupal\Core\Entity\Sql\SqlContentEntityStorage;
-use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Language\LanguageInterface;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\nidirect_gp\Entity\GpInterface;
 
 /**

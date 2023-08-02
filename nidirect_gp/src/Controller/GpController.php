@@ -3,12 +3,12 @@
 namespace Drupal\nidirect_gp\Controller;
 
 use Drupal\Component\Utility\Xss;
-use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Controller\ControllerBase;
-use Symfony\Component\DependencyInjection\ContainerInterface;
+use Drupal\Core\Datetime\DateFormatterInterface;
 use Drupal\Core\Link;
 use Drupal\Core\Url;
 use Drupal\nidirect_gp\Entity\GpInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class GpController.

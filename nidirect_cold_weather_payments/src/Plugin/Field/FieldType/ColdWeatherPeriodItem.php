@@ -2,10 +2,10 @@
 
 namespace Drupal\nidirect_cold_weather_payments\Plugin\Field\FieldType;
 
-use Drupal\Core\TypedData\DataDefinition;
+use Drupal\Core\Field\FieldItemBase;
 use Drupal\Core\Field\FieldItemInterface;
 use Drupal\Core\Field\FieldStorageDefinitionInterface;
-use Drupal\Core\Field\FieldItemBase;
+use Drupal\Core\TypedData\DataDefinition;
 
 /**
  * Field type "nidirect_cold_weather_period".

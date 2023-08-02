@@ -2,8 +2,8 @@
 
 namespace Drupal\Tests\nidirect_driving_instructors\Functional;
 
-use Drupal\Tests\BrowserTestBase;
 use Drupal\node\Entity\Node;
+use Drupal\Tests\BrowserTestBase;
 
 /**
  * Tests Driving Instructor title generation.

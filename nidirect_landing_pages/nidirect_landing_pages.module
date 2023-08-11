@@ -723,3 +723,22 @@ function nidirect_landing_pages_render_article_teasers_by_topic(int $tid, array 
   }
   return $results;
 }
+
+
+/**
+ * Implements template_preprocess_book_navigation().
+ */
+function nidirect_landing_pages_preprocess_book_navigation(&$variables) {
+  $node = \Drupal::routeMatch()->getParameter('node');
+
+  if ($node instanceof NodeInterface && $node->bundle() == 'landing_page') {
+
+    // Hide book navigation on landing pages that are the first page of a book.
+    if ($node->book && $node->book['depth'] == 1) {
+      // Remove list of book contents
+      unset($variables['tree']);
+      // Hide previous/next book links.
+      $variables['has_links'] = FALSE;
+    }
+  }
+}

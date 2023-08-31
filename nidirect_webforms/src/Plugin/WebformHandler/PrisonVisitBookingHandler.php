@@ -34,7 +34,16 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return [];
+    return [
+      'visit_type' => [
+        'V' => 'virtual',
+        'F' => 'face-to-face',
+      ],
+      'visit_prison' => [
+        'MY' => 'Maghaberry',
+        'HK' => 'Hydebank',
+      ],
+    ];
   }
 
   /**
@@ -48,10 +57,38 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * Validate visit booking reference.
    */
   private function validateVisitOrderNumber(FormStateInterface $formState) {
+
     $order_number = !empty($formState->getValue('visitor_order_number')) ? Html::escape($formState->getValue('visitor_order_number')) : NULL;
+
+    if (empty($order_number)) {
+      $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number is required'));
+      return;
+    }
+
+    // Validate order number.
+    $order_number_is_valid = TRUE;
+
+    $order_number_prison_identifier = substr($order_number, 0, 2);
+    $order_number_visit_type = substr($order_number, 2, 1);
     $order_number_week = (int) substr($order_number, 3, 2);
     $order_number_year = (int) substr($order_number, 5, 2);
+    $order_number_sequence = (int) substr($order_number, 8);
 
+    // Validate prison identifier.
+    if (array_key_exists($order_number_prison_identifier, $this->configuration['visit_prison']) !== TRUE) {
+      $order_number_is_valid = FALSE;
+    } else {
+      $formState->setValue('prison_visit_prison_name', $this->configuration['visit_prison'][$order_number_prison_identifier]);
+    }
+
+    // Validate visit type.
+    if (array_key_exists($order_number_visit_type, $this->configuration['visit_type']) !== TRUE) {
+      $order_number_is_valid = FALSE;
+    } else {
+      $formState->setValue('prison_visit_type', $this->configuration['visit_type'][$order_number_visit_type]);
+    }
+
+    // Validate order number week and year.
     $today = DrupalDateTime::createFromTimestamp(time());
     $today_week = $today->format('W');
     $today_year = $today->format('Y');
@@ -60,11 +97,26 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $order_week_date = date_isodate_set($today->getPhpDateTime(), $today_year, $order_number_week, 1);
 
     if ($order_number_year < $today_year_two_digit || $order_number_week < $today_week) {
+      $order_number_is_valid = FALSE;
+    }
+    else {
+      $formState->setValue('prison_visit_week_date', $order_week_date->format('l, d M Y'));
+    }
+
+    // Validate visit sequence number.
+    if ($order_number_sequence < 1 || $order_number_sequence > 9999) {
+      $order_number_is_valid = FALSE;
+    }
+    else {
+      $formState->setValue('prison_visit_sequence', $order_number_sequence);
+    }
+
+    if ($order_number_is_valid !== TRUE) {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number is not valid'));
     }
     else {
       $formState->setValue('visitor_order_number', $order_number);
-      $formState->setValue('visit_week_commencing_date', $order_week_date->format('l, d M Y'));
     }
   }
+
 }

@@ -3,15 +3,11 @@
 namespace Drupal\nidirect_webforms\Plugin\WebformHandler;
 
 use Drupal\Component\Utility\Html;
-use Drupal\Core\Ajax\AjaxResponse;
-use Drupal\Core\Ajax\OpenModalDialogCommand;
-use Drupal\Core\Ajax\ReplaceCommand;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
-
 
 /**
  * Prison Visit Booking Webform Handler.
@@ -77,14 +73,16 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     // Validate prison identifier.
     if (array_key_exists($order_number_prison_identifier, $this->configuration['visit_prison']) !== TRUE) {
       $order_number_is_valid = FALSE;
-    } else {
+    }
+    else {
       $formState->setValue('prison_visit_prison_name', $this->configuration['visit_prison'][$order_number_prison_identifier]);
     }
 
     // Validate visit type.
     if (array_key_exists($order_number_visit_type, $this->configuration['visit_type']) !== TRUE) {
       $order_number_is_valid = FALSE;
-    } else {
+    }
+    else {
       $formState->setValue('prison_visit_type', $this->configuration['visit_type'][$order_number_visit_type]);
     }
 

@@ -103,6 +103,7 @@ function nidirect_webforms_webform_submission_presave(WebformSubmissionInterface
  * Implements hook_form_alter().
  */
 function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $form_id) {
+
   if (preg_match('/webform/', $form_id)) {
     $form['#cache']['contexts'] = ['url.path'];
 
@@ -132,6 +133,10 @@ function nidirect_webforms_form_alter(&$form, FormStateInterface $form_state, $f
           ->addFormProtection($form, $form_state, $options);
       }
     }
+  }
+
+  if (preg_match('/webform_submission_prison_visit/', $form_id)) {
+    $form['#attached']['library'][] = 'nidirect_webforms/prison_visit_booking';
   }
 }
 

@@ -1,0 +1,6 @@
+visit_type:
+  V: 'virtual'
+  F: 'face-to-face'
+visit_prison:
+  MY: 'Maghaberry'
+  HK: 'Hydebank'

@@ -3,11 +3,13 @@
 namespace Drupal\nidirect_webforms\Plugin\WebformHandler;
 
 use Drupal\Component\Utility\Html;
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\webform\Plugin\WebformHandlerBase;
 use Drupal\webform\WebformSubmissionInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Prison Visit Booking Webform Handler.
@@ -27,6 +29,20 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
   use StringTranslationTrait;
 
   /**
+   * @var ConfigFactoryInterface
+   */
+  protected $configFactory;
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    $instance = parent::create($container, $configuration, $plugin_id, $plugin_definition);
+    $instance->configFactory = $container->get('config.factory');
+    return $instance;
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
@@ -40,6 +56,13 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
         'HK' => 'Hydebank',
       ],
     ];
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function alterForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
+    $form['#attached']['drupalSettings']['prisonVisitBooking'] =  $this->configuration;
   }
 
   /**

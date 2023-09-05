@@ -1,6 +1,8 @@
 visit_type:
   V: 'virtual'
   F: 'face-to-face'
+  E: 'enhanced'
 visit_prison:
   MY: 'Maghaberry'
   HK: 'Hydebank'
+  MN: 'Magilligan'

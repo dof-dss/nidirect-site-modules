@@ -29,7 +29,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
   use StringTranslationTrait;
 
   /**
-   * @var ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ConfigFactoryInterface
    */
   protected $configFactory;
 
@@ -50,10 +50,12 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       'visit_type' => [
         'V' => 'virtual',
         'F' => 'face-to-face',
+        'E' => 'enhanced',
       ],
       'visit_prison' => [
         'MY' => 'Maghaberry',
         'HK' => 'Hydebank',
+        'MN' => 'Magilligan',
       ],
     ];
   }
@@ -62,7 +64,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function alterForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    $form['#attached']['drupalSettings']['prisonVisitBooking'] =  $this->configuration;
+    $form['#attached']['drupalSettings']['prisonVisitBooking'] = $this->configuration;
   }
 
   /**

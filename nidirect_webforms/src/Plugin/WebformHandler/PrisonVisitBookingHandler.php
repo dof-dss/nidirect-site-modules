@@ -54,20 +54,20 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
         'V' => 'virtual',
         'E' => 'enhanced',
       ],
-      'visit_prison' => [
+      'prisons' => [
         'MY' => 'Maghaberry',
         'HK' => 'Hydebank',
         'MN' => 'Magilligan',
       ],
-      'visit_booking_advance_notice' => [
-        'F' => '24 hours', // Face to face must be booked 24 hours in advance.
-        'V' => '48 hours', // Virtual must be booked 48 hours in advance.
-        'E' => '24 hours', // Enhanced must be booked 24 hours in advance.
+      'visit_advance_notice' => [
+        'F' => '24 hours',
+        'V' => '48 hours',
+        'E' => '24 hours',
       ],
-      'visit_booking_reference_validity_weeks' => [
-        'F' => '1', // Face to face booking reference valid for 1 week.
-        'V' => '1', // Virtual booking reference valid for 1 week.
-        'E' => '4', // Enhanced booking reference valid for 4 weeks.
+      'booking_reference_validity_period' => [
+        'F' => '1 week',
+        'V' => '1 week',
+        'E' => '4 weeks',
       ],
     ];
   }
@@ -83,91 +83,90 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    $this->validateVisitOrderNumber($form_state);
+    $this->validateVisitBookingReference($form_state);
   }
 
   /**
    * Validate visit booking reference.
    */
-  private function validateVisitOrderNumber(FormStateInterface $formState) {
+  private function validateVisitBookingReference(FormStateInterface $formState) {
 
-    $order_number = !empty($formState->getValue('visitor_order_number')) ? Html::escape($formState->getValue('visitor_order_number')) : NULL;
+    $booking_ref = !empty($formState->getValue('visitor_order_number')) ? Html::escape($formState->getValue('visitor_order_number')) : NULL;
 
     // Basic validation with early return.
-    if (empty($order_number)) {
+    if (empty($booking_ref)) {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number is required'));
       return;
     }
-    else if (strlen($order_number) !== $this->configuration['visit_order_number_length']) {
+    else if (strlen($booking_ref) !== $this->configuration['visit_order_number_length']) {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number must contain 12 characters'));
       return;
     }
 
-    // We have an order number with correct length. Now we can dissect it
+    // We have an order number with correct length. Now dissect and process the
     // individual parts.
-    $order_number_is_valid = TRUE;
+    $booking_ref_is_valid = TRUE;
 
-    $order_number_prison_identifier = substr($order_number, 0, 2);
-    $order_number_visit_type = substr($order_number, 2, 1);
-    $order_number_week = (int) substr($order_number, 3, 2);
-    $order_number_week_validity = $this->configuration['visit_booking_reference_validity_weeks'][$order_number_visit_type];
-    $order_number_year = (int) substr($order_number, 5, 2);
-    $order_number_year_full = (int) DrupalDateTime::createFromFormat('y', $order_number_year)->format('Y');
-    $order_number_sequence = (int) substr($order_number, 8);
+    $booking_ref_prison_identifier = substr($booking_ref, 0, 2);
+    $booking_ref_visit_type = substr($booking_ref, 2, 1);
+    $booking_ref_week = (int) substr($booking_ref, 3, 2);
+    $booking_ref_validity_period = $this->configuration['booking_reference_validity_period'][$booking_ref_visit_type];
+    $booking_ref_year = (int) substr($booking_ref, 5, 2);
+    $booking_ref_year_full = (int) DrupalDateTime::createFromFormat('y', $booking_ref_year)->format('Y');
+    $booking_ref_sequence = (int) substr($booking_ref, 8);
 
     // Validate prison identifier.
-    if (array_key_exists($order_number_prison_identifier, $this->configuration['visit_prison']) !== TRUE) {
-      $order_number_is_valid = FALSE;
+    if (array_key_exists($booking_ref_prison_identifier, $this->configuration['prisons']) !== TRUE) {
+      $booking_ref_is_valid = FALSE;
     }
     else {
-      $formState->setValue('prison_visit_prison_name', $this->configuration['visit_prison'][$order_number_prison_identifier]);
+      $formState->setValue('prison_visit_prison_name', $this->configuration['prisons'][$booking_ref_prison_identifier]);
     }
 
     // Validate visit type.
-    if (array_key_exists($order_number_visit_type, $this->configuration['visit_type']) !== TRUE) {
-      $order_number_is_valid = FALSE;
+    if (array_key_exists($booking_ref_visit_type, $this->configuration['visit_type']) !== TRUE) {
+      $booking_ref_is_valid = FALSE;
     }
     else {
-      $formState->setValue('prison_visit_type', $this->configuration['visit_type'][$order_number_visit_type]);
+      $formState->setValue('prison_visit_type', $this->configuration['visit_type'][$booking_ref_visit_type]);
     }
 
-    // Validate whether order number has expired.
-    
+    // Validate week and year parts.
     $now = new DrupalDateTime('now');
     $now->setTimezone(new \DateTimeZone(DateTimeItemInterface::STORAGE_TIMEZONE));
 
     $now_week_commence = new DrupalDateTime();
     $now_week_commence->setISODate($now->format('Y'), $now->format('W'), 1);
 
-    $order_number_valid_from = new DrupalDateTime();
-    $order_number_valid_from->setISODate($order_number_year_full, $order_number_week, 1);
+    $booking_ref_valid_from = new DrupalDateTime();
+    $booking_ref_valid_from->setISODate($booking_ref_year_full, $booking_ref_week, 1);
 
-    $order_number_valid_to = new DrupalDateTime($order_number_valid_from->format('Y-m-d'));
-    $order_number_valid_to->modify('+' . $order_number_week_validity . ' weeks');
+    $booking_ref_valid_to = new DrupalDateTime($booking_ref_valid_from->format('Y-m-d'));
+    $booking_ref_valid_to->modify('+' . $booking_ref_validity_period);
 
-    if ($now_week_commence->getTimestamp() > $order_number_valid_to->getTimestamp()) {
-      $order_number_is_valid = FALSE;
+    if ($now_week_commence->getTimestamp() > $booking_ref_valid_to->getTimestamp()) {
+      $booking_ref_is_valid = FALSE;
     }
-    else if ($order_number_valid_from->getTimestamp() > $now_week_commence->getTimestamp()) {
-      $formState->setValue('prison_visit_week_date', $order_number_valid_from->format('l, d M Y'));
+    else if ($booking_ref_valid_from->getTimestamp() > $now_week_commence->getTimestamp()) {
+      $formState->setValue('prison_visit_week_date', $booking_ref_valid_from->format('l, d M Y'));
     }
     else {
       $formState->setValue('prison_visit_week_date', $now_week_commence->format('l, d M Y'));
     }
 
     // Validate visit sequence number.
-    if ($order_number_sequence < 1 || $order_number_sequence > 9999) {
-      $order_number_is_valid = FALSE;
+    if ($booking_ref_sequence < 1 || $booking_ref_sequence > 9999) {
+      $booking_ref_is_valid = FALSE;
     }
     else {
-      $formState->setValue('prison_visit_sequence', $order_number_sequence);
+      $formState->setValue('prison_visit_sequence', $booking_ref_sequence);
     }
 
-    if ($order_number_is_valid !== TRUE) {
+    if ($booking_ref_is_valid !== TRUE) {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number does not look correct or has expired.'));
     }
     else {
-      $formState->setValue('visitor_order_number', $order_number);
+      $formState->setValue('visitor_order_number', $booking_ref);
     }
   }
 

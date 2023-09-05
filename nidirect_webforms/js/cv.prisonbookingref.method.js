@@ -21,6 +21,23 @@
       bookRefIsValid = false;
     }
 
+    // Validate order number week and year.
+    let today = new Date();
+    console.log('Prison visit booking date is ' + today.toLocaleDateString('en-GB'));
+
+    let today_week = today.getUTCWeekNumber();
+    console.log('Week number is ' + today_week);
+
+    let today_year = today.getUTCFullYear();
+    console.log('Year is ' + today_year);
+
+    let today_year_two_digit = today_year.toString().slice(2,4);
+    console.log('Two digit year is ' + today_year_two_digit);
+
+    /*if (pvbYear < today_year_two_digit || pvbWeek < today_week) {
+      bookRefIsValid = false;
+    }*/
+
     return bookRefIsValid;
   }, 'Visit reference number does not look correct or has expired.');
 

@@ -9,6 +9,7 @@ use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\StringTranslation\StringTranslationTrait;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\webform\Plugin\WebformHandlerBase;
+use Drupal\webform\WebformInterface;
 use Drupal\webform\WebformSubmissionInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -55,6 +56,13 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    */
   public function alterForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $form['#attached']['drupalSettings']['prisonVisitBooking'] = $this->configuration;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function alterElements(array &$elements, WebformInterface $webform) {
+    // TODO do something ...
   }
 
   /**

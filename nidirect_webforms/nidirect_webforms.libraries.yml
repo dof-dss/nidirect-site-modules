@@ -4,6 +4,7 @@ multiple_webform_submit.js:
 prison_visit_booking:
   js:
     js/date.get-utc-week-number.js: {}
+    js/date.set-date-from-iso-week-date.js: {}
     js/cv.prisonbookingref.method.js: {}
     js/cv.jquery.prisonbooking.js: {}
   dependencies:

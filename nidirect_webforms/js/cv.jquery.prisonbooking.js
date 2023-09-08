@@ -14,10 +14,13 @@
 
       let $prisonVisitOrderNumber = $(prisonVisitForm).find('input[name="visitor_order_number"]');
       let visitTypes = Object.keys(drupalSettings.prisonVisitBooking.visit_type);
-      let visitPrisonIDs = Object.keys(drupalSettings.prisonVisitBooking.visit_prison);
+      let visitPrisonIDs = Object.keys(drupalSettings.prisonVisitBooking.prisons);
+      let visitAdvanceNotice = drupalSettings.prisonVisitBooking.visit_advance_notice;
+      let visitBookingRefValidityPeriodDays = drupalSettings.prisonVisitBooking.booking_reference_validity_period_days;
+
 
       $prisonVisitOrderNumber.rules( "add", {
-        validPrisonVisitBookingRef: [true, visitPrisonIDs, visitTypes]
+        validPrisonVisitBookingRef: [true, visitPrisonIDs, visitTypes, visitAdvanceNotice, visitBookingRefValidityPeriodDays]
       });
 
     }

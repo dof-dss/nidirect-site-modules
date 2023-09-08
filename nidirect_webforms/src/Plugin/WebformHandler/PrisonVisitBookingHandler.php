@@ -47,29 +47,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return [
-      'visit_order_number_length' => 12,
-      'visit_type' => [
-        'F' => 'face-to-face',
-        'V' => 'virtual',
-        'E' => 'enhanced',
-      ],
-      'prisons' => [
-        'MY' => 'Maghaberry',
-        'HK' => 'Hydebank',
-        'MN' => 'Magilligan',
-      ],
-      'visit_advance_notice' => [
-        'F' => '24 hours',
-        'V' => '48 hours',
-        'E' => '24 hours',
-      ],
-      'booking_reference_validity_period' => [
-        'F' => '1 week',
-        'V' => '1 week',
-        'E' => '4 weeks',
-      ],
-    ];
+    return $this->configFactory->get('prison_visit_booking.settings')->getRawData() ?? [];
   }
 
   /**
@@ -103,6 +81,11 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       return;
     }
 
+    // Abort further validation if there is no config.
+    if (empty($this->configuration)) {
+      return;
+    }
+
     // We have an order number with correct length. Now dissect and process the
     // individual parts.
     $booking_ref_is_valid = TRUE;
@@ -110,7 +93,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $booking_ref_prison_identifier = substr($booking_ref, 0, 2);
     $booking_ref_visit_type = substr($booking_ref, 2, 1);
     $booking_ref_week = (int) substr($booking_ref, 3, 2);
-    $booking_ref_validity_period = $this->configuration['booking_reference_validity_period'][$booking_ref_visit_type];
+    $booking_ref_validity_period_days = $this->configuration['booking_reference_validity_period_days'][$booking_ref_visit_type];
     $booking_ref_year = (int) substr($booking_ref, 5, 2);
     $booking_ref_year_full = (int) DrupalDateTime::createFromFormat('y', $booking_ref_year)->format('Y');
     $booking_ref_sequence = (int) substr($booking_ref, 8);
@@ -142,7 +125,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $booking_ref_valid_from->setISODate($booking_ref_year_full, $booking_ref_week, 1);
 
     $booking_ref_valid_to = new DrupalDateTime($booking_ref_valid_from->format('Y-m-d'));
-    $booking_ref_valid_to->modify('+' . $booking_ref_validity_period);
+    $booking_ref_valid_to->modify('+' . $booking_ref_validity_period_days . ' days');
 
     if ($now_week_commence->getTimestamp() > $booking_ref_valid_to->getTimestamp()) {
       $booking_ref_is_valid = FALSE;

@@ -48,7 +48,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    * {@inheritdoc}
    */
   public function defaultConfiguration() {
-    return $this->configFactory->get('prison_visit_booking.settings')->getRawData() ?? [];
+    return $this->configFactory->get('nidirect_webforms.prison_visit_booking.settings')->getRawData() ?? [];
   }
 
   /**

@@ -84,7 +84,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number is required'));
       return;
     }
-    else if (strlen($booking_ref) !== $this->configuration['visit_order_number_length']) {
+    elseif (strlen($booking_ref) !== $this->configuration['visit_order_number_length']) {
       $formState->setErrorByName('visitor_order_number', $this->t('Visit reference number must contain 12 characters'));
       return;
     }
@@ -138,7 +138,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     if ($now_week_commence->getTimestamp() > $booking_ref_valid_to->getTimestamp()) {
       $booking_ref_is_valid = FALSE;
     }
-    else if ($booking_ref_valid_from->getTimestamp() > $now_week_commence->getTimestamp()) {
+    elseif ($booking_ref_valid_from->getTimestamp() > $now_week_commence->getTimestamp()) {
       $formState->setValue('prison_visit_week_date', $booking_ref_valid_from->format('l, d M Y'));
     }
     else {

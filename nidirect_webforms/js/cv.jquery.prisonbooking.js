@@ -23,6 +23,13 @@
         validPrisonVisitBookingRef: [true, visitPrisonIDs, visitTypes, visitAdvanceNotice, visitBookingRefValidityPeriodDays]
       });
 
+      let visitSlotsAvailable = drupalSettings.prisonVisitBooking.visit_slots;
+
+      let strJSON = JSON.stringify(visitSlotsAvailable);
+      strJSON = JSON.stringify(visitSlotsAvailable, null, 4);
+      
+      console.log(strJSON);
+
     }
   };
 })(jQuery, Drupal, once);

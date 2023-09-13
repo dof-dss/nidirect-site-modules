@@ -1,19 +1,20 @@
+uuid: 109ac987-b56b-42a5-bb87-01a62bf422be
 langcode: en
 status: open
 dependencies:
   module:
     - nidirect_webforms
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
 id: taxi_driver_theory_practice_1
 title: 'Taxi driver theory test - practice test 1'
 description: ''
-category: 'Taxi driver theory test'
-elements: |
+categories: {  }
+elements: |-
   question_1_page:
     '#type': webform_wizard_page
     '#title': 'Question 1'
@@ -151,7 +152,7 @@ elements: |
     '#next_button_label': Continue
     scenario:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -162,7 +163,7 @@ elements: |
     '#title': 'Question 11'
     scenario_q11:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -183,7 +184,7 @@ elements: |
     '#title': 'Question 12'
     scenario_q12:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -192,7 +193,7 @@ elements: |
     q12_image:
       '#type': processed_text
       '#display_on': both
-      '#text': |
+      '#text': |-
         <p>Please look at the following options:</p>
 
         <drupal-media data-align="center" data-entity-type="media" data-entity-uuid="7fcc0dc7-5a47-4a8b-af6d-13a996524f04"></drupal-media>
@@ -213,7 +214,7 @@ elements: |
     '#title': 'Question 13'
     scenario_q13:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -234,7 +235,7 @@ elements: |
     '#title': 'Question 14'
     scenario_q14:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -255,7 +256,7 @@ elements: |
     '#title': 'Question 15'
     scenario_q15:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>You drive a taxi licensed to carry four passengers. You are in the middle of a 12 hour shift and you get a call from the office to pick up some passengers from a local night club. On the way, you come across traffic lights that have stopped working. There is a police officer standing facing you controlling the traffic and signalling you to go ahead. When you get to the night club there are five passengers one of whom is in a wheelchair. On the way back to the office via the motorway, you get a call on the taxi radio which does not have a hands free facility. The controller asks if you would consider staying on for an extra couple of hours. You have yet to complete the compulsory module of taxi periodic training.</p>
@@ -288,38 +289,48 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -328,11 +339,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -347,7 +353,15 @@ settings:
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -364,9 +378,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: ''
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: 'Take practice test again'
@@ -390,26 +404,13 @@ settings:
   purge_days: 1
   results_disabled: false
   results_disabled_ignore: false
-  token_update: false
-  token_view: false
-  page_theme_name: ''
-  form_disable_remote_addr: true
-  share: false
-  share_node: false
-  share_theme_name: ''
-  share_title: true
-  share_page_body_attributes: {  }
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
-  wizard_prev_button_label: ''
-  wizard_next_button_label: ''
-  wizard_toggle: false
-  wizard_toggle_show_label: ''
-  wizard_toggle_hide_label: ''
   results_customize: false
+  token_view: false
+  token_update: false
   token_delete: false
   serial_disabled: false
+  page_admin_theme: false
+  form_remote_addr: true
 access:
   create:
     roles:
@@ -460,9 +461,9 @@ access:
 handlers:
   quiz_results:
     id: nidirect_quiz_results
+    handler_id: quiz_results
     label: 'Quiz Results'
     notes: ''
-    handler_id: quiz_results
     status: true
     conditions: {  }
     weight: 0
@@ -479,7 +480,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 2. Your Vehicle.</p>'
         question_2:
           correct_answer: q2_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Road positioning</h4>
 
             <p>You should normally keep to the left when driving. However, keep clear of parked vehicles, leaving room for:</p>
@@ -525,7 +526,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 4, Mirrors.</p>'
         question_5:
           correct_answer: q5_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Parking at night</h4>
 
             <p>Cars can park without lights on roads with a speed limit of 30 mph<br />
@@ -544,7 +545,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 248 - 250.</p>'
         question_6:
           correct_answer: q6_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Anticipation</h4>
 
             <p>Anticipation in driving means planning well ahead and acting promptly to deal with the changes going on around you. It should, with experience, become almost an automatic reaction. It’s the hallmark of a good driver.</p>
@@ -563,7 +564,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 1, The Driver.</p>'
         question_7:
           correct_answer: q7_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Transport is an essential part of modern life, but we can’t ignore its environmental consequences – local, regional and global. There’s increasing public concern for the protection of our environment, with the result that many motor manufacturers are devoting more time, effort and resources to the development of environmentally friendly vehicles. But you, as a driver, can also help. If you follow the principles of ecosafe driving, you’ll become a more environmentally friendly driver and</p>
 
             <ul>
@@ -576,14 +577,14 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 17, Ecosafe driving and the environment.</p>'
         question_8:
           correct_answer: q8_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Selecting gears</h4>
 
             <p>It’s not always necessary to change up or down through each gear; it’s possible to miss out intermediate gears (this is known as ‘block’ gear changing). It helps to reduce the amount of time you’re accelerating, and as this is when fuel consumption is at its highest, it will help you to save fuel. As soon as conditions allow, use the highest gear possible without making the engine struggle.</p>
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 17, Ecosafe driving and the environment.</p>'
         question_9:
           correct_answer: q9_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Route planning</h4>
 
             <p>Plan your route and avoid known hold-ups and roadworks. Always know where you’re going – you’ll use a lot of fuel by getting lost.<br />
@@ -600,7 +601,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 17, Ecosafe driving and the environment.</p>'
         question_10:
           correct_answer: q10_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Catalytic converters</h4>
 
             <p>These are exhaust treatment systems which remove up to 75% of carbon monoxide, nitrogen oxide and hydrocarbons. The converter is a honeycomb-shaped filter with a total surface area about equal to a football pitch. This surface is coated with precious metals such as platinum, palladium and rhodium. These speed up a chemical reaction in the exhaust gases as the engine heats up. The oxygen content of the exhaust is monitored and a sensor triggers controls to adjust the air–fuel mixture. The converter only deals with toxic and polluting gases. Carbon dioxide is still produced. Leaded petrol can’t be used in vehicles fitted with a catalytic converter. Even one tankful can permanently damage the system. If you over-accelerate or exceed 3000 rpm the catalytic converter can’t clean up emissions completely, and will release some that are contaminated. Make sure therefore that you don’t drive in such a way that this will occur.</p>
@@ -611,7 +612,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 1. Getting Started.</p>'
         question_12:
           correct_answer: q12_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Signals by authorised persons - police officers</h4>
 
             <p>To Beckon traffic on from the front:</p>
@@ -620,7 +621,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI".</p>'
         question_13:
           correct_answer: q13_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Driving time and rest periods</h4>
 
             <p>The manual, “All you need to know to become a Taxi Driver” offers recommendations as to working hours and the required duration of breaks for taxi drivers. Taxi drivers should not work for more than an average of ten hours per day. The usual break should be 30 minutes for a shift of between six and nine hours.</p>
@@ -631,7 +632,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 3. Limits and regulations.</p>'
         question_14:
           correct_answer: q14_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Mobile phones and radio communication equipment</h4>
 
             <p>It is illegal to operate a hand-held mobile phone or similar device while driving. No driver should use a mobile communication device while in control of a moving vehicle. Never use a hand-held microphone or similar device while driving. You should always find a safe and convenient place to stop before using such equipment.<br />

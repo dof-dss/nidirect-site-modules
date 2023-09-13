@@ -1,17 +1,18 @@
+uuid: 405f8383-a1e2-4363-87d6-e534ca2ab73f
 langcode: en
 status: open
 dependencies: {  }
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 24
 template: false
 archive: false
 id: should_i_get_tested_for_coronavi
 title: 'Should I get tested for coronavirus (COVID-19)?'
 description: ''
-category: ''
-elements: |
+categories: {  }
+elements: |-
   question_1:
     '#type': webform_wizard_page
     '#title': 'Showing symptoms'
@@ -74,7 +75,7 @@ elements: |
         visible:
           ':input[name="do_you_have_a_high_temperature_new_continuous_cough_or_a_loss_of"]':
             value: 'No'
-      '#text': |
+      '#text': |-
         <div class="info-notice info-notice--error info-notice--large">
         <h2>You do not need to get tested</h2>
         </div>
@@ -95,7 +96,7 @@ elements: |
             value: 'Yes'
           ':input[name="are_you_a_health_and_social_care_hsc_worker_"]':
             value: 'Yes'
-      '#text': |
+      '#text': |-
         <div class="info-notice info-notice--success info-notice--large">
         <h2>Contact your line manager to arrange a test</h2>
         </div>
@@ -111,7 +112,7 @@ elements: |
             value: 'Yes'
           ':input[name="are_you_an_essential_worker_"]':
             value: 'No'
-      '#text': |
+      '#text': |-
         <div class="info-notice info-notice--success info-notice--large">
         <h2>Book a test</h2>
         </div>
@@ -129,7 +130,7 @@ elements: |
             value: 'Yes'
           ':input[name="are_you_a_health_and_social_care_hsc_worker_"]':
             value: 'No'
-      '#text': |
+      '#text': |-
         <div class="info-notice info-notice--success info-notice--large">
         <h2><strong>Book a test for essential workers</strong></h2>
         </div>
@@ -155,9 +156,9 @@ settings:
   page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
@@ -167,16 +168,16 @@ settings:
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
@@ -188,7 +189,12 @@ settings:
   share_title: true
   share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -197,11 +203,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -212,13 +213,13 @@ settings:
   wizard_progress_percentage: false
   wizard_progress_link: false
   wizard_progress_states: false
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
   wizard_start_label: ''
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
   wizard_prev_button_label: ''
   wizard_next_button_label: ''
@@ -241,9 +242,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: none
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: ''
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: 'Start again'

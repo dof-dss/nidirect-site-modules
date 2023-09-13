@@ -1,19 +1,20 @@
+uuid: d25e6fe0-8811-49ba-9194-008adf3a3eb3
 langcode: en
 status: open
 dependencies:
   module:
     - nidirect_webforms
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
 id: taxi_driver_theory_practice_2
 title: 'Taxi driver theory test - practice test 2'
 description: ''
-category: 'Taxi driver theory test'
-elements: |
+categories: {  }
+elements: |-
   question_1_page:
     '#type': webform_wizard_page
     '#title': 'Question 1'
@@ -111,7 +112,7 @@ elements: |
     tx3039_image:
       '#type': processed_text
       '#display_on': both
-      '#text': |
+      '#text': |-
         <drupal-media data-align="center" data-entity-type="media" data-entity-uuid="f8baa387-c9f8-447d-8cd8-12334d84d1a2" data-view-mode="article_float"></drupal-media>
 
       '#format': basic_html
@@ -156,7 +157,7 @@ elements: |
     '#title': Scenario
     scenario:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -167,7 +168,7 @@ elements: |
     '#title': 'Question 11'
     scenario_q11:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -188,7 +189,7 @@ elements: |
     '#title': 'Question 12'
     scenario_q12:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -209,7 +210,7 @@ elements: |
     '#title': 'Question 13'
     scenario_q13:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -230,7 +231,7 @@ elements: |
     '#title': 'Question 14'
     scenario_q14:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -251,7 +252,7 @@ elements: |
     '#title': 'Question 15'
     scenario_q15:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>Prior to starting duty you carry out a check of your vehicle. Access to the passenger seating area is by the sliding doors on both sides of your vehicle or by the double doors at the rear. You realise the electric wheelchair ramp at the rear is defective. You have been having problems starting your vehicle first thing every morning so you replace the vehicle battery. Your first appointment is a party of 12 and 13 year old school children going to their school prom. You pick them up at various locations and take them to the venue, stopping on the near side of the road next to the kerb. On the way, the teenagers start moving around in the rear of the vehicle. To date you have attended two periodic training courses, one lasting 7 hours and one lasting 5 hours. You have another one scheduled for next week which meets the minimum time requirement.</p>
@@ -282,38 +283,48 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -322,11 +333,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -341,7 +347,15 @@ settings:
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -358,9 +372,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: ''
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: 'Take practice test again'
@@ -384,26 +398,13 @@ settings:
   purge_days: 1
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
-  page_theme_name: ''
-  form_disable_remote_addr: true
-  share: false
-  share_node: false
-  share_theme_name: ''
-  share_title: true
-  share_page_body_attributes: {  }
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
-  wizard_prev_button_label: ''
-  wizard_next_button_label: ''
-  wizard_toggle: false
-  wizard_toggle_show_label: ''
-  wizard_toggle_hide_label: ''
-  results_customize: false
   token_delete: false
   serial_disabled: false
+  page_admin_theme: false
+  form_remote_addr: true
 access:
   create:
     roles:
@@ -454,9 +455,9 @@ access:
 handlers:
   quiz_results:
     id: nidirect_quiz_results
+    handler_id: quiz_results
     label: 'Quiz Results'
     notes: ''
-    handler_id: quiz_results
     status: true
     conditions: {  }
     weight: 0
@@ -473,7 +474,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 6, Traffic Signs.</p>'
         question_2:
           correct_answer: q2_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Defensive driving</h4>
 
             <p>Take extra care if your path crosses or joins the path of other road users.</p>
@@ -490,7 +491,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 6, Traffic Signs.</p>'
         question_5:
           correct_answer: q5_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Pelican crossings</h4>
 
             <p>These are light-controlled crossings where the pedestrian uses push-button controls to control the traffic. They have no red and<br />
@@ -498,7 +499,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 196.</p>'
         question_6:
           correct_answer: q6_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Pedestrians and cyclists</h4>
 
             <p>You should:</p>
@@ -512,7 +513,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 8, Junctions.</p>'
         question_7:
           correct_answer: q7_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Overheating</h4>
 
             <p>The probable causes of overheating could be any of the following:</p>
@@ -526,14 +527,14 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 14, Basic maintainance.</p>'
         question_8:
           correct_answer: q8_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Keep a safe distance – there could be queues in front.</p>
 
             <drupal-media data-align="center" data-entity-type="media" data-entity-uuid="f8baa387-c9f8-447d-8cd8-12334d84d1a2"></drupal-media>
           incorrect_feedback: '<p>Please read "The Highway Code for NI".</p>'
         question_9:
           correct_answer: q9_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Some warning lights if they remain on must be checked out immediately – Oil, Seatbelt, and Airbag etc. If possible you should stop somewhere safe and convenient and try to find the cause. You should also check your vehicle’s handbook for further information.</p>
 
             <p>Others such as the Particulate Filter warning light advise that action is required, but not necessarily immediately. If this light is illuminated it means that the particulate filer is upwards of 45% blocked with the soot residue from the burnt fuel from the engine.</p>
@@ -546,14 +547,14 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 196 - 198.</p>'
         question_11:
           correct_answer: q11_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Ensuring that daily walk-round checks are carried out will enable you to find any defects that could become a problem and cause the vehicle to break down or be driven while illegal.</p>
 
             <p>The time taken to complete a thorough check will be less than that required to organise repair or replacement while out on the road. Checks need to be made before you start up the vehicle or begin a journey. The consequences are too great to risk driving a vehicle with defective parts.</p>
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 2. Your Vehicle.</p>'
         question_12:
           correct_answer: q12_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>The driver MUST ensure that all children under 14 years of age in cars, vans and other goods vehicles wear seat belts or sit in an approved child restraint where required (see table below). If a child is under 1.35 metres (approx 4 feet 5 inches) tall, a baby seat, child seat, booster seat or booster cushion suitable for the child’s weight and fitted to the manufacturer’s instructions MUST be used.</p>
 
             <div class="x-scroll">
@@ -609,7 +610,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI".</p>'
         question_13:
           correct_answer: q13_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Recycling</p>
 
             <p>If you do your own maintenance, make sure that you send oil, old batteries and used tyres to a garage or local authority site for<br />
@@ -628,7 +629,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 239.</p>'
         question_15:
           correct_answer: q15_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>The training MUST be delivered by an approved training provider and the course MUST have been approved by DVA before it can be uploaded against each taxi driver’s record.</p>
 
             <p>If after five years, you have not completed the minimum 35 hours training your taxi licence will not be renewed.</p>

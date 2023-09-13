@@ -61,9 +61,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
 
     $form['#attached']['drupalSettings']['prisonVisitBooking'] = $this->configuration;
 
-    //\Kint::$depth_limit = 3;
-    //kint($form_state->getValue('prison_visit_prison_name'));
-
     $visit_type = $form_state->getValue('prison_visit_type') ?? NULL;
     $visit_prison = $form_state->getValue('prison_visit_prison_name') ?? NULL;
     $visit_sequence = (int) $form_state->getValue('prison_visit_sequence') ?? NULL;
@@ -90,24 +87,36 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
 
       // Loop through four weeks worth of slots.
       for ($i = 1; $i <= 4; $i++) {
-        // Loop through each day of time slots ...
-        foreach ($config_visit_slots as $day => $config_visit_slots_by_day) {
-          // If there are no time slots, remove corresponding form elements.
-          if (empty($config_visit_slots_by_day)) {
-            $form['elements']['visit_preferred_day_and_time']['slots_week_' . $i][strtolower($day) . '_week_' . $i]['#access'] = FALSE;
+
+        // Slots for the week from the form.
+        $form_slots = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i];
+
+        // Loop through each day of config slots
+        foreach ($config_visit_slots as $day => $config_slots) {
+          // If there are no time slots for a particular day in the config,
+          // remove corresponding form elements.
+          if (empty($config_slots)) {
+            $form_slots[strtolower($day) . '_week_' . $i]['#access'] = FALSE;
           }
           else {
+            $form_slots[strtolower($day) . '_week_' . $i]['#access'] = TRUE;
+
+            // There are slots for this day.
+            // Now filter specific time slots out of the form.
+            // First get the configured time slots.
             if ($visit_type == 'virtual') {
-              $config_time_slots_by_category = $config_visit_slots_by_day;
+              $config_time_slots = $config_slots;
             }
             else {
-              $config_time_slots_by_category = $config_visit_slots_by_day[$visit_sequence_category];
+              $config_time_slots = $config_slots[$visit_sequence_category];
             }
+
             // Get the corresponding options in the form.
             $options = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i][strtolower($day) . '_week_' . $i]['#options'];
-            // Remove options if they don't exist in the config.
+
+            // Remove a form options if it does not exist in the config.
             foreach ($options as $key => $value) {
-              if (empty($config_time_slots_by_category[$key])) {
+              if (empty($config_time_slots[$key])) {
                 unset($options[$key]);
               }
             }
@@ -122,7 +131,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     }
 
   }
-
 
   public function configureVisitSlots(array &$form, FormStateInterface $form_state) {
 

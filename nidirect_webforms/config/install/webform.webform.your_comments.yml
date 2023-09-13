@@ -1,17 +1,18 @@
+uuid: f26dc7f0-81cf-4984-9028-f57ffffb65fe
 langcode: en
 status: open
 dependencies: {  }
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
 id: your_comments
 title: 'Your comments'
 description: 'Page feedback form'
-category: ''
-elements: |
+categories: {  }
+elements: |-
   error_message:
     '#type': processed_text
     '#format': full_html
@@ -109,7 +110,7 @@ elements: |
         visible:
           ':input[name="do_you_want_a_reply_options"]':
             value: 'No'
-      '#text': |
+      '#text': |-
         <p class="info-notice info-notice--warning"><strong>We will not reply to your feedback.</strong>&nbsp; Don't include any personal or financial information, for example National Insurance, credit card numbers, or phone numbers.</p>
 
       '#format': full_html
@@ -137,7 +138,7 @@ elements: |
           - or
           - ':input[name="feedback_about"]':
               value: other
-      '#text': |
+      '#text': |-
         <p class="info-notice info-notice--warning">Don't include any personal or financial information, for example National Insurance, credit card numbers, or phone numbers.</p>
 
       '#format': full_html
@@ -189,7 +190,7 @@ elements: |
           value: angling
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -205,7 +206,7 @@ elements: |
           value: benefits
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -250,7 +251,7 @@ elements: |
           value: blue_badge
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -286,7 +287,7 @@ elements: |
           value: claiming_compensation_roads
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -302,7 +303,7 @@ elements: |
           value: covid_19
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -326,7 +327,7 @@ elements: |
           value: covid_19_certificate
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -362,7 +363,7 @@ elements: |
           value: employment_rights
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -397,7 +398,7 @@ elements: |
           value: high_street_voucher
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -423,7 +424,7 @@ elements: |
           value: nidirect_account
     '#wrapper_attributes':
       role: alert
-    '#text': |
+    '#text': |-
       <div class="no-submit">
       <h2>What to do next</h2>
 
@@ -525,38 +526,48 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: false
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -565,11 +576,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -584,7 +590,15 @@ settings:
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: false
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -601,9 +615,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: message
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: 'Thank you for your feedback'
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: false
   confirmation_back_label: ''
@@ -627,26 +641,13 @@ settings:
   purge_days: null
   results_disabled: true
   results_disabled_ignore: true
-  token_update: false
-  page_theme_name: ''
-  share: false
-  share_node: false
-  share_theme_name: ''
-  share_title: true
-  share_page_body_attributes: {  }
-  wizard_auto_forward: true
-  wizard_prev_button_label: ''
-  wizard_next_button_label: ''
-  wizard_toggle: false
-  wizard_toggle_show_label: ''
-  wizard_toggle_hide_label: ''
   results_customize: false
   token_view: false
-  form_disable_remote_addr: false
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
+  token_update: false
   token_delete: false
   serial_disabled: false
+  page_admin_theme: false
+  form_remote_addr: true
 access:
   create:
     roles:
@@ -697,9 +698,9 @@ access:
 handlers:
   email:
     id: email
+    handler_id: email
     label: Email
     notes: ''
-    handler_id: email
     status: true
     conditions: {  }
     weight: 0
@@ -708,15 +709,19 @@ handlers:
         - completed
       to_mail: feedback@nidirect.gov.uk
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: '[webform_submission:values:enter_a_valid_email_address:raw]'
       from_options: {  }
       from_name: 'nidirect visitor'
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: 'Page feedback'
-      body: |
+      body: |-
         Submitted on [webform_submission:created]
 
         Submitted values are:
@@ -725,22 +730,18 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: false
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
-      exclude_attachments: false
+      debug: false
   auto_reply:
     id: email
+    handler_id: auto_reply
     label: 'Auto reply'
     notes: ''
-    handler_id: auto_reply
     status: true
     conditions:
       enabled:
@@ -754,15 +755,19 @@ handlers:
         - completed
       to_mail: '[webform_submission:values:enter_a_valid_email_address:raw]'
       to_options: {  }
-      cc_mail: ''
-      cc_options: {  }
       bcc_mail: ''
       bcc_options: {  }
+      cc_mail: ''
+      cc_options: {  }
       from_mail: noreply@nidirect.gov.uk
       from_options: {  }
       from_name: NIDirect
+      reply_to: ''
+      return_path: ''
+      sender_mail: ''
+      sender_name: ''
       subject: 'Thank you for your feedback on nidirect.gov.uk'
-      body: |
+      body: |-
         Thank you for your feedback.<br />
         <br />
         We aim to get back to you within 10 working days.&nbsp; All responses will usually be sent out Monday to Friday, 9.00 am to 5.00 pm (excluding public and bank holidays). This is an automated email message. Please do not reply to this email as we do not have access to emails sent to noreply@nidirect.gov.uk.
@@ -771,15 +776,11 @@ handlers:
       ignore_access: false
       exclude_empty: true
       exclude_empty_checkbox: false
+      exclude_attachments: false
       html: true
       attachments: false
       twig: false
-      debug: false
-      reply_to: ''
-      return_path: ''
-      sender_mail: ''
-      sender_name: ''
       theme_name: ''
       parameters: {  }
-      exclude_attachments: false
+      debug: false
 variants: {  }

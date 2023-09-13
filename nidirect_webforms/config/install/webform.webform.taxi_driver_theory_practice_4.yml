@@ -1,19 +1,20 @@
+uuid: 5feafa77-632f-49f3-a441-af98c54a1d05
 langcode: en
 status: open
 dependencies:
   module:
     - nidirect_webforms
+weight: 0
 open: null
 close: null
-weight: 0
 uid: 1
 template: false
 archive: false
 id: taxi_driver_theory_practice_4
 title: 'Taxi driver theory test - practice test 4'
 description: ''
-category: 'Taxi driver theory test'
-elements: |
+categories: {  }
+elements: |-
   question_1_page:
     '#type': webform_wizard_page
     '#title': 'Question 1'
@@ -137,7 +138,7 @@ elements: |
     tx1001_image:
       '#type': processed_text
       '#display_on': both
-      '#text': |
+      '#text': |-
         <drupal-media data-align="center" data-entity-type="media" data-entity-uuid="dc5b3825-7404-4017-a1e5-7160ce58c49d" data-view-mode="article_float"></drupal-media>
 
       '#format': full_html
@@ -156,7 +157,7 @@ elements: |
     '#title': Scenario
     scenario:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -167,7 +168,7 @@ elements: |
     '#title': 'Question 11'
     scenario_q11:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -188,7 +189,7 @@ elements: |
     '#title': 'Question 12'
     scenario_q12:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -209,7 +210,7 @@ elements: |
     '#title': 'Question 13'
     scenario_q13:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -230,7 +231,7 @@ elements: |
     '#title': 'Question 14'
     scenario_q14:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -251,7 +252,7 @@ elements: |
     '#title': 'Question 15'
     scenario_q15:
       '#type': processed_text
-      '#text': |
+      '#text': |-
         <p><strong>Please carefully read the following scenario and then answer questions 11 to 15 which follow.</strong></p>
 
         <p>It‘s a lovely dry day and on the way to your next pick up, while driving at 40 mph, a van stops suddenly in front of you. While on route to the airport along the motorway, one of your wheel trims comes off. After picking up four passengers from the airport you come across a herd of cows with a farmer blocking the country road. Further along the country road which has no footpath, you encounter a lady pedestrian with a guide dog wearing a white harness waiting to cross the road. You drop the passengers from the airport off one by one. When you drop the last passenger, he refuses to pay the full amount, stating that the others should have paid their part of the fare when they were dropped off.</p>
@@ -282,38 +283,48 @@ settings:
   page: true
   page_submit_path: ''
   page_confirm_path: ''
-  page_admin_theme: false
+  page_theme_name: ''
   form_title: source_entity_webform
   form_submit_once: false
-  form_exception_message: ''
   form_open_message: ''
   form_close_message: ''
+  form_exception_message: ''
   form_previous_submissions: false
   form_confidential: false
   form_confidential_message: ''
-  form_remote_addr: true
+  form_disable_remote_addr: true
   form_convert_anonymous: false
   form_prepopulate: false
   form_prepopulate_source_entity: false
   form_prepopulate_source_entity_required: false
   form_prepopulate_source_entity_type: ''
-  form_reset: false
+  form_unsaved: false
+  form_disable_back: false
+  form_submit_back: false
   form_disable_autocomplete: false
   form_novalidate: false
   form_disable_inline_errors: false
   form_required: false
-  form_unsaved: false
-  form_disable_back: false
-  form_submit_back: false
   form_autofocus: false
   form_details_toggle: false
+  form_reset: false
   form_access_denied: default
   form_access_denied_title: ''
   form_access_denied_message: ''
   form_access_denied_attributes: {  }
   form_file_limit: ''
+  share: false
+  share_node: false
+  share_theme_name: ''
+  share_title: true
+  share_page_body_attributes: {  }
   submission_label: ''
+  submission_exception_message: ''
+  submission_locked_message: ''
   submission_log: false
+  submission_excluded_elements: {  }
+  submission_exclude_empty: false
+  submission_exclude_empty_checkbox: false
   submission_views: {  }
   submission_views_replace: {  }
   submission_user_columns: {  }
@@ -322,11 +333,6 @@ settings:
   submission_access_denied_title: ''
   submission_access_denied_message: ''
   submission_access_denied_attributes: {  }
-  submission_exception_message: ''
-  submission_locked_message: ''
-  submission_excluded_elements: {  }
-  submission_exclude_empty: false
-  submission_exclude_empty_checkbox: false
   previous_submission_message: ''
   previous_submissions_message: ''
   autofill: false
@@ -341,7 +347,15 @@ settings:
   wizard_preview_link: false
   wizard_confirmation: true
   wizard_confirmation_label: ''
+  wizard_auto_forward: true
+  wizard_auto_forward_hide_next_button: false
+  wizard_keyboard: true
   wizard_track: ''
+  wizard_prev_button_label: ''
+  wizard_next_button_label: ''
+  wizard_toggle: true
+  wizard_toggle_show_label: ''
+  wizard_toggle_hide_label: ''
   preview: 0
   preview_label: ''
   preview_title: ''
@@ -358,9 +372,9 @@ settings:
   draft_pending_single_message: ''
   draft_pending_multiple_message: ''
   confirmation_type: page
+  confirmation_url: ''
   confirmation_title: ''
   confirmation_message: ''
-  confirmation_url: ''
   confirmation_attributes: {  }
   confirmation_back: true
   confirmation_back_label: 'Take practice test again'
@@ -384,26 +398,13 @@ settings:
   purge_days: 1
   results_disabled: false
   results_disabled_ignore: false
+  results_customize: false
   token_view: false
   token_update: false
-  page_theme_name: ''
-  form_disable_remote_addr: true
-  share: false
-  share_node: false
-  share_theme_name: ''
-  share_title: true
-  share_page_body_attributes: {  }
-  wizard_auto_forward: true
-  wizard_auto_forward_hide_next_button: false
-  wizard_keyboard: true
-  wizard_prev_button_label: ''
-  wizard_next_button_label: ''
-  wizard_toggle: true
-  wizard_toggle_show_label: ''
-  wizard_toggle_hide_label: ''
-  results_customize: false
   token_delete: false
   serial_disabled: false
+  page_admin_theme: false
+  form_remote_addr: true
 access:
   create:
     roles:
@@ -454,9 +455,9 @@ access:
 handlers:
   quiz_results:
     id: nidirect_quiz_results
+    handler_id: quiz_results
     label: 'Quiz Results'
     notes: ''
-    handler_id: quiz_results
     status: true
     conditions: {  }
     weight: 0
@@ -469,7 +470,7 @@ handlers:
       answers:
         question_1:
           correct_answer: q1_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>It is essential that you remain calm during any situation and avoid doing or saying anything that implies you are asking them to leave the vehicle. Act in a confident manner and keep your behaviour in proportion to the provocation. You should:</p>
 
             <ul>
@@ -482,7 +483,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 1. Getting started.</p>'
         question_2:
           correct_answer: q2_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>It’s unreasonable to expect the right child seat or booster to be available in a taxi unless a parent or carer has brought it<br />
             with them. There’s therefore a qualified exception which says that if child restraints aren’t available in a licensed taxi or licensed private hire vehicle</p>
 
@@ -493,7 +494,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 1. Getting started.</p>'
         question_3:
           correct_answer: q3_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Stopping at the roadside</h4>
 
             <p>All drivers have to stop at the side of the road, but as a taxi driver you have to think of your passengers at all times and ensure that, when you stop, your passengers are able to get in or out of your vehicle safely and conveniently.</p>
@@ -510,7 +511,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 23, Driving taxis.</p>'
         question_4:
           correct_answer: q4_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Smoking in a taxi</h4>
 
             <p>Legislation was introduced in April 2007 in Northern Ireland concerning smoking in certain vehicles, this includes smoking in taxis.</p>
@@ -533,7 +534,7 @@ handlers:
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 3. Limits and Regulations.</p>'
         question_5:
           correct_answer: q5_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Ramp and wheelchair fittings</h4>
 
             <p>If you have the facility to carry wheelchairs you must ensure that you’re able to correctly load and secure the wheelchair so that the passenger can be transported safely and then reverse the process at the end of the journey.</p>
@@ -563,7 +564,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 23, Driving taxis.</p>'
         question_6:
           correct_answer: q6_a1
-          correct_feedback: |
+          correct_feedback: |-
             <p>Caring for your passengers is an important part of taxi driving. As the driver, you’re responsible for the safety and comfort of your passengers as they get into and out of your vehicle as well as during the journey.</p>
 
             <p>Your job is to convey your passengers to their destination</p>
@@ -577,7 +578,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 23, Driving Taxis.</p>'
         question_7:
           correct_answer: q7_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>People who are deaf or hard of hearing</h4>
 
             <p>It is common courtesy to look at people when you speak to them. Just doing that will allow most deaf or hearing-impaired people to understand you. Good communication also saves time.</p>
@@ -592,7 +593,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 269.</p>'
         question_10:
           correct_answer: q10_a1
-          correct_feedback: |
+          correct_feedback: |-
             <drupal-media data-align="center" data-entity-type="media" data-entity-uuid="dc5b3825-7404-4017-a1e5-7160ce58c49d" data-view-mode="article_float"></drupal-media>
 
             <h4>Bends</h4>
@@ -619,14 +620,14 @@ handlers:
           incorrect_feedback: '<p>Please read "The Official DVSA Guide to DRIVING the essential skills". Section 7, On the Road.</p>'
         question_11:
           correct_answer: q11_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Payment of fares</h4>
 
             <p>If a passenger refuses to pay their fare, you should not get into a situation where aggression or violence is allowed to develop. Where possible take the individuals name and address, note the reasons why they are refusing to make payment and pass this information onto your depot manager so he can take the necessary steps to address the issue. A passenger has a legal obligation to pay a fare providing no extenuating circumstances led to an increase in that fare which were not of their making.</p>
           incorrect_feedback: '<p>Please read "All you need to know to become a Taxi Driver". Section 1. Getting Started.</p>'
         question_12:
           correct_answer: q12_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Typical Stopping Distances</h4>
 
             <ul>
@@ -640,7 +641,7 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI".</p>'
         question_13:
           correct_answer: q13_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Obstructions</h4>
 
             <p>If anything falls from your vehicle (or any other vehicle) on to the road, stop and retrieve it only if it is safe to do so.<br />
@@ -650,14 +651,14 @@ handlers:
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 279-280.</p>'
         question_14:
           correct_answer: q14_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>Other road users</h4>
 
             <p>Animals. When passing animals, drive slowly. Give them plenty of room and be ready to stop. Do not scare animals by sounding your horn, revving your engine, or accelerating rapidly once you have passed them. Look out for animals being led, driven or ridden on the road and take extra care. Keep your speed down at bends and on narrow country roads. If a road is blocked by a herd of animals, stop and switch off your engine until they have left the road. Watch out for animals on unfenced roads.</p>
           incorrect_feedback: '<p>Please read "The Highway Code for NI". Rule 214.</p>'
         question_15:
           correct_answer: q15_a1
-          correct_feedback: |
+          correct_feedback: |-
             <h4>People with disabilities</h4>
 
             <p>Take special care around people with disabilities.</p>

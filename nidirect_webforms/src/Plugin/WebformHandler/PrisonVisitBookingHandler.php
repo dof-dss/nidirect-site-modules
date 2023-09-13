@@ -91,7 +91,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
         // Slots for the week from the form.
         $form_slots = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i];
 
-        // Loop through each day of config slots
+        // Loop through each day of config slots.
         foreach ($config_visit_slots as $day => $config_slots) {
           // If there are no time slots for a particular day in the config,
           // remove corresponding form elements.
@@ -123,25 +123,12 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
           }
         }
 
-        // Add week commencing date to container titles for each week's slots
+        // Add week commencing date to container titles for each week's slots.
         $slots_title = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i]['#title'];
         $slots_title = str_replace('[DATE]', date('d F Y', strtotime($visit_week_date_start . '+' . ($i - 1) . 'weeks')), $slots_title);
       }
-
     }
 
-  }
-
-  public function configureVisitSlots(array &$form, FormStateInterface $form_state) {
-
-    /** @var \Drupal\webform\WebformSubmissionForm $form_object */
-    $form_object = $form_state->getFormObject();
-
-    /** @var \Drupal\webform\Ajax\WebformSubmissionAjaxResponse $response */
-    $response = $form_object->submitAjaxForm($form, $form_state);
-    $response->addCommand(new InvokeCommand(NULL, 'configureVisitSlots'));
-
-    return $response;
   }
 
   /**

@@ -143,12 +143,12 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
           if (!empty($config_slots)) {
             // Work out date to prefix option keys with.
             $key_date = clone $visit_booking_ref_valid_from;
-            $key_date->modify('+'. ($i - 1) . ' weeks');
+            $key_date->modify('+' . ($i - 1) . ' weeks');
             $key_date->modify($day . ' this week');
 
             // Loop through time slots for this day.
             $options = &$form_slots_day['#options'];
-            
+
             foreach ($options as $key => $value) {
               $key_time = (date_parse($key));
               $key_date->setTime($key_time['hour'], $key_time['minute'], $key_time['second']);

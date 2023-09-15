@@ -97,8 +97,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       $visit_booking_ref_valid_from = $visit_booking_week_start;
     }
 
-    $visit_validity_period_weeks = (int) ceil($visit_booking_ref_valid_from->diff($visit_booking_ref_valid_to)->days / 7);
-
     // Retrieve configured visit slots for a given prison and visit type.
     // For example, slots for Maghaberry face-to-face visits).
     $config_visit_slots = $this->configuration['visit_slots'][$visit_prison][$visit_type];
@@ -114,12 +112,10 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
         // Slots for each week are grouped together in some kind of webform
         // grouping element (e.g. container, section or details). The keys
         // must be slots_week_1, slots_week_2, etc.
-
         $form_slots_week = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i];
 
         // By default, disable access. Enable access if there are days
         // and times to show.
-
         $form_slots_week['#access'] = FALSE;
 
         // Add week commencing date to container titles for each week.
@@ -135,11 +131,13 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
           $form_slots_day['#access'] = FALSE;
 
           // Get the configured time slots.
+          $config_time_slots = $config_slots;
+
+          // There may be specific time slots for prisoner categories.
+          $time_slots_prisoner_category_specific = FALSE;
           if (!empty($config_slots[$visit_prisoner_category])) {
+            $time_slots_prisoner_category_specific = TRUE;
             $config_time_slots = $config_slots[$visit_prisoner_category];
-          }
-          else {
-            $config_time_slots = $config_slots;
           }
 
           if (!empty($config_slots)) {
@@ -150,16 +148,47 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
 
             // Loop through time slots for this day.
             $options = &$form_slots_day['#options'];
+            
             foreach ($options as $key => $value) {
               $key_time = (date_parse($key));
               $key_date->setTime($key_time['hour'], $key_time['minute'], $key_time['second']);
 
               // If the option time is in config and the option key date falls
               // with visit booking dates ...
-              if (array_key_exists($key, $config_time_slots) && $key_date >= $visit_booking_earliest && $key_date <= $visit_booking_ref_valid_to ) {
-                // Make a new option with key containing full datetime.
+              if (array_key_exists($key, $config_time_slots) && $key_date >= $visit_booking_earliest && $key_date <= $visit_booking_ref_valid_to) {
+
+                // Make a new key containing full datetime.
                 $new_key = $key_date->format('d/m/Y H:i');
-                $options[$new_key] = $value;
+
+                // Make a new option with this key. If the prisoner category
+                // is "separates", only create keys for AM or PM times
+                // depending on the prisoner subcategory and whether this
+                // is an odd or even week number.
+
+                if ($visit_prisoner_category !== 'separates' || $time_slots_prisoner_category_specific === FALSE) {
+                  $options[$new_key] = $value;
+                }
+                elseif ($time_slots_prisoner_category_specific) {
+                  // Give separates am or pm timeslots depending on
+                  // week number parity.
+                  $week_number = $key_date->format('W');
+                  if ($week_number % 2 === 0) {
+                    if ($visit_prisoner_subcategory === 0 && $key_time['hour'] <= 12) {
+                      $options[$new_key] = $value;
+                    }
+                    elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] > 12) {
+                      $options[$new_key] = $value;
+                    }
+                  }
+                  else {
+                    if ($visit_prisoner_subcategory === 0 && $key_time['hour'] > 12) {
+                      $options[$new_key] = $value;
+                    }
+                    elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] <= 12) {
+                      $options[$new_key] = $value;
+                    }
+                  }
+                }
               }
 
               // Unset old options.
@@ -296,9 +325,9 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       // Determine prisoner category from the sequence number.
       $prisoner_categories = $this->configuration['visit_order_number_categories'];
       foreach ($prisoner_categories as $category_key => $category_value) {
+        $form_state->setValue('prison_visit_prisoner_category', $category_key);
         foreach ($category_value as $subcategory_key => $subcategory_value) {
           if ($booking_ref_sequence >= $subcategory_value[0] && $booking_ref_sequence <= $subcategory_value[1]) {
-            $form_state->setValue('prison_visit_prisoner_category', $category_key);
             $form_state->setValue('prison_visit_prisoner_subcategory', $subcategory_key);
           }
         }

@@ -199,7 +199,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $this->validateVisitBookingReference($form, $form_state);
-    $this->validateVisitorOneDOB($form, $form_state);
+    $this->validateVisitorOneDateOfBirth($form, $form_state);
   }
 
   /**
@@ -370,7 +370,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
   /**
    * Validate visitor one DOB.
    */
-  private function validateVisitorOneDOB(array &$form, FormStateInterface $form_state) {
+  private function validateVisitorOneDateOfBirth(array &$form, FormStateInterface $form_state) {
     $visitor_1_dob = !empty($form_state->getValue('visitor_1_dob')) ? $form_state->getValue('visitor_1_dob') : NULL;
 
     if (!empty($visitor_1_dob)) {

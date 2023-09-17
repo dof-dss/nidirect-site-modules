@@ -63,7 +63,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $form['#attached']['drupalSettings']['prisonVisitBooking'] = $this->configuration;
 
     $booking_ref = $this->processBookingReference($form_state);
-    kint($booking_ref);
+    //kint($booking_ref);
 
     if (!empty($booking_ref)) {
 

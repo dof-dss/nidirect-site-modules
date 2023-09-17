@@ -89,11 +89,8 @@ elements: |-
         <p>
         <strong class="meta">
         {{ data.prison_visit_type | title }}
-        {% if data.prison_visit_sequence >= 9000 %}
-          {{ '(separates)' | t }}
-        {% else %}
-          {{ '(integrated)' | t }}
-        {% endif %}
+        {{ data.prison_visit_prisoner_category }}
+        {{ data.prison_visit_prisoner_subcategory }}
         </strong>
         </p>
     slots_week_1:
@@ -562,6 +559,18 @@ handlers:
         HW: 'Hydebank Wood'
         MN: Magilligan
       visit_order_number_length: 12
+      visit_order_number_categories:
+        integrated:
+          -
+            - 1
+            - 8999
+        separates:
+          -
+            - 9000
+            - 9499
+          -
+            - 9500
+            - 9999
       visit_type:
         F: face-to-face
         V: virtual

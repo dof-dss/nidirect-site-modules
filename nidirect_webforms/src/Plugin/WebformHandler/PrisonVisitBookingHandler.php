@@ -63,7 +63,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $form['#attached']['drupalSettings']['prisonVisitBooking'] = $this->configuration;
 
     $booking_ref = $this->processBookingReference($form_state);
-    //kint($booking_ref);
 
     if (!empty($booking_ref)) {
 
@@ -83,13 +82,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       if ($visit_booking_ref_valid_from < $visit_booking_week_start) {
         $visit_booking_ref_valid_from = $visit_booking_week_start;
       }
-
-      /*kint(
-        $visit_booking_ref_valid_from,
-        $visit_booking_ref_valid_to,
-        $visit_booking_week_start,
-        $visit_notice_cutoff
-      );*/
 
       // Retrieve configured visit slots for a given prison and visit type.
       // For example, slots for Maghaberry face-to-face visits).
@@ -207,7 +199,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
    */
   public function validateForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
     $this->validateVisitBookingReference($form, $form_state);
-    //$this->validateVisitorOneDOB($form, $form_state);
+    $this->validateVisitorOneDOB($form, $form_state);
   }
 
   /**

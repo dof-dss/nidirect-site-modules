@@ -203,13 +203,6 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
   }
 
   /**
-   * {@inheritdoc}
-   */
-  public function submitForm(array &$form, FormStateInterface $form_state, WebformSubmissionInterface $webform_submission) {
-    //kint('submit');
-  }
-
-  /**
    * Validate visit booking reference.
    */
   private function validateVisitBookingReference(array &$form, FormStateInterface $form_state) {

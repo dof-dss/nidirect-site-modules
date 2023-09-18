@@ -76,7 +76,8 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       $visit_order_date = $booking_ref['visit_order_date'];
       $visit_booking_ref_valid_from = $booking_ref['visit_order_valid_from'];
       $visit_booking_ref_valid_to = $booking_ref['visit_order_valid_to'];
-      $visit_notice_cutoff = $booking_ref['visit_notice_cutoff'];
+      $visit_earliest_booking_date = $booking_ref['visit_earliest_booking_date'];
+      $visit_latest_booking_date = $booking_ref['visit_latest_booking_date'];
       $visit_booking_week_start = $booking_ref['visit_booking_week_start'];
 
       if ($visit_booking_ref_valid_from < $visit_booking_week_start) {
@@ -136,44 +137,55 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
               $options = &$form_slots_day['#options'];
 
               foreach ($options as $key => $value) {
+
                 $key_time = (date_parse($key));
                 $key_date->setTime($key_time['hour'], $key_time['minute'], $key_time['second']);
 
-                // If the option time is in config and the option key date falls
-                // with visit booking dates ...
-                if (array_key_exists($key, $config_time_slots) && $key_date >= $visit_booking_week_start && $key_date <= $visit_booking_ref_valid_to) {
+                // Determine if this key_date is bookable.
+                $key_date_is_bookable = TRUE;
+
+                if (array_key_exists($key, $config_time_slots) === FALSE) {
+                  $key_date_is_bookable = FALSE;
+                }
+
+                if ($key_date > $visit_booking_ref_valid_to) {
+                  $key_date_is_bookable = FALSE;
+                }
+
+                if ($key_date < $visit_earliest_booking_date) {
+                  $key_date_is_bookable = FALSE;
+                }
+
+                if ($key_date > $visit_latest_booking_date && $visit_order_date > $visit_latest_booking_date) {
+                  $key_date_is_bookable = FALSE;
+                }
+
+                if ($time_slots_prisoner_category_specific) {
+                  // Prevent separates booking am or pm timeslots depending on
+                  // week number parity.
+                  $week_number = $key_date->format('W');
+                  if ($week_number % 2 === 0) {
+                    if ($visit_prisoner_subcategory === 0 && $key_time['hour'] <= 12) {
+                      $key_date_is_bookable = FALSE;
+                    }
+                    elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] > 12) {
+                      $key_date_is_bookable = FALSE;
+                    }
+                  }
+                  else {
+                    if ($visit_prisoner_subcategory === 0 && $key_time['hour'] > 12) {
+                      $key_date_is_bookable = FALSE;
+                    }
+                    elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] <= 12) {
+                      $key_date_is_bookable = FALSE;
+                    }
+                  }
+                }
+
+                if ($key_date_is_bookable) {
                   // Make a new key containing full datetime.
                   $new_key = $key_date->format('d/m/Y H:i');
-
-                  // Make a new option with this key. If the prisoner category
-                  // is "separates", only create keys for AM or PM times
-                  // depending on the prisoner subcategory and whether this
-                  // is an odd or even week number.
-
-                  if ($visit_prisoner_category !== 'separates' || $time_slots_prisoner_category_specific === FALSE) {
-                    $options[$new_key] = $value;
-                  }
-                  elseif ($time_slots_prisoner_category_specific) {
-                    // Give separates am or pm timeslots depending on
-                    // week number parity.
-                    $week_number = $key_date->format('W');
-                    if ($week_number % 2 === 0) {
-                      if ($visit_prisoner_subcategory === 0 && $key_time['hour'] <= 12) {
-                        $options[$new_key] = $value;
-                      }
-                      elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] > 12) {
-                        $options[$new_key] = $value;
-                      }
-                    }
-                    else {
-                      if ($visit_prisoner_subcategory === 0 && $key_time['hour'] > 12) {
-                        $options[$new_key] = $value;
-                      }
-                      elseif ($visit_prisoner_subcategory === 1 && $key_time['hour'] <= 12) {
-                        $options[$new_key] = $value;
-                      }
-                    }
-                  }
+                  $options[$new_key] = $value;
                 }
 
                 // Unset old options.
@@ -248,7 +260,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       $process_booking_ref_is_valid = FALSE;
       $error_message = $this->t('Visit reference number has expired.');
     }
-    elseif ($booking_ref_processed['visit_order_date'] > $booking_ref_processed['visit_notice_cutoff']) {
+    elseif ($booking_ref_processed['visit_order_date'] > $booking_ref_processed['visit_latest_booking_date']) {
       $process_booking_ref_is_valid = FALSE;
       $error_message = $this->t('Visit reference number has expired.');
     }
@@ -317,17 +329,25 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     $booking_ref_valid_to = clone $booking_ref_valid_from;
     $booking_ref_valid_to->modify('+' . $booking_ref_validity_period_days . ' days');
 
-    // Determine the advance notice required for a booking and
-    // set a cutoff date for this. It is calculated by subtracting
-    // the period of notice from the valid to date.
+    // Determine the advance notice required for a booking.
+    // The advance notice required is dependent on the visit type.
     $visit_advance_notice = $this->configuration['visit_advance_notice'][$booking_ref_visit_type];
-    $visit_notice_cutoff = clone $booking_ref_valid_to;
-    $visit_notice_cutoff->modify('-' . $visit_advance_notice);
+
+    // Determine the earliest date for booking
+    // (current date plus the advance notice).
+    $visit_earliest_booking_date = clone $now;
+    $visit_earliest_booking_date->modify('+' . $visit_advance_notice);
+
+    // Determine the latest date for booking
+    // (booking reference valid to date minus the advance notice).
+    $visit_latest_booking_date = clone $booking_ref_valid_to;
+    $visit_latest_booking_date->modify('-' . $visit_advance_notice);
 
     $booking_ref_processed['visit_order_date'] = $now;
     $booking_ref_processed['visit_order_valid_from'] = $booking_ref_valid_from;
     $booking_ref_processed['visit_order_valid_to'] = $booking_ref_valid_to;
-    $booking_ref_processed['visit_notice_cutoff'] = $visit_notice_cutoff;
+    $booking_ref_processed['visit_earliest_booking_date'] = $visit_earliest_booking_date;
+    $booking_ref_processed['visit_latest_booking_date'] = $visit_latest_booking_date;
 
     if ($now < $booking_ref_valid_from) {
       // Determine whether week date for the booking is for a future week or

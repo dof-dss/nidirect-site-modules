@@ -2,6 +2,7 @@
 
 namespace Drupal\nidirect_webforms\Plugin\WebformHandler;
 
+use DateTimeZone;
 use Drupal\Component\Utility\Html;
 use Drupal\Core\Ajax\AjaxResponse;
 use Drupal\Core\Ajax\InvokeCommand;
@@ -130,6 +131,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
             if (!empty($config_slots)) {
               // Work out date to prefix option keys with.
               $key_date = clone $visit_booking_ref_valid_from;
+              $key_date->setTimezone(new DateTimeZone('Europe/London'));
               $key_date->modify('+' . ($i - 1) . ' weeks');
               $key_date->modify($day . ' this week');
 
@@ -152,7 +154,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
                   $key_date_is_bookable = FALSE;
                 }
 
-                if ($key_date < $visit_earliest_booking_date) {
+                if ($key_date <= $visit_earliest_booking_date) {
                   $key_date_is_bookable = FALSE;
                 }
 

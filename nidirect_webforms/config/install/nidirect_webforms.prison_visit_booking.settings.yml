@@ -3,6 +3,12 @@ prisons:
   HW: 'Hydebank Wood'
   MN: 'Magilligan'
 visit_order_number_length: 12
+visit_order_number_categories:
+  integrated:
+    - [ 1, 8999 ]
+  separates:
+    - [ 9000, 9499 ]
+    - [ 9500, 9999 ]
 visit_type:
   F: face-to-face
   V: virtual
@@ -143,28 +149,22 @@ visit_slots:
     face-to-face:
       Monday: null
       Tuesday:
-        integrated:
-          '09:30': '9.30 am'
-          '10:45': '10.45 am'
-          '14:00': '2.00 pm'
-          '15:15': '3.15 pm'
-        separates: null
+        '09:30': '9.30 am'
+        '10:45': '10.45 am'
+        '14:00': '2.00 pm'
+        '15:15': '3.15 pm'
       Wednesday:
-        integrated:
-          '09:30': '9.30 am'
-          '10:45': '10.45 am'
-          '14:00': '2.00 pm'
-          '15:15': '3.15 pm'
-        separates: null
+        '09:30': '9.30 am'
+        '10:45': '10.45 am'
+        '14:00': '2.00 pm'
+        '15:15': '3.15 pm'
       Thursday: null
       Friday: null
       Saturday: null
       Sunday:
-        integrated:
-          '09:30': '9.30 am'
-          '10:45': '10.45 am'
-          '14:30': '2.30 pm'
-        separates: null
+        '09:30': '9.30 am'
+        '10:45': '10.45 am'
+        '14:30': '2.30 pm'
     virtual:
       Monday:
         '09:00': '9.00 am'
@@ -230,21 +230,15 @@ visit_slots:
       Monday: null
       Tuesday: null
       Wednesday:
-        integrated:
-          '10:00': '10.00 am'
-          '14:00': '2.00 pm'
-        separates: null
+        '10:00': '10.00 am'
+        '14:00': '2.00 pm'
       Thursday: null
       Friday:
-        integrated:
-          '10:00': '10.00 am'
-          '14:00': '2.00 pm'
-        separates: null
+        '10:00': '10.00 am'
+        '14:00': '2.00 pm'
       Saturday:
-        integrated:
-          '10:00': '10.00 am'
-          '14:00': '2.00 pm'
-        separates: null
+        '10:00': '10.00 am'
+        '14:00': '2.00 pm'
       Sunday: null
     virtual:
       Monday:

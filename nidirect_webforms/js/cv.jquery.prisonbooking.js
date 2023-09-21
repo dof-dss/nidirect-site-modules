@@ -13,22 +13,33 @@
       const prisonVisitForm = once('prisonVisitForm', 'form.webform-submission-prison-visit-online-booking-form', context);
 
       let $prisonVisitOrderNumber = $(prisonVisitForm).find('input[name="visitor_order_number"]');
-      let visitTypes = Object.keys(drupalSettings.prisonVisitBooking.visit_type);
-      let visitPrisonIDs = Object.keys(drupalSettings.prisonVisitBooking.prisons);
+      let visitPrisons = drupalSettings.prisonVisitBooking.prisons;
+      let visitTypes = drupalSettings.prisonVisitBooking.visit_type;
       let visitAdvanceNotice = drupalSettings.prisonVisitBooking.visit_advance_notice;
       let visitBookingRefValidityPeriodDays = drupalSettings.prisonVisitBooking.booking_reference_validity_period_days;
-
+      let visitSlotsAvailable = drupalSettings.prisonVisitBooking.visit_slots;
+      let visitSequenceAffiliations = drupalSettings.prisonVisitBooking.visit_order_number_categories;
 
       $prisonVisitOrderNumber.rules( "add", {
-        validPrisonVisitBookingRef: [true, visitPrisonIDs, visitTypes, visitAdvanceNotice, visitBookingRefValidityPeriodDays]
+        validPrisonVisitBookingRef: [
+          true,
+          visitPrisons,
+          visitTypes,
+          visitAdvanceNotice,
+          visitBookingRefValidityPeriodDays,
+          visitSlotsAvailable,
+          visitSequenceAffiliations
+        ],
+        expiredVisitBookingRef: [
+          true,
+          visitPrisons,
+          visitTypes,
+          visitAdvanceNotice,
+          visitBookingRefValidityPeriodDays,
+          visitSlotsAvailable,
+          visitSequenceAffiliations
+        ]
       });
-
-      let visitSlotsAvailable = drupalSettings.prisonVisitBooking.visit_slots;
-
-      let strJSON = JSON.stringify(visitSlotsAvailable);
-      strJSON = JSON.stringify(visitSlotsAvailable, null, 4);
-      
-      console.log(strJSON);
 
     }
   };

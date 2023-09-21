@@ -110,6 +110,9 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
           $form_slots_week_date->modify('+' . ($i - 1) . 'weeks');
           $form_slots_week['#title'] = str_replace('[DATE]', $form_slots_week_date->format('d F Y'), $form_slots_week['#title']);
 
+          // Get available slots.
+          // TODO: get available slots from external json.
+
           // Loop through each day of config slots.
           foreach ($config_visit_slots as $day => $config_slots) {
             $form_slots_day = &$form_slots_week[strtolower($day) . '_week_' . $i];
@@ -134,20 +137,15 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
               $key_date->modify('+' . ($i - 1) . ' weeks');
               $key_date->modify($day . ' this week');
 
-              // Loop through time slots for this day.
-              $options = &$form_slots_day['#options'];
+              $options = [];
 
-              foreach ($options as $key => $value) {
+              foreach ($config_time_slots as $key => $value) {
 
                 $key_time = (date_parse($key));
                 $key_date->setTime($key_time['hour'], $key_time['minute'], $key_time['second']);
 
                 // Determine if this key_date is bookable.
                 $key_date_is_bookable = TRUE;
-
-                if (array_key_exists($key, $config_time_slots) === FALSE) {
-                  $key_date_is_bookable = FALSE;
-                }
 
                 if ($key_date > $visit_booking_ref_valid_to) {
                   $key_date_is_bookable = FALSE;
@@ -188,14 +186,11 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
                   $new_key = $key_date->format('d/m/Y H:i');
                   $options[$new_key] = $value;
                 }
-
-                // Unset old options.
-                unset($options[$key]);
               }
 
-              // If we have any options left to show to user, enable access to
-              // parent webform elements.
+              // If we options to show...
               if (!empty($options)) {
+                $form_slots_day['#options'] = $options;
                 $form_slots_day['#access'] = TRUE;
                 $form_slots_week['#access'] = TRUE;
               }

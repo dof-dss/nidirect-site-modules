@@ -64,7 +64,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
 
     $booking_ref = $this->processBookingReference($form_state);
 
-    $form['#attached']['drupalSettings']['prisonVisitBooking']['booking_ref'] =  $booking_ref;
+    $form['#attached']['drupalSettings']['prisonVisitBooking']['booking_ref'] = $booking_ref;
 
     if (!empty($booking_ref)) {
       $visit_type = $booking_ref['visit_type'];
@@ -315,7 +315,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       // The "E" visit type (enhanced) is synonymous with the 'F' type
       // and so is face-to-face and has same time slots.
       if ($booking_ref_visit_type === 'E') {
-        $booking_ref_processed['visit_type'] =  $this->configuration['visit_type']['F'];
+        $booking_ref_processed['visit_type'] = $this->configuration['visit_type']['F'];
       }
     }
 

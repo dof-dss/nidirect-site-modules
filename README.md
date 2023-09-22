@@ -1,6 +1,6 @@
 [![CircleCI](https://circleci.com/gh/dof-dss/nidirect-site-modules.svg?style=svg)](https://circleci.com/gh/dof-dss/nidirect-site-modules)
 
-# DEPRECIATED 
+# DEPRECATED 
 These modules have been merged into the main repo. 
 Any changes to this repo will not appear on the site.  
 

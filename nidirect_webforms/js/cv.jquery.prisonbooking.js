@@ -13,6 +13,7 @@
       const prisonVisitForm = once('prisonVisitForm', 'form.webform-submission-prison-visit-online-booking-form', context);
 
       let $prisonVisitOrderNumber = $(prisonVisitForm).find('input[name="visitor_order_number"]');
+      let visitOrderVisitTypeKey = drupalSettings.prisonVisitBooking.booking_ref.visit_type_key;
       let visitPrisons = drupalSettings.prisonVisitBooking.prisons;
       let visitTypes = drupalSettings.prisonVisitBooking.visit_type;
       let visitAdvanceNotice = drupalSettings.prisonVisitBooking.visit_advance_notice;
@@ -40,6 +41,31 @@
           visitSequenceAffiliations
         ]
       });
+
+
+      const $weekSlots = $('[data-webform-key^="slots_week"]', prisonVisitForm);
+      if ($weekSlots.length === 1) {
+        $weekSlots.prop("open", true);
+        $('summary', $weekSlots)
+          .prop('aria-expanded', true)
+          .prop('aria-pressed', true);
+      }
+
+      const $timeSlots = $('input[type="checkbox"]', $weekSlots);
+      if ($timeSlots.length) {
+        let timeSlotLimit = (visitOrderVisitTypeKey === 'E') ? 5 : 3;
+        $('[data-webform-key^="slots_week"] input[type="checkbox"]', prisonVisitForm).on('change', function(e) {
+          let timeSlotCheckedCount = $timeSlots.filter(':checked').length;
+          if (timeSlotCheckedCount === timeSlotLimit) {
+            $timeSlots.filter(':not(:checked)').prop('disabled', true);
+          }
+          else if (timeSlotCheckedCount < timeSlotLimit) {
+            $timeSlots.filter(':not(:checked)').prop('disabled', false);
+          }
+        });
+      }
+
+
 
     }
   };

@@ -64,8 +64,9 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
 
     $booking_ref = $this->processBookingReference($form_state);
 
-    if (!empty($booking_ref)) {
+    $form['#attached']['drupalSettings']['prisonVisitBooking']['booking_ref'] =  $booking_ref;
 
+    if (!empty($booking_ref)) {
       $visit_type = $booking_ref['visit_type'];
       $visit_type_key = $booking_ref['visit_type_key'];
       $visit_prison = $booking_ref['prison_name'];
@@ -85,7 +86,7 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
       }
 
       // Retrieve configured visit slots for a given prison and visit type.
-      // For example, slots for Maghaberry face-to-face visits).
+      // For example, slots for Maghaberry face-to-face visits.
       $config_visit_slots = $this->configuration['visit_slots'][$visit_prison][$visit_type];
 
       if (!empty($config_visit_slots)) {
@@ -100,6 +101,10 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
           // grouping element (e.g. container, section or details). The keys
           // must be slots_week_1, slots_week_2, etc.
           $form_slots_week = &$form['elements']['visit_preferred_day_and_time']['slots_week_' . $i];
+
+          if ($form_slots_week['#access'] = FALSE) {
+            continue;
+          }
 
           // By default, disable access. Enable access if there are days
           // and times to show.
@@ -250,6 +255,10 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     if (empty($this->configuration['visit_slots'][$prison_name][$visit_type])) {
       $process_booking_ref_is_valid = FALSE;
     }
+    else {
+      $form_state->setValue('prison_visit_prison_name', $prison_name);
+      $form_state->setValue('prison_visit_type', $visit_type);
+    }
 
     // Check date and year portions.
     if ($booking_ref_processed['visit_order_date'] > $booking_ref_processed['visit_order_valid_to']) {
@@ -302,6 +311,12 @@ class PrisonVisitBookingHandler extends WebformHandlerBase {
     if (array_key_exists($booking_ref_visit_type, $this->configuration['visit_type'])) {
       $booking_ref_processed['visit_type_key'] = $booking_ref_visit_type;
       $booking_ref_processed['visit_type'] = $this->configuration['visit_type'][$booking_ref_visit_type];
+
+      // The "E" visit type (enhanced) is synonymous with the 'F' type
+      // and so is face-to-face and has same time slots.
+      if ($booking_ref_visit_type === 'E') {
+        $booking_ref_processed['visit_type'] =  $this->configuration['visit_type']['F'];
+      }
     }
 
     // Process the week number and year to set some dates in form state.
